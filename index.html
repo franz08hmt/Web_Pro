@@ -3,20 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Website giới thiệu mô hình động cơ và robot">
-  <title>Động cơ & Robot</title>
+  <meta name="description" content="Website hướng dẫn lựa chọn linh kiện và lắp ráp robot theo mẫu">
+  <title>Robot Assembly Lab</title>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
   <header class="site-header">
-    <a class="logo" href="index.html">Động cơ & Robot</a>
+    <a class="logo" href="index.html">Robot Assembly Lab</a>
     <nav aria-label="Điều hướng chính">
       <ul class="nav-list">
         <li><a href="index.html" aria-current="page">Trang chủ</a></li>
-        <li><a href="pages/phan-loai.html">Phân loại</a></li>
-        <li><a href="pages/cau-tao.html">Cấu tạo</a></li>
-        <li><a href="pages/nguyen-ly.html">Nguyên lý</a></li>
-        <li><a href="pages/ung-dung.html">Ứng dụng</a></li>
+        <li><a href="pages/mau-robot.html">Mẫu robot</a></li>
+        <li><a href="pages/linh-kien.html">Linh kiện</a></li>
+        <li><a href="pages/lap-rap.html">Lắp ráp</a></li>
         <li><a href="pages/thu-vien.html">Thư viện</a></li>
         <li><a href="pages/thanh-vien.html">Thành viên</a></li>
       </ul>
@@ -25,34 +24,37 @@
 
   <main>
     <section class="hero">
-      <p class="eyebrow">Web Programming</p>
-      <h1>Khám phá động cơ và mô hình robot</h1>
-      <p>Tìm hiểu lịch sử phát triển, cấu tạo, nguyên lý hoạt động và các ứng dụng tiêu biểu.</p>
-      <a class="button" href="pages/cau-tao.html">Khám phá cấu tạo</a>
+      <p class="eyebrow">Web Programming · Nhóm 4</p>
+      <h1>Chọn linh kiện và lắp ráp robot theo từng bước</h1>
+      <p>Khám phá các mẫu robot cơ bản, kiểm tra danh sách linh kiện bắt buộc và thực hiện hướng dẫn lắp ráp 2D phù hợp cho người mới.</p>
+      <div class="button-group">
+        <a class="button" href="pages/mau-robot.html">Chọn mẫu robot</a>
+        <a class="text-link" href="pages/lap-rap.html">Thử lắp ráp mẫu</a>
+      </div>
     </section>
 
-    <section class="content-section" aria-labelledby="noi-dung-chinh">
-      <h2 id="noi-dung-chinh">Nội dung chính</h2>
+    <section class="content-section" aria-labelledby="quy-trinh">
+      <p class="section-label">Quy trình sử dụng</p>
+      <h2 id="quy-trinh">Lắp ráp robot trong 3 bước</h2>
       <div class="card-grid">
-        <article class="card">
-          <h3>Phân loại</h3>
-          <p>Các nhóm động cơ và robot theo cấu tạo, chức năng và ứng dụng.</p>
-        </article>
-        <article class="card">
-          <h3>Cấu tạo</h3>
-          <p>Thành phần chính và chức năng của từng bộ phận trong mô hình.</p>
-        </article>
-        <article class="card">
-          <h3>Nguyên lý</h3>
-          <p>Quá trình vận hành được trình bày bằng nội dung và hình ảnh minh họa.</p>
-        </article>
+        <article class="card"><span class="step-number">01</span><h3>Chọn mẫu</h3><p>Chọn robot dò đường, tránh vật cản hoặc cánh tay robot mini.</p></article>
+        <article class="card"><span class="step-number">02</span><h3>Kiểm tra linh kiện</h3><p>Đánh dấu các linh kiện đã có và nhận cảnh báo nếu còn thiếu.</p></article>
+        <article class="card"><span class="step-number">03</span><h3>Lắp theo hướng dẫn</h3><p>Thực hiện các bước theo đúng thứ tự và theo dõi tiến độ hoàn thành.</p></article>
       </div>
+    </section>
+
+    <section class="content-section split-section" aria-labelledby="pham-vi">
+      <div><p class="section-label">Phạm vi giai đoạn đầu</p><h2 id="pham-vi">Mô phỏng đơn giản, dễ thực hiện</h2></div>
+      <ul class="feature-list">
+        <li>Giao diện HTML/CSS responsive.</li>
+        <li>Dữ liệu mẫu được quản lý bằng JavaScript.</li>
+        <li>Kiểm tra đủ linh kiện và hiển thị tiến độ.</li>
+        <li>Chưa sử dụng mô hình 3D hoặc mô phỏng vật lý.</li>
+      </ul>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <p>Nhóm Web Programming - 2026</p>
-  </footer>
+  <footer class="site-footer"><p>Nhóm 4 - WEPR</p></footer>
   <script src="assets/js/main.js"></script>
 </body>
 </html>

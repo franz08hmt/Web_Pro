@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Danh sách mẫu robot cơ bản dành cho người mới">
+  <title>Mẫu robot | Robot Assembly Lab</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="../index.html">Robot Assembly Lab</a>
+    <nav aria-label="Điều hướng chính"><ul class="nav-list">
+      <li><a href="../index.html">Trang chủ</a></li><li><a href="mau-robot.html" aria-current="page">Mẫu robot</a></li>
+      <li><a href="linh-kien.html">Linh kiện</a></li><li><a href="lap-rap.html">Lắp ráp</a></li>
+      <li><a href="thu-vien.html">Thư viện</a></li><li><a href="thanh-vien.html">Thành viên</a></li>
+    </ul></nav>
+  </header>
+  <main class="content-section">
+    <p class="section-label">Danh mục</p><h1>Mẫu robot dành cho người mới</h1>
+    <p class="page-intro">Tìm kiếm một mẫu phù hợp, sau đó chuyển sang phần lắp ráp để kiểm tra linh kiện.</p>
+    <label class="search-box" for="robot-search"><span>Tìm theo tên hoặc chức năng</span><input id="robot-search" type="search" placeholder="Ví dụ: dò đường" autocomplete="off"></label>
+    <div id="robot-catalog" class="card-grid" aria-live="polite"></div>
+    <p id="robot-empty" class="empty-state" hidden>Không tìm thấy mẫu robot phù hợp.</p>
+  </main>
+  <footer class="site-footer"><p>Nhóm 4 - WEPR</p></footer>
+  <script src="../assets/js/data.js"></script><script src="../assets/js/main.js"></script>
+</body>
+</html>
+

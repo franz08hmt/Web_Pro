@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Mô phỏng kiểm tra linh kiện và hướng dẫn lắp ráp robot">
+  <title>Lắp ráp | Robot Assembly Lab</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="../index.html">Robot Assembly Lab</a>
+    <nav aria-label="Điều hướng chính"><ul class="nav-list">
+      <li><a href="../index.html">Trang chủ</a></li><li><a href="mau-robot.html">Mẫu robot</a></li>
+      <li><a href="linh-kien.html">Linh kiện</a></li><li><a href="lap-rap.html" aria-current="page">Lắp ráp</a></li>
+      <li><a href="thu-vien.html">Thư viện</a></li><li><a href="thanh-vien.html">Thành viên</a></li>
+    </ul></nav>
+  </header>
+  <main class="content-section">
+    <p class="section-label">Mô phỏng 2D</p><h1>Kiểm tra và lắp ráp robot</h1>
+    <p class="page-intro">Chọn một mẫu robot, đánh dấu linh kiện đã có và làm theo các bước hướng dẫn.</p>
+    <section class="assembly-panel" aria-labelledby="chon-mau">
+      <div><label for="model-select" id="chon-mau"><strong>Mẫu robot</strong></label><select id="model-select"></select><p id="model-summary" class="muted-text"></p></div>
+      <div class="progress-block"><div class="progress-heading"><strong>Tiến độ chuẩn bị</strong><span id="progress-value">0%</span></div><progress id="parts-progress" max="100" value="0">0%</progress><p id="assembly-status" class="status-message">Hãy đánh dấu các linh kiện bạn đã có.</p></div>
+      <fieldset><legend>Linh kiện bắt buộc</legend><div id="parts-checklist" class="checklist"></div></fieldset>
+    </section>
+    <section class="assembly-steps" aria-labelledby="cac-buoc"><h2 id="cac-buoc">Các bước lắp ráp</h2><p class="muted-text">Hướng dẫn sẽ sẵn sàng khi bạn đã chọn đủ linh kiện.</p><ol id="assembly-steps" class="step-list"></ol></section>
+  </main>
+  <footer class="site-footer"><p>Nhóm 4 - WEPR</p></footer>
+  <script src="../assets/js/data.js"></script><script src="../assets/js/main.js"></script>
+</body>
+</html>
+
