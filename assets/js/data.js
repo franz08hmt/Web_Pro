@@ -1,11 +1,71 @@
 "use strict";
 
+window.COMPONENTS_DATA = [
+  {
+    id: "arduino-uno",
+    name: "Mạch Arduino Uno R3",
+    category: "Mạch điều khiển",
+    image: "../assets/images/assembly/arduino-uno.png",
+    description: "Bo mạch vi điều khiển trung tâm xử lý tín hiệu và điều khiển robot."
+  },
+  {
+    id: "hc-sr04",
+    name: "Cảm biến siêu âm HC-SR04",
+    category: "Cảm biến",
+    image: "../assets/images/assembly/hc-sr04.png",
+    description: "Đo khoảng cách tới vật cản giúp robot né tránh chướng ngại vật."
+  },
+  {
+    id: "sg90",
+    name: "Động cơ Servo SG90",
+    category: "Động cơ",
+    image: "../assets/images/assembly/sg90.png", // Đảm bảo tệp sg90.png trong thư mục assembly đúng là hình Servo màu xanh dương
+    description: "Động cơ góc quay nhỏ gọn dùng để xoay mắt cảm biến."
+  },
+  {
+    id: "l298n",
+    name: "Mạch điều khiển động cơ L298N",
+    category: "Mạch công suất",
+    image: "../assets/images/assembly/l298n.png",
+    description: "Driver điều khiển hướng quay và tốc độ của động cơ DC."
+  },
+  {
+    id: "chassis-2wd",
+    name: "Khung xe 2 bánh",
+    category: "Cơ khí",
+    image: "../assets/images/assembly/chassis-2wd.png",
+    description: "Khung Mica chịu lực gá lắp động cơ, bo mạch và nguồn pin."
+  },
+  {
+    id: "dc-motor",
+    name: "Động cơ DC TT & Bánh xe",
+    category: "Động cơ",
+    image: "../assets/images/assembly/dc-motor.png",
+    description: "Động cơ giảm tốc cung cấp lực truyền động quay bánh xe robot."
+  },
+  {
+    id: "line-sensor",
+    name: "Cảm biến dò line hồng ngoại",
+    category: "Cảm biến",
+    image: "../assets/images/assembly/line-sensor.png",
+    description: "Phát hiện vạch màu đen/trắng giúp robot bám quỹ đạo di chuyển."
+  },
+  {
+    id: "battery-holder",
+    name: "Hộp pin AA 4 cell",
+    category: "Nguồn điện",
+    image: "../assets/images/assembly/battery-holder.png",
+    description: "Cung cấp nguồn DC 6V độc lập cho mạch công suất và động cơ."
+  }
+];
+
 window.ROBOT_MODELS = [
   {
     id: "line-follower",
     name: "Robot dò đường",
     level: "Cơ bản",
     summary: "Robot hai bánh sử dụng cảm biến hồng ngoại để bám theo vạch màu trên mặt đường.",
+    image: "../assets/images/assembly/arduino-uno.png",
     parts: [
       { name: "Khung xe 2 bánh", quantity: 1 },
       { name: "Arduino Uno", quantity: 1 },
@@ -28,6 +88,7 @@ window.ROBOT_MODELS = [
     name: "Robot tránh vật cản",
     level: "Cơ bản",
     summary: "Robot sử dụng cảm biến siêu âm để phát hiện và đổi hướng khi gặp vật cản.",
+    image: "../assets/images/assembly/hc-sr04.png",
     parts: [
       { name: "Khung xe 2 bánh", quantity: 1 },
       { name: "Arduino Uno", quantity: 1 },
@@ -49,6 +110,7 @@ window.ROBOT_MODELS = [
     name: "Cánh tay robot mini",
     level: "Trung bình",
     summary: "Mô hình cánh tay nhiều khớp sử dụng động cơ servo để thực hiện thao tác gắp đơn giản.",
+    image: "../assets/images/assembly/sg90.png",
     parts: [
       { name: "Bộ khung cánh tay", quantity: 1 },
       { name: "Arduino Uno", quantity: 1 },
@@ -65,4 +127,3 @@ window.ROBOT_MODELS = [
     ]
   }
 ];
-

@@ -1,36 +1,37 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Các nhóm linh kiện cơ bản để lắp ráp robot">
-  <title>Linh kiện | Robot Assembly Lab</title>
+  <title>Danh Sách Linh Kiện - Web Pro</title>
   <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-  <header class="site-header">
-    <a class="logo" href="../index.html">Robot Assembly Lab</a>
-    <nav aria-label="Điều hướng chính"><ul class="nav-list">
-      <li><a href="../index.html">Trang chủ</a></li><li><a href="mau-robot.html">Mẫu robot</a></li>
-      <li><a href="linh-kien.html" aria-current="page">Linh kiện</a></li><li><a href="lap-rap.html">Lắp ráp</a></li>
-      <li><a href="thu-vien.html">Thư viện</a></li><li><a href="thanh-vien.html">Thành viên</a></li>
-    </ul></nav>
-  </header>
-  <main class="content-section">
-    <p class="section-label">Kiến thức cơ bản</p><h1>Các nhóm linh kiện</h1>
-    <p class="page-intro">Mỗi linh kiện đảm nhận một vai trò khác nhau. Người dùng cần chọn đúng loại và đủ số lượng theo mẫu robot.</p>
-    <div class="card-grid">
-      <article class="card"><p class="card-kicker">Bộ điều khiển</p><h2>Arduino Uno</h2><p>Nhận dữ liệu cảm biến và điều khiển hoạt động của robot.</p></article>
-      <article class="card"><p class="card-kicker">Chuyển động</p><h2>Động cơ DC</h2><p>Tạo chuyển động cho bánh xe; thường cần hai động cơ cho robot hai bánh.</p></article>
-      <article class="card"><p class="card-kicker">Cảm biến</p><h2>Hồng ngoại / siêu âm</h2><p>Nhận biết vạch hoặc đo khoảng cách đến vật cản.</p></article>
-      <article class="card"><p class="card-kicker">Điều khiển công suất</p><h2>Module L298N</h2><p>Điều khiển chiều quay và tốc độ của động cơ DC.</p></article>
-      <article class="card"><p class="card-kicker">Cơ khí</p><h2>Khung và bánh xe</h2><p>Cố định linh kiện và tạo nền tảng di chuyển ổn định.</p></article>
-      <article class="card"><p class="card-kicker">Nguồn điện</p><h2>Hộp pin</h2><p>Cấp điện cho bộ điều khiển, cảm biến và động cơ.</p></article>
-    </div>
-    <aside class="note-box"><strong>Quy tắc tương thích:</strong> linh kiện phải đúng chức năng, đủ số lượng và sử dụng mức điện áp phù hợp với mẫu robot.</aside>
-  </main>
-  <footer class="site-footer"><p>Nhóm 4 - WEPR</p></footer>
-  <script src="../assets/js/main.js"></script>
+<header class="site-header">
+  <a href="../index.html" class="logo">RobotEdu</a>
+  <ul class="nav-list">
+    <li><a href="../index.html">Trang chủ</a></li>
+    <li><a href="mau-robot.html">Mẫu Robot</a></li>
+    <li><a href="lap-rap.html">Hướng dẫn lắp ráp</a></li>
+    <li><a href="linh-kien.html" aria-current="page">Linh kiện</a></li>
+    <li><a href="thu-vien.html">Thư viện</a></li>
+    <li><a href="thanh-vien.html">Thành viên</a></li>
+  </ul>
+</header>
+
+<main class="content-section">
+  <span class="eyebrow">Tài nguyên phần cứng</span>
+  <h1>Linh Kiện Robot</h1>
+  <p class="page-intro">Tổng hợp danh sách các mạch điều khiển, cảm biến và động cơ phục vụ lắp ráp mô hình.</p>
+
+  <div id="component-list" class="card-grid"></div>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 Nhóm Phát Triển Web_Pro. Trường ĐHSPKT TP.HCM.</p>
+</footer>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/main.js"></script>
 </body>
 </html>
-

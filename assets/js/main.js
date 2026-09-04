@@ -1,16 +1,36 @@
 "use strict";
 
 const robotModels = window.ROBOT_MODELS || [];
+const componentsData = window.COMPONENTS_DATA || [];
 
+// Hàm mã hóa chống lỗ hổng bảo mật Cross-Site Scripting (XSS)
 function escapeHtml(value) {
   return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
 }
 
+// Render trang Linh Kiện (pages/linh-kien.html)
+function setupComponents() {
+  const componentContainer = document.querySelector("#component-list");
+  if (!componentContainer || componentsData.length === 0) return;
+
+  componentContainer.innerHTML = componentsData.map((item) => `
+    <article class="card component-card">
+      <div class="media-placeholder card-image">
+        <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}">
+      </div>
+      <span class="card-kicker">${escapeHtml(item.category)}</span>
+      <h3>${escapeHtml(item.name)}</h3>
+      <p>${escapeHtml(item.description)}</p>
+    </article>
+  `).join("");
+}
+
+// Render trang Danh Mục Robot (pages/mau-robot.html)
 function renderCatalog(models) {
   const catalog = document.querySelector("#robot-catalog");
   const emptyState = document.querySelector("#robot-empty");
@@ -18,6 +38,9 @@ function renderCatalog(models) {
 
   catalog.innerHTML = models.map((model) => `
     <article class="card robot-card">
+      <div class="media-placeholder card-image">
+        <img src="${escapeHtml(model.image)}" alt="${escapeHtml(model.name)}">
+      </div>
       <p class="card-kicker">${escapeHtml(model.level)}</p>
       <h2>${escapeHtml(model.name)}</h2>
       <p>${escapeHtml(model.summary)}</p>
@@ -37,12 +60,13 @@ function setupCatalog() {
   searchInput.addEventListener("input", () => {
     const keyword = searchInput.value.trim().toLocaleLowerCase("vi");
     const filtered = robotModels.filter((model) =>
-      `${model.name} ${model.summary} ${model.level}`.toLocaleLowerCase("vi").includes(keyword)
+        `${model.name} ${model.summary} ${model.level}`.toLocaleLowerCase("vi").includes(keyword)
     );
     renderCatalog(filtered);
   });
 }
 
+// Render trang Lắp Ráp & Xử lý Tiến Độ (pages/lap-rap.html)
 function setupAssembly() {
   const modelSelect = document.querySelector("#model-select");
   if (!modelSelect || robotModels.length === 0) return;
@@ -53,9 +77,10 @@ function setupAssembly() {
   const progress = document.querySelector("#parts-progress");
   const progressValue = document.querySelector("#progress-value");
   const status = document.querySelector("#assembly-status");
+  const modelImage = document.querySelector("#model-preview-image");
 
   modelSelect.innerHTML = robotModels.map((model) =>
-    `<option value="${escapeHtml(model.id)}">${escapeHtml(model.name)} · ${escapeHtml(model.level)}</option>`
+      `<option value="${escapeHtml(model.id)}">${escapeHtml(model.name)} · ${escapeHtml(model.level)}</option>`
   ).join("");
 
   const requestedModel = new URLSearchParams(window.location.search).get("model");
@@ -65,11 +90,13 @@ function setupAssembly() {
     const items = [...checklist.querySelectorAll("input[type='checkbox']")];
     const selected = items.filter((item) => item.checked).length;
     const percent = Math.round((selected / items.length) * 100);
+
     progress.value = percent;
     progressValue.textContent = `${percent}%`;
     status.textContent = percent === 100
-      ? "Đã đủ linh kiện. Bạn có thể thực hiện các bước lắp ráp."
-      : `Còn thiếu ${items.length - selected} nhóm linh kiện.`;
+        ? "Đã đủ linh kiện. Bạn có thể thực hiện các bước lắp ráp."
+        : `Còn thiếu ${items.length - selected} nhóm linh kiện.`;
+
     status.classList.toggle("is-complete", percent === 100);
     steps.classList.toggle("is-ready", percent === 100);
   }
@@ -77,12 +104,19 @@ function setupAssembly() {
   function renderSelectedModel() {
     const model = robotModels.find((item) => item.id === modelSelect.value) || robotModels[0];
     summary.textContent = model.summary;
+
+    if (modelImage) {
+      modelImage.src = model.image;
+      modelImage.alt = model.name;
+    }
+
     checklist.innerHTML = model.parts.map((part, index) => `
       <label class="check-item" for="part-${index}">
         <input id="part-${index}" type="checkbox">
         <span>${escapeHtml(part.name)} <strong>× ${part.quantity}</strong></span>
       </label>
     `).join("");
+
     steps.innerHTML = model.steps.map((step) => `<li>${escapeHtml(step)}</li>`).join("");
     updateProgress();
   }
@@ -92,6 +126,7 @@ function setupAssembly() {
   renderSelectedModel();
 }
 
+// Khởi chạy hệ thống
+setupComponents();
 setupCatalog();
 setupAssembly();
-
