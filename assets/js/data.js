@@ -11,6 +11,7 @@ window.ROBOT_MODELS = [
       { name: "Arduino Uno", quantity: 1 },
       { name: "Động cơ DC", quantity: 2 },
       { name: "Bánh xe", quantity: 2 },
+      { name: "Bánh tự do", quantity: 1 },
       { name: "Cảm biến dò line", quantity: 2 },
       { name: "Module L298N", quantity: 1 },
       { name: "Hộp pin", quantity: 1 }
@@ -32,6 +33,8 @@ window.ROBOT_MODELS = [
       { name: "Khung xe 2 bánh", quantity: 1 },
       { name: "Arduino Uno", quantity: 1 },
       { name: "Động cơ DC", quantity: 2 },
+      { name: "Bánh xe", quantity: 2 },
+      { name: "Bánh tự do", quantity: 1 },
       { name: "Cảm biến siêu âm HC-SR04", quantity: 1 },
       { name: "Module L298N", quantity: 1 },
       { name: "Hộp pin", quantity: 1 }
