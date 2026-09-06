@@ -8,29 +8,93 @@
   <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-  <header class="site-header">
-    <a class="logo" href="../index.html">Robot Assembly Lab</a>
-    <nav aria-label="Điều hướng chính"><ul class="nav-list">
-      <li><a href="../index.html">Trang chủ</a></li><li><a href="mau-robot.html">Mẫu robot</a></li>
-      <li><a href="linh-kien.html" aria-current="page">Linh kiện</a></li><li><a href="lap-rap.html">Lắp ráp</a></li>
-      <li><a href="thu-vien.html">Thư viện</a></li><li><a href="thanh-vien.html">Thành viên</a></li>
-    </ul></nav>
-  </header>
-  <main class="content-section">
-    <p class="section-label">Kiến thức cơ bản</p><h1>Các nhóm linh kiện</h1>
-    <p class="page-intro">Mỗi linh kiện đảm nhận một vai trò khác nhau. Người dùng cần chọn đúng loại và đủ số lượng theo mẫu robot.</p>
-    <div class="card-grid">
-      <article class="card"><p class="card-kicker">Bộ điều khiển</p><h2>Arduino Uno</h2><p>Nhận dữ liệu cảm biến và điều khiển hoạt động của robot.</p></article>
-      <article class="card"><p class="card-kicker">Chuyển động</p><h2>Động cơ DC</h2><p>Tạo chuyển động cho bánh xe; thường cần hai động cơ cho robot hai bánh.</p></article>
-      <article class="card"><p class="card-kicker">Cảm biến</p><h2>Hồng ngoại / siêu âm</h2><p>Nhận biết vạch hoặc đo khoảng cách đến vật cản.</p></article>
-      <article class="card"><p class="card-kicker">Điều khiển công suất</p><h2>Module L298N</h2><p>Điều khiển chiều quay và tốc độ của động cơ DC.</p></article>
-      <article class="card"><p class="card-kicker">Cơ khí</p><h2>Khung và bánh xe</h2><p>Cố định linh kiện và tạo nền tảng di chuyển ổn định.</p></article>
-      <article class="card"><p class="card-kicker">Nguồn điện</p><h2>Hộp pin</h2><p>Cấp điện cho bộ điều khiển, cảm biến và động cơ.</p></article>
-    </div>
-    <aside class="note-box"><strong>Quy tắc tương thích:</strong> linh kiện phải đúng chức năng, đủ số lượng và sử dụng mức điện áp phù hợp với mẫu robot.</aside>
-  </main>
-  <footer class="site-footer"><p>Nhóm 4 - WEPR</p></footer>
-  <script src="../assets/js/main.js"></script>
+<header class="site-header">
+  <a class="logo" href="../index.html">Robot Assembly Lab</a>
+  <nav aria-label="Điều hướng chính"><ul class="nav-list">
+    <li><a href="../index.html">Trang chủ</a></li><li><a href="mau-robot.html">Mẫu robot</a></li>
+    <li><a href="linh-kien.html" aria-current="page">Linh kiện</a></li><li><a href="lap-rap.html">Lắp ráp</a></li>
+    <li><a href="thu-vien.html">Thư viện</a></li><li><a href="thanh-vien.html">Thành viên</a></li>
+  </ul></nav>
+</header>
+
+<main class="content-section">
+  <p class="section-label">Kiến thức cơ bản</p><h1>Các nhóm linh kiện</h1>
+  <p class="page-intro">
+    Mỗi linh kiện đảm nhận một vai trò khác nhau trong robot.
+    Người dùng cần hiểu chức năng, chọn đúng loại và đủ số lượng theo từng mẫu robot.</p>
+
+  <div class="card-grid">
+
+    <article class="card">
+      <div class="card-image"><img src="../assets/images/components/arduino-uno.png" alt="Arduino Uno"></div>
+      <p class="card-kicker">Bộ điều khiển</p><h2>Arduino Uno</h2>
+      <p>Nhận dữ liệu từ cảm biến, xử lý chương trình và điều khiển hoạt động của robot.</p>
+      <p class="component-use"><strong>Dùng cho:</strong> cả ba mẫu robot.</p>
+    </article>
+
+    <article class="card">
+      <div class="card-image"><img src="../assets/images/components/motor-dc.png" alt="Động cơ DC"></div>
+      <p class="card-kicker">Chuyển động</p><h2>Động cơ DC</h2>
+      <p>Tạo chuyển động quay cho bánh xe, giúp robot tiến, lùi và thay đổi hướng.</p>
+      <p class="component-use"><strong>Dùng cho:</strong> Robot dò đường và Robot tránh vật cản.</p>
+    </article>
+
+    <article class="card">
+      <div class="card-image"><img src="../assets/images/components/ir-sensor.png" alt="Cảm biến dò line"></div>
+      <p class="card-kicker">Cảm biến</p><h2>Cảm biến dò line</h2>
+      <p>Sử dụng tín hiệu hồng ngoại để nhận biết sự khác nhau giữa vạch và nền trên mặt đường.</p>
+      <p class="component-use"><strong>Dùng cho:</strong> Robot dò đường.</p>
+    </article>
+
+    <article class="card">
+      <div class="card-image"><img src="../assets/images/components/ultrasonic.png" alt="Cảm biến siêu âm HC-SR04"></div>
+      <p class="card-kicker">Cảm biến</p><h2>HC-SR04</h2>
+      <p>Sử dụng sóng siêu âm để đo khoảng cách từ robot đến vật cản phía trước.</p>
+      <p class="component-use"><strong>Dùng cho:</strong> Robot tránh vật cản.</p>
+    </article>
+
+    <article class="card">
+      <div class="card-image"><img src="../assets/images/components/l298n.png" alt="Module L298N"></div>
+      <p class="card-kicker">Điều khiển công suất</p><h2>Module L298N</h2>
+      <p>Là mạch trung gian giữa Arduino và động cơ DC, giúp điều khiển chiều quay và tốc độ động cơ.</p>
+      <p class="component-use"><strong>Dùng cho:</strong> Robot dò đường và Robot tránh vật cản.</p>
+    </article>
+
+    <article class="card">
+      <div class="card-image"><img src="../assets/images/components/wheel.png" alt="Bánh xe robot"></div>
+      <p class="card-kicker">Cơ khí</p><h2>Bánh xe robot</h2>
+      <p>Bánh xe kết hợp với động cơ DC để truyền chuyển động và giúp robot di chuyển trên bề mặt.</p>
+      <p class="component-use"><strong>Dùng cho:</strong> Robot dò đường và Robot tránh vật cản.</p>
+    </article>
+
+    <article class="card">
+      <div class="card-image"><img src="../assets/images/components/servo-motor.png" alt="Động cơ Servo"></div>
+      <p class="card-kicker">Điều khiển góc</p><h2>Động cơ Servo</h2>
+      <p>Cho phép điều khiển vị trí theo góc, phù hợp với các khớp cần chuyển động chính xác.</p>
+      <p class="component-use"><strong>Dùng cho:</strong> Cánh tay robot mini.</p>
+    </article>
+
+    <article class="card">
+      <div class="card-image"><img src="../assets/images/components/battery-holder.png" alt="Hộp pin"></div>
+      <p class="card-kicker">Nguồn điện</p><h2>Hộp pin</h2>
+      <p>Cung cấp điện cho bộ điều khiển, cảm biến và động cơ trong quá trình robot hoạt động.</p>
+      <p class="component-use"><strong>Dùng cho:</strong> cả ba mẫu robot.</p>
+      <p><strong>Lưu ý:</strong> sử dụng mức điện áp phù hợp với từng linh kiện.</p>
+    </article>
+
+    <article class="card">
+      <div class="card-image"><img src="../assets/images/components/jumper-wire.png" alt="Dây nối Jumper"></div>
+      <p class="card-kicker">Kết nối</p><h2>Dây nối</h2>
+      <p>Kết nối Arduino với cảm biến, module điều khiển và các linh kiện khác trong hệ thống.</p>
+      <p class="component-use"><strong>Dùng cho:</strong> cả ba mẫu robot.</p>
+      <p><strong>Lưu ý:</strong> cần kết nối đúng VCC, GND và chân tín hiệu.</p>
+    </article>
+  </div>
+
+  <aside class="note-box"><strong>Quy tắc tương thích:</strong> linh kiện phải đúng chức năng, đủ số lượng, kết nối đúng chân và sử dụng mức điện áp phù hợp với mẫu robot.</aside>
+</main>
+
+<footer class="site-footer"><p>Nhóm 4 - WEPR</p></footer>
+<script src="../assets/js/main.js"></script>
 </body>
 </html>
-

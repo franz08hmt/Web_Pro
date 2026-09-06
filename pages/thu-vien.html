@@ -6,18 +6,55 @@
   <title>Thư viện | Robot Assembly Lab</title><link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-  <header class="site-header"><a class="logo" href="../index.html">Robot Assembly Lab</a><nav aria-label="Điều hướng chính"><ul class="nav-list">
-    <li><a href="../index.html">Trang chủ</a></li><li><a href="mau-robot.html">Mẫu robot</a></li><li><a href="linh-kien.html">Linh kiện</a></li><li><a href="lap-rap.html">Lắp ráp</a></li><li><a href="thu-vien.html" aria-current="page">Thư viện</a></li><li><a href="thanh-vien.html">Thành viên</a></li>
-  </ul></nav></header>
-  <main class="content-section">
-    <p class="section-label">Media</p><h1>Thư viện hướng dẫn</h1><p class="page-intro">Khu vực tập hợp sơ đồ nối dây, hình ảnh linh kiện và video minh họa. Nội dung có nguồn tham khảo sẽ được nhóm bổ sung dần.</p>
-    <div class="card-grid">
-      <article class="card media-placeholder"><span>Hình ảnh</span><h2>Sơ đồ kết nối</h2><p>Sơ đồ Arduino, cảm biến và module điều khiển động cơ.</p></article>
-      <article class="card media-placeholder"><span>Video</span><h2>Lắp ráp từng bước</h2><p>Video ngắn minh họa các thao tác cơ khí và đấu nối.</p></article>
-      <article class="card media-placeholder"><span>Tài liệu</span><h2>Thông số linh kiện</h2><p>Datasheet và ghi chú sử dụng linh kiện an toàn.</p></article>
-    </div>
-  </main>
-  <footer class="site-footer"><p>Nhóm 4 - WEPR</p></footer><script src="../assets/js/main.js"></script>
+<header class="site-header"><a class="logo" href="../index.html">Robot Assembly Lab</a><nav aria-label="Điều hướng chính"><ul class="nav-list">
+  <li><a href="../index.html">Trang chủ</a></li><li><a href="mau-robot.html">Mẫu robot</a></li><li><a href="linh-kien.html">Linh kiện</a></li><li><a href="lap-rap.html">Lắp ráp</a></li><li><a href="thu-vien.html" aria-current="page">Thư viện</a></li><li><a href="thanh-vien.html">Thành viên</a></li>
+</ul></nav></header>
+
+<main class="content-section">
+  <p class="section-label">Media</p><h1>Thư viện hướng dẫn</h1>
+  <p class="page-intro">Khu vực tổng hợp hình ảnh mẫu robot, linh kiện, sơ đồ kết nối và tài liệu hỗ trợ người dùng trong quá trình lắp ráp.</p>
+
+  <div class="card-grid">
+    <article class="card">
+      <div class="card-image"><img src="../assets/images/robots/robot-do-line.png" alt="Robot dò đường"></div>
+      <p class="card-kicker">Mẫu robot</p><h2>Robot dò đường</h2>
+      <p>Mẫu robot sử dụng cảm biến hồng ngoại để nhận biết vạch và điều chỉnh hướng di chuyển.</p>
+    </article>
+
+    <article class="card">
+      <div class="card-image"><img src="../assets/images/robots/robot-tranh-vat-can.png" alt="Robot tránh vật cản"></div>
+      <p class="card-kicker">Mẫu robot</p><h2>Robot tránh vật cản</h2>
+      <p>Mẫu robot sử dụng cảm biến siêu âm để phát hiện vật cản và tự động thay đổi hướng.</p>
+    </article>
+
+    <article class="card">
+      <div class="card-image"><img src="../assets/images/robots/robot-arm-mini.png" alt="Cánh tay robot mini"></div>
+      <p class="card-kicker">Mẫu robot</p><h2>Cánh tay robot mini</h2>
+      <p>Mô hình sử dụng động cơ servo để điều khiển chuyển động của các khớp và bộ kẹp.</p>
+    </article>
+
+    <article class="card">
+      <div class="card-image"><img src="../assets/images/components/arduino-uno.png" alt="Arduino Uno"></div>
+      <p class="card-kicker">Linh kiện</p><h2>Arduino Uno</h2>
+      <p>Bộ điều khiển trung tâm nhận dữ liệu cảm biến và điều khiển hoạt động của robot.</p>
+    </article>
+
+    <article class="card">
+      <div class="card-image"><img src="../assets/images/components/ir-sensor.png" alt="Cảm biến dò line"></div>
+      <p class="card-kicker">Linh kiện</p><h2>Cảm biến dò line</h2>
+      <p>Cảm biến hồng ngoại dùng để nhận biết sự khác nhau giữa vạch và nền.</p>
+    </article>
+
+    <article class="card">
+      <div class="card-image"><img src="../assets/images/components/ultrasonic.png" alt="Cảm biến siêu âm HC-SR04"></div>
+      <p class="card-kicker">Linh kiện</p><h2>HC-SR04</h2>
+      <p>Cảm biến siêu âm dùng để đo khoảng cách từ robot đến vật cản.</p>
+    </article>
+  </div>
+
+  <aside class="note-box"><strong>Gợi ý:</strong> xem phần <a href="linh-kien.html">Linh kiện</a> để hiểu chức năng từng thành phần, sau đó chuyển sang <a href="lap-rap.html">Lắp ráp</a> để thực hiện theo từng bước.</aside>
+</main>
+
+<footer class="site-footer"><p>Nhóm 4 - WEPR</p></footer><script src="../assets/js/main.js"></script>
 </body>
 </html>
-
