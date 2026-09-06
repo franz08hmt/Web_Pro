@@ -8,14 +8,38 @@
   <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-  <header class="site-header">
-    <a class="logo" href="../index.html">Robot Assembly Lab</a>
-    <nav aria-label="Điều hướng chính"><ul class="nav-list">
-      <li><a href="../index.html">Trang chủ</a></li><li><a href="mau-robot.html" aria-current="page">Mẫu robot</a></li>
-      <li><a href="linh-kien.html">Linh kiện</a></li><li><a href="lap-rap.html">Lắp ráp</a></li>
-      <li><a href="thu-vien.html">Thư viện</a></li><li><a href="thanh-vien.html">Thành viên</a></li>
-    </ul></nav>
-  </header>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="../index.html"
+       aria-label="Robot Assembly Lab - Trang chủ">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M8 7h8a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-5a3 3 0 0 1 3-3Z"/>
+          <path d="M9 3v4M15 3v4M9 18v3M15 18v3M3 11h2M3 15h2M19 11h2M19 15h2"/>
+          <circle cx="10" cy="12.5" r="1"/>
+          <circle cx="14" cy="12.5" r="1"/>
+        </svg>
+      </span>
+
+      <span class="brand-name">Robot Assembly Lab</span>
+    </a>
+
+    <nav aria-label="Điều hướng chính">
+      <ul class="nav-list">
+        <li><a href="../index.html">Trang chủ</a></li>
+        <li><a href="mau-robot.html" aria-current="page">Mẫu robot</a></li>
+        <li><a href="linh-kien.html">Linh kiện</a></li>
+        <li><a href="lap-rap.html">Lắp ráp</a></li>
+        <li><a href="thu-vien.html">Thư viện</a></li>
+        <li><a href="thanh-vien.html">Thành viên</a></li>
+      </ul>
+    </nav>
+
+    <a class="header-cta" href="lap-rap.html">
+      Lắp ráp ngay <span aria-hidden="true">→</span>
+    </a>
+  </div>
+</header>
   <main class="content-section">
     <p class="section-label">Danh mục</p><h1>Mẫu robot dành cho người mới</h1>
     <p class="page-intro">Tìm kiếm một mẫu phù hợp, sau đó chuyển sang phần lắp ráp để kiểm tra linh kiện.</p>
@@ -23,10 +47,43 @@
     <div id="robot-catalog" class="card-grid" aria-live="polite"></div>
     <p id="robot-empty" class="empty-state" hidden>Không tìm thấy mẫu robot phù hợp.</p>
   </main>
-  <footer class="site-footer">
-    <p>Robot Assembly Lab · Nhóm 4 · Web Programming</p>
-  </footer>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <section class="footer-intro" aria-labelledby="footer-lab-title">
+      <p class="footer-kicker">ROBOT ASSEMBLY LAB</p>
+      <h2 id="footer-lab-title">Học bằng cách tự lắp ráp</h2>
+      <p>
+        Đồ án thực hành môn Web Programming: lựa chọn mẫu robot,
+        kiểm tra linh kiện và thực hiện lắp ráp theo từng bước.
+      </p>
+    </section>
+
+    <nav class="footer-column" aria-label="Điều hướng nhanh">
+      <h2>Điều hướng</h2>
+      <ul class="footer-links">
+        <li><a href="../index.html">Trang chủ</a></li>
+        <li><a href="mau-robot.html">Mẫu robot</a></li>
+        <li><a href="linh-kien.html">Linh kiện</a></li>
+        <li><a href="thu-vien.html">Thư viện</a></li>
+        <li><a href="lap-rap.html">Hướng dẫn lắp ráp</a></li>
+      </ul>
+    </nav>
+
+    <section class="footer-column" aria-labelledby="footer-team-title">
+      <h2 id="footer-team-title">Nhóm thực hiện</h2>
+      <ul class="footer-team">
+        <li><strong>Huỳnh Minh Tài</strong><span>Trang chủ & tích hợp</span></li>
+        <li><strong>Văn Phạm Thảo Nhi</strong><span>Nội dung & cấu trúc</span></li>
+        <li><strong>Phạm Tuấn Anh</strong><span>Tương tác & responsive</span></li>
+      </ul>
+    </section>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© 2026 Robot Assembly Lab · Nhóm 4</p>
+    <p>Phiên bản v1.0 · Phục vụ mục đích học thuật</p>
+  </div>
+</footer>
   <script src="../assets/js/data.js"></script><script src="../assets/js/main.js"></script>
 </body>
 </html>
-
