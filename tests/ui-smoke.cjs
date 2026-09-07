@@ -94,6 +94,16 @@ const pages = ["index.html", "pages/mau-robot.html", "pages/linh-kien.html", "pa
       assert.equal(await page.locator("#assembly-steps").evaluate(el => el.classList.contains("is-ready")), false);
     }
     await page.goto(base + "/index.html");
+    const primaryButton = page.locator(".button").first();
+    const transitionProperties = await primaryButton.evaluate(element => getComputedStyle(element).transitionProperty);
+    assert.match(transitionProperties, /transform/, "Primary action animates transform");
+    const restingTransform = await primaryButton.evaluate(element => getComputedStyle(element).transform);
+    await primaryButton.hover();
+    await page.waitForTimeout(220);
+    assert.notEqual(await primaryButton.evaluate(element => getComputedStyle(element).transform), restingTransform, "Primary action lifts on hover");
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    assert.equal(await primaryButton.evaluate(element => getComputedStyle(element).transitionDuration), "0s", "Reduced motion disables transitions");
+    await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.keyboard.press("Tab");
     assert.equal(await page.locator(".skip-link").evaluate(el => el === document.activeElement), true);
     await page.keyboard.press("Enter");
