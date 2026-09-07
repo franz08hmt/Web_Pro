@@ -6,48 +6,64 @@
   <meta name="description" content="Website giúp người dùng lựa chọn mẫu robot, kiểm tra linh kiện và lắp ráp theo từng bước">
   <title>Robot Assembly Lab | Hướng dẫn lắp ráp robot</title>
   <link rel="stylesheet" href="assets/css/style.css">
+  <meta name="theme-color" content="#191d20">
+  <link rel="icon" href="assets/icons/cpu-chip.svg" type="image/svg+xml">
 </head>
-<body>
-<header class="site-header">
-  <div class="header-inner">
-    <a class="brand" href="index.html"
-       aria-label="Robot Assembly Lab - Trang chủ">
-      <span class="brand-mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24">
-          <path d="M8 7h8a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-5a3 3 0 0 1 3-3Z"/>
-          <path d="M9 3v4M15 3v4M9 18v3M15 18v3M3 11h2M3 15h2M19 11h2M19 15h2"/>
-          <circle cx="10" cy="12.5" r="1"/>
-          <circle cx="14" cy="12.5" r="1"/>
-        </svg>
-      </span>
-
-      <span class="brand-name">Robot Assembly Lab</span>
+<body class="home-page dark-page">
+<a class="skip-link" href="#main-content">Chuyển đến nội dung</a>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Robot Assembly Lab — Trang chủ">
+      <span class="brand-mark"><svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z"/>
+</svg></span>
+      <span class="brand-name">ROBOT<span>ASSEMBLY LAB</span></span>
     </a>
-
+    <p class="nav-caption">KHÔNG GIAN THỰC HÀNH</p>
     <nav aria-label="Điều hướng chính">
       <ul class="nav-list">
-        <li><a href="index.html" aria-current="page">Trang chủ</a></li>
-        <li><a href="pages/mau-robot.html">Mẫu robot</a></li>
-        <li><a href="pages/linh-kien.html">Linh kiện</a></li>
-        <li><a href="pages/lap-rap.html">Lắp ráp</a></li>
-        <li><a href="pages/thu-vien.html">Thư viện</a></li>
-        <li><a href="pages/thanh-vien.html">Thành viên</a></li>
+        <li><a href="index.html" aria-current="page"><svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/>
+</svg><span>Tổng quan</span></a></li>
+        <li><a href="pages/mau-robot.html"><svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/>
+</svg><span>Mẫu robot</span></a></li>
+        <li><a href="pages/linh-kien.html"><svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z"/>
+</svg><span>Linh kiện</span></a></li>
+        <li><a href="pages/lap-rap.html"><svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z"/>
+</svg><span>Lắp ráp</span></a></li>
+        <li><a href="pages/thu-vien.html"><svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/>
+</svg><span>Thư viện</span></a></li>
+        <li><a href="pages/thanh-vien.html"><svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/>
+</svg><span>Thành viên</span></a></li>
       </ul>
     </nav>
-
-    <a class="header-cta" href="pages/lap-rap.html">
-      Lắp ráp ngay <span aria-hidden="true">→</span>
-    </a>
+    <aside class="sidebar-guide" aria-label="Bắt đầu thực hành">
+      <svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/>
+</svg>
+      <p>Từ linh kiện<br>đến chuyển động.</p>
+      <a href="pages/lap-rap.html">Bắt đầu lắp ráp <svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25"/>
+</svg></a>
+    </aside>
+    <p class="sidebar-credit">WEB PROGRAMMING<span>Nhóm 4 · Robot Assembly Lab</span></p>
+  </header>
+  <div class="workspace-bar">
+    <p><span class="workspace-label">ROBOT LAB</span><span class="bar-divider">/</span>Tổng quan</p>
+    <a href="pages/lap-rap.html" class="workspace-action">Vào phòng lắp ráp <svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25"/>
+</svg></a>
   </div>
-</header>
 
-  <main>
-    <section class="hero hero-showcase">
-      <div class="hero-copy">
+  <main id="main-content" tabindex="-1">
+    <section class="hero hero-showcase" aria-labelledby="hero-heading">
+      <header class="hero-copy">
         <p class="eyebrow">Đồ án Web Programming · Nhóm 4</p>
-        <h1>
-          Lắp ráp robot theo hướng dẫn trực quan
-        </h1>
+        <h1 id="hero-heading">Khám phá cấu tạo.<br><em>Bắt đầu lắp ráp.</em></h1>
 
         <p>
           Khám phá mô hình robot, đối chiếu linh kiện và thực hiện quy trình
@@ -58,13 +74,14 @@
           <a class="button" href="pages/mau-robot.html">Xem danh mục robot</a>
           <a class="text-link" href="pages/lap-rap.html">Bắt đầu lắp ráp</a>
         </div>
-      </div>
+      </header>
 
-      <div class="hero-visual" aria-label="Mô hình Robot tránh vật cản">
+      <figure class="hero-visual" aria-label="Mô hình Robot tránh vật cản">
         <div class="hero-image-frame">
           <img
                   src="assets/images/robots/robot-tranh-vat-can.png"
                   alt="Mô hình robot tránh vật cản với cảm biến siêu âm và bánh xe"
+                  width="1024" height="1024" fetchpriority="high" decoding="async"
           >
 
           <a class="hero-hotspot hotspot-sensor" href="pages/linh-kien.html">
@@ -82,7 +99,8 @@
             <small>Động cơ DC</small>
           </a>
         </div>
-      </div>
+      <figcaption><strong>Robot tránh vật cản</strong><span>HC-SR04 · Arduino Uno · Động cơ DC</span></figcaption>
+      </figure>
     </section>
 
     <section class="stats-section lab-status" aria-label="Trạng thái Robot Assembly Lab">
@@ -103,23 +121,23 @@
 
       <dl class="stats-grid">
         <div class="stat-item">
-          <dt class="stat-value">03</dt>
-          <dd class="stat-label">Mẫu robot để thực hành</dd>
+          <dt class="stat-label">Mẫu robot để thực hành</dt>
+          <dd class="stat-value">03</dd>
         </div>
 
         <div class="stat-item">
-          <dt class="stat-value">09</dt>
-          <dd class="stat-label">Linh kiện giới thiệu</dd>
+          <dt class="stat-label">Linh kiện giới thiệu</dt>
+          <dd class="stat-value">09</dd>
         </div>
 
         <div class="stat-item">
-          <dt class="stat-value">05</dt>
-          <dd class="stat-label">Bước hướng dẫn mỗi mẫu</dd>
+          <dt class="stat-label">Bước hướng dẫn mỗi mẫu</dt>
+          <dd class="stat-value">05</dd>
         </div>
 
         <div class="stat-item">
-          <dt class="stat-value">100%</dt>
-          <dd class="stat-label">Trải nghiệm trên nền web</dd>
+          <dt class="stat-label">Trải nghiệm trên nền web</dt>
+          <dd class="stat-value">100%</dd>
         </div>
       </dl>
     </section>
@@ -170,7 +188,7 @@
         </article>
 
         <article class="component-card">
-          <span class="component-code">HC-04</span>
+          <span class="component-code">HC-SR04</span>
           <p class="component-category">Cảm biến</p>
           <h3>HC-SR04</h3>
           <p>Đo khoảng cách để robot nhận biết và tránh vật cản.</p>
@@ -196,7 +214,7 @@
       <div class="section-heading-row">
         <div>
           <p class="section-label">Nhóm thực hiện</p>
-          <h2 id="team-heading">Mỗi thành viên phụ trách một phần rõ ràng</h2>
+          <h2 id="team-heading">Cùng xây dựng Robot Lab</h2>
         </div>
 
         <a class="section-link" href="pages/thanh-vien.html">
@@ -263,64 +281,60 @@
       </a>
     </section>
 
+    <section class="content-section" aria-labelledby="faq-heading">
+      <p class="section-label">Trước khi bắt đầu</p>
+      <h2 id="faq-heading">Giải đáp nhanh</h2>
+      <div class="faq-grid">
+        <details><summary>Robot Assembly Lab giúp bạn làm gì?</summary><p>Robot Assembly Lab giúp người mới khám phá mô hình, tra cứu linh kiện, kiểm tra mức độ sẵn sàng và theo dõi hướng dẫn lắp ráp từng bước.</p></details>
+        <details><summary>Nên bắt đầu với mẫu robot nào?</summary><p>Robot dò đường và robot tránh vật cản phù hợp với người mới. Cánh tay robot mini sử dụng nhiều servo và cần thêm thao tác hiệu chỉnh.</p></details>
+        <details><summary>Đánh dấu đủ linh kiện có nghĩa là đã lắp ráp xong?</summary><p>Chưa. Tiến độ thể hiện mức độ chuẩn bị linh kiện. Sau khi chuẩn bị đầy đủ, bạn thực hiện các bước hướng dẫn để lắp ráp mô hình.</p></details>
+      </div>
+    </section>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Robot Assembly Lab giúp bạn làm gì?","acceptedAnswer":{"@type":"Answer","text":"Robot Assembly Lab giúp người mới khám phá mô hình, tra cứu linh kiện, kiểm tra mức độ sẵn sàng và theo dõi hướng dẫn lắp ráp từng bước."}},{"@type":"Question","name":"Nên bắt đầu với mẫu robot nào?","acceptedAnswer":{"@type":"Answer","text":"Robot dò đường và robot tránh vật cản phù hợp với người mới. Cánh tay robot mini sử dụng nhiều servo và cần thêm thao tác hiệu chỉnh."}},{"@type":"Question","name":"Đánh dấu đủ linh kiện có nghĩa là đã lắp ráp xong?","acceptedAnswer":{"@type":"Answer","text":"Chưa. Tiến độ thể hiện mức độ chuẩn bị linh kiện. Sau khi chuẩn bị đầy đủ, bạn thực hiện các bước hướng dẫn để lắp ráp mô hình."}}]}</script>
   </main>
 <footer class="site-footer">
-  <div class="footer-inner">
-    <section class="footer-intro" aria-labelledby="footer-lab-title">
-      <p class="footer-kicker">ROBOT ASSEMBLY LAB</p>
-      <h2 id="footer-lab-title">Nền tảng thực hành robot</h2>
-      <p>Đồ án Web Programming hỗ trợ lựa chọn mô hình, đối chiếu linh kiện và theo dõi quy trình lắp ráp từng bước.</p>
-      <div class="footer-meta" aria-label="Thông tin dự án">
-        <span>Nhóm 4 · WEPR</span>
-        <span>Đồ án học thuật</span>
-      </div>
-    </section>
-
-    <nav class="footer-column" aria-label="Điều hướng nhanh">
-      <h2>Khám phá</h2>
-      <ul class="footer-links">
-        <li><a href="pages/mau-robot.html">Danh mục robot</a></li>
-        <li><a href="pages/linh-kien.html">Linh kiện</a></li>
-        <li><a href="pages/lap-rap.html">Quy trình lắp ráp</a></li>
-        <li><a href="pages/thu-vien.html">Thư viện</a></li>
-        <li><a href="pages/thanh-vien.html">Nhóm phát triển</a></li>
-      </ul>
-    </nav>
-
-    <section class="footer-column" aria-labelledby="footer-team-title">
-      <h2 id="footer-team-title">Nhóm phát triển</h2>
-      <ul class="footer-team">
-        <li><strong>Huỳnh Minh Tài</strong><span>Giao diện & tích hợp</span></li>
-        <li><strong>Văn Phạm Thảo Nhi</strong><span>Nội dung & dữ liệu</span></li>
-        <li><strong>Phạm Tuấn Anh</strong><span>Tương tác & đa thiết bị</span></li>
-      </ul>
-    </section>
-
-    <section class="footer-column footer-project" aria-labelledby="footer-project-title">
-      <h2 id="footer-project-title">Dự án</h2>
-      <p class="footer-project-text">Theo dõi mã nguồn và tiến độ phát triển của nhóm trên GitHub.</p>
-      <div class="footer-social-links">
-        <a class="footer-social-link" href="https://github.com/franz08hmt/Web_Pro" target="_blank" rel="noopener noreferrer">
-          <span class="footer-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.1c0-.9.1-1.3-.4-1.8 3.2-.4 6.6-1.6 6.6-7.1A5.5 5.5 0 0 0 19.7 5c.1-.4.6-1.9-.1-4 0 0-1.2-.4-4.1 1.5a14 14 0 0 0-7 0C5.6.6 4.4 1 4.4 1c-.7 2.1-.2 3.6-.1 4A5.5 5.5 0 0 0 2.8 9c0 5.5 3.4 6.7 6.6 7.1-.4.4-.6 1-.5 1.8V21"/></svg></span>
-          Kho mã nguồn
-        </a>
-        <a class="footer-social-link" href="https://github.com/franz08hmt/Web_Pro/pulls" target="_blank" rel="noopener noreferrer">
-          <span class="footer-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="18" cy="19" r="2"/><path d="M6 7v10m12-6V7a2 2 0 0 0-2-2h-3m2-2-2 2 2 2"/></svg></span>
-          Pull Request
-        </a>
-      </div>
-      <div class="footer-stack">
-        <p class="footer-stack-label">Công nghệ sử dụng</p>
-        <ul class="footer-tech-list"><li class="footer-tech-item">HTML5</li><li class="footer-tech-item">CSS3</li><li class="footer-tech-item">JavaScript</li></ul>
-      </div>
-    </section>
-  </div>
-
-  <div class="footer-bottom">
-    <p>© 2026 Robot Assembly Lab · Nhóm 4</p>
-    <p>Phiên bản 1.0 · Phục vụ mục đích học thuật</p>
-  </div>
-</footer>
+    <div class="footer-inner">
+      <section class="footer-intro" aria-labelledby="footer-lab-title">
+        <p class="footer-kicker"><svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z"/>
+</svg> ROBOT ASSEMBLY LAB</p>
+        <h2 id="footer-lab-title">Hiểu cấu tạo.<br>Làm chủ chuyển động.</h2>
+        <p>Nền tảng thực hành robot dành cho người mới. Khám phá mô hình, chuẩn bị linh kiện và lắp ráp theo từng bước.</p>
+        <p class="footer-meta">Đồ án Web Programming · Nhóm 4</p>
+      </section>
+      <nav class="footer-column" aria-label="Điều hướng cuối trang">
+        <h2>Khám phá</h2>
+        <ul class="footer-links">
+          <li><a href="pages/mau-robot.html">Mẫu robot</a></li>
+          <li><a href="pages/linh-kien.html">Linh kiện</a></li>
+          <li><a href="pages/lap-rap.html">Lắp ráp</a></li>
+          <li><a href="pages/thu-vien.html">Thư viện</a></li>
+          <li><a href="pages/thanh-vien.html">Thành viên</a></li>
+        </ul>
+      </nav>
+      <section class="footer-column" aria-labelledby="footer-team-title">
+        <h2 id="footer-team-title">Nhóm phát triển</h2>
+        <ul class="footer-team">
+          <li><strong>Huỳnh Minh Tài</strong><span>Giao diện &amp; tích hợp</span></li>
+          <li><strong>Văn Phạm Thảo Nhi</strong><span>Nội dung &amp; dữ liệu</span></li>
+          <li><strong>Phạm Tuấn Anh</strong><span>Tương tác &amp; đa thiết bị</span></li>
+        </ul>
+      </section>
+      <nav class="footer-column" aria-label="Liên kết dự án">
+        <h2>Cùng xây dựng</h2>
+        <p>Theo dõi mã nguồn và đóng góp cho dự án của nhóm.</p>
+        <a class="footer-social-link" href="https://github.com/franz08hmt/Web_Pro" target="_blank" rel="noopener noreferrer"><svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5"/>
+</svg> GitHub <svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25"/>
+</svg><span class="sr-only"> (mở tab mới)</span></a>
+        <a class="footer-social-link" href="https://github.com/franz08hmt/Web_Pro/pulls" target="_blank" rel="noopener noreferrer">Đóng góp mã nguồn <svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25"/>
+</svg><span class="sr-only"> (mở tab mới)</span></a>
+      </nav>
+    </div>
+    <div class="footer-bottom"><p>© 2026 Robot Assembly Lab</p><p>Thiết kế để học. Xây dựng để hiểu.</p></div>
+  </footer>
   <script src="assets/js/data.js"></script>
   <script src="assets/js/home.js"></script>
   <script src="assets/js/main.js"></script>

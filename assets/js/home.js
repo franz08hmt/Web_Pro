@@ -24,11 +24,14 @@
 
         return `
       <article class="featured-card">
-        <div class="featured-card-top">
+        <header class="featured-card-top">
           <span class="difficulty-tag">${escapeHtml(model.level)}</span>
           <span class="model-index">0${index + 1}</span>
-        </div>
+        </header>
 
+        <figure class="card-image">
+          <img src="${escapeHtml(model.image.replace(/^\.\.\//, ""))}" alt="${escapeHtml(model.name)}" width="1024" height="1024" loading="lazy" decoding="async">
+        </figure>
         <h3>${escapeHtml(model.name)}</h3>
         <p>${escapeHtml(model.summary)}</p>
 
