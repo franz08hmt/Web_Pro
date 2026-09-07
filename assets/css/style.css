@@ -823,3 +823,242 @@ legend { margin-bottom: 0.7rem; font-weight: 800; }
   max-height: 100%;
   object-fit: contain;
 }
+
+.hero-showcase {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(20rem, 0.9fr);
+    align-items: center;
+    gap: clamp(2.5rem, 5vw, 5rem);
+    min-height: 38rem;
+}
+
+.hero-copy {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-showcase .hero-copy h1 {
+  max-width: 13.8ch;
+  font-size: clamp(3rem, 5vw, 4.75rem);
+}
+
+.hero-showcase .hero-copy > p:not(.eyebrow) {
+    max-width: 42rem;
+    margin: 1.5rem 0 0;
+    color: var(--muted);
+    font-size: clamp(1rem, 1.3vw, 1.125rem);
+    line-height: 1.75;
+}
+
+.hero-visual {
+    width: min(100%, 34rem);
+    justify-self: end;
+}
+
+.hero-image-frame {
+    position: relative;
+    overflow: hidden;
+    padding: 1rem;
+    border: 1px solid rgb(16 185 129 / 28%);
+    border-radius: var(--radius-lg);
+    background:
+            linear-gradient(145deg, rgb(255 255 255 / 94%), rgb(234 245 240 / 88%));
+    box-shadow: var(--shadow-lg);
+}
+
+.hero-image-frame::before {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    content: "";
+    pointer-events: none;
+    background:
+            linear-gradient(90deg, transparent 49.7%, rgb(15 118 110 / 8%) 50%, transparent 50.3%),
+            linear-gradient(transparent 49.7%, rgb(15 118 110 / 8%) 50%, transparent 50.3%);
+    background-size: 3rem 3rem;
+}
+
+.hero-image-frame img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: calc(var(--radius-lg) - 0.35rem);
+    object-fit: cover;
+    background: var(--surface);
+}
+
+.hero-hotspot {
+    position: absolute;
+    z-index: 2;
+    display: block;
+    min-width: 7.2rem;
+    padding: 0.55rem 0.7rem;
+    color: var(--primary-dark);
+    text-decoration: none;
+    background: rgb(255 255 255 / 94%);
+    border: 1px solid rgb(16 185 129 / 45%);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+
+.hero-hotspot::before {
+    position: absolute;
+    inset: -0.28rem;
+    z-index: -1;
+    content: "";
+    border: 1px solid rgb(16 185 129 / 38%);
+    border-radius: inherit;
+    animation: hotspot-pulse 2.4s ease-out infinite;
+}
+
+.hero-hotspot span,
+.hero-hotspot small {
+    display: block;
+}
+
+.hero-hotspot span {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.hero-hotspot small {
+    margin-top: 0.08rem;
+    color: var(--muted);
+    font-size: 0.72rem;
+}
+
+.hero-hotspot:hover,
+.hero-hotspot:focus-visible {
+    color: #ffffff;
+    background: var(--primary);
+    outline: none;
+    transform: translateY(-0.2rem);
+}
+
+.hero-hotspot:hover small,
+.hero-hotspot:focus-visible small {
+    color: rgb(255 255 255 / 82%);
+}
+
+.hotspot-sensor {
+    top: 16%;
+    left: 8%;
+}
+
+.hotspot-controller {
+    top: 46%;
+    right: 7%;
+}
+
+.hotspot-drive {
+    bottom: 12%;
+    left: 10%;
+}
+
+@keyframes hotspot-pulse {
+    0%,
+    100% {
+        opacity: 0.8;
+        transform: scale(0.96);
+    }
+
+    50% {
+        opacity: 0;
+        transform: scale(1.16);
+    }
+}
+
+@media (max-width: 760px) {
+    .hero-showcase {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        gap: 2.5rem;
+    }
+
+    .hero-visual {
+        width: min(100%, 31rem);
+        justify-self: center;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-hotspot,
+    .hero-hotspot::before {
+        animation: none;
+        transition: none;
+    }
+}
+
+.lab-status {
+  padding-bottom: 4.5rem;
+}
+
+.lab-status-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  margin-bottom: 1rem;
+  padding: 0.95rem 1.25rem;
+  background: rgb(234 245 240 / 78%);
+  border: 1px solid rgb(16 185 129 / 25%);
+  border-radius: var(--radius-md);
+}
+
+.lab-status-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.status-indicator {
+  display: block;
+  flex: 0 0 auto;
+  width: 0.7rem;
+  height: 0.7rem;
+  background: var(--primary-bright);
+  border-radius: 50%;
+  box-shadow: 0 0 0 0.3rem rgb(16 185 129 / 16%);
+}
+
+.lab-status-label,
+.lab-status-message,
+.lab-status-detail {
+  margin: 0;
+}
+
+.lab-status-label {
+  color: var(--primary-dark);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lab-status-message {
+  color: var(--slate);
+  font-size: 0.96rem;
+  font-weight: 700;
+}
+
+.lab-status-detail {
+  max-width: 32rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  text-align: right;
+}
+
+@media (max-width: 680px) {
+  .lab-status-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .lab-status-detail {
+    text-align: left;
+  }
+}

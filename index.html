@@ -42,17 +42,65 @@
 </header>
 
   <main>
-    <section class="hero">
-      <p class="eyebrow">Web Programming · Nhóm 4</p>
-        <h1>Tự lắp ráp robot từ mẫu và linh kiện có sẵn</h1>
-      <p>Chọn một mẫu robot, kiểm tra các linh kiện cần thiết và thực hiện quy trình lắp ráp theo hướng dẫn trực quan từng bước</p>
-      <div class="button-group">
-        <a class="button" href="pages/mau-robot.html">Khám phá mẫu robot</a>
-        <a class="text-link" href="pages/lap-rap.html">Bắt đầu lắp ráp</a>
+    <section class="hero hero-showcase">
+      <div class="hero-copy">
+        <p class="eyebrow">Web Programming · Nhóm 4</p>
+        <h1>
+          Lắp ráp robot theo hướng dẫn trực quan
+        </h1>
+
+        <p>
+          Chọn một mẫu robot, kiểm tra các linh kiện cần thiết và thực hiện
+          quy trình lắp ráp theo hướng dẫn trực quan từng bước.
+        </p>
+
+        <div class="button-group">
+          <a class="button" href="pages/mau-robot.html">Khám phá mẫu robot</a>
+          <a class="text-link" href="pages/lap-rap.html">Bắt đầu lắp ráp</a>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-label="Mô hình Robot tránh vật cản">
+        <div class="hero-image-frame">
+          <img
+                  src="assets/images/robots/robot-tranh-vat-can.png"
+                  alt="Mô hình robot tránh vật cản với cảm biến siêu âm và bánh xe"
+          >
+
+          <a class="hero-hotspot hotspot-sensor" href="pages/linh-kien.html">
+            <span>Cảm biến</span>
+            <small>HC-SR04</small>
+          </a>
+
+          <a class="hero-hotspot hotspot-controller" href="pages/linh-kien.html">
+            <span>Điều khiển</span>
+            <small>Arduino Uno</small>
+          </a>
+
+          <a class="hero-hotspot hotspot-drive" href="pages/linh-kien.html">
+            <span>Chuyển động</span>
+            <small>Động cơ DC</small>
+          </a>
+        </div>
       </div>
     </section>
 
-    <section class="stats-section" aria-label="Tổng quan Robot Assembly Lab">
+    <section class="stats-section lab-status" aria-label="Trạng thái Robot Assembly Lab">
+      <div class="lab-status-header">
+        <div class="lab-status-title">
+          <span class="status-indicator" aria-hidden="true"></span>
+
+          <div>
+            <p class="lab-status-label">Trạng thái phòng thực hành</p>
+            <p class="lab-status-message">Hệ thống hướng dẫn sẵn sàng</p>
+          </div>
+        </div>
+
+        <p class="lab-status-detail">
+          Người dùng có thể chọn mẫu, kiểm tra linh kiện và bắt đầu lắp ráp.
+        </p>
+      </div>
+
       <dl class="stats-grid">
         <div class="stat-item">
           <dt class="stat-value">03</dt>
@@ -60,18 +108,18 @@
         </div>
 
         <div class="stat-item">
-          <dt class="stat-value">12</dt>
-          <dd class="stat-label">Loại linh kiện nền tảng</dd>
+          <dt class="stat-value">09</dt>
+          <dd class="stat-label">Linh kiện giới thiệu</dd>
         </div>
 
         <div class="stat-item">
           <dt class="stat-value">05</dt>
-          <dd class="stat-label">Bước lắp ráp mỗi mẫu</dd>
+          <dd class="stat-label">Bước hướng dẫn mỗi mẫu</dd>
         </div>
 
         <div class="stat-item">
           <dt class="stat-value">100%</dt>
-          <dd class="stat-label">Thao tác trực tiếp trên web</dd>
+          <dd class="stat-label">Trải nghiệm trên nền web</dd>
         </div>
       </dl>
     </section>
