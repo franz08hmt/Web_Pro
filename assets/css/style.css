@@ -1,8 +1,8 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap");
 :root {
   color-scheme: light;
   --font-body: "Inter", Arial, Helvetica, sans-serif;
-  --font-heading: "Plus Jakarta Sans", "Inter", Arial, sans-serif;
+  --font-heading: "Space Grotesk", "Inter", Arial, sans-serif;
 
   --background: #f8fafc;
   --surface: #ffffff;
@@ -12,7 +12,7 @@
   --primary: #0f766e;
   --primary-dark: #115e59;
   --primary-bright: #10b981;
-  --accent: #f59e0b;
+  --accent: #b45309;
   --border: #e2e8f0;
   --slate: #0f172a;
 
@@ -59,6 +59,7 @@ h3 {
   font-family: var(--font-heading);
   font-weight: 700;
   letter-spacing: -0.025em;
+  text-wrap: balance;
 }
 
 p {
@@ -100,8 +101,8 @@ svg {
 
 .footer-inner {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
-  gap: 3rem;
+  grid-template-columns: minmax(0, 1.35fr) minmax(9rem, 0.7fr) minmax(12rem, 1fr) minmax(13rem, 1fr);
+  gap: clamp(2rem, 4vw, 3.5rem);
   width: min(var(--container-width), calc(100% - 2.5rem));
   margin: 0 auto;
   padding: 4rem 0 3rem;
@@ -122,10 +123,32 @@ svg {
   font-size: 1.1rem;
 }
 
-.footer-intro p:last-child {
+.footer-intro > p:last-of-type {
   max-width: 32rem;
   margin: 0;
   color: rgb(226 232 240 / 72%);
+}
+
+.footer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+
+.footer-meta span,
+.footer-tech-item {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.9rem;
+  padding: 0.32rem 0.62rem;
+  color: rgb(226 232 240 / 78%);
+  font-size: 0.74rem;
+  font-weight: 600;
+  line-height: 1;
+  background: rgb(255 255 255 / 6%);
+  border: 1px solid rgb(226 232 240 / 12%);
+  border-radius: 999px;
 }
 
 .footer-links,
@@ -163,6 +186,84 @@ svg {
   font-size: 0.86rem;
 }
 
+.footer-project-text {
+  margin-bottom: 1rem;
+  color: rgb(226 232 240 / 68%);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.footer-social-links {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.footer-social-link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: fit-content;
+  color: rgb(255 255 255 / 88%);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.footer-social-link:hover {
+  color: var(--primary-bright);
+  transform: translateX(0.2rem);
+}
+
+.footer-social-link:focus-visible {
+  outline: 2px solid var(--primary-bright);
+  outline-offset: 4px;
+  border-radius: 0.2rem;
+}
+
+.footer-link-icon {
+  display: grid;
+  width: 1.85rem;
+  height: 1.85rem;
+  place-items: center;
+  color: var(--primary-bright);
+  background: rgb(16 185 129 / 10%);
+  border: 1px solid rgb(16 185 129 / 20%);
+  border-radius: 0.55rem;
+}
+
+.footer-link-icon svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.footer-stack {
+  margin-top: 1.35rem;
+}
+
+.footer-stack-label {
+  margin-bottom: 0.55rem;
+  color: rgb(226 232 240 / 50%);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.footer-tech-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .footer-bottom {
   display: flex;
   justify-content: space-between;
@@ -177,6 +278,12 @@ svg {
 
 .footer-bottom p {
   margin: 0;
+}
+
+@media (max-width: 980px) {
+  .footer-inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 720px) {
@@ -1184,7 +1291,8 @@ legend { margin-bottom: 0.7rem; font-weight: 800; }
 
 @media (prefers-reduced-motion: reduce) {
   .filter-button,
-  .component-catalog .card {
+  .component-catalog .card,
+  .footer-social-link {
     transition: none;
   }
 }
