@@ -20,9 +20,9 @@ function setupComponents() {
 
   componentContainer.innerHTML = componentsData.map((item) => `
     <article class="card component-card">
-      <div class="media-placeholder card-image">
-        <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}">
-      </div>
+      <figure class="media-placeholder card-image">
+        <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" width="1024" height="1024" loading="lazy" decoding="async">
+      </figure>
       <span class="card-kicker">${escapeHtml(item.category)}</span>
       <h3>${escapeHtml(item.name)}</h3>
       <p>${escapeHtml(item.description)}</p>
@@ -38,9 +38,9 @@ function renderCatalog(models) {
 
   catalog.innerHTML = models.map((model) => `
     <article class="card robot-card">
-      <div class="media-placeholder card-image">
-        <img src="${escapeHtml(model.image)}" alt="${escapeHtml(model.name)}">
-      </div>
+      <figure class="media-placeholder card-image">
+        <img src="${escapeHtml(model.image)}" alt="${escapeHtml(model.name)}" width="1024" height="1024" loading="lazy" decoding="async">
+      </figure>
       <p class="card-kicker">${escapeHtml(model.level)}</p>
       <h2>${escapeHtml(model.name)}</h2>
       <p>${escapeHtml(model.summary)}</p>

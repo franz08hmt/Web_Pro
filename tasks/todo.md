@@ -1,0 +1,4 @@
+- [x] Tài nguyên và khung UI dùng chung; kiểm tra local.
+- [x] Trang khám phá và nội dung; kiểm tra filter/search và ngữ nghĩa.
+- [x] Trang lắp ráp dạng bảng điều khiển; kiểm tra cả ba mô hình.
+- [x] Responsive, accessibility, ảnh và console; ghi kết quả trong docs/UI_DESIGN.md.
