@@ -154,6 +154,7 @@
     let revealed = 0;
 
     targets.forEach((target) => {
+      if (target.closest(".photo-explorer") || target.querySelector(".photo-explorer")) return;
       if (showcaseSections.has(target)) return;
       if (target.getBoundingClientRect().top < fold) return;
 

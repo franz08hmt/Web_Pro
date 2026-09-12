@@ -44,6 +44,9 @@ tải giả cho dữ liệu cục bộ. Không thêm dependency/build step. Khô
 
 ## Bổ sung danh sách trang chủ
 
+> Cập nhật 12/09/2026: hai danh sách homepage đã chuyển sang slider ảnh theo
+> mẫu tham chiếu mới. Vùng slider không dùng reveal dọc; xem `PHOTO_EXPLORER.md`.
+
 Theo yêu cầu tiếp theo: ba thẻ robot và bốn thẻ linh kiện có reveal 44px/scale .97,
 500ms, so le 0/90/180/270ms. Chạy lại khi thẻ rời vùng quan sát rồi quay lại;
 không chạy trên phần màn hình đầu. Không animate cả section cha cùng với card.
