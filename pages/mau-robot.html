@@ -6,10 +6,11 @@
   <meta name="description" content="Danh sách mẫu robot cơ bản dành cho người mới">
   <title>Danh mục robot | Robot Assembly Lab</title>
   <link rel="stylesheet" href="../assets/css/style.css">
-  <meta name="theme-color" content="#191d20">
+  <meta name="theme-color" content="#0e1215">
   <link rel="icon" href="../assets/icons/cpu-chip.svg" type="image/svg+xml">
+  <script src="../assets/js/ui.js"></script>
 </head>
-<body class="catalog-page dark-page">
+<body class="catalog-page">
 <a class="skip-link" href="#main-content">Chuyển đến nội dung</a>
   <header class="site-header">
     <a class="brand" href="../index.html" aria-label="Robot Assembly Lab — Trang chủ">
@@ -18,8 +19,14 @@
 </svg></span>
       <span class="brand-name">ROBOT<span>ASSEMBLY LAB</span></span>
     </a>
+    <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="true" aria-controls="primary-nav" aria-label="Thu gọn thanh điều hướng">
+      <svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5 11.25 12l7.5-7.5M12.75 19.5 5.25 12l7.5-7.5"/>
+      </svg>
+      <span>Thu gọn</span>
+    </button>
     <p class="nav-caption">KHÔNG GIAN THỰC HÀNH</p>
-    <nav aria-label="Điều hướng chính">
+    <nav id="primary-nav" aria-label="Điều hướng chính">
       <ul class="nav-list">
         <li><a href="../index.html"><svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
   <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/>
@@ -53,12 +60,17 @@
     <p class="sidebar-credit">WEB PROGRAMMING<span>Nhóm 4 · Robot Assembly Lab</span></p>
   </header>
   <div class="workspace-bar">
-    <p><span class="workspace-label">ROBOT LAB</span><span class="bar-divider">/</span>Danh mục robot</p>
+    <nav aria-label="Đường dẫn phân cấp">
+      <ol>
+        <li><a href="../index.html"><span class="workspace-label">ROBOT LAB</span></a></li>
+        <li>Mẫu robot</li>
+      </ol>
+    </nav>
     <a href="../pages/lap-rap.html" class="workspace-action">Vào phòng lắp ráp <svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
   <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25"/>
 </svg></a>
   </div>
-  <main class="content-section" id="main-content" tabindex="-1">
+  <main class="content-section page-lead page-lead-bench" id="main-content" tabindex="-1">
     <p class="section-label">Danh mục thực hành</p><h1>Lựa chọn mô hình robot</h1>
     <p class="page-intro">So sánh mục tiêu, độ khó và cấu hình linh kiện trước khi chuyển sang quy trình lắp ráp.</p>
     <search aria-label="Tìm mẫu robot">
@@ -66,7 +78,31 @@
     </search>
     <div id="robot-catalog" class="card-grid" aria-live="polite"></div>
     <p id="robot-empty" class="empty-state" hidden>Không tìm thấy mẫu robot phù hợp.</p>
-    <noscript><p class="note-box">Bật JavaScript để tìm kiếm và chọn mẫu. Xem hình ảnh và mô tả ba mô hình tại <a href="thu-vien.html">thư viện robot</a>.</p></noscript>
+    <noscript><p class="note-box">Bật JavaScript để tìm kiếm, chọn mẫu và xem bảng so sánh ba mô hình. Xem hình ảnh và mô tả ba mô hình tại <a href="thu-vien.html">thư viện robot</a>.</p></noscript>
+
+    <section aria-labelledby="compare-heading">
+      <h2 id="compare-heading">So sánh ba mẫu robot</h2>
+      <p class="section-intro">Đối chiếu khối lượng công việc và kỹ năng thu được trước khi chọn mẫu để lắp ráp.</p>
+
+      <div class="table-scroll" tabindex="0">
+        <table class="data-table">
+          <caption>Số nhóm linh kiện và số bước được tính trực tiếp từ dữ liệu của từng mẫu.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Mẫu robot</th>
+              <th scope="col">Độ khó</th>
+              <th scope="col">Nhóm linh kiện</th>
+              <th scope="col">Số bước</th>
+              <th scope="col">Thời gian lắp</th>
+              <th scope="col">Cảm biến chính</th>
+              <th scope="col">Kỹ năng học được</th>
+            </tr>
+          </thead>
+          <tbody id="compare-body"></tbody>
+        </table>
+      </div>
+    </section>
+
     <!-- PHẦN GỢI Ý CHỌN MẪU ROBOT -->
     <aside class="note-box">
       <strong>Khuyến nghị:</strong> Robot dò đường và robot tránh vật cản phù hợp để bắt đầu. Cánh tay robot mini yêu cầu nhiều servo và thao tác hiệu chỉnh hơn.

@@ -6,8 +6,9 @@
   <meta name="description" content="Danh mục linh kiện nền tảng dành cho các mô hình robot">
   <title>Danh mục linh kiện | Robot Assembly Lab</title>
   <link rel="stylesheet" href="../assets/css/style.css">
-  <meta name="theme-color" content="#191d20">
+  <meta name="theme-color" content="#0e1215">
   <link rel="icon" href="../assets/icons/cpu-chip.svg" type="image/svg+xml">
+  <script src="../assets/js/ui.js"></script>
 </head>
 <body class="components-page">
   <a class="skip-link" href="#main-content">Chuyển đến nội dung</a>
@@ -18,8 +19,14 @@
 </svg></span>
       <span class="brand-name">ROBOT<span>ASSEMBLY LAB</span></span>
     </a>
+    <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="true" aria-controls="primary-nav" aria-label="Thu gọn thanh điều hướng">
+      <svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5 11.25 12l7.5-7.5M12.75 19.5 5.25 12l7.5-7.5"/>
+      </svg>
+      <span>Thu gọn</span>
+    </button>
     <p class="nav-caption">KHÔNG GIAN THỰC HÀNH</p>
-    <nav aria-label="Điều hướng chính">
+    <nav id="primary-nav" aria-label="Điều hướng chính">
       <ul class="nav-list">
         <li><a href="../index.html"><svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
   <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/>
@@ -53,12 +60,17 @@
     <p class="sidebar-credit">WEB PROGRAMMING<span>Nhóm 4 · Robot Assembly Lab</span></p>
   </header>
   <div class="workspace-bar">
-    <p><span class="workspace-label">ROBOT LAB</span><span class="bar-divider">/</span>Linh kiện</p>
+    <nav aria-label="Đường dẫn phân cấp">
+      <ol>
+        <li><a href="../index.html"><span class="workspace-label">ROBOT LAB</span></a></li>
+        <li>Linh kiện</li>
+      </ol>
+    </nav>
     <a href="../pages/lap-rap.html" class="workspace-action">Vào phòng lắp ráp <svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
   <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25"/>
 </svg></a>
   </div>
-  <main class="content-section" id="main-content" tabindex="-1">
+  <main class="content-section page-lead page-lead-board" id="main-content" tabindex="-1">
     <p class="section-label">Danh mục kỹ thuật</p><h1>Linh kiện robot nền tảng</h1>
     <p class="page-intro">
       Tra cứu vai trò, chức năng và khả năng tương thích của các thành phần được sử dụng trong từng mô hình robot.</p>
@@ -87,56 +99,56 @@
 
     <div id="component-catalog" class="card-grid component-catalog" aria-live="polite">
 
-      <article class="card" data-component-category="controller">
+      <article class="card" data-component-id="arduino-uno" data-component-category="controller">
         <figure class="card-image"><img src="../assets/images/components/arduino-uno.png" alt="Arduino Uno" width="1024" height="1024" loading="lazy" decoding="async"></figure>
         <p class="card-kicker">Bộ điều khiển</p><h2>Arduino Uno</h2>
         <p>Nhận dữ liệu từ cảm biến, xử lý chương trình và điều khiển hoạt động của robot.</p>
         <p class="component-use"><strong>Dùng cho:</strong> cả ba mẫu robot.</p>
       </article>
 
-      <article class="card" data-component-category="motion">
+      <article class="card" data-component-id="dc-motor" data-component-category="motion">
         <figure class="card-image"><img src="../assets/images/components/motor-dc.png" alt="Động cơ DC" width="1024" height="1024" loading="lazy" decoding="async"></figure>
         <p class="card-kicker">Chuyển động</p><h2>Động cơ DC</h2>
         <p>Tạo chuyển động quay cho bánh xe, giúp robot tiến, lùi và thay đổi hướng.</p>
         <p class="component-use"><strong>Dùng cho:</strong> Robot dò đường và Robot tránh vật cản.</p>
       </article>
 
-      <article class="card" data-component-category="sensor">
+      <article class="card" data-component-id="line-sensor" data-component-category="sensor">
         <figure class="card-image"><img src="../assets/images/components/ir-sensor.png" alt="Cảm biến dò line" width="1024" height="1024" loading="lazy" decoding="async"></figure>
         <p class="card-kicker">Cảm biến</p><h2>Cảm biến dò line</h2>
         <p>Sử dụng tín hiệu hồng ngoại để nhận biết sự khác nhau giữa vạch và nền trên mặt đường.</p>
         <p class="component-use"><strong>Dùng cho:</strong> Robot dò đường.</p>
       </article>
 
-      <article class="card" data-component-category="sensor">
+      <article class="card" data-component-id="hc-sr04" data-component-category="sensor">
         <figure class="card-image"><img src="../assets/images/components/ultrasonic.png" alt="Cảm biến siêu âm HC-SR04" width="1024" height="1024" loading="lazy" decoding="async"></figure>
         <p class="card-kicker">Cảm biến</p><h2>HC-SR04</h2>
         <p>Sử dụng sóng siêu âm để đo khoảng cách từ robot đến vật cản phía trước.</p>
         <p class="component-use"><strong>Dùng cho:</strong> Robot tránh vật cản.</p>
       </article>
 
-      <article class="card" data-component-category="controller">
+      <article class="card" data-component-id="l298n" data-component-category="controller">
         <figure class="card-image"><img src="../assets/images/components/l298n.png" alt="Module L298N" width="1024" height="1024" loading="lazy" decoding="async"></figure>
         <p class="card-kicker">Điều khiển công suất</p><h2>Module L298N</h2>
         <p>Là mạch trung gian giữa Arduino và động cơ DC, giúp điều khiển chiều quay và tốc độ động cơ.</p>
         <p class="component-use"><strong>Dùng cho:</strong> Robot dò đường và Robot tránh vật cản.</p>
       </article>
 
-      <article class="card" data-component-category="motion">
+      <article class="card" data-component-id="wheel" data-component-category="motion">
         <figure class="card-image"><img src="../assets/images/components/wheel.png" alt="Bánh xe robot" width="1024" height="1024" loading="lazy" decoding="async"></figure>
         <p class="card-kicker">Cơ khí</p><h2>Bánh xe robot</h2>
         <p>Bánh xe kết hợp với động cơ DC để truyền chuyển động và giúp robot di chuyển trên bề mặt.</p>
         <p class="component-use"><strong>Dùng cho:</strong> Robot dò đường và Robot tránh vật cản.</p>
       </article>
 
-      <article class="card" data-component-category="motion">
+      <article class="card" data-component-id="sg90" data-component-category="motion">
         <figure class="card-image"><img src="../assets/images/components/servo-motor.png" alt="Động cơ Servo" width="1024" height="1024" loading="lazy" decoding="async"></figure>
         <p class="card-kicker">Điều khiển góc</p><h2>Động cơ Servo</h2>
         <p>Cho phép điều khiển vị trí theo góc, phù hợp với các khớp cần chuyển động chính xác.</p>
         <p class="component-use"><strong>Dùng cho:</strong> Cánh tay robot mini.</p>
       </article>
 
-      <article class="card" data-component-category="utility">
+      <article class="card" data-component-id="battery-holder" data-component-category="utility">
         <figure class="card-image"><img src="../assets/images/components/battery-holder.png" alt="Hộp pin" width="1024" height="1024" loading="lazy" decoding="async"></figure>
         <p class="card-kicker">Nguồn điện</p><h2>Hộp pin</h2>
         <p>Cung cấp điện cho bộ điều khiển, cảm biến và động cơ trong quá trình robot hoạt động.</p>
@@ -144,7 +156,7 @@
         <p><strong>Lưu ý:</strong> sử dụng mức điện áp phù hợp với từng linh kiện.</p>
       </article>
 
-      <article class="card" data-component-category="utility">
+      <article class="card" data-component-id="jumper-wire" data-component-category="utility">
         <figure class="card-image"><img src="../assets/images/components/jumper-wire.png" alt="Dây nối Jumper" width="1024" height="1024" loading="lazy" decoding="async"></figure>
         <p class="card-kicker">Kết nối</p><h2>Dây nối</h2>
         <p>Kết nối Arduino với cảm biến, module điều khiển và các linh kiện khác trong hệ thống.</p>
@@ -152,6 +164,41 @@
         <p><strong>Lưu ý:</strong> cần kết nối đúng VCC, GND và chân tín hiệu.</p>
       </article>
     </div>
+
+
+    <section class="chart-card" aria-labelledby="chart-heading">
+      <h2 id="chart-heading">Phân bố linh kiện theo nhóm chức năng</h2>
+      <p class="muted-text">Chín linh kiện của thư viện được chia thành bốn nhóm. Nhóm chuyển động chiếm tỉ trọng lớn nhất vì gồm cả động cơ và bộ truyền động.</p>
+
+      <svg class="bar-chart" viewBox="0 0 640 214" role="img" aria-labelledby="chart-title" focusable="false">
+        <title id="chart-title">Biểu đồ cột: chuyển động 3 linh kiện; bộ điều khiển, cảm biến, nguồn và kết nối mỗi nhóm 2 linh kiện.</title>
+        <line class="axis" x1="180" y1="10" x2="180" y2="200"/>
+
+        <text x="0" y="34">Bộ điều khiển</text>
+        <rect class="bar" x="180" y="16" width="260" height="28" rx="4"/>
+        <text x="452" y="34">2</text>
+
+        <text x="0" y="82">Cảm biến</text>
+        <rect class="bar" x="180" y="64" width="260" height="28" rx="4"/>
+        <text x="452" y="82">2</text>
+
+        <text x="0" y="130">Chuyển động</text>
+        <rect class="bar-alt" x="180" y="112" width="390" height="28" rx="4"/>
+        <text x="582" y="130">3</text>
+
+        <text x="0" y="178">Nguồn &amp; kết nối</text>
+        <rect class="bar" x="180" y="160" width="260" height="28" rx="4"/>
+        <text x="452" y="178">2</text>
+      </svg>
+
+      <ul class="chart-figures">
+        <li>Bộ điều khiển: <strong>2</strong></li>
+        <li>Cảm biến: <strong>2</strong></li>
+        <li>Chuyển động: <strong>3</strong></li>
+        <li>Nguồn &amp; kết nối: <strong>2</strong></li>
+        <li>Tổng cộng: <strong>9</strong></li>
+      </ul>
+    </section>
 
     <aside class="note-box"><strong>Quy tắc tương thích:</strong> linh kiện phải đúng chức năng, đủ số lượng, kết nối đúng chân và sử dụng mức điện áp phù hợp với mẫu robot.</aside>
   </main>
@@ -198,6 +245,7 @@
     </div>
     <div class="footer-bottom"><p>© 2026 Robot Assembly Lab</p><p>Thiết kế để học. Xây dựng để hiểu.</p></div>
   </footer>
+  <script src="../assets/js/data.js"></script>
   <script src="../assets/js/components-filter.js"></script>
   <script src="../assets/js/main.js"></script>
 </body>

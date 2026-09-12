@@ -13,6 +13,31 @@ function escapeHtml(value) {
       .replaceAll("'", "&#039;");
 }
 
+// Đọc/ghi localStorage an toàn: chế độ riêng tư có thể ném lỗi.
+const storage = {
+  read(key) {
+    try {
+      return window.localStorage.getItem(key);
+    } catch (error) {
+      return null;
+    }
+  },
+  write(key, value) {
+    try {
+      window.localStorage.setItem(key, value);
+    } catch (error) {
+      /* Bỏ qua: trạng thái đã lưu chỉ là tiện ích, không phải chức năng bắt buộc. */
+    }
+  },
+  remove(key) {
+    try {
+      window.localStorage.removeItem(key);
+    } catch (error) {
+      /* Bỏ qua. */
+    }
+  }
+};
+
 // Render trang Linh Kiện (pages/linh-kien.html)
 function setupComponents() {
   const componentContainer = document.querySelector("#component-list");
@@ -30,6 +55,47 @@ function setupComponents() {
   `).join("");
 }
 
+// Bổ sung bảng thông số kỹ thuật vào các thẻ linh kiện tĩnh.
+// Số lượng thẻ trong HTML không thay đổi, chỉ thêm nội dung bên trong.
+function setupComponentSpecs() {
+  const cards = document.querySelectorAll("[data-component-id]");
+  if (cards.length === 0) return;
+
+  cards.forEach((card) => {
+    const item = componentsData.find((entry) => entry.id === card.dataset.componentId);
+    if (!item || !item.specs) return;
+
+    const rows = Object.entries(item.specs).map(([label, value]) => `
+      <dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd>
+    `).join("");
+
+    card.insertAdjacentHTML("beforeend", `
+      <details class="spec-details">
+        <summary>Thông số kỹ thuật</summary>
+        <dl class="spec-list">${rows}</dl>
+      </details>
+    `);
+  });
+}
+
+// Bảng so sánh ba mẫu robot (pages/mau-robot.html)
+function setupCompareTable() {
+  const body = document.querySelector("#compare-body");
+  if (!body || robotModels.length === 0) return;
+
+  body.innerHTML = robotModels.map((model) => `
+    <tr>
+      <th scope="row">${escapeHtml(model.name)}</th>
+      <td>${escapeHtml(model.level)}</td>
+      <td>${model.parts.length}</td>
+      <td>${model.steps.length}</td>
+      <td>${escapeHtml(model.buildTime || "—")}</td>
+      <td>${escapeHtml(model.mainSensor || "—")}</td>
+      <td>${escapeHtml(model.skills || "—")}</td>
+    </tr>
+  `).join("");
+}
+
 // Render trang Danh Mục Robot (pages/mau-robot.html)
 function renderCatalog(models) {
   const catalog = document.querySelector("#robot-catalog");
@@ -44,7 +110,7 @@ function renderCatalog(models) {
       <p class="card-kicker">${escapeHtml(model.level)}</p>
       <h2>${escapeHtml(model.name)}</h2>
       <p>${escapeHtml(model.summary)}</p>
-      <p><strong>${model.parts.length}</strong> nhóm linh kiện · <strong>${model.steps.length}</strong> bước</p>
+      <p><strong>${model.parts.length}</strong> nhóm linh kiện · <strong>${model.steps.length}</strong> bước · <strong>${escapeHtml(model.buildTime || "—")}</strong></p>
       <a class="card-link" href="lap-rap.html?model=${encodeURIComponent(model.id)}">Chọn mẫu này →</a>
     </article>
   `).join("");
@@ -79,14 +145,51 @@ function setupAssembly() {
   const status = document.querySelector("#assembly-status");
   const modelImage = document.querySelector("#model-preview-image");
 
+  // Phần bổ sung của Phase 2, có thể vắng mặt nên luôn kiểm tra trước khi dùng.
+  const wiringBody = document.querySelector("#wiring-body");
+  const wiringCaption = document.querySelector("#wiring-caption");
+  const dialValue = document.querySelector("#dial-value");
+  const dialLabel = document.querySelector("#dial-label");
+  const resetButton = document.querySelector("#reset-progress");
+
+  const DIAL_LENGTH = 339.29; // chu vi đường tròn bán kính 54
+
   modelSelect.innerHTML = robotModels.map((model) =>
       `<option value="${escapeHtml(model.id)}">${escapeHtml(model.name)} · ${escapeHtml(model.level)}</option>`
   ).join("");
 
   const requestedModel = new URLSearchParams(window.location.search).get("model");
-  if (robotModels.some((model) => model.id === requestedModel)) modelSelect.value = requestedModel;
+  const storedModel = storage.read("ral.model");
 
-  function updateProgress() {
+  // Query string do người dùng vừa bấm luôn được ưu tiên hơn trạng thái đã lưu.
+  if (robotModels.some((model) => model.id === requestedModel)) {
+    modelSelect.value = requestedModel;
+  } else if (robotModels.some((model) => model.id === storedModel)) {
+    modelSelect.value = storedModel;
+  }
+
+  function partsKey() {
+    return `ral.parts.${modelSelect.value}`;
+  }
+
+  function savePartsState(items) {
+    storage.write(partsKey(), JSON.stringify(items.map((item) => item.checked)));
+  }
+
+  function restorePartsState(items) {
+    const raw = storage.read(partsKey());
+    if (!raw) return;
+
+    try {
+      const saved = JSON.parse(raw);
+      if (!Array.isArray(saved) || saved.length !== items.length) return;
+      items.forEach((item, index) => { item.checked = saved[index] === true; });
+    } catch (error) {
+      storage.remove(partsKey());
+    }
+  }
+
+  function updateProgress(persist) {
     const items = [...checklist.querySelectorAll("input[type='checkbox']")];
     const selected = items.filter((item) => item.checked).length;
     const percent = Math.round((selected / items.length) * 100);
@@ -99,9 +202,34 @@ function setupAssembly() {
 
     status.classList.toggle("is-complete", percent === 100);
     steps.classList.toggle("is-ready", percent === 100);
+
+    if (dialValue) {
+      dialValue.style.strokeDasharray = String(DIAL_LENGTH);
+      dialValue.style.strokeDashoffset = String(DIAL_LENGTH * (1 - percent / 100));
+    }
+    if (dialLabel) dialLabel.textContent = `${percent}%`;
+
+    if (persist) savePartsState(items);
   }
 
-  function renderSelectedModel() {
+  function renderWiring(model) {
+    if (!wiringBody) return;
+
+    const rows = model.wiring || [];
+    wiringBody.innerHTML = rows.map((row) => `
+      <tr>
+        <th scope="row"><span class="pin-code">${escapeHtml(row.pin)}</span></th>
+        <td>${escapeHtml(row.target)}</td>
+        <td>${escapeHtml(row.note)}</td>
+      </tr>
+    `).join("");
+
+    if (wiringCaption) {
+      wiringCaption.textContent = `Sơ đồ nối dây của ${model.name}: ${rows.length} kết nối cần thực hiện.`;
+    }
+  }
+
+  function renderSelectedModel(restore) {
     const model = robotModels.find((item) => item.id === modelSelect.value) || robotModels[0];
     summary.textContent = model.summary;
 
@@ -114,19 +242,40 @@ function setupAssembly() {
       <label class="check-item" for="part-${index}">
         <input id="part-${index}" type="checkbox">
         <span>${escapeHtml(part.name)} <strong>× ${part.quantity}</strong></span>
+        <svg class="icon tick-icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+          <path class="tick" stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/>
+        </svg>
       </label>
     `).join("");
 
     steps.innerHTML = model.steps.map((step) => `<li>${escapeHtml(step)}</li>`).join("");
-    updateProgress();
+    renderWiring(model);
+
+    if (restore) restorePartsState([...checklist.querySelectorAll("input[type='checkbox']")]);
+    updateProgress(false);
   }
 
-  checklist.addEventListener("change", updateProgress);
-  modelSelect.addEventListener("change", renderSelectedModel);
-  renderSelectedModel();
+  checklist.addEventListener("change", () => updateProgress(true));
+
+  modelSelect.addEventListener("change", () => {
+    storage.write("ral.model", modelSelect.value);
+    renderSelectedModel(true);
+  });
+
+  if (resetButton) {
+    resetButton.addEventListener("click", () => {
+      storage.remove(partsKey());
+      checklist.querySelectorAll("input[type='checkbox']").forEach((item) => { item.checked = false; });
+      updateProgress(false);
+    });
+  }
+
+  renderSelectedModel(true);
 }
 
 // Khởi chạy hệ thống
 setupComponents();
+setupComponentSpecs();
+setupCompareTable();
 setupCatalog();
 setupAssembly();

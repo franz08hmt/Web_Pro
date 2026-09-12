@@ -6,8 +6,9 @@
   <meta name="description" content="Quy trình kiểm tra linh kiện và hướng dẫn lắp ráp robot">
   <title>Quy trình lắp ráp | Robot Assembly Lab</title>
   <link rel="stylesheet" href="../assets/css/style.css">
-  <meta name="theme-color" content="#191d20">
+  <meta name="theme-color" content="#0e1215">
   <link rel="icon" href="../assets/icons/cpu-chip.svg" type="image/svg+xml">
+  <script src="../assets/js/ui.js"></script>
 </head>
 <body class="assembly-page">
   <a class="skip-link" href="#main-content">Chuyển đến nội dung</a>
@@ -18,8 +19,14 @@
 </svg></span>
       <span class="brand-name">ROBOT<span>ASSEMBLY LAB</span></span>
     </a>
+    <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="true" aria-controls="primary-nav" aria-label="Thu gọn thanh điều hướng">
+      <svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5 11.25 12l7.5-7.5M12.75 19.5 5.25 12l7.5-7.5"/>
+      </svg>
+      <span>Thu gọn</span>
+    </button>
     <p class="nav-caption">KHÔNG GIAN THỰC HÀNH</p>
-    <nav aria-label="Điều hướng chính">
+    <nav id="primary-nav" aria-label="Điều hướng chính">
       <ul class="nav-list">
         <li><a href="../index.html"><svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
   <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/>
@@ -53,7 +60,12 @@
     <p class="sidebar-credit">WEB PROGRAMMING<span>Nhóm 4 · Robot Assembly Lab</span></p>
   </header>
   <div class="workspace-bar">
-    <p><span class="workspace-label">ROBOT LAB</span><span class="bar-divider">/</span>Phòng lắp ráp</p>
+    <nav aria-label="Đường dẫn phân cấp">
+      <ol>
+        <li><a href="../index.html"><span class="workspace-label">ROBOT LAB</span></a></li>
+        <li>Phòng lắp ráp</li>
+      </ol>
+    </nav>
     <a href="../pages/lap-rap.html" class="workspace-action">Vào phòng lắp ráp <svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
   <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25"/>
 </svg></a>
@@ -75,11 +87,27 @@
           <p id="model-summary" class="muted-text"></p>
         </div>
         <section class="progress-block" aria-labelledby="progress-heading">
+          <svg class="progress-dial" viewBox="0 0 132 132" aria-hidden="true" focusable="false">
+            <circle class="track" cx="66" cy="66" r="54"/>
+            <circle id="dial-value" class="value" cx="66" cy="66" r="54" stroke-dasharray="339.29" stroke-dashoffset="339.29"/>
+            <text id="dial-label" x="66" y="76" text-anchor="middle">0%</text>
+          </svg>
           <header class="progress-heading"><h3 id="progress-heading">Tiến độ chuẩn bị</h3><span id="progress-value">0%</span></header>
           <progress id="parts-progress" max="100" value="0" aria-labelledby="progress-heading">0%</progress>
           <p id="assembly-status" class="status-message" role="status">Hãy đánh dấu các linh kiện bạn đã có.</p>
         </section>
-        <fieldset><legend>Linh kiện bắt buộc</legend><div id="parts-checklist" class="checklist"></div></fieldset>
+        <fieldset>
+          <legend>Linh kiện bắt buộc</legend>
+          <div id="parts-checklist" class="checklist"></div>
+          <p class="checklist-actions">
+            <button class="reset-button" id="reset-progress" type="button">
+              <svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992V4.356m-4.992 4.992-1.72-1.72A7.5 7.5 0 0 0 4.51 9.53M2.985 14.652h4.992v4.992m-4.992-4.992 1.72 1.72a7.5 7.5 0 0 0 12.516-1.902"/>
+              </svg>
+              Đặt lại tiến độ
+            </button>
+          </p>
+        </fieldset>
       </section>
     </div>
     <section class="assembly-steps" aria-labelledby="cac-buoc">
@@ -87,6 +115,26 @@
       <p class="muted-text">Tiến độ phía trên phản ánh việc chuẩn bị linh kiện. Khi đã đủ, hãy thực hiện lần lượt các bước bên dưới.</p>
       <ol id="assembly-steps" class="step-list"></ol>
     </section>
+
+    <section class="chart-card" aria-labelledby="wiring-heading">
+      <h2 id="wiring-heading">Sơ đồ nối dây theo mẫu đang chọn</h2>
+      <p class="muted-text">Bảng cập nhật theo mẫu robot chọn ở trên. Nối chung GND giữa Arduino, mạch công suất và nguồn trước khi cấp điện.</p>
+
+      <div class="table-scroll" tabindex="0">
+        <table class="data-table">
+          <caption id="wiring-caption">Sơ đồ nối dây của mẫu đang chọn.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Chân Arduino</th>
+              <th scope="col">Nối tới</th>
+              <th scope="col">Ghi chú</th>
+            </tr>
+          </thead>
+          <tbody id="wiring-body"></tbody>
+        </table>
+      </div>
+    </section>
+
     <noscript><p class="note-box">Bật JavaScript để chọn mô hình và kiểm tra linh kiện. Bạn vẫn có thể tham khảo <a href="thu-vien.html">thư viện hình ảnh</a>.</p></noscript>
   </main>
   <footer class="site-footer">
