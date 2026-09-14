@@ -1,0 +1,24 @@
+{
+  "name": "robot-assembly-lab",
+  "version": "2.0.0",
+  "private": true,
+  "description": "REST API nền tảng cho Robot Assembly Lab.",
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "test": "node --test tests/server/**/*.test.cjs",
+    "test:ui": "node tests/ui-smoke.cjs"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
+    "helmet": "^8.1.0",
+    "mysql2": "^3.14.3"
+  }
+}

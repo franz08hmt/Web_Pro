@@ -3,4 +3,10 @@ out/
 .DS_Store
 Thumbs.db
 *.log
-
+node_modules/
+coverage/
+.env
+.env.local
+.env.*.local
+*.pem
+*.key

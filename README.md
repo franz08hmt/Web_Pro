@@ -175,7 +175,8 @@ robot-engine-website/
 `-- README.md
 ```
 
-Đây là cấu trúc mục tiêu, chưa phải toàn bộ thư mục đã tồn tại ở thời điểm hiện tại.
+Nền Express, middleware, route health check, cấu hình môi trường và pool MySQL
+đã được khởi tạo. `database/` cùng migration/seed vẫn là phần Nhi sẽ triển khai.
 
 ## Quy trình Git
 
@@ -200,4 +201,22 @@ robot-engine-website/
 
 ## Chạy phiên bản hiện tại
 
-Mở `index.html` bằng trình duyệt hoặc dùng tính năng preview của IntelliJ IDEA. Phiên bản full-stack chưa được khởi tạo; lệnh cài đặt backend và database sẽ được bổ sung sau khi nhóm hoàn thành bước chốt kiến trúc.
+Phần giao diện tĩnh có thể mở bằng preview của IntelliJ IDEA. Để chạy API nền:
+
+```bash
+npm install
+Copy-Item .env.example .env
+npm start
+```
+
+Sau đó mở `http://127.0.0.1:3000/api/health`. Không cần MySQL để kiểm tra API
+cơ bản: response trả `database: "not_configured"`. Khi Nhi hoàn thành schema,
+điền đủ năm biến `DB_*` trong `.env` để bật pool MySQL. Không commit `.env`.
+
+Lệnh kiểm tra backend:
+
+```bash
+npm test
+```
+
+Quy ước request/response ở [docs/API_CONVENTIONS.md](docs/API_CONVENTIONS.md).
