@@ -55,7 +55,6 @@
 .explorer-count { font-size: 30px; font-weight: 600; margin-right: auto; font-variant-numeric: tabular-nums; }
 .explorer-count small { font-size: 13px; font-weight: 400; }
 .explorer-control { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; border: 1px solid rgb(255 255 255 / .55); border-radius: 50%; background: rgb(var(--photo-shade) / .6); color: var(--photo-white); }
-.explorer-play { gap: 8px; padding-inline: 16px; border-radius: 24px; font-size: 12px; }
 .explorer-control:hover { background: var(--surface); color: var(--photo-white); }
 .photo-explorer :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .explorer-credit { grid-column: 1 / -1; color: var(--photo-white); font-size: 10px; line-height: 1.6; min-height: 16px; }

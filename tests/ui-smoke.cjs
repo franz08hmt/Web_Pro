@@ -4,7 +4,7 @@ const path = require("node:path");
 const fs = require("node:fs");
 const { chromium } = require("playwright");
 const base = process.env.BASE_URL || "http://127.0.0.1:4173";
-const pages = ["index.html", "pages/mau-robot.html", "pages/linh-kien.html", "pages/lap-rap.html", "pages/thu-vien.html", "pages/thanh-vien.html"];
+const pages = ["index.html", "pages/mau-robot.html", "pages/linh-kien.html", "pages/lap-rap.html", "pages/thu-vien.html", "pages/thanh-vien.html", "pages/tai-khoan.html"];
 
 (async () => {
   const browser = await chromium.launch({ channel: "chrome", headless: true });

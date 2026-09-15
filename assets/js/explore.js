@@ -15,8 +15,6 @@
     const paths = {
       next: "M4.5 12h15m-6.75-6.75L19.5 12l-6.75 6.75",
       previous: "M19.5 12h-15m6.75 6.75L4.5 12l6.75-6.75",
-      play: "M5.25 5.25v13.5L18.75 12 5.25 5.25Z",
-      pause: "M9 5.25v13.5m6-13.5v13.5",
       chip: "M8.25 3v1.5M12 3v1.5M15.75 3v1.5M8.25 19.5V21M12 19.5V21M15.75 19.5V21M3 8.25h1.5M3 12h1.5M3 15.75h1.5M19.5 8.25H21M19.5 12H21M19.5 15.75H21M6.75 4.5h10.5a2.25 2.25 0 0 1 2.25 2.25v10.5a2.25 2.25 0 0 1-2.25 2.25H6.75a2.25 2.25 0 0 1-2.25-2.25V6.75A2.25 2.25 0 0 1 6.75 4.5Z"
     };
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -66,14 +64,14 @@
     const controls = make("div", "explorer-controls"), counter = make("p", "explorer-count"), status = make("p", "sr-only");
     status.setAttribute("role", "status");
     const sourceCredit = make("div", "explorer-credit");
-    let current = 0, request = 0, timer, playing = false, visible = false, hovered = false, focusPaused = false;
+    let current = 0, request = 0;
     const buttons = items.map((item, index) => {
       const li = make("li"), button = make("button", "explorer-thumb"), text = make("span");
       button.type = "button"; button.setAttribute("aria-label", `Xem ${item.name}`); button.setAttribute("aria-controls", copy.id);
       text.append(make("small", "", item.category), make("strong", "", item.name));
       const thumbnail = picture(item); thumbnail.alt = "";
       button.append(thumbnail, text); li.append(button); thumbs.append(li);
-      button.addEventListener("click", () => { stop(); select(index); });
+      button.addEventListener("click", () => select(index));
       return button;
     });
     function control(name, text, action) {
@@ -81,31 +79,8 @@
       b.setAttribute("aria-label", `${label}: ${text}`); b.setAttribute("aria-controls", copy.id);
       b.append(icon(name)); b.addEventListener("click", action); return b;
     }
-    const previous = control("previous", "trước", () => {stop(); select(current - 1);});
-    const next = control("next", "tiếp theo", () => {stop(); select(current + 1);});
-    const play = control("play", "bật tự phát", () => {
-      playing = !playing;
-      // An explicit Play action may start while its button still has focus.
-      if (playing) {hovered = false; focusPaused = false;}
-      syncPlay(); schedule();
-    });
-    play.classList.add("explorer-play");
-    const playShape = play.querySelector("path"), playText = make("span");
-    play.append(playText);
-    function syncPlay() {
-      // Keep the hovered button subtree stable: replacing it retriggers mouseenter.
-      playShape.setAttribute("d", playing ? "M9 5.25v13.5m6-13.5v13.5" : "M5.25 5.25v13.5L18.75 12 5.25 5.25Z");
-      playText.textContent = playing ? "Dừng tự phát" : "Tự phát";
-      play.setAttribute("aria-label", `${label}: ${playing ? "dừng" : "bật"} tự phát`);
-      play.setAttribute("aria-pressed", String(playing));
-      play.disabled = reduced.matches;
-      play.title = reduced.matches ? "Tự phát tắt theo tùy chọn giảm chuyển động của thiết bị" : "Chuyển ảnh sau mỗi 6 giây";
-    }
-    function stop() {playing = false; clearTimeout(timer); syncPlay();}
-    function schedule() {
-      clearTimeout(timer);
-      if (playing && visible && !hovered && !focusPaused && !document.hidden && !reduced.matches) timer = setTimeout(() => select(current + 1, false), 6000);
-    }
+    const previous = control("previous", "trước", () => select(current - 1));
+    const next = control("next", "tiếp theo", () => select(current + 1));
     function render(announce) {
       const item = items[current];
       img.src = url(item.image); img.alt = item.alt || item.name;
@@ -120,10 +95,9 @@
     }
     async function select(index, announce = true) {
       const target = (index + items.length) % items.length, token = ++request;
-      clearTimeout(timer);
       const preload = new Image(); preload.src = url(items[target].image);
       try { await preload.decode(); } catch {
-        if (token === request) {status.textContent = "Ảnh chưa tải được. Bạn có thể chọn mục khác."; stop();}
+        if (token === request) status.textContent = "Ảnh chưa tải được. Bạn có thể chọn mục khác.";
         return;
       }
       if (token !== request) return;
@@ -135,7 +109,6 @@
         img.animate([{opacity:.35, transform:"scale(1.025)"}, {opacity:1, transform:"scale(1)"}], {duration:500, easing:"ease-out"});
         copy.animate([{opacity:0, transform:"translateY(12px)"}, {opacity:1, transform:"translateY(0)"}], {duration:350, easing:"ease-out"});
       }
-      schedule();
     }
     thumbs.addEventListener("keydown", event => {
       const index = buttons.indexOf(event.target); if (index < 0) return;
@@ -144,7 +117,7 @@
       if (event.key === "ArrowLeft") target = (index + items.length - 1) % items.length;
       if (event.key === "Home") target = 0;
       if (event.key === "End") target = items.length - 1;
-      if (target !== undefined) {event.preventDefault(); stop(); buttons[target].focus({preventScroll:true}); select(target);}
+      if (target !== undefined) {event.preventDefault(); buttons[target].focus({preventScroll:true}); select(target);}
     });
     let touchStart;
     root.addEventListener("touchstart", e => {
@@ -155,23 +128,15 @@
       if (!touchStart) return;
       const t = e.changedTouches[0], dx = t.clientX - touchStart.x, dy = t.clientY - touchStart.y;
       touchStart = null;
-      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {stop(); select(current + (dx < 0 ? 1 : -1));}
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) select(current + (dx < 0 ? 1 : -1));
     }, {passive:true});
     root.addEventListener("touchcancel", () => {touchStart = null;}, {passive:true});
-    root.addEventListener("mouseenter", () => {hovered = true; schedule();});
-    root.addEventListener("mouseleave", () => {hovered = false; schedule();});
-    root.addEventListener("focusin", () => {focusPaused = true; schedule();});
-    root.addEventListener("focusout", () => setTimeout(() => {focusPaused = root.contains(document.activeElement); schedule();}, 0));
-    document.addEventListener("visibilitychange", schedule);
     reduced.addEventListener("change", () => {
-      if (reduced.matches) {stop(); root.getAnimations({subtree:true}).forEach(a => a.cancel());}
-      syncPlay();
+      if (reduced.matches) root.getAnimations({subtree:true}).forEach(a => a.cancel());
     });
-    if ("IntersectionObserver" in window) new IntersectionObserver(entries => {visible = entries[0].isIntersecting; schedule();}, {threshold:.1}).observe(root);
-    else visible = true;
-    controls.append(counter, previous, next, play);
+    controls.append(counter, previous, next);
     root.replaceChildren(photo, top, copy, thumbs, controls, sourceCredit, status);
-    syncPlay(); render(false);
+    render(false);
   }
 
   const referenceSlide = item => ({...item, reference:true, href:`pages/thu-vien.html#reference-${item.id}`, action:"Khám phá tư liệu"});

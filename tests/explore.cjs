@@ -7,25 +7,10 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:4176';
   const browser = await chromium.launch({channel:'chrome'});
   try {
     const page = await browser.newPage({viewport:{width:1440,height:1000}});
-    await page.clock.install();
     await page.goto(base);
-    const root = page.locator('#featured-robots');
-    await root.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(200);
-    await root.locator('.explorer-play').click();
-    await page.clock.fastForward(6500);
-    await page.waitForFunction(() => document.querySelector('#featured-robots .explorer-count').textContent.startsWith('02'));
-    await root.locator('.explorer-thumb').nth(2).focus();
-    await page.clock.fastForward(13000);
-    assert.ok((await root.locator('.explorer-count').textContent()).startsWith('02'), 'Focus pauses autoplay');
-    await page.keyboard.press('Enter');
-    await page.waitForFunction(() => document.querySelector('#featured-robots .explorer-count').textContent.startsWith('03'));
-    assert.equal(await root.locator('.explorer-play').getAttribute('aria-pressed'), 'false', 'Manual selection stops autoplay');
-    await page.emulateMedia({reducedMotion:'reduce'});
-    await page.waitForFunction(() => document.querySelector('#featured-robots .explorer-play').disabled);
-    assert.ok(await root.locator('.explorer-play').isDisabled());
     for (const [id,count] of [['featured-robots',5],['component-explorer',6]]) {
       const stage = page.locator('#'+id);
+      await stage.scrollIntoViewIfNeeded();
       assert.equal(await stage.locator('.explorer-thumb').count(),count);
       await stage.locator('.explorer-thumb').first().focus();
       await page.keyboard.press('End');
@@ -52,6 +37,6 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:4176';
     await failure.locator('#featured-robots .explorer-thumb').last().click();
     await failure.waitForFunction(() => document.querySelector('#featured-robots [role=status]').textContent.includes('chưa tải được'));
     assert.equal(await failure.locator('#featured-robots h3').textContent(), 'Robot dò đường', 'Failed image preserves current slide');
-    console.log('PASS: autoplay, focus pause, manual stop, reduced motion, keyboard, wraparound, touch swipe, failed-image fallback.');
+    console.log('PASS: keyboard navigation, wraparound, touch swipe, failed-image fallback under reduced motion.');
   } finally { await browser.close(); }
 })().catch(error => {console.error(error); process.exitCode=1;});
