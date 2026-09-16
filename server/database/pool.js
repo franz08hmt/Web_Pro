@@ -14,7 +14,10 @@ function createDatabasePool(config) {
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    enableKeepAlive: true
+    enableKeepAlive: true,
+    timezone: "Z",
+    supportBigNumbers: true,
+    bigNumberStrings: true
   });
 }
 

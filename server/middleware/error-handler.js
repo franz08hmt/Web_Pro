@@ -17,11 +17,14 @@ function errorHandler(logger) {
     if (response.headersSent) return next(error);
 
     const invalidJson = error instanceof SyntaxError && Object.hasOwn(error, "body");
+    const payloadTooLarge = error.type === "entity.too.large";
     const knownError = error instanceof ApiError;
-    const status = knownError ? error.status : invalidJson ? 400 : 500;
-    const code = knownError ? error.code : invalidJson ? "INVALID_JSON" : "INTERNAL_SERVER_ERROR";
+    const status = knownError ? error.status : payloadTooLarge ? 413 : invalidJson ? 400 : 500;
+    const code = knownError ? error.code : payloadTooLarge ? "PAYLOAD_TOO_LARGE" : invalidJson ? "INVALID_JSON" : "INTERNAL_SERVER_ERROR";
     const message = knownError ? error.message : invalidJson
       ? "Nội dung JSON không hợp lệ."
+      : payloadTooLarge
+        ? "Nội dung JSON vượt quá giới hạn 256 KB."
       : "Đã xảy ra lỗi máy chủ. Vui lòng thử lại sau.";
 
     logger.error({

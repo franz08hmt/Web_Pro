@@ -1,5 +1,6 @@
 "use strict";
 
+const path = require("node:path");
 const cors = require("cors");
 const express = require("express");
 const rateLimit = require("express-rate-limit");
@@ -10,7 +11,9 @@ const { ApiError } = require("./core/api-error");
 const { createDatabasePool } = require("./database/pool");
 const { errorHandler, notFound } = require("./middleware/error-handler");
 const { requestContext } = require("./middleware/request-context");
-const { apiRouter } = require("./routes");
+const { createApiRouter } = require("./routes");
+
+const PROJECT_ROOT = path.resolve(__dirname, "..");
 
 function createApp(options = {}) {
   const config = options.config || loadConfig();
@@ -32,7 +35,7 @@ function createApp(options = {}) {
       return callback(new ApiError(403, "CORS_ORIGIN_DENIED", "Origin này không được phép truy cập API."));
     }
   }));
-  app.use(express.json({ limit: "16kb" }));
+  app.use(express.json({ limit: "256kb" }));
   app.use("/api", rateLimit({
     windowMs: config.rateLimit.windowMs,
     limit: config.rateLimit.max,
@@ -42,7 +45,23 @@ function createApp(options = {}) {
       next(new ApiError(429, "RATE_LIMITED", "Bạn đã gửi quá nhiều yêu cầu. Vui lòng thử lại sau."));
     }
   }));
-  app.use("/api", apiRouter);
+  app.use("/api", createApiRouter({
+    database,
+    contentRepository: options.contentRepository,
+    requireAdmin: options.requireAdmin,
+    protectMutation: options.protectMutation
+  }));
+  app.get(["/", "/index.html"], (request, response) => {
+    response.sendFile(path.join(PROJECT_ROOT, "index.html"));
+  });
+  app.use("/assets", express.static(path.join(PROJECT_ROOT, "assets"), {
+    dotfiles: "deny",
+    index: false
+  }));
+  app.use("/pages", express.static(path.join(PROJECT_ROOT, "pages"), {
+    dotfiles: "deny",
+    index: false
+  }));
   app.use(notFound);
   app.use(errorHandler(logger));
 

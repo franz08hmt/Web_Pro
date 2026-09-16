@@ -27,6 +27,34 @@ async function withServerOptions(options, run) {
   }
 }
 
+function createContentRepository() {
+  const component = {
+    id: "battery-holder",
+    name: "Hộp pin AA 4",
+    category: "Nguồn điện",
+    image: "/assets/images/assembly/battery-holder.png",
+    description: "Cấp nguồn cho robot.",
+    specs: { "Điện áp": "6V" }
+  };
+
+  return {
+    async list(kind) {
+      const data = kind === "components" ? [component] : [];
+      return { data, meta: { page: 1, limit: 20, total: data.length } };
+    },
+    async get(kind, id) {
+      if (kind === "components" && id === component.id) return component;
+      throw Object.assign(new Error("Không tìm thấy nội dung."), { status: 404, code: "NOT_FOUND" });
+    },
+    async parts() { return []; },
+    async create() { throw new Error("Không dùng trong test đọc công khai."); },
+    async update() { throw new Error("Không dùng trong test đọc công khai."); },
+    async remove() { throw new Error("Không dùng trong test đọc công khai."); },
+    async setPart() { throw new Error("Không dùng trong test đọc công khai."); },
+    async removePart() { throw new Error("Không dùng trong test đọc công khai."); }
+  };
+}
+
 test("GET /api/health identifies the API without requiring MySQL locally", async () => {
   await withServer(async (baseUrl) => {
     const response = await fetch(`${baseUrl}/api/health`);
@@ -94,5 +122,61 @@ test("API gives structured errors for malformed JSON and unknown paths", async (
     const missing = await fetch(`${baseUrl}/api/does-not-exist`);
     assert.equal(missing.status, 404);
     assert.equal((await missing.json()).error.code, "NOT_FOUND");
+  });
+});
+
+test("GET /api/components exposes Nhi content through the shared server", async () => {
+  await withServerOptions({ contentRepository: createContentRepository() }, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/components`);
+    const body = await response.json();
+
+    assert.equal(response.status, 200);
+    assert.equal(body.meta.total, 1);
+    assert.equal(body.data[0].name, "Hộp pin AA 4");
+  });
+});
+
+test("content API reports a service error when MySQL is not configured", async () => {
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/components`);
+    const body = await response.json();
+
+    assert.equal(response.status, 503);
+    assert.equal(body.error.code, "DATABASE_NOT_CONFIGURED");
+  });
+});
+
+test("admin content routes stay locked until production authentication is connected", async () => {
+  await withServerOptions({ contentRepository: createContentRepository() }, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/admin/components`);
+    const body = await response.json();
+
+    assert.equal(response.status, 401);
+    assert.equal(body.error.code, "AUTH_REQUIRED");
+  });
+});
+
+test("shared server serves the website on the same origin as the API", async () => {
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/`);
+    const html = await response.text();
+
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get("content-type"), /text\/html/);
+    assert.match(html, /Robot Assembly Lab/);
+  });
+});
+
+test("API returns 413 for JSON bodies larger than the content contract", async () => {
+  await withServerOptions({ contentRepository: createContentRepository() }, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/admin/components`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ description: "x".repeat(270 * 1024) })
+    });
+    const body = await response.json();
+
+    assert.equal(response.status, 413);
+    assert.equal(body.error.code, "PAYLOAD_TOO_LARGE");
   });
 });
