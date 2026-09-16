@@ -66,16 +66,50 @@ window.ROBOT_MODELS = [
     level: "Cơ bản",
     summary: "Robot hai bánh sử dụng cảm biến hồng ngoại để bám theo vạch màu trên mặt đường.",
     image: "../assets/images/robots/robot-do-line.png",
+
     parts: [
-      { name: "Khung xe 2 bánh", quantity: 1 },
-      { name: "Arduino Uno", quantity: 1 },
-      { name: "Động cơ DC", quantity: 2 },
-      { name: "Bánh xe", quantity: 2 },
-      { name: "Bánh tự do", quantity: 1 },
-      { name: "Cảm biến dò line", quantity: 2 },
-      { name: "Module L298N", quantity: 1 },
-      { name: "Hộp pin", quantity: 1 }
+      {
+        id: "chassis",
+        name: "Khung xe 2 bánh",
+        quantity: 1
+      },
+      {
+        id: "arduino-uno",
+        name: "Arduino Uno",
+        quantity: 1
+      },
+      {
+        id: "dc-motor",
+        name: "Động cơ DC",
+        quantity: 2
+      },
+      {
+        id: "wheel",
+        name: "Bánh xe",
+        quantity: 2
+      },
+      {
+        id: "caster-wheel",
+        name: "Bánh tự do",
+        quantity: 1
+      },
+      {
+        id: "line-sensor",
+        name: "Cảm biến dò line",
+        quantity: 2
+      },
+      {
+        id: "l298n",
+        name: "Module L298N",
+        quantity: 1
+      },
+      {
+        id: "battery-holder",
+        name: "Hộp pin",
+        quantity: 1
+      }
     ],
+
     steps: [
       "Gắn hai động cơ và bánh xe vào khung.",
       "Cố định Arduino và module L298N lên khung.",
@@ -84,22 +118,25 @@ window.ROBOT_MODELS = [
       "Nạp chương trình và kiểm tra khả năng bám vạch."
     ]
   },
+
   {
     id: "obstacle-avoider",
     name: "Robot tránh vật cản",
     level: "Cơ bản",
     summary: "Robot sử dụng cảm biến siêu âm để phát hiện và đổi hướng khi gặp vật cản.",
     image: "../assets/images/robots/robot-tranh-vat-can.png",
+
     parts: [
-      { name: "Khung xe 2 bánh", quantity: 1 },
-      { name: "Arduino Uno", quantity: 1 },
-      { name: "Động cơ DC", quantity: 2 },
-      { name: "Bánh xe", quantity: 2 },
-      { name: "Bánh tự do", quantity: 1 },
-      { name: "Cảm biến siêu âm HC-SR04", quantity: 1 },
-      { name: "Module L298N", quantity: 1 },
-      { name: "Hộp pin", quantity: 1 }
+      { id: "chassis", name: "Khung xe 2 bánh", quantity: 1 },
+      { id: "arduino-uno", name: "Arduino Uno", quantity: 1 },
+      { id: "dc-motor", name: "Động cơ DC", quantity: 2 },
+      { id: "wheel", name: "Bánh xe", quantity: 2 },
+      { id: "caster-wheel", name: "Bánh tự do", quantity: 1 },
+      { id: "hc-sr04", name: "Cảm biến siêu âm HC-SR04", quantity: 1 },
+      { id: "l298n", name: "Module L298N", quantity: 1 },
+      { id: "battery-holder", name: "Hộp pin", quantity: 1 }
     ],
+
     steps: [
       "Lắp động cơ, bánh xe và bánh tự do vào khung.",
       "Cố định Arduino và module điều khiển động cơ.",
@@ -108,19 +145,22 @@ window.ROBOT_MODELS = [
       "Nạp chương trình và thử nghiệm khoảng cách phát hiện."
     ]
   },
+
   {
     id: "mini-arm",
     name: "Cánh tay robot mini",
     level: "Trung bình",
     summary: "Mô hình cánh tay nhiều khớp sử dụng động cơ servo để thực hiện thao tác gắp đơn giản.",
     image: "../assets/images/robots/robot-arm-mini.png",
+
     parts: [
-      { name: "Bộ khung cánh tay", quantity: 1 },
-      { name: "Arduino Uno", quantity: 1 },
-      { name: "Động cơ servo", quantity: 4 },
-      { name: "Bộ kẹp mini", quantity: 1 },
-      { name: "Nguồn 5V phù hợp", quantity: 1 }
+      { id: "arm-frame", name: "Bộ khung cánh tay", quantity: 1 },
+      { id: "arduino-uno", name: "Arduino Uno", quantity: 1 },
+      { id: "sg90", name: "Động cơ servo", quantity: 4 },
+      { id: "gripper", name: "Bộ kẹp mini", quantity: 1 },
+      { id: "power-5v", name: "Nguồn 5V phù hợp", quantity: 1 }
     ],
+
     steps: [
       "Lắp đế và các khớp của cánh tay.",
       "Cố định servo vào đúng vị trí từng khớp.",
