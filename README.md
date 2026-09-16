@@ -201,7 +201,9 @@ Nền Express, middleware, route health check, cấu hình môi trường và po
 
 ## Chạy phiên bản hiện tại
 
-Phần giao diện tĩnh có thể mở bằng preview của IntelliJ IDEA. Để chạy API nền:
+Phần giao diện tĩnh vẫn có thể mở bằng preview của IntelliJ IDEA và sẽ dùng dữ liệu
+dự phòng trong `assets/js/data.js`. Để kiểm tra luồng full-stack, cấu hình MySQL rồi
+chạy website và Content API trên cùng một Express server:
 
 ```bash
 npm install
@@ -209,9 +211,14 @@ Copy-Item .env.example .env
 npm start
 ```
 
-Sau đó mở `http://127.0.0.1:3000/api/health`. Không cần MySQL để kiểm tra API
-cơ bản: response trả `database: "not_configured"`. Khi Nhi hoàn thành schema,
-điền đủ năm biến `DB_*` trong `.env` để bật pool MySQL. Không commit `.env`.
+Sau đó mở `http://127.0.0.1:3000/`. Các trang Mẫu robot, Linh kiện và Thư viện sẽ
+đọc `/api/robots`, `/api/components`, `/api/library-resources` cùng các endpoint quan
+hệ. Nếu API lỗi, giao diện giữ dữ liệu tĩnh và thông báo đang dùng dữ liệu dự phòng.
+
+Không cần MySQL để kiểm tra riêng `http://127.0.0.1:3000/api/health`; response sẽ trả
+`database: "not_configured"`. Muốn kiểm tra dữ liệu thật, tạo schema/seed theo
+`docs/content/INTEGRATION.md` và điền đủ năm biến `DB_*` trong `.env`. Không commit
+`.env`.
 
 Lệnh kiểm tra backend:
 

@@ -80,6 +80,7 @@
     <search aria-label="Tìm mẫu robot">
       <label class="search-box" for="robot-search"><span>Tìm theo tên hoặc ứng dụng</span><input id="robot-search" type="search" placeholder="Ví dụ: robot dò đường" autocomplete="off" aria-controls="robot-catalog"></label>
     </search>
+    <p id="robot-data-status" class="muted-text" role="status" aria-live="polite">Đang kiểm tra nguồn dữ liệu nội dung…</p>
     <div id="robot-catalog" class="card-grid" aria-live="polite"></div>
     <p id="robot-empty" class="empty-state" hidden>Không tìm thấy mẫu robot phù hợp.</p>
     <noscript><p class="note-box">Bật JavaScript để tìm kiếm, chọn mẫu và xem bảng so sánh ba mô hình. Xem hình ảnh và mô tả ba mô hình tại <a href="thu-vien.html">thư viện robot</a>.</p></noscript>
@@ -164,6 +165,8 @@
     <div class="footer-bottom"><p>© 2026 Robot Assembly Lab</p><p>Thiết kế để học. Xây dựng để hiểu.</p></div>
   </footer>
   <script src="../assets/js/data.js"></script><script src="../assets/js/main.js"></script>
+  <script src="../assets/js/content-api.js"></script>
+  <script src="../assets/js/robot-catalog-api.js"></script>
   <script src="../assets/js/explore-data.js"></script>
   <script src="../assets/js/explore.js"></script>
 </body>

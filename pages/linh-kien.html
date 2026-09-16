@@ -101,6 +101,8 @@
       </div>
     </section>
 
+    <p id="component-data-status" class="muted-text" role="status" aria-live="polite">Đang kiểm tra dữ liệu Content API…</p>
+
     <div id="component-catalog" class="card-grid component-catalog" aria-live="polite">
 
       <article class="card" data-component-id="arduino-uno" data-component-category="controller">
@@ -179,28 +181,28 @@
         <line class="axis" x1="180" y1="10" x2="180" y2="200"/>
 
         <text x="0" y="34">Bộ điều khiển</text>
-        <rect class="bar" x="180" y="16" width="260" height="28" rx="4"/>
-        <text x="452" y="34">2</text>
+        <rect class="bar" data-chart-group="controller" x="180" y="16" width="260" height="28" rx="4"/>
+        <text data-chart-group="controller" x="582" y="34">2</text>
 
         <text x="0" y="82">Cảm biến</text>
-        <rect class="bar" x="180" y="64" width="260" height="28" rx="4"/>
-        <text x="452" y="82">2</text>
+        <rect class="bar" data-chart-group="sensor" x="180" y="64" width="260" height="28" rx="4"/>
+        <text data-chart-group="sensor" x="582" y="82">2</text>
 
         <text x="0" y="130">Chuyển động</text>
-        <rect class="bar-alt" x="180" y="112" width="390" height="28" rx="4"/>
-        <text x="582" y="130">3</text>
+        <rect class="bar-alt" data-chart-group="motion" x="180" y="112" width="390" height="28" rx="4"/>
+        <text data-chart-group="motion" x="582" y="130">3</text>
 
         <text x="0" y="178">Nguồn &amp; kết nối</text>
-        <rect class="bar" x="180" y="160" width="260" height="28" rx="4"/>
-        <text x="452" y="178">2</text>
+        <rect class="bar" data-chart-group="utility" x="180" y="160" width="260" height="28" rx="4"/>
+        <text data-chart-group="utility" x="582" y="178">2</text>
       </svg>
 
       <ul class="chart-figures">
-        <li>Bộ điều khiển: <strong>2</strong></li>
-        <li>Cảm biến: <strong>2</strong></li>
-        <li>Chuyển động: <strong>3</strong></li>
-        <li>Nguồn &amp; kết nối: <strong>2</strong></li>
-        <li>Tổng cộng: <strong>9</strong></li>
+        <li>Bộ điều khiển: <strong data-chart-group="controller">2</strong></li>
+        <li>Cảm biến: <strong data-chart-group="sensor">2</strong></li>
+        <li>Chuyển động: <strong data-chart-group="motion">3</strong></li>
+        <li>Nguồn &amp; kết nối: <strong data-chart-group="utility">2</strong></li>
+        <li>Tổng cộng: <strong data-chart-total>9</strong></li>
       </ul>
     </section>
 
@@ -260,6 +262,8 @@
   <script src="../assets/js/data.js"></script>
   <script src="../assets/js/components-filter.js"></script>
   <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/content-api.js"></script>
+  <script src="../assets/js/component-catalog-api.js"></script>
   <script src="../assets/js/explore-data.js"></script>
   <script src="../assets/js/explore.js"></script>
 </body>

@@ -11,17 +11,30 @@
   const buttons = Array.from(
     controls.querySelectorAll(".filter-button[data-filter]")
   );
-  const cards = Array.from(
-    catalog.querySelectorAll("[data-component-category]")
-  );
+  let cards = Array.from(catalog.querySelectorAll("[data-component-category]"));
 
-  if (buttons.length === 0 || cards.length === 0) {
+  if (buttons.length === 0) {
     return;
   }
 
-  const applyFilter = (selectedFilter) => {
+  let selectedFilter =
+    buttons.find((button) => button.getAttribute("aria-pressed") === "true")?.dataset.filter ||
+    buttons[0].dataset.filter;
+
+  const updateCounts = () => {
     buttons.forEach((button) => {
-      const isActive = button.dataset.filter === selectedFilter;
+      const count = button.dataset.filter === "all"
+        ? cards.length
+        : cards.filter(card => card.dataset.componentCategory === button.dataset.filter).length;
+      const label = button.querySelector("span");
+      if (label) label.textContent = String(count).padStart(2, "0");
+    });
+  };
+
+  const applyFilter = (nextFilter) => {
+    selectedFilter = nextFilter;
+    buttons.forEach((button) => {
+      const isActive = button.dataset.filter === nextFilter;
 
       button.classList.toggle("is-active", isActive);
       button.setAttribute("aria-pressed", String(isActive));
@@ -29,8 +42,8 @@
 
     cards.forEach((card) => {
       const isVisible =
-        selectedFilter === "all" ||
-        card.dataset.componentCategory === selectedFilter;
+        nextFilter === "all" ||
+        card.dataset.componentCategory === nextFilter;
 
       card.hidden = !isVisible;
     });
@@ -50,9 +63,12 @@
     applyFilter(button.dataset.filter);
   });
 
-  const initialButton =
-    buttons.find((button) => button.getAttribute("aria-pressed") === "true") ||
-    buttons[0];
+  document.addEventListener("robot:components-updated", () => {
+    cards = Array.from(catalog.querySelectorAll("[data-component-category]"));
+    updateCounts();
+    applyFilter(selectedFilter);
+  });
 
-  applyFilter(initialButton.dataset.filter);
+  updateCounts();
+  applyFilter(selectedFilter);
 })();

@@ -76,7 +76,9 @@
     <p class="section-label">Tài nguyên kỹ thuật</p><h1>Thư viện hình ảnh và tài liệu</h1>
     <p class="page-intro">Tổng hợp hình ảnh mô hình, linh kiện và tài liệu tham khảo phục vụ quá trình chuẩn bị, đối chiếu và lắp ráp robot.</p>
 
-    <div class="card-grid">
+    <p id="library-data-status" class="muted-text" role="status" aria-live="polite">Đang kiểm tra dữ liệu Content API…</p>
+
+    <div id="library-catalog" class="card-grid" aria-live="polite">
       <article class="card">
         <figure class="card-image"><img src="../assets/images/robots/robot-do-line.png" alt="Robot dò đường" width="1024" height="1024" loading="lazy" decoding="async"></figure>
         <p class="card-kicker">Mẫu robot</p><h2>Robot dò đường</h2>
@@ -202,6 +204,8 @@
     <div class="footer-bottom"><p>© 2026 Robot Assembly Lab</p><p>Thiết kế để học. Xây dựng để hiểu.</p></div>
   </footer>
   <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/content-api.js"></script>
+  <script src="../assets/js/library-api.js"></script>
   <script src="../assets/js/explore-data.js"></script>
   <script src="../assets/js/explore.js"></script>
 </body>
