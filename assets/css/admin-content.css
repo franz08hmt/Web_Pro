@@ -1,0 +1,8 @@
+:root { font-family: system-ui, sans-serif; color: #173044; background: #f1f5f8; }
+body { margin: 0; } header { display: flex; justify-content: space-between; gap: 1rem; padding: 1.2rem 4%; background: #163247; color: white; } header a { color: white; }
+main { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; } fieldset { border: 1px solid #bac9d4; border-radius: 12px; padding: 1.5rem; background: white; min-width: 0; }
+.layout { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(0, 2fr); gap: 2rem; margin-top: 1rem; }
+label { display: block; font-weight: 600; margin: 1rem 0 .35rem; } input, textarea, select, button { font: inherit; padding: .65rem; border: 1px solid #8098aa; border-radius: 6px; box-sizing: border-box; }
+input, textarea { width: 100%; } textarea { min-height: 95px; resize: vertical; } button { cursor: pointer; background: #eaf3f8; margin: .25rem 0; } button:hover { background: #d3e7f1; } button:disabled { cursor: default; opacity: .55; } :focus-visible { outline: 3px solid #007f99; outline-offset: 2px; }
+ul { padding: 0; list-style: none; } #items button { width: 100%; text-align: left; overflow-wrap: anywhere; } #status { padding: 1rem; background: #e0edf4; border-radius: 6px; } #status[data-error="true"] { color: #8e1924; background: #fff0f1; } #relations { border-top: 1px solid #bac9d4; margin-top: 2rem; } #delete { color: #922031; }
+@media (max-width: 700px) { .layout { grid-template-columns: 1fr; } header { flex-direction: column; } fieldset { padding: .8rem; } }

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quản trị nội dung | Robot Assembly Lab</title>
+  <link rel="stylesheet" href="../assets/css/admin-content.css">
+  <script src="../assets/js/admin-content.js" defer></script>
+</head>
+<body>
+  <header><a href="../index.html">Robot Assembly Lab</a><span>Thảo Nhi · Quản trị nội dung</span></header>
+  <main>
+    <h1>Quản trị nội dung</h1>
+    <p>Đăng nhập bằng tài khoản quản trị qua hệ thống của nhóm trước khi chỉnh sửa.</p>
+    <p id="status" role="status" aria-live="polite">Đang kiểm tra phiên đăng nhập…</p>
+    <fieldset id="workspace" disabled>
+      <legend>Nội dung mô hình và linh kiện</legend>
+      <label for="kind">Danh mục</label>
+      <select id="kind"><option value="robots">Mô hình robot</option><option value="components">Linh kiện</option><option value="steps">Bước lắp ráp</option><option value="library-resources">Thư viện</option></select>
+      <button type="button" id="new">Thêm mới</button>
+      <div class="layout">
+        <section aria-label="Danh sách nội dung"><ul id="items"></ul><button type="button" id="previous">Trang trước</button> <span id="paging"></span> <button type="button" id="next">Trang sau</button></section>
+        <form id="editor"><h2 id="editor-title">Thêm nội dung</h2><div id="fields"></div><button type="submit">Lưu nội dung</button> <button type="button" id="delete" hidden>Xóa nội dung</button></form>
+      </div>
+      <section id="relations" hidden>
+        <h2>Linh kiện bắt buộc của robot</h2><ul id="parts"></ul>
+        <form id="part-form"><label for="component-id">ID linh kiện</label><input id="component-id" required maxlength="64" placeholder="arduino-uno"><label for="quantity">Số lượng</label><input id="quantity" type="number" min="1" max="10000" required value="1"><button type="submit">Lưu linh kiện</button></form>
+      </section>
+    </fieldset>
+  </main>
+</body>
+</html>
