@@ -19,6 +19,7 @@
     "express": "^5.1.0",
     "express-rate-limit": "^8.0.1",
     "helmet": "^8.1.0",
-    "mysql2": "^3.14.3"
+    "mysql2": "^3.14.3",
+    "three": "^0.149.0"
   }
 }

@@ -1,5 +1,7 @@
 "use strict";
 
+(() => {
+
 /*
  * ============================================
  * ROBOT ASSEMBLY 3D
@@ -49,6 +51,18 @@ const statusElement = document.querySelector("#assembly-3d-status");
 const progressElement = document.querySelector("#assembly-3d-progress");
 const progressValue = document.querySelector("#assembly-3d-progress-value");
 const resetButton = document.querySelector("#assembly-3d-reset");
+
+if (!window.THREE) {
+    if (statusElement) {
+        statusElement.textContent = "Không thể tải trình dựng 3D. Hãy làm mới trang hoặc kiểm tra cấu hình máy chủ.";
+    }
+    if (resetButton) {
+        resetButton.disabled = true;
+    }
+    return;
+}
+
+const THREE = window.THREE;
 
 
 /* ============================================
@@ -1031,3 +1045,5 @@ window.addEventListener(
         );
     }
 );
+
+})();

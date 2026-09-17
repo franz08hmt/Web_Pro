@@ -167,6 +167,17 @@ test("shared server serves the website on the same origin as the API", async () 
   });
 });
 
+test("shared server exposes Three.js locally for the 3D assembly page", async () => {
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/vendor/three/three.min.js`);
+    const source = await response.text();
+
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get("content-type"), /javascript/);
+    assert.match(source, /THREE/);
+  });
+});
+
 test("API returns 413 for JSON bodies larger than the content contract", async () => {
   await withServerOptions({ contentRepository: createContentRepository() }, async (baseUrl) => {
     const response = await fetch(`${baseUrl}/api/admin/components`, {

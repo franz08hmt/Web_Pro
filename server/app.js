@@ -54,6 +54,10 @@ function createApp(options = {}) {
   app.get(["/", "/index.html"], (request, response) => {
     response.sendFile(path.join(PROJECT_ROOT, "index.html"));
   });
+  app.use("/vendor/three", express.static(path.join(PROJECT_ROOT, "node_modules", "three", "build"), {
+    dotfiles: "deny",
+    index: false
+  }));
   app.use("/assets", express.static(path.join(PROJECT_ROOT, "assets"), {
     dotfiles: "deny",
     index: false
