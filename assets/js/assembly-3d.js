@@ -848,6 +848,7 @@ function renderPartsPanel() {
                     }
                 }
 
+                focusRobot();
                 updateProgress();
             }
         );

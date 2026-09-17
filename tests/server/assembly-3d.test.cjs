@@ -20,3 +20,10 @@ test("3D assembly uses the local Three.js bundle and gives a readable fallback w
 test("3D assembly panel keeps readable dark text on its white surface", () => {
   assert.match(styleSource, /\.assembly-3d-panel\s*\{[^}]*color:\s*#1[0-9a-f]{5};/s);
 });
+
+test("3D assembly refocuses the camera after parts change", () => {
+  assert.match(
+    assemblySource,
+    /checkbox\.addEventListener\([\s\S]*?focusRobot\(\);\s*updateProgress\(\);/
+  );
+});
