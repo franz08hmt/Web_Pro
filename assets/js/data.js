@@ -9,7 +9,7 @@ window.COMPONENTS_DATA = [
     id: "arduino-uno",
     name: "Mạch Arduino Uno R3",
     category: "Mạch điều khiển",
-    image: "../assets/images/assembly/arduino-uno.png",
+    image: "../assets/images/components/arduino-uno.png",
     description: "Bo mạch vi điều khiển trung tâm xử lý tín hiệu và điều khiển robot.",
     specs: {
       "Vi điều khiển": "ATmega328P",
@@ -25,7 +25,7 @@ window.COMPONENTS_DATA = [
     id: "hc-sr04",
     name: "Cảm biến siêu âm HC-SR04",
     category: "Cảm biến",
-    image: "../assets/images/assembly/hc-sr04.png",
+    image: "../assets/images/components/ultrasonic.png",
     description: "Đo khoảng cách tới vật cản giúp robot né tránh chướng ngại vật.",
     specs: {
       "Điện áp hoạt động": "5V DC",
@@ -40,7 +40,7 @@ window.COMPONENTS_DATA = [
     id: "sg90",
     name: "Động cơ Servo SG90",
     category: "Động cơ",
-    image: "../assets/images/assembly/sg90.png",
+    image: "../assets/images/components/servo-motor.png",
     description: "Động cơ góc quay nhỏ gọn dùng để xoay mắt cảm biến.",
     specs: {
       "Điện áp hoạt động": "4.8 – 6V DC",
@@ -55,7 +55,7 @@ window.COMPONENTS_DATA = [
     id: "l298n",
     name: "Mạch điều khiển động cơ L298N",
     category: "Mạch công suất",
-    image: "../assets/images/assembly/l298n.png",
+    image: "../assets/images/components/l298n.png",
     description: "Driver điều khiển hướng quay và tốc độ của động cơ DC.",
     specs: {
       "Điện áp cấp động cơ": "5 – 35V DC",
@@ -70,20 +70,20 @@ window.COMPONENTS_DATA = [
     id: "chassis-2wd",
     name: "Khung xe 2 bánh",
     category: "Cơ khí",
-    image: "../assets/images/assembly/chassis-2wd.png",
-    description: "Khung Mica chịu lực gá lắp động cơ, bo mạch và nguồn pin.",
+    image: "../assets/images/components/chassis-2wd.jpg",
+    description: "Bộ khung hai tầng dùng để gá động cơ, bánh xe, bo mạch và nguồn pin.",
     specs: {
-      "Vật liệu": "Mica (acrylic) dày 3 – 5 mm",
-      "Kích thước tấm": "khoảng 220 × 150 mm",
-      "Cấu hình": "2 động cơ dẫn động, 1 bánh tự do",
-      "Lỗ bắt vít": "chuẩn cho Arduino Uno và L298N"
+      "Vật liệu": "khung kim loại và chi tiết nhựa",
+      "Kích thước tham khảo": "khoảng 156 × 103 mm khi lắp bánh",
+      "Cấu hình": "2 động cơ dẫn động, 2 bánh xe và 1 bánh tự do",
+      "Lắp đặt": "các lỗ bắt vít dành cho bo mạch và nguồn"
     }
   },
   {
     id: "dc-motor",
     name: "Động cơ DC TT & Bánh xe",
     category: "Động cơ",
-    image: "../assets/images/assembly/dc-motor.png",
+    image: "../assets/images/components/motor-dc.png",
     description: "Động cơ giảm tốc cung cấp lực truyền động quay bánh xe robot.",
     specs: {
       "Điện áp hoạt động": "3 – 6V DC",
@@ -97,7 +97,7 @@ window.COMPONENTS_DATA = [
     id: "line-sensor",
     name: "Cảm biến dò line hồng ngoại",
     category: "Cảm biến",
-    image: "../assets/images/assembly/line-sensor.png",
+    image: "../assets/images/components/ir-sensor.png",
     description: "Phát hiện vạch màu đen/trắng giúp robot bám quỹ đạo di chuyển.",
     specs: {
       "Linh kiện cảm biến": "TCRT5000 hồng ngoại phản xạ",
@@ -111,7 +111,7 @@ window.COMPONENTS_DATA = [
     id: "battery-holder",
     name: "Hộp pin AA 4 cell",
     category: "Nguồn điện",
-    image: "../assets/images/assembly/battery-holder.png",
+    image: "../assets/images/components/battery-holder.png",
     description: "Cung cấp nguồn DC 6V độc lập cho mạch công suất và động cơ.",
     specs: {
       "Cấu hình": "4 viên AA mắc nối tiếp",

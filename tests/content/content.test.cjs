@@ -18,6 +18,19 @@ test('seed validates and contains every robot part and ordered step', () => {
   for (const robot of seed.robots) assert.deepEqual(seed.steps.filter(s => s.robotId === robot.id).map(s => s.stepOrder), [1, 2, 3, 4, 5]);
   for (const row of [...seed.robots, ...seed.components, ...seed.library]) assert.ok(fs.existsSync(path.resolve(__dirname, '../..', (row.image || row.url).slice(1))));
 });
+test('every component card uses a dedicated local product photo', () => {
+  for (const component of seed.components) {
+    assert.match(
+      component.image,
+      /^\/assets\/images\/components\/.+\.(?:jpe?g|png|webp)$/i,
+      `${component.id} must use a component photo instead of an assembly illustration`
+    );
+    assert.ok(
+      fs.existsSync(path.resolve(__dirname, '../..', component.image.slice(1))),
+      `${component.id} photo must exist in the repository`
+    );
+  }
+});
 test('schema snapshot equals ordered migrations', () => {
   const directory = path.resolve(__dirname, '../../database/migrations');
   const expected = fs.readdirSync(directory).filter(name => name.endsWith('.sql')).sort().map(name => fs.readFileSync(path.join(directory, name), 'utf8').replace(/\r\n/g, '\n').trimEnd()).join('\n\n') + '\n';

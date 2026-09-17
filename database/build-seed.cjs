@@ -24,24 +24,61 @@ const components = data.COMPONENTS_DATA.map(component => ({
 }));
 
 const extraComponents = [
-  ['caster-wheel', 'Bánh tự do', '/assets/images/assembly/chassis-2wd.png'],
-  ['arm-frame', 'Bộ khung cánh tay', '/assets/images/robots/robot-arm-mini.png'],
-  ['mini-gripper', 'Bộ kẹp mini', '/assets/images/robots/robot-arm-mini.png'],
-  ['power-5v', 'Nguồn 5V phù hợp', '/assets/images/robots/robot-arm-mini.png']
+  {
+    id: 'caster-wheel',
+    name: 'Bánh tự do',
+    category: 'Cơ khí',
+    image: '/assets/images/components/caster-wheel.jpg',
+    description: 'Bánh bi tự do đỡ đầu còn lại của khung xe và giúp robot đổi hướng linh hoạt.',
+    specs: {
+      'Cơ cấu': 'bi cầu xoay tự do',
+      'Vai trò': 'đỡ tải và giữ cân bằng cho khung xe 2 bánh',
+      'Lắp đặt': 'bắt vít vào mặt đáy khung',
+      'Lưu ý': 'chọn chiều cao tương thích với bánh chủ động'
+    }
+  },
+  {
+    id: 'arm-frame',
+    name: 'Bộ khung cánh tay',
+    category: 'Cơ khí',
+    image: '/assets/images/components/arm-frame.jpg',
+    description: 'Cụm khung tay robot nhiều khớp dùng để gá cơ cấu truyền động và bộ kẹp.',
+    specs: {
+      'Cấu trúc': 'đế xoay và các liên kết nhiều khớp',
+      'Vai trò': 'đỡ động cơ, truyền lực và định vị đầu kẹp',
+      'Lắp đặt': 'siết vít tại từng khớp theo thứ tự lắp ráp',
+      'Lưu ý': 'kiểm tra hành trình khớp trước khi cấp nguồn'
+    }
+  },
+  {
+    id: 'mini-gripper',
+    name: 'Bộ kẹp mini',
+    category: 'Cơ khí',
+    image: '/assets/images/components/mini-gripper.jpg',
+    description: 'Bộ kẹp hai ngón dùng ở đầu cánh tay để giữ các vật thể nhỏ.',
+    specs: {
+      'Cơ cấu': 'hai ngón kẹp truyền động bằng bánh răng',
+      'Vật liệu tham khảo': 'nhựa in 3D',
+      'Điều khiển': 'kết hợp động cơ servo phù hợp',
+      'Lưu ý': 'giới hạn lực kẹp để tránh kẹt cơ cấu'
+    }
+  },
+  {
+    id: 'power-5v',
+    name: 'Nguồn 5V phù hợp',
+    category: 'Nguồn điện',
+    image: '/assets/images/components/power-5v.jpg',
+    description: 'Module hạ áp DC-DC XL4015 dùng tạo nguồn 5V ổn định cho mạch logic hoặc servo.',
+    specs: {
+      'Loại': 'bộ chuyển đổi hạ áp DC-DC XL4015',
+      'Đầu ra': 'điều chỉnh về 5V trước khi nối tải',
+      'Ứng dụng': 'cấp nguồn logic hoặc servo từ nguồn DC cao hơn',
+      'Lưu ý': 'đo lại điện áp đầu ra và nối chung GND'
+    }
+  }
 ];
 
-for (const [id, name, image] of extraComponents) {
-  components.push({
-    id,
-    name,
-    category: id === 'power-5v' ? 'Nguồn điện' : 'Cơ khí',
-    image,
-    description: `${name}. Ảnh minh họa theo cụm lắp ráp; chọn kích thước và tải phù hợp bộ kit.`,
-    specs: {
-      'Ghi chú': 'Đối chiếu bộ kit thực tế trước khi lắp ráp.'
-    }
-  });
-}
+components.push(...extraComponents);
 
 const componentAliases = {
   'Khung xe 2 bánh': 'chassis-2wd',
