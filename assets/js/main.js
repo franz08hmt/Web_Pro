@@ -135,6 +135,7 @@ function setupCatalog() {
 // Render trang Lắp Ráp & Xử lý Tiến Độ (pages/lap-rap.html)
 function setupAssembly() {
   const modelSelect = document.querySelector("#model-select");
+  const start3DButton = document.querySelector("#start-3d-assembly");
   if (!modelSelect || robotModels.length === 0) return;
 
   const checklist = document.querySelector("#parts-checklist");
@@ -199,6 +200,15 @@ function setupAssembly() {
     status.textContent = percent === 100
         ? "Đã đủ linh kiện. Bạn có thể thực hiện các bước lắp ráp."
         : `Còn thiếu ${items.length - selected} nhóm linh kiện.`;
+
+    if (start3DButton) {
+      start3DButton.hidden = percent !== 100;
+    }
+
+    if (percent === 100) {
+      start3DButton.href =
+          `lap-rap-3d.html?model=${encodeURIComponent(modelSelect.value)}`;
+    }
 
     status.classList.toggle("is-complete", percent === 100);
     steps.classList.toggle("is-ready", percent === 100);

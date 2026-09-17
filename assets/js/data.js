@@ -161,15 +161,48 @@ window.ROBOT_MODELS = [
     mainSensor: "Cảm biến dò line hồng ngoại",
     skills: "Đọc tín hiệu số, điều khiển động cơ bằng PWM",
     parts: [
-      { name: "Khung xe 2 bánh", quantity: 1 },
-      { name: "Arduino Uno", quantity: 1 },
-      { name: "Động cơ DC", quantity: 2 },
-      { name: "Bánh xe", quantity: 2 },
-      { name: "Bánh tự do", quantity: 1 },
-      { name: "Cảm biến dò line", quantity: 2 },
-      { name: "Module L298N", quantity: 1 },
-      { name: "Hộp pin", quantity: 1 }
+      {
+        id: "chassis-2wd",
+        name: "Khung xe 2 bánh",
+        quantity: 1
+      },
+      {
+        id: "arduino-uno",
+        name: "Arduino Uno",
+        quantity: 1
+      },
+      {
+        id: "dc-motor",
+        name: "Động cơ DC",
+        quantity: 2
+      },
+      {
+        id: "wheel",
+        name: "Bánh xe",
+        quantity: 2
+      },
+      {
+        id: "caster-wheel",
+        name: "Bánh tự do",
+        quantity: 1
+      },
+      {
+        id: "line-sensor",
+        name: "Cảm biến dò line",
+        quantity: 2
+      },
+      {
+        id: "l298n",
+        name: "Module L298N",
+        quantity: 1
+      },
+      {
+        id: "battery-holder",
+        name: "Hộp pin",
+        quantity: 1
+      }
     ],
+
     steps: [
       "Gắn hai động cơ và bánh xe vào khung.",
       "Cố định Arduino và module L298N lên khung.",
@@ -190,6 +223,7 @@ window.ROBOT_MODELS = [
       { pin: "GND", target: "GND cảm biến, L298N và hộp pin", note: "Bắt buộc nối chung mass" }
     ]
   },
+
   {
     id: "obstacle-avoider",
     name: "Robot tránh vật cản",
@@ -200,15 +234,16 @@ window.ROBOT_MODELS = [
     mainSensor: "Cảm biến siêu âm HC-SR04",
     skills: "Đo khoảng cách bằng xung, xử lý rẽ nhánh theo điều kiện",
     parts: [
-      { name: "Khung xe 2 bánh", quantity: 1 },
-      { name: "Arduino Uno", quantity: 1 },
-      { name: "Động cơ DC", quantity: 2 },
-      { name: "Bánh xe", quantity: 2 },
-      { name: "Bánh tự do", quantity: 1 },
-      { name: "Cảm biến siêu âm HC-SR04", quantity: 1 },
-      { name: "Module L298N", quantity: 1 },
-      { name: "Hộp pin", quantity: 1 }
+      { id: "chassis-2wd", name: "Khung xe 2 bánh", quantity: 1 },
+      { id: "arduino-uno", name: "Arduino Uno", quantity: 1 },
+      { id: "dc-motor", name: "Động cơ DC", quantity: 2 },
+      { id: "wheel", name: "Bánh xe", quantity: 2 },
+      { id: "caster-wheel", name: "Bánh tự do", quantity: 1 },
+      { id: "hc-sr04", name: "Cảm biến siêu âm HC-SR04", quantity: 1 },
+      { id: "l298n", name: "Module L298N", quantity: 1 },
+      { id: "battery-holder", name: "Hộp pin", quantity: 1 }
     ],
+
     steps: [
       "Lắp động cơ, bánh xe và bánh tự do vào khung.",
       "Cố định Arduino và module điều khiển động cơ.",
@@ -229,6 +264,7 @@ window.ROBOT_MODELS = [
       { pin: "GND", target: "GND cảm biến, L298N và hộp pin", note: "Bắt buộc nối chung mass" }
     ]
   },
+
   {
     id: "mini-arm",
     name: "Cánh tay robot mini",
@@ -239,12 +275,13 @@ window.ROBOT_MODELS = [
     mainSensor: "Không dùng cảm biến, điều khiển theo góc đặt trước",
     skills: "Điều khiển servo theo góc, phối hợp nhiều khớp",
     parts: [
-      { name: "Bộ khung cánh tay", quantity: 1 },
-      { name: "Arduino Uno", quantity: 1 },
-      { name: "Động cơ servo", quantity: 4 },
-      { name: "Bộ kẹp mini", quantity: 1 },
-      { name: "Nguồn 5V phù hợp", quantity: 1 }
+      { id: "arm-frame", name: "Bộ khung cánh tay", quantity: 1 },
+      { id: "arduino-uno", name: "Arduino Uno", quantity: 1 },
+      { id: "sg90", name: "Động cơ servo", quantity: 4 },
+      { id: "mini-gripper", name: "Bộ kẹp mini", quantity: 1 },
+      { id: "power-5v", name: "Nguồn 5V phù hợp", quantity: 1 }
     ],
+
     steps: [
       "Lắp đế và các khớp của cánh tay.",
       "Cố định servo vào đúng vị trí từng khớp.",

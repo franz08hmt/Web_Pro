@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Lắp ráp Robot 3D</title>
+
+    <link
+            rel="stylesheet"
+            href="../assets/css/style.css"
+    >
+</head>
+
+<body class="assembly-3d-page">
+
+<!-- HEADER -->
+<header class="assembly-3d-header">
+
+    <a href="lap-rap.html">
+        ← Quay lại
+    </a>
+
+    <h1>Lắp ráp Robot 3D</h1>
+
+    <span id="model-name">
+            Robot dò đường
+        </span>
+
+</header>
+
+
+<!-- NỘI DUNG CHÍNH -->
+<main class="assembly-3d-workspace">
+
+    <!-- KHU VỰC 3D -->
+    <section
+            class="assembly-3d-view"
+            aria-label="Mô hình robot 3D"
+    >
+
+        <!-- Three.js sẽ render vào đây -->
+        <div id="assembly-3d-canvas"></div>
+
+    </section>
+
+
+    <!-- PANEL ĐIỀU KHIỂN -->
+    <aside class="assembly-3d-panel">
+
+        <h2>Linh kiện</h2>
+
+        <p id="assembly-3d-status">
+            Hãy chọn linh kiện để bắt đầu lắp ráp.
+        </p>
+
+
+        <!-- Danh sách linh kiện -->
+        <div
+                id="assembly-3d-parts"
+                class="assembly-3d-parts"
+        >
+        </div>
+
+
+        <!-- TIẾN ĐỘ -->
+        <div class="assembly-3d-progress">
+
+            <strong>
+                Tiến độ:
+                <span id="assembly-3d-progress-value">
+                        0%
+                    </span>
+            </strong>
+
+            <progress
+                    id="assembly-3d-progress"
+                    max="100"
+                    value="0"
+            >
+                0%
+            </progress>
+
+        </div>
+
+
+        <!-- RESET -->
+        <button
+                id="assembly-3d-reset"
+                type="button"
+        >
+            Reset
+        </button>
+
+    </aside>
+
+</main>
+
+
+<!-- =========================
+     JAVASCRIPT
+     ========================= -->
+
+<!-- Three.js -->
+<script
+        src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js">
+</script>
+
+
+<!-- Dữ liệu robot -->
+<script src="../assets/js/data.js"></script>
+
+
+<!-- Cấu hình vị trí 3D -->
+<script src="../assets/js/assembly-3d-config.js"></script>
+
+
+<!-- Logic lắp ráp 3D -->
+<script src="../assets/js/assembly-3d.js"></script>
+
+</body>
+
+</html>
