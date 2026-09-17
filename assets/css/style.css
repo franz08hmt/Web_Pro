@@ -859,6 +859,9 @@
 
   flex-direction: column;
 
+  /* Trang dùng nền tối toàn cục, còn panel là bề mặt sáng. */
+  color: #14181a;
+
   gap: 16px;
 
   padding: 20px;
