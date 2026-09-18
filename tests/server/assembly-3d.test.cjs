@@ -28,8 +28,29 @@ test("3D assembly uses the local Three.js bundle and gives a readable fallback w
   assert.match(assemblySource, /Không thể tải trình dựng 3D/);
 });
 
-test("3D assembly panel keeps readable dark text on its white surface", () => {
-  assert.match(styleSource, /\.assembly-3d-panel\s*\{[^}]*color:\s*#1[0-9a-f]{5};/s);
+test("3D assembly panel uses the readable dark laboratory theme", () => {
+  assert.match(
+    styleSource,
+    /\.assembly-3d-page \.assembly-3d-panel\s*\{[^}]*color:\s*var\(--assembly-text\);[^}]*background:\s*linear-gradient/s
+  );
+});
+
+test("3D assembly room exposes accessible camera and exploded-view controls", () => {
+  for (const controlId of [
+    "assembly-3d-focus",
+    "assembly-3d-rotate-left",
+    "assembly-3d-rotate-right",
+    "assembly-3d-zoom-in",
+    "assembly-3d-zoom-out",
+    "assembly-3d-explode"
+  ]) {
+    assert.match(pageSource, new RegExp(`id=["']${controlId}["']`));
+    assert.match(assemblySource, new RegExp(`#${controlId}`));
+  }
+
+  assert.match(pageSource, /id="assembly-3d-status"[^>]*role="status"[^>]*aria-live="polite"/);
+  assert.match(pageSource, /id="assembly-3d-explode"[^>]*aria-pressed="false"/);
+  assert.match(assemblySource, /function setExplodedView\(/);
 });
 
 test("3D assembly refocuses the camera after parts change", () => {

@@ -9,11 +9,19 @@
 
   const container = document.querySelector("#assembly-3d-canvas");
   const modelName = document.querySelector("#model-name");
+  const modelSummary = document.querySelector("#assembly-3d-summary");
   const partsContainer = document.querySelector("#assembly-3d-parts");
   const statusElement = document.querySelector("#assembly-3d-status");
   const progressElement = document.querySelector("#assembly-3d-progress");
   const progressValue = document.querySelector("#assembly-3d-progress-value");
+  const progressCounter = document.querySelector("#assembly-3d-counter");
   const resetButton = document.querySelector("#assembly-3d-reset");
+  const focusButton = document.querySelector("#assembly-3d-focus");
+  const rotateLeftButton = document.querySelector("#assembly-3d-rotate-left");
+  const rotateRightButton = document.querySelector("#assembly-3d-rotate-right");
+  const zoomInButton = document.querySelector("#assembly-3d-zoom-in");
+  const zoomOutButton = document.querySelector("#assembly-3d-zoom-out");
+  const explodeButton = document.querySelector("#assembly-3d-explode");
 
   if (!container || !model) {
     throw new Error("Không thể khởi tạo phòng lắp ráp 3D.");
@@ -29,6 +37,7 @@
 
   const THREE = window.THREE;
   if (modelName) modelName.textContent = model.name;
+  if (modelSummary) modelSummary.textContent = model.summary;
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0b1014);
@@ -119,6 +128,7 @@
   const robotGroup = new THREE.Group();
   scene.add(robotGroup);
   const assembledParts = new Map();
+  let explodedView = false;
 
   function getTargets(partId) {
     const target = assemblyConfig[model.id]?.[partId]?.target;
@@ -158,12 +168,40 @@
     assembledParts.delete(partId);
   }
 
+  function setExplodedView(nextValue) {
+    explodedView = Boolean(nextValue) && assembledParts.size > 0;
+
+    model.parts.forEach((part, index) => {
+      const object = assembledParts.get(part.id);
+      if (!object) return;
+      if (!explodedView) {
+        object.position.set(0, 0, 0);
+        return;
+      }
+
+      const angle = (index / Math.max(model.parts.length, 1)) * Math.PI * 2 - Math.PI / 3;
+      const radius = model.id === "mini-arm" ? 1.7 : 1.8;
+      object.position.set(
+        Math.cos(angle) * radius,
+        0.25 + (index % 2) * 0.22,
+        Math.sin(angle) * radius
+      );
+    });
+
+    if (explodeButton) {
+      explodeButton.setAttribute("aria-pressed", String(explodedView));
+      explodeButton.textContent = explodedView ? "Ghép về vị trí" : "Tách linh kiện";
+    }
+    focusRobot();
+  }
+
   function updateProgress() {
     const total = model.parts.length;
     const completed = assembledParts.size;
     const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
     if (progressElement) progressElement.value = percent;
     if (progressValue) progressValue.textContent = `${percent}%`;
+    if (progressCounter) progressCounter.textContent = `${completed}/${total} nhóm`;
     if (!statusElement) return;
     if (percent === 100) statusElement.textContent = "Đã lắp ráp đầy đủ robot.";
     else if (percent === 0) statusElement.textContent = "Chọn linh kiện theo thứ tự để bắt đầu lắp ráp.";
@@ -190,7 +228,7 @@
     }
     const sphere = box.getBoundingSphere(new THREE.Sphere());
     cameraState.target.copy(sphere.center);
-    cameraState.radius = THREE.MathUtils.clamp(sphere.radius * 3.3, 4.6, 8.2);
+    cameraState.radius = THREE.MathUtils.clamp(sphere.radius * 3.3, 4.6, 10.5);
     updateCamera();
   }
 
@@ -227,6 +265,7 @@
           removePart(part.id);
         }
         label.classList.toggle("is-installed", checkbox.checked);
+        if (explodedView) setExplodedView(true);
         focusRobot();
         updateProgress();
       });
@@ -236,12 +275,23 @@
   function resetAssembly() {
     assembledParts.forEach((object) => robotGroup.remove(object));
     assembledParts.clear();
+    setExplodedView(false);
     partsContainer?.querySelectorAll("input[type='checkbox']").forEach((checkbox) => {
       checkbox.checked = false;
       checkbox.closest("label")?.classList.remove("is-installed");
     });
     focusRobot();
     updateProgress();
+  }
+
+  function rotateCamera(delta) {
+    cameraState.azimuth += delta;
+    updateCamera();
+  }
+
+  function zoomCamera(delta) {
+    cameraState.radius = THREE.MathUtils.clamp(cameraState.radius + delta, 3.4, 10);
+    updateCamera();
   }
 
   function enablePointerControls() {
@@ -288,6 +338,12 @@
   focusRobot();
   enablePointerControls();
   resetButton?.addEventListener("click", resetAssembly);
+  focusButton?.addEventListener("click", focusRobot);
+  rotateLeftButton?.addEventListener("click", () => rotateCamera(-0.35));
+  rotateRightButton?.addEventListener("click", () => rotateCamera(0.35));
+  zoomInButton?.addEventListener("click", () => zoomCamera(-0.6));
+  zoomOutButton?.addEventListener("click", () => zoomCamera(0.6));
+  explodeButton?.addEventListener("click", () => setExplodedView(!explodedView));
   window.addEventListener("resize", resizeRenderer);
   resizeRenderer();
 

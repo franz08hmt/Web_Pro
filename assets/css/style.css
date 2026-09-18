@@ -1019,3 +1019,495 @@
     width: 100%;
   }
 }
+
+/* Assembly room redesign: intentionally follows the legacy block so this
+   feature can evolve without affecting the shared site layout. */
+.assembly-3d-page {
+  --assembly-bg: #090e12;
+  --assembly-surface: #11191f;
+  --assembly-surface-raised: #172229;
+  --assembly-line: #2a3942;
+  --assembly-text: #f4f7f8;
+  --assembly-muted: #94a8b2;
+  --assembly-accent: #ff8748;
+  --assembly-teal: #38d3c3;
+  color: var(--assembly-text);
+  background:
+    radial-gradient(circle at 18% 0%, rgb(56 211 195 / 8%), transparent 28rem),
+    radial-gradient(circle at 88% 10%, rgb(255 135 72 / 8%), transparent 24rem),
+    var(--assembly-bg);
+}
+
+.assembly-3d-page .assembly-3d-header {
+  grid-template-columns: minmax(180px, auto) 1fr minmax(220px, auto);
+  gap: 32px;
+  width: min(1560px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 24px 0 20px;
+  border-bottom-color: var(--assembly-line);
+}
+
+.assembly-3d-title {
+  display: grid;
+  gap: 3px;
+}
+
+.assembly-3d-title > span,
+.assembly-3d-model-chip > span,
+.assembly-3d-panel-header > span {
+  color: var(--assembly-accent);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.assembly-3d-page .assembly-3d-title h1 {
+  margin: 0;
+  font-size: clamp(26px, 3vw, 38px);
+  line-height: 1.1;
+}
+
+.assembly-3d-page .assembly-3d-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  color: var(--assembly-text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  transition: color 160ms ease;
+}
+
+.assembly-3d-back:hover,
+.assembly-3d-back:focus-visible {
+  color: var(--assembly-accent);
+}
+
+.assembly-3d-page .assembly-3d-back > span {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 1px solid var(--assembly-line);
+  border-radius: 50%;
+  background: var(--assembly-surface);
+}
+
+.assembly-3d-model-chip {
+  display: grid;
+  justify-items: end;
+  gap: 4px;
+}
+
+.assembly-3d-model-chip strong {
+  font-size: 15px;
+}
+
+.assembly-3d-page .assembly-3d-workspace {
+  grid-template-columns: minmax(0, 1fr) minmax(330px, 380px);
+  gap: 24px;
+  width: min(1560px, calc(100% - 48px));
+  min-height: calc(100vh - 118px);
+  margin: 0 auto;
+  padding: 24px 0 32px;
+}
+
+.assembly-3d-page .assembly-3d-view {
+  min-height: 620px;
+  border-color: var(--assembly-line);
+  border-radius: 24px;
+  background: #0b1014;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
+}
+
+.assembly-3d-stage-meta {
+  position: absolute;
+  z-index: 2;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 12px;
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 999px;
+  color: #c7d4d9;
+  background: rgb(9 14 18 / 78%);
+  backdrop-filter: blur(12px);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.assembly-3d-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--assembly-teal);
+  box-shadow: 0 0 0 5px rgb(56 211 195 / 12%);
+}
+
+.assembly-3d-toolbar {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px;
+  border: 1px solid rgb(255 255 255 / 11%);
+  border-radius: 14px;
+  background: rgb(13 20 25 / 86%);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 28%);
+  backdrop-filter: blur(14px);
+  transform: translateX(-50%);
+}
+
+.assembly-3d-toolbar > span {
+  width: 1px;
+  height: 24px;
+  margin: 0 3px;
+  background: var(--assembly-line);
+}
+
+.assembly-3d-toolbar button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 9px;
+  color: var(--assembly-text);
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: 750;
+}
+
+.assembly-3d-toolbar button:hover,
+.assembly-3d-toolbar button:focus-visible {
+  color: #11181c;
+  background: var(--assembly-accent);
+  outline: none;
+}
+
+.assembly-3d-view-hint {
+  position: absolute;
+  z-index: 2;
+  top: 24px;
+  right: 20px;
+  margin: 0;
+  color: var(--assembly-muted);
+  font-size: 12px;
+}
+
+.assembly-3d-page .assembly-3d-panel {
+  min-height: 0;
+  gap: 14px;
+  padding: 24px;
+  border-color: var(--assembly-line);
+  border-radius: 24px;
+  color: var(--assembly-text);
+  background: linear-gradient(180deg, #152027, #10181d);
+  box-shadow: 0 18px 60px rgb(0 0 0 / 22%);
+}
+
+.assembly-3d-panel-header {
+  display: grid;
+  gap: 7px;
+}
+
+.assembly-3d-page .assembly-3d-panel-header h2 {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.05;
+}
+
+.assembly-3d-panel-header p {
+  margin: 0;
+  color: var(--assembly-muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.assembly-3d-page #assembly-3d-status {
+  padding: 12px 14px;
+  border: 1px solid rgb(56 211 195 / 18%);
+  border-radius: 12px;
+  color: #d9f8f4;
+  background: rgb(56 211 195 / 8%);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.assembly-3d-list-heading,
+.assembly-3d-progress > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.assembly-3d-list-heading {
+  color: var(--assembly-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.assembly-3d-list-heading strong {
+  color: var(--assembly-text);
+  font-size: 11px;
+}
+
+.assembly-3d-page .assembly-3d-parts {
+  gap: 8px;
+  max-height: min(44vh, 450px);
+  padding-right: 5px;
+  scrollbar-color: var(--assembly-line) transparent;
+}
+
+.assembly-3d-page .assembly-3d-part-item {
+  display: grid;
+  grid-template-columns: 22px 34px minmax(0, 1fr);
+  gap: 11px;
+  min-height: 62px;
+  padding: 9px 12px;
+  border-color: var(--assembly-line);
+  border-radius: 13px;
+  background: rgb(255 255 255 / 2%);
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.assembly-3d-page .assembly-3d-part-item:hover {
+  border-color: #465963;
+  background: rgb(255 255 255 / 4%);
+  transform: translateX(-2px);
+}
+
+.assembly-3d-part-item.is-installed {
+  border-color: rgb(56 211 195 / 50%);
+  background: rgb(56 211 195 / 7%);
+}
+
+.assembly-3d-page .assembly-3d-part-item input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--assembly-teal);
+  cursor: pointer;
+}
+
+.assembly-3d-part-order {
+  display: grid;
+  width: 31px;
+  height: 31px;
+  place-items: center;
+  border: 1px solid var(--assembly-line);
+  border-radius: 9px;
+  color: var(--assembly-muted);
+  background: #0d1418;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.assembly-3d-part-copy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.assembly-3d-part-copy strong,
+.assembly-3d-part-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.assembly-3d-part-copy strong {
+  color: var(--assembly-text);
+  font-size: 13px;
+}
+
+.assembly-3d-part-copy small {
+  color: var(--assembly-muted);
+  font-size: 11px;
+}
+
+.assembly-3d-page .assembly-3d-progress {
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.assembly-3d-progress span {
+  color: var(--assembly-muted);
+  font-size: 12px;
+}
+
+.assembly-3d-progress strong {
+  color: var(--assembly-accent);
+  font-size: 14px;
+}
+
+.assembly-3d-page #assembly-3d-progress {
+  overflow: hidden;
+  width: 100%;
+  height: 7px;
+  border: 0;
+  border-radius: 999px;
+  background: #263239;
+}
+
+#assembly-3d-progress::-webkit-progress-bar {
+  border-radius: 999px;
+  background: #263239;
+}
+
+#assembly-3d-progress::-webkit-progress-value {
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--assembly-accent), #ffb36f);
+}
+
+#assembly-3d-progress::-moz-progress-bar {
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--assembly-accent), #ffb36f);
+}
+
+.assembly-3d-panel-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+.assembly-3d-panel-actions button {
+  min-height: 43px;
+  padding: 9px 12px;
+  border: 1px solid var(--assembly-line);
+  border-radius: 10px;
+  color: var(--assembly-text);
+  background: #1a252c;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.assembly-3d-panel-actions button:hover,
+.assembly-3d-panel-actions button:focus-visible {
+  border-color: var(--assembly-accent);
+  outline: none;
+}
+
+#assembly-3d-explode[aria-pressed="true"] {
+  border-color: var(--assembly-accent);
+  color: #11181c;
+  background: var(--assembly-accent);
+}
+
+.assembly-3d-page #assembly-3d-reset {
+  width: auto;
+  padding: 9px 12px;
+  border-color: var(--assembly-line);
+  border-radius: 10px;
+  color: var(--assembly-text);
+  background: #1a252c;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.assembly-3d-page #assembly-3d-reset:hover,
+.assembly-3d-page #assembly-3d-reset:focus-visible {
+  border-color: var(--assembly-accent);
+  background: #1f2c34;
+}
+
+@media (max-width: 1050px) {
+  .assembly-3d-page .assembly-3d-header,
+  .assembly-3d-page .assembly-3d-workspace {
+    width: min(100% - 32px, 900px);
+  }
+
+  .assembly-3d-page .assembly-3d-header {
+    grid-template-columns: auto 1fr;
+  }
+
+  .assembly-3d-model-chip {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-items: start;
+  }
+
+  .assembly-3d-page .assembly-3d-workspace {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .assembly-3d-page .assembly-3d-view {
+    min-height: min(68vh, 640px);
+  }
+
+  .assembly-3d-page .assembly-3d-parts {
+    max-height: 380px;
+  }
+}
+
+@media (max-width: 620px) {
+  .assembly-3d-page .assembly-3d-header,
+  .assembly-3d-page .assembly-3d-workspace {
+    width: min(100% - 24px, 560px);
+  }
+
+  .assembly-3d-page .assembly-3d-header {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding-top: 16px;
+  }
+
+  .assembly-3d-title {
+    grid-row: 1;
+  }
+
+  .assembly-3d-back {
+    grid-row: 2;
+  }
+
+  .assembly-3d-model-chip {
+    grid-row: 3;
+  }
+
+  .assembly-3d-page .assembly-3d-workspace {
+    gap: 14px;
+    padding-top: 14px;
+  }
+
+  .assembly-3d-page .assembly-3d-view {
+    min-height: 430px;
+    border-radius: 18px;
+  }
+
+  .assembly-3d-stage-meta {
+    top: 13px;
+    left: 13px;
+  }
+
+  .assembly-3d-toolbar {
+    bottom: 15px;
+  }
+
+  .assembly-3d-view-hint {
+    display: none;
+  }
+
+  .assembly-3d-page .assembly-3d-panel {
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  .assembly-3d-panel-actions {
+    grid-template-columns: 1fr;
+  }
+}

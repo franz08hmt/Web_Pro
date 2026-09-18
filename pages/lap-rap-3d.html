@@ -19,86 +19,79 @@
 
 <body class="assembly-3d-page">
 
-<!-- HEADER -->
 <header class="assembly-3d-header">
-
-    <a href="lap-rap.html">
-        ← Quay lại
+    <a class="assembly-3d-back" href="lap-rap.html">
+        <span aria-hidden="true">←</span>
+        Quay lại thư viện
     </a>
 
-    <h1>Lắp ráp Robot 3D</h1>
+    <div class="assembly-3d-title">
+        <span>Phòng thực hành số 03</span>
+        <h1>Lắp ráp Robot 3D</h1>
+    </div>
 
-    <span id="model-name">
-            Robot dò đường
-        </span>
-
+    <div class="assembly-3d-model-chip">
+        <span>Đang thao tác</span>
+        <strong id="model-name">Robot dò đường</strong>
+    </div>
 </header>
 
-
-<!-- NỘI DUNG CHÍNH -->
 <main class="assembly-3d-workspace">
+    <section class="assembly-3d-view" aria-label="Mô hình robot 3D tương tác">
+        <div class="assembly-3d-stage-meta" aria-hidden="true">
+            <span class="assembly-3d-live-dot"></span>
+            Không gian lắp ráp trực tiếp
+        </div>
 
-    <!-- KHU VỰC 3D -->
-    <section
-            class="assembly-3d-view"
-            aria-label="Mô hình robot 3D"
-    >
-
-        <!-- Three.js sẽ render vào đây -->
         <div id="assembly-3d-canvas"></div>
 
+        <div class="assembly-3d-toolbar" role="group" aria-label="Điều khiển góc nhìn mô hình">
+            <button id="assembly-3d-rotate-left" type="button" aria-label="Xoay mô hình sang trái">↶</button>
+            <button id="assembly-3d-focus" type="button" aria-label="Căn giữa mô hình">◎</button>
+            <button id="assembly-3d-rotate-right" type="button" aria-label="Xoay mô hình sang phải">↷</button>
+            <span aria-hidden="true"></span>
+            <button id="assembly-3d-zoom-out" type="button" aria-label="Thu nhỏ mô hình">−</button>
+            <button id="assembly-3d-zoom-in" type="button" aria-label="Phóng to mô hình">+</button>
+        </div>
+
+        <p class="assembly-3d-view-hint">Kéo để xoay · Cuộn để thu phóng</p>
     </section>
 
-
-    <!-- PANEL ĐIỀU KHIỂN -->
     <aside class="assembly-3d-panel">
+        <header class="assembly-3d-panel-header">
+            <span>Quy trình lắp ráp</span>
+            <h2>Linh kiện</h2>
+            <p id="assembly-3d-summary"></p>
+        </header>
 
-        <h2>Linh kiện</h2>
-
-        <p id="assembly-3d-status">
+        <p id="assembly-3d-status" role="status" aria-live="polite">
             Hãy chọn linh kiện để bắt đầu lắp ráp.
         </p>
 
-
-        <!-- Danh sách linh kiện -->
-        <div
-                id="assembly-3d-parts"
-                class="assembly-3d-parts"
-        >
+        <div class="assembly-3d-list-heading">
+            <span>Danh sách</span>
+            <strong id="assembly-3d-counter">0/0 nhóm</strong>
         </div>
 
+        <div id="assembly-3d-parts" class="assembly-3d-parts"></div>
 
-        <!-- TIẾN ĐỘ -->
         <div class="assembly-3d-progress">
-
-            <strong>
-                Tiến độ:
-                <span id="assembly-3d-progress-value">
-                        0%
-                    </span>
-            </strong>
-
-            <progress
-                    id="assembly-3d-progress"
-                    max="100"
-                    value="0"
-            >
-                0%
-            </progress>
-
+            <div>
+                <span>Tiến độ hoàn thành</span>
+                <strong id="assembly-3d-progress-value">0%</strong>
+            </div>
+            <progress id="assembly-3d-progress" max="100" value="0">0%</progress>
         </div>
 
-
-        <!-- RESET -->
-        <button
-                id="assembly-3d-reset"
-                type="button"
-        >
-            Reset
-        </button>
-
+        <div class="assembly-3d-panel-actions">
+            <button id="assembly-3d-explode" type="button" aria-pressed="false">
+                Tách linh kiện
+            </button>
+            <button id="assembly-3d-reset" type="button">
+                Lắp lại từ đầu
+            </button>
+        </div>
     </aside>
-
 </main>
 
 
