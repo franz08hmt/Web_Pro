@@ -72,14 +72,14 @@ biến MySQL, và `"connected"` khi query `SELECT 1` thành công.
 | `POST` | `/api/auth/register` | `fullName`, `email`, `password` | `201`, `{ data: { user } }` | Đặt cookie phiên |
 | `POST` | `/api/auth/login` | `email`, `password` | `200`, `{ data: { user } }` | Đặt cookie phiên |
 | `POST` | `/api/auth/logout` | Không có | `204`, không body | Xóa cookie, thu hồi phiên |
-| `GET` | `/api/auth/me` | Cookie phiên | `200`, `{ data: { user } }` hoặc `401 AUTH_REQUIRED` | — |
+| `GET` | `/api/auth/me` | Cookie phiên | `200`, `{ data: { user }, csrfToken }` hoặc `401 AUTH_REQUIRED` | — |
 
 **Validation (`VALIDATION_ERROR` nếu vi phạm):**
 
 - `fullName`: chuỗi, sau khi trim dài 2–100 ký tự.
 - `email`: chuỗi hợp lệ theo định dạng email; được chuẩn hóa (`trim` + `toLowerCase`)
   trước khi so sánh/lưu, để so khớp không phân biệt hoa/thường.
-- `password`: chuỗi, dài 8–72 ký tự (72 là giới hạn kỹ thuật của bcrypt).
+- `password`: chuỗi, dài 8–72 ký tự; backend băm bằng `scrypt` với salt ngẫu nhiên.
 
 **User public shape** (không bao giờ có `passwordHash`):
 
@@ -93,9 +93,8 @@ biến MySQL, và `"connected"` khi query `SELECT 1` thành công.
 }
 ```
 
-`role` hiện chỉ có giá trị `"USER"`. `"ADMIN"` được để dành cho trang quản trị
-nội dung của Nhi ở giai đoạn sau — **chưa route nào trong phần Tài kiểm tra vai
-trò `ADMIN`.**
+`role` có giá trị `"USER"` hoặc `"ADMIN"`. Các route ghi dưới `/api/admin/*`
+yêu cầu phiên `ADMIN` và header `X-CSRF-Token` hợp lệ.
 
 **Cookie phiên:** tên `ral_session`, `HttpOnly`, `SameSite=Lax`, `Secure` khi
 `NODE_ENV=production`, `Path=/api`, hết hạn theo `expiresAt` của phiên (mặc định

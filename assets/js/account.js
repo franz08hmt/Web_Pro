@@ -1,13 +1,17 @@
 "use strict";
 
-/* Đăng nhập/đăng ký chỉ xem trước giao diện: chưa có cơ sở dữ liệu (xem README,
-   mục "Giai đoạn 2 — Ứng dụng full-stack"). Validate thật bằng ràng buộc HTML5,
-   không giả lập đăng nhập thành công bằng localStorage hay bất kỳ cách nào khác. */
-
 (() => {
+  const api = window.RobotAssemblyApi;
   const tabs = [...document.querySelectorAll(".auth-tab")];
   const panels = { login: document.querySelector("#panel-login"), signup: document.querySelector("#panel-signup") };
-  if (tabs.length === 0) return;
+  const entry = document.querySelector("#account-entry");
+  const sessionPanel = document.querySelector("#account-session");
+  const pageStatus = document.querySelector("#account-status");
+  const title = document.querySelector("#account-title");
+  if (!api || tabs.length === 0) {
+    if (pageStatus) pageStatus.textContent = "Không thể tải kết nối API. Hãy tải lại trang.";
+    return;
+  }
 
   function activate(id, focusTab) {
     tabs.forEach((tab) => {
@@ -33,17 +37,55 @@
     activate(tabs[index].dataset.tab, true);
   });
 
-  function showPending(form, message) {
+  function showNote(form, message, state = "") {
     const note = form.querySelector(".form-note");
-    if (note) note.textContent = message;
+    if (!note) return;
+    note.textContent = message;
+    note.dataset.state = state;
+  }
+
+  function setSubmitting(form, submitting, pendingText) {
+    const button = form.querySelector("button[type='submit']");
+    if (!button) return;
+    if (!button.dataset.label) button.dataset.label = button.textContent;
+    button.disabled = submitting;
+    button.textContent = submitting ? pendingText : button.dataset.label;
+    form.setAttribute("aria-busy", String(submitting));
+  }
+
+  function showUser(user) {
+    entry.hidden = true;
+    sessionPanel.hidden = false;
+    pageStatus.textContent = "";
+    title.textContent = "Tài khoản của bạn";
+    document.querySelector("#account-user-name").textContent = user.fullName;
+    document.querySelector("#account-user-email").textContent = user.email;
+    document.querySelector("#account-user-role").textContent = user.role === "ADMIN" ? "Quản trị nội dung" : "Thành viên";
+  }
+
+  function showAuth() {
+    sessionPanel.hidden = true;
+    entry.hidden = false;
+    pageStatus.textContent = "";
+    title.textContent = "Đăng nhập hoặc tạo tài khoản";
   }
 
   const loginForm = document.querySelector("#login-form");
   if (loginForm) {
-    loginForm.addEventListener("submit", (event) => {
+    loginForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (!loginForm.reportValidity()) return;
-      showPending(loginForm, "Thông tin hợp lệ. Đăng nhập sẽ hoạt động khi website kết nối cơ sở dữ liệu ở giai đoạn phát triển tiếp theo.");
+      showNote(loginForm, "");
+      setSubmitting(loginForm, true, "Đang đăng nhập…");
+      try {
+        const fields = new FormData(loginForm);
+        showUser(await api.auth.login({ email: fields.get("email"), password: fields.get("password") }));
+        loginForm.reset();
+      } catch (error) {
+        showNote(loginForm, error.message || "Không thể đăng nhập. Vui lòng thử lại.", "error");
+      } finally {
+        setSubmitting(loginForm, false, "");
+      }
     });
   }
 
@@ -56,11 +98,52 @@
     };
     password.addEventListener("input", syncConfirm);
     confirm.addEventListener("input", syncConfirm);
-    signupForm.addEventListener("submit", (event) => {
+    signupForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       syncConfirm();
       if (!signupForm.reportValidity()) return;
-      showPending(signupForm, "Thông tin hợp lệ. Tạo tài khoản sẽ hoạt động khi website kết nối cơ sở dữ liệu ở giai đoạn phát triển tiếp theo.");
+      showNote(signupForm, "");
+      setSubmitting(signupForm, true, "Đang tạo tài khoản…");
+      try {
+        const fields = new FormData(signupForm);
+        showUser(await api.auth.register({
+          fullName: fields.get("fullName"),
+          email: fields.get("email"),
+          password: fields.get("password")
+        }));
+        signupForm.reset();
+      } catch (error) {
+        showNote(signupForm, error.message || "Không thể tạo tài khoản. Vui lòng thử lại.", "error");
+      } finally {
+        setSubmitting(signupForm, false, "");
+      }
     });
   }
+
+  document.querySelector("#logout-button").addEventListener("click", async (event) => {
+    const button = event.currentTarget;
+    button.disabled = true;
+    pageStatus.textContent = "Đang đăng xuất…";
+    try {
+      await api.auth.logout();
+      showAuth();
+      document.querySelector("#login-email").focus();
+    } catch (error) {
+      pageStatus.textContent = error.message || "Không thể đăng xuất. Vui lòng thử lại.";
+      pageStatus.dataset.state = "error";
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  api.auth.me()
+    .then(showUser)
+    .catch((error) => {
+      if (error.code === "AUTH_REQUIRED") showAuth();
+      else {
+        showAuth();
+        pageStatus.textContent = error.message || "Không thể kiểm tra phiên đăng nhập.";
+        pageStatus.dataset.state = "error";
+      }
+    });
 })();

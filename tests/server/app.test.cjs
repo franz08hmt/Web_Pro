@@ -90,6 +90,12 @@ test("GET /api/health hides database failures from API consumers", async () => {
 
 test("API accepts configured origins and rejects unconfigured origins", async () => {
   await withServer(async (baseUrl) => {
+    const sameOrigin = await fetch(`${baseUrl}/api/health`, {
+      headers: { Origin: baseUrl }
+    });
+    assert.equal(sameOrigin.status, 200);
+    assert.equal(sameOrigin.headers.get("access-control-allow-origin"), baseUrl);
+
     const permitted = await fetch(`${baseUrl}/api/health`, {
       headers: { Origin: "http://localhost:4173" }
     });

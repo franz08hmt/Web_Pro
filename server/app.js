@@ -34,12 +34,13 @@ function createApp(options = {}) {
 
   app.use(requestContext(logger));
   app.use(helmet());
-  app.use(cors({
-    credentials: true,
-    origin(origin, callback) {
-      if (!origin || config.corsOrigins.includes(origin)) return callback(null, true);
-      return callback(new ApiError(403, "CORS_ORIGIN_DENIED", "Origin này không được phép truy cập API."));
+  app.use(cors((request, callback) => {
+    const origin = request.get("Origin");
+    const requestOrigin = `${request.protocol}://${request.get("Host")}`;
+    if (!origin || origin === requestOrigin || config.corsOrigins.includes(origin)) {
+      return callback(null, { credentials: true, origin: true });
     }
+    return callback(new ApiError(403, "CORS_ORIGIN_DENIED", "Origin này không được phép truy cập API."));
   }));
   app.use(express.json({ limit: "256kb" }));
   app.use("/api", rateLimit({
