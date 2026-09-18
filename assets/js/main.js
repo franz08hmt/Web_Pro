@@ -1,6 +1,6 @@
 "use strict";
 
-const robotModels = window.ROBOT_MODELS || [];
+let robotModels = window.ROBOT_MODELS || [];
 const componentsData = window.COMPONENTS_DATA || [];
 
 // Hàm mã hóa chống lỗ hổng bảo mật Cross-Site Scripting (XSS)
@@ -133,10 +133,10 @@ function setupCatalog() {
 }
 
 // Render trang Lắp Ráp & Xử lý Tiến Độ (pages/lap-rap.html)
-function setupAssembly() {
+async function setupAssembly() {
   const modelSelect = document.querySelector("#model-select");
   const start3DButton = document.querySelector("#start-3d-assembly");
-  if (!modelSelect || robotModels.length === 0) return;
+  if (!modelSelect) return;
 
   const checklist = document.querySelector("#parts-checklist");
   const steps = document.querySelector("#assembly-steps");
@@ -152,8 +152,21 @@ function setupAssembly() {
   const dialValue = document.querySelector("#dial-value");
   const dialLabel = document.querySelector("#dial-label");
   const resetButton = document.querySelector("#reset-progress");
+  const sessionApi = window.RobotAssemblyApi?.assemblySessions;
+  let activeSession = null;
+  let selectionRevision = 0;
 
   const DIAL_LENGTH = 339.29; // chu vi đường tròn bán kính 54
+
+  if (window.RobotContentApi?.enabled) {
+    status.textContent = "Đang tải dữ liệu lắp ráp từ Content API…";
+    try {
+      robotModels = await window.RobotContentApi.loadRobots() || robotModels;
+    } catch (error) {
+      status.textContent = `Không thể đồng bộ Content API; đang dùng dữ liệu dự phòng. ${error.message}`;
+    }
+  }
+  if (robotModels.length === 0) return;
 
   modelSelect.innerHTML = robotModels.map((model) =>
       `<option value="${escapeHtml(model.id)}">${escapeHtml(model.name)} · ${escapeHtml(model.level)}</option>`
@@ -190,24 +203,24 @@ function setupAssembly() {
     }
   }
 
-  function updateProgress(persist) {
+  function updateProgress(persist, notice = "") {
     const items = [...checklist.querySelectorAll("input[type='checkbox']")];
     const selected = items.filter((item) => item.checked).length;
-    const percent = Math.round((selected / items.length) * 100);
+    const percent = items.length === 0 ? 0 : Math.round((selected / items.length) * 100);
 
     progress.value = percent;
     progressValue.textContent = `${percent}%`;
-    status.textContent = percent === 100
+    status.textContent = notice || (percent === 100
         ? "Đã đủ linh kiện. Bạn có thể thực hiện các bước lắp ráp."
-        : `Còn thiếu ${items.length - selected} nhóm linh kiện.`;
+        : `Còn thiếu ${items.length - selected} nhóm linh kiện.`);
 
     if (start3DButton) {
       start3DButton.hidden = percent !== 100;
     }
 
-    if (percent === 100) {
+    if (percent === 100 && start3DButton) {
       start3DButton.href =
-          `lap-rap-3d.html?model=${encodeURIComponent(modelSelect.value)}`;
+          `lap-rap-3d.html?model=${encodeURIComponent(modelSelect.value)}${activeSession ? `&session=${encodeURIComponent(activeSession.id)}` : ""}`;
     }
 
     status.classList.toggle("is-complete", percent === 100);
@@ -250,7 +263,7 @@ function setupAssembly() {
 
     checklist.innerHTML = model.parts.map((part, index) => `
       <label class="check-item" for="part-${index}">
-        <input id="part-${index}" type="checkbox">
+        <input id="part-${index}" type="checkbox" data-component-id="${escapeHtml(part.id)}">
         <span>${escapeHtml(part.name)} <strong>× ${part.quantity}</strong></span>
         <svg class="icon tick-icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
           <path class="tick" stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/>
@@ -265,22 +278,101 @@ function setupAssembly() {
     updateProgress(false);
   }
 
-  checklist.addEventListener("change", () => updateProgress(true));
+  function applySession(session, notice) {
+    activeSession = session;
+    const prepared = new Set(
+      (session.components || []).filter((item) => item.isPrepared).map((item) => item.componentId)
+    );
+    const inputs = [...checklist.querySelectorAll("input[data-component-id]")];
+    inputs.forEach((input) => { input.checked = prepared.has(input.dataset.componentId); });
+    savePartsState(inputs);
+    updateProgress(false, notice);
+  }
 
-  modelSelect.addEventListener("change", () => {
+  async function restoreSession() {
+    const revision = ++selectionRevision;
+    activeSession = null;
+    const inputs = [...checklist.querySelectorAll("input[data-component-id]")];
+    if (!sessionApi) {
+      updateProgress(false, "Tiến độ đang được lưu trên trình duyệt này.");
+      return;
+    }
+
+    inputs.forEach((input) => { input.disabled = true; });
+    updateProgress(false, "Đang khôi phục tiến độ đã lưu…");
+    try {
+      const session = await sessionApi.createOrResume(modelSelect.value);
+      if (revision !== selectionRevision) return;
+      applySession(session, "Đã đồng bộ tiến độ với tài khoản của bạn.");
+    } catch (error) {
+      if (revision !== selectionRevision) return;
+      const message = error.code === "AUTH_REQUIRED"
+        ? "Đăng nhập để lưu tiến độ trên tài khoản; hiện đang lưu trên trình duyệt này."
+        : `Không thể đồng bộ tiến độ; đang dùng dữ liệu trên trình duyệt. ${error.message}`;
+      updateProgress(false, message);
+    } finally {
+      if (revision === selectionRevision) inputs.forEach((input) => { input.disabled = false; });
+    }
+  }
+
+  checklist.addEventListener("change", async (event) => {
+    const input = event.target.closest("input[data-component-id]");
+    if (!input) return;
+    const previous = !input.checked;
+    updateProgress(true, activeSession ? "Đang lưu tiến độ…" : "Tiến độ đã lưu trên trình duyệt này.");
+    if (!activeSession || !sessionApi) return;
+
+    input.disabled = true;
+    try {
+      activeSession = await sessionApi.setComponentPrepared(
+        activeSession.id,
+        input.dataset.componentId,
+        input.checked
+      );
+      updateProgress(true, "Đã lưu tiến độ vào tài khoản.");
+    } catch (error) {
+      input.checked = previous;
+      updateProgress(true, `Không thể lưu thay đổi. ${error.message}`);
+    } finally {
+      input.disabled = false;
+    }
+  });
+
+  modelSelect.addEventListener("change", async () => {
     storage.write("ral.model", modelSelect.value);
     renderSelectedModel(true);
+    await restoreSession();
   });
 
   if (resetButton) {
-    resetButton.addEventListener("click", () => {
+    resetButton.addEventListener("click", async () => {
       storage.remove(partsKey());
-      checklist.querySelectorAll("input[type='checkbox']").forEach((item) => { item.checked = false; });
-      updateProgress(false);
+      const inputs = [...checklist.querySelectorAll("input[data-component-id]")];
+      const preparedIds = inputs.filter((item) => item.checked).map((item) => item.dataset.componentId);
+      inputs.forEach((item) => { item.checked = false; });
+      updateProgress(false, activeSession ? "Đang đặt lại tiến độ…" : "Đã đặt lại tiến độ trên trình duyệt này.");
+      if (!activeSession || !sessionApi || preparedIds.length === 0) return;
+
+      resetButton.disabled = true;
+      try {
+        for (const componentId of preparedIds) {
+          activeSession = await sessionApi.setComponentPrepared(activeSession.id, componentId, false);
+        }
+        updateProgress(false, "Đã đặt lại tiến độ trong tài khoản.");
+      } catch (error) {
+        try {
+          applySession(await sessionApi.get(activeSession.id), `Không thể đặt lại toàn bộ. ${error.message}`);
+        } catch {
+          updateProgress(false, `Không thể khôi phục tiến độ. ${error.message}`);
+        }
+      } finally {
+        resetButton.disabled = false;
+      }
     });
   }
 
   renderSelectedModel(true);
+  await restoreSession();
 }
 
 // Khởi chạy hệ thống
@@ -288,4 +380,4 @@ setupComponents();
 setupComponentSpecs();
 setupCompareTable();
 setupCatalog();
-setupAssembly();
+void setupAssembly();
