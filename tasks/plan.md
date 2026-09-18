@@ -26,3 +26,44 @@ Không tràn ngang ở các kích thước kiểm tra; tài nguyên ảnh/font/i
 Nội dung mô tả trực tiếp mục đích trang; heading tuần tự; liên kết thật; bổ sung FAQ hiển thị với structured data tương ứng ở trang chủ. Không tạo giá, đánh giá, canonical hoặc dữ liệu vận hành giả.
 ## Ranh giới
 Luôn giữ nguyên tên/ID mô hình, selector logic hiện có; không triển khai database hoặc chức năng 2D mới trong đợt UI. Main chỉ cập nhật khi người dùng yêu cầu.
+
+---
+
+# Kế hoạch full-stack của Tài sau tích hợp
+
+## Mục tiêu
+
+Hoàn thiện lớp backend nền tảng và tích hợp trên `integration/fullstack-v2` sau
+khi đã nhận Content API/MySQL adapters của Nhi và mô hình lắp ráp của Tuấn Anh.
+Giữ nguyên contract trong `docs/API_CONVENTIONS.md` và không đưa chi tiết SQL vào
+service/controller.
+
+## Thứ tự phụ thuộc
+
+1. **Xác thực:** service đăng ký/đăng nhập/đăng xuất/đọc phiên, cookie HttpOnly,
+   hash mật khẩu và token; kiểm thử bằng repository double.
+2. **Quyền quản trị:** middleware `requireAuth`, `requireAdmin` và CSRF thật; cắm
+   vào CRUD nội dung của Nhi.
+3. **Phiên lắp ráp:** service + HTTP API dùng `assemblySessions` adapter của Nhi,
+   tính tiến độ và kiểm tra chuyển trạng thái ở service.
+4. **Frontend:** API client dùng chung, màn hình tài khoản thật, lưu/khôi phục
+   checklist và trạng thái lắp ráp.
+5. **Nghiệm thu:** test API, test MySQL tùy chọn, kiểm tra trình duyệt và cập nhật
+   hướng dẫn chạy trên máy mới.
+
+## Quyết định kiến trúc
+
+- Luồng phụ thuộc giữ đúng `route -> controller -> service -> repository`.
+- Khi MySQL đã cấu hình, dùng `createBackendRepositories(pool)` của Nhi; test dùng
+  repository double được inject, không chứa SQL giả trong service.
+- Cookie phiên chỉ chứa token ngẫu nhiên; database chỉ lưu SHA-256 của token.
+- Response và lỗi giữ nguyên envelope hiện có; thay đổi chỉ mang tính bổ sung.
+- Không lưu mật khẩu, token hoặc cấu hình `.env` vào Git/log/response.
+
+## Điểm kiểm tra
+
+- Sau xác thực và quyền quản trị: toàn bộ test hiện có vẫn xanh; CRUD admin nhận
+  đúng 401/403/CSRF.
+- Sau API phiên: tạo/tiếp tục/lưu tiến độ/tải lại chạy bằng double và MySQL adapter.
+- Sau frontend: đăng nhập -> chọn robot -> lưu -> tải lại -> hoàn thành hoạt động
+  xuyên suốt trên cùng origin.
