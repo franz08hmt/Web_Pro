@@ -146,6 +146,11 @@ nằm trong danh sách trên trả `409 INVALID_STATE_TRANSITION`. Gọi `PATCH`
 
 **Enum `StepProgress.status`:** `PENDING` (mặc định) | `COMPLETED`.
 
+Chỉ được sửa `session_components` khi phiên đang `PREPARING` hoặc `READY`. Chỉ
+được sửa `session_steps` khi phiên đang `IN_PROGRESS`. Phiên `COMPLETED` và
+`ABANDONED` là bất biến; thao tác ghi không phù hợp trả
+`409 INVALID_STATE_TRANSITION`.
+
 **`progressPercent`:** tính ở service, làm tròn xuống, bằng
 `floor(số nhóm component có isPrepared=true / tổng số nhóm component bắt buộc của robotId × 100)`.
 Tổng số nhóm lấy từ bảng nối `robot_components` qua Content Repository. `quantity`

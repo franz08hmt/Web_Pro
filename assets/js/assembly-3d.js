@@ -454,7 +454,11 @@
 
       const copy = document.createElement("span");
       copy.className = "assembly-3d-part-copy";
-      copy.innerHTML = `<strong>${part.name}</strong><small>${part.quantity} linh kiện vật lý</small>`;
+      const partName = document.createElement("strong");
+      partName.textContent = part.name;
+      const partQuantity = document.createElement("small");
+      partQuantity.textContent = `${part.quantity} linh kiện vật lý`;
+      copy.append(partName, partQuantity);
 
       label.append(checkbox, order, copy);
       partsContainer.append(label);

@@ -190,6 +190,14 @@ test("assembly session API persists preparation and completes the documented sta
     assert.equal(created.status, "PREPARING");
     assert.equal(created.progressPercent, 0);
 
+    const prematureStep = await fetch(`${baseUrl}/api/assembly-sessions/${created.id}/steps/line-follower-step-1`, {
+      method: "PUT",
+      headers: client.headers,
+      body: JSON.stringify({ status: "COMPLETED" })
+    });
+    assert.equal(prematureStep.status, 409);
+    assert.equal((await prematureStep.json()).error.code, "INVALID_STATE_TRANSITION");
+
     const anotherUser = await createAuthenticatedClient(baseUrl, "other@example.com");
     const forbiddenSession = await fetch(`${baseUrl}/api/assembly-sessions/${created.id}`, {
       headers: { Cookie: anotherUser.cookie }
@@ -235,6 +243,28 @@ test("assembly session API persists preparation and completes the documented sta
     const completed = (await finalStep.json()).data;
     assert.equal(completed.status, "COMPLETED");
     assert.equal(completed.progressPercent, 100);
+
+    const mutateCompletedPreparation = await fetch(
+      `${baseUrl}/api/assembly-sessions/${created.id}/components/arduino-uno`,
+      {
+        method: "PUT",
+        headers: client.headers,
+        body: JSON.stringify({ isPrepared: false })
+      }
+    );
+    assert.equal(mutateCompletedPreparation.status, 409);
+    assert.equal((await mutateCompletedPreparation.json()).error.code, "INVALID_STATE_TRANSITION");
+
+    const mutateCompletedStep = await fetch(
+      `${baseUrl}/api/assembly-sessions/${created.id}/steps/line-follower-step-1`,
+      {
+        method: "PUT",
+        headers: client.headers,
+        body: JSON.stringify({ status: "PENDING" })
+      }
+    );
+    assert.equal(mutateCompletedStep.status, 409);
+    assert.equal((await mutateCompletedStep.json()).error.code, "INVALID_STATE_TRANSITION");
 
     const invalidTransition = await fetch(`${baseUrl}/api/assembly-sessions/${created.id}`, {
       method: "PATCH",

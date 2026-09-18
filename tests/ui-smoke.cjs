@@ -1,23 +1,54 @@
-/* Run against the existing static server. Requires Playwright in NODE_PATH. */
+/* Run against the shared Express server. Uses the locally installed Chrome channel. */
 const assert = require("node:assert/strict");
 const path = require("node:path");
 const fs = require("node:fs");
-const { chromium } = require("playwright");
-const base = process.env.BASE_URL || "http://127.0.0.1:4173";
-const pages = ["index.html", "pages/mau-robot.html", "pages/linh-kien.html", "pages/lap-rap.html", "pages/thu-vien.html", "pages/thanh-vien.html", "pages/tai-khoan.html"];
+const http = require("node:http");
+require("dotenv").config();
+const { chromium } = require("playwright-core");
+const { createApp } = require("../server/app");
+const { loadConfig } = require("../server/config/env");
+const { createDatabasePool } = require("../server/database/pool");
+let base = process.env.BASE_URL;
+let testServer = null;
+let database = null;
+const pages = ["index.html", "pages/mau-robot.html", "pages/linh-kien.html", "pages/lap-rap.html", "pages/lap-rap-3d.html?model=line-follower", "pages/thu-vien.html", "pages/thanh-vien.html", "pages/tai-khoan.html"];
 
 (async () => {
+  if (!base) {
+    const config = loadConfig();
+    config.rateLimit.max = 10000;
+    database = createDatabasePool(config.database);
+    const app = createApp({
+      config,
+      database,
+      logger: { info() {}, error() {} }
+    });
+    testServer = http.createServer(app);
+    await new Promise(resolve => testServer.listen(0, "127.0.0.1", resolve));
+    base = `http://127.0.0.1:${testServer.address().port}`;
+  }
+
   const browser = await chromium.launch({ channel: "chrome", headless: true });
   try {
     const page = await browser.newPage();
     const errors = [];
     page.on("pageerror", error => errors.push(error.message));
-    page.on("console", message => { if (["error", "warning"].includes(message.type())) errors.push(message.text()); });
-    page.on("response", response => { if (response.status() >= 400) errors.push(response.status() + " " + response.url()); });
+    page.on("console", message => {
+      if (["error", "warning"].includes(message.type()) && !message.text().startsWith("Failed to load resource:")) {
+        errors.push(message.text());
+      }
+    });
+    page.on("response", response => {
+      const expectedGuestSession = response.status() === 401 && response.url().endsWith("/api/auth/me");
+      if (response.status() >= 400 && !expectedGuestSession) errors.push(response.status() + " " + response.url());
+    });
     for (const width of [320, 768, 1024, 1440]) {
       await page.setViewportSize({ width, height: 1000 });
       for (const file of pages) {
         await page.goto(base + "/" + file);
+        if (file.startsWith("pages/lap-rap-3d.html")) {
+          await page.locator("#assembly-3d-parts input").first().waitFor({ state: "visible" });
+        }
         await page.evaluate(() => document.fonts.ready);
         for (const img of await page.locator("img").all()) {
           await img.scrollIntoViewIfNeeded();
@@ -33,7 +64,7 @@ const pages = ["index.html", "pages/mau-robot.html", "pages/linh-kien.html", "pa
           const ids = [...document.querySelectorAll("[id]")].map(el => el.id);
           if (new Set(ids).size !== ids.length) problems.push("duplicate IDs");
           let previous = 0;
-          for (const h of document.querySelectorAll("main h1, main h2, main h3, main h4")) {
+          for (const h of document.querySelectorAll("h1, h2, h3, h4")) {
             const level = Number(h.tagName[1]);
             if (level > previous + 1) problems.push("heading skip: " + h.textContent);
             previous = level;
@@ -67,9 +98,14 @@ const pages = ["index.html", "pages/mau-robot.html", "pages/linh-kien.html", "pa
       }
     }
     await page.goto(base + "/pages/linh-kien.html");
-    for (const [filter, count] of [["sensor", 2], ["controller", 2], ["motion", 3], ["utility", 2], ["all", 9]]) {
+    await page.waitForLoadState("networkidle");
+    const totalComponents = await page.locator("#component-catalog article").count();
+    assert.ok(totalComponents > 0, "Component API returns a non-empty catalog");
+    for (const filter of ["sensor", "controller", "motion", "utility", "all"]) {
       await page.locator('[data-filter="' + filter + '"]').click();
-      assert.equal(await page.locator("#component-catalog article:visible").count(), count, filter);
+      const visibleCount = await page.locator("#component-catalog article:visible").count();
+      if (filter === "all") assert.equal(visibleCount, totalComponents, filter);
+      else assert.ok(visibleCount > 0 && visibleCount < totalComponents, filter);
       assert.equal(await page.locator('[data-filter="' + filter + '"]').getAttribute("aria-pressed"), "true");
     }
     await page.goto(base + "/pages/mau-robot.html");
@@ -79,6 +115,7 @@ const pages = ["index.html", "pages/mau-robot.html", "pages/linh-kien.html", "pa
     await page.locator("#robot-search").fill("tránh vật cản");
     assert.equal(await page.locator("#robot-catalog article").count(), 1);
     await page.locator("#robot-catalog a").click();
+    await page.waitForLoadState("networkidle");
     assert.equal(await page.locator("#model-select").inputValue(), "obstacle-avoider");
     const models = await page.locator("#model-select option").evaluateAll(items => items.map(item => item.value));
     for (const model of models) {
@@ -109,6 +146,12 @@ const pages = ["index.html", "pages/mau-robot.html", "pages/linh-kien.html", "pa
     await page.keyboard.press("Enter");
     assert.equal(await page.locator("main").evaluate(el => el === document.activeElement), true);
     assert.deepEqual(errors, [], "Browser errors");
-    console.log("PASS: 24 responsive page checks; images, headings, local fonts, filters, search, 3 assembly models, progress and keyboard.");
-  } finally { await browser.close(); }
+    console.log("PASS: 32 responsive page checks; images, headings, local fonts, dynamic filters, search, 3 assembly models, 3D room, progress and keyboard.");
+  } finally {
+    await browser.close();
+    if (testServer) {
+      await new Promise((resolve, reject) => testServer.close(error => error ? reject(error) : resolve()));
+    }
+    if (database) await database.end();
+  }
 })().catch(error => { console.error(error); process.exitCode = 1; });

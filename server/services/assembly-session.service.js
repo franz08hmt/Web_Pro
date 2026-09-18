@@ -113,6 +113,7 @@ function createAssemblySessionService({ repository, contentRepository }) {
 
     async setComponentPrepared({ sessionId, userId, componentId, isPrepared }) {
       const current = await owned(sessionId, userId);
+      if (!["PREPARING", "READY"].includes(current.status)) throw invalidTransition();
       const relations = await componentRelations(current.robotId);
       if (!relations.some((item) => item.componentId === componentId)) {
         throw new ApiError(422, "VALIDATION_ERROR", "Linh kiện không thuộc robot của phiên.");
@@ -127,6 +128,7 @@ function createAssemblySessionService({ repository, contentRepository }) {
 
     async setStepStatus({ sessionId, userId, stepId, status }) {
       const current = await owned(sessionId, userId);
+      if (current.status !== "IN_PROGRESS") throw invalidTransition();
       const requiredSteps = await stepRecords(current.robotId);
       if (!requiredSteps.some((step) => step.id === stepId)) {
         throw new ApiError(422, "VALIDATION_ERROR", "Bước không thuộc robot của phiên.");

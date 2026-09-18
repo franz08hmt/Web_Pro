@@ -130,3 +130,9 @@ test("3D assembly loads live content and persists assembly steps through the ses
   assert.match(assemblySource, /sessionApi\.setStepStatus\(/);
   assert.match(assemblySource, /session\.steps/);
 });
+
+test("3D assembly renders API-provided component text without HTML injection", () => {
+  assert.doesNotMatch(assemblySource, /copy\.innerHTML/);
+  assert.match(assemblySource, /partName\.textContent\s*=\s*part\.name/);
+  assert.match(assemblySource, /partQuantity\.textContent/);
+});

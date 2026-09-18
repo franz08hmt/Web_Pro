@@ -15,9 +15,11 @@ và tiêu chí nghiệm thu rõ.
   ADMIN và CSRF cho thao tác ghi quản trị.
 - API phiên lắp ráp đọc robot, linh kiện và bước thật từ MySQL; không còn dùng
   `server/config/known-robots.js` hay chấp nhận ID tùy ý.
-- Mô phỏng 3D của Tuấn Anh đã được tích hợp. Phần còn lại của Tài là nối
-  `assets/js/api.js`, trang tài khoản và trạng thái mô phỏng với các endpoint
-  phiên thật, rồi kiểm thử end-to-end.
+- Mô phỏng 3D của Tuấn Anh đã được tích hợp với Content API và API phiên thật.
+  Trang tài khoản, chuẩn bị linh kiện và checklist bước 3D đều lưu/khôi phục qua
+  `assets/js/api.js`; khi chưa đăng nhập chỉ dùng fallback cục bộ có thông báo rõ.
+- Kiểm thử server, MySQL adapter và responsive end-to-end đã được bổ sung; lệnh
+  chạy chuẩn nằm trong README.
 
 ## 1. Hợp đồng MySQL đã được Nhi bàn giao
 

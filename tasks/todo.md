@@ -10,4 +10,4 @@
 - [x] API phiên lắp ráp theo contract đã chốt với Nhi/Tuấn Anh.
 - [x] API client và trang tài khoản gọi backend thật.
 - [x] Lưu/khôi phục tiến độ lắp ráp từ giao diện.
-- [ ] Kiểm thử end-to-end, bảo mật cơ bản và hướng dẫn chạy máy mới.
+- [x] Kiểm thử end-to-end, bảo mật cơ bản và hướng dẫn chạy máy mới.
