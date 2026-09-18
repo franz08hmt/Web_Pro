@@ -5,7 +5,7 @@
 
 ## Full-stack của Tài sau tích hợp
 
-- [ ] Xác thực production: register/login/logout/me, cookie và password hashing.
+- [x] Xác thực production: register/login/logout/me, cookie và password hashing.
 - [ ] Middleware phiên, quyền ADMIN và CSRF cho Content API.
 - [ ] API phiên lắp ráp theo contract đã chốt với Nhi/Tuấn Anh.
 - [ ] API client và trang tài khoản gọi backend thật.

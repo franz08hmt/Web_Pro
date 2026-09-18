@@ -71,6 +71,13 @@ function loadConfig(environment = process.env) {
       windowMs: positiveInteger(environment.RATE_LIMIT_WINDOW_MS, 15 * 60 * 1000, "RATE_LIMIT_WINDOW_MS"),
       max: positiveInteger(environment.RATE_LIMIT_MAX, 120, "RATE_LIMIT_MAX")
     },
+    auth: {
+      sessionTokenTtlMs: positiveInteger(
+        environment.SESSION_TOKEN_TTL_MS,
+        7 * 24 * 60 * 60 * 1000,
+        "SESSION_TOKEN_TTL_MS"
+      )
+    },
     database: {
       isConfigured: hasCompleteDatabaseConfig,
       host: environment.DB_HOST,

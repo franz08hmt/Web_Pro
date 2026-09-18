@@ -2,6 +2,9 @@
 
 const { Router } = require("express");
 const { ApiError } = require("../core/api-error");
+const { createAuthMiddleware } = require("../middleware/auth");
+const { createAuthService } = require("../services/auth.service");
+const { createAuthRouter } = require("./auth.routes");
 const { healthRouter } = require("./health.routes");
 const { createContentRouter } = require("../content/index.cjs");
 
@@ -27,13 +30,34 @@ function createApiRouter(options = {}) {
   const router = Router();
   router.use(healthRouter);
 
+  let authMiddleware = null;
+  if (options.repositories?.users && options.repositories?.authSessions) {
+    const authService = createAuthService({
+      repositories: options.repositories,
+      sessionTtlMs: options.config.auth.sessionTokenTtlMs
+    });
+    authMiddleware = createAuthMiddleware(authService);
+    router.use(authMiddleware.attach);
+    router.use("/auth", createAuthRouter({
+      authService,
+      middleware: authMiddleware,
+      isProduction: options.config.isProduction
+    }));
+  } else {
+    router.use("/auth", (request, response, next) => next(new ApiError(
+      503,
+      "DEPENDENCY_NOT_READY",
+      "Dịch vụ xác thực chưa được cấu hình."
+    )));
+  }
+
   if (options.database || options.contentRepository) {
     router.use(createContentRouter({
       Router,
       pool: options.database,
       repository: options.contentRepository,
-      requireAdmin: options.requireAdmin || authenticationRequired,
-      protectMutation: options.protectMutation || csrfRequired
+      requireAdmin: options.requireAdmin || authMiddleware?.requireAdmin || authenticationRequired,
+      protectMutation: options.protectMutation || authMiddleware?.protectMutation || csrfRequired
     }));
   } else {
     router.use((request, response, next) => {

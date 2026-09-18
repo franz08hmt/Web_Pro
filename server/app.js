@@ -8,6 +8,7 @@ const helmet = require("helmet");
 const { loadConfig } = require("./config/env");
 const { createLogger } = require("./config/logger");
 const { ApiError } = require("./core/api-error");
+const { createBackendRepositories } = require("./content/backend-repositories.cjs");
 const { createDatabasePool } = require("./database/pool");
 const { errorHandler, notFound } = require("./middleware/error-handler");
 const { requestContext } = require("./middleware/request-context");
@@ -19,12 +20,14 @@ function createApp(options = {}) {
   const config = options.config || loadConfig();
   const logger = options.logger || createLogger();
   const database = options.database === undefined ? createDatabasePool(config.database) : options.database;
+  const repositories = options.repositories || (database ? createBackendRepositories(database) : null);
   const app = express();
 
   app.disable("x-powered-by");
   app.locals.database = database;
   app.locals.config = config;
   app.locals.logger = logger;
+  app.locals.repositories = repositories;
 
   app.use(requestContext(logger));
   app.use(helmet());
@@ -47,6 +50,8 @@ function createApp(options = {}) {
   }));
   app.use("/api", createApiRouter({
     database,
+    repositories,
+    config,
     contentRepository: options.contentRepository,
     requireAdmin: options.requireAdmin,
     protectMutation: options.protectMutation
