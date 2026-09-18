@@ -1,10 +1,20 @@
 "use strict";
 
-(() => {
+(async () => {
   const params = new URLSearchParams(window.location.search);
   const modelId = params.get("model") || "line-follower";
-  const model = (window.ROBOT_MODELS || []).find((item) => item.id === modelId)
-    || (window.ROBOT_MODELS || [])[0];
+  let robotModels = window.ROBOT_MODELS || [];
+  let contentWarning = "";
+
+  if (window.RobotContentApi?.enabled) {
+    try {
+      robotModels = await window.RobotContentApi.loadRobots() || robotModels;
+    } catch (error) {
+      contentWarning = `Không thể tải dữ liệu mới; đang dùng dữ liệu dự phòng. ${error.message}`;
+    }
+  }
+
+  const model = robotModels.find((item) => item.id === modelId) || robotModels[0];
   const assemblyConfig = window.ASSEMBLY_3D_CONFIG || {};
 
   const container = document.querySelector("#assembly-3d-canvas");
@@ -15,6 +25,9 @@
   const progressElement = document.querySelector("#assembly-3d-progress");
   const progressValue = document.querySelector("#assembly-3d-progress-value");
   const progressCounter = document.querySelector("#assembly-3d-counter");
+  const stepsContainer = document.querySelector("#assembly-3d-steps");
+  const stepCounter = document.querySelector("#assembly-3d-step-counter");
+  const syncStatus = document.querySelector("#assembly-3d-sync-status");
   const resetButton = document.querySelector("#assembly-3d-reset");
   const focusButton = document.querySelector("#assembly-3d-focus");
   const rotateLeftButton = document.querySelector("#assembly-3d-rotate-left");
@@ -22,10 +35,200 @@
   const zoomInButton = document.querySelector("#assembly-3d-zoom-in");
   const zoomOutButton = document.querySelector("#assembly-3d-zoom-out");
   const explodeButton = document.querySelector("#assembly-3d-explode");
+  const sessionApi = window.RobotAssemblyApi?.assemblySessions;
+  let activeSession = null;
+
+  const stepRecords = Array.isArray(model?.stepRecords) && model.stepRecords.length > 0
+    ? model.stepRecords
+    : (model?.steps || []).map((instruction, index) => ({
+        id: `${model.id}-step-${index + 1}`,
+        title: `Bước ${index + 1}`,
+        instruction,
+        stepOrder: index + 1
+      }));
 
   if (!container || !model) {
     throw new Error("Không thể khởi tạo phòng lắp ráp 3D.");
   }
+
+  const stepStorageKey = `ral.assemblySteps.${model.id}`;
+  const visualStorageKey = `ral.assembledParts.${model.id}`;
+
+  function readStoredIds(key) {
+    try {
+      const value = JSON.parse(window.localStorage.getItem(key) || "[]");
+      return new Set(Array.isArray(value) ? value.filter((item) => typeof item === "string") : []);
+    } catch {
+      window.localStorage.removeItem(key);
+      return new Set();
+    }
+  }
+
+  function writeStoredIds(key, ids) {
+    try {
+      window.localStorage.setItem(key, JSON.stringify([...ids]));
+    } catch {
+      // Trình duyệt có thể chặn storage; giao diện vẫn hoạt động trong phiên hiện tại.
+    }
+  }
+
+  function setSyncStatus(message, state = "") {
+    if (!syncStatus) return;
+    syncStatus.textContent = message;
+    syncStatus.dataset.state = state;
+  }
+
+  function updateStepCounter() {
+    if (!stepsContainer) return;
+    const inputs = [...stepsContainer.querySelectorAll("input[data-step-id]")];
+    const completed = inputs.filter((input) => input.checked).length;
+    if (stepCounter) stepCounter.textContent = `${completed}/${inputs.length} bước`;
+  }
+
+  function setStepInputsDisabled(disabled) {
+    stepsContainer?.querySelectorAll("input[data-step-id]").forEach((input) => {
+      input.disabled = disabled;
+    });
+  }
+
+  function applyStepIds(completedIds) {
+    stepsContainer?.querySelectorAll("input[data-step-id]").forEach((input) => {
+      input.checked = completedIds.has(input.dataset.stepId);
+      input.closest("label")?.classList.toggle("is-complete", input.checked);
+    });
+    writeStoredIds(stepStorageKey, completedIds);
+    updateStepCounter();
+  }
+
+  function completedStepIdsFromSession(session) {
+    return new Set(
+      (session.steps || [])
+        .filter((step) => step.status === "COMPLETED")
+        .map((step) => step.stepId)
+    );
+  }
+
+  function renderStepsPanel() {
+    if (!stepsContainer) return;
+    stepsContainer.replaceChildren();
+
+    stepRecords.forEach((step, index) => {
+      const label = document.createElement("label");
+      label.className = "assembly-3d-step-item";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.dataset.stepId = step.id;
+      checkbox.setAttribute("aria-label", `${step.title || `Bước ${index + 1}`}: ${step.instruction}`);
+
+      const order = document.createElement("span");
+      order.className = "assembly-3d-step-order";
+      order.textContent = String(step.stepOrder || index + 1).padStart(2, "0");
+
+      const copy = document.createElement("span");
+      copy.className = "assembly-3d-step-copy";
+      const title = document.createElement("strong");
+      title.textContent = step.title || `Bước ${index + 1}`;
+      const instruction = document.createElement("small");
+      instruction.textContent = step.instruction;
+      copy.append(title, instruction);
+
+      label.append(checkbox, order, copy);
+      stepsContainer.append(label);
+
+      checkbox.addEventListener("change", async () => {
+        const previous = !checkbox.checked;
+        const localIds = readStoredIds(stepStorageKey);
+        if (checkbox.checked) localIds.add(step.id);
+        else localIds.delete(step.id);
+        writeStoredIds(stepStorageKey, localIds);
+        label.classList.toggle("is-complete", checkbox.checked);
+        updateStepCounter();
+
+        if (!activeSession || !sessionApi) {
+          setSyncStatus("Tiến độ bước đang được lưu trên trình duyệt này.", "local");
+          return;
+        }
+
+        checkbox.disabled = true;
+        setSyncStatus("Đang lưu bước lắp ráp…", "loading");
+        try {
+          activeSession = await sessionApi.setStepStatus(
+            activeSession.id,
+            step.id,
+            checkbox.checked ? "COMPLETED" : "PENDING"
+          );
+          applyStepIds(completedStepIdsFromSession(activeSession));
+          if (activeSession.status === "COMPLETED") {
+            setStepInputsDisabled(true);
+            setSyncStatus("Đã hoàn thành và lưu toàn bộ quy trình lắp ráp.", "complete");
+          } else {
+            setSyncStatus("Đã lưu bước lắp ráp vào tài khoản.", "saved");
+          }
+        } catch (error) {
+          checkbox.checked = previous;
+          label.classList.toggle("is-complete", previous);
+          const rollbackIds = readStoredIds(stepStorageKey);
+          if (previous) rollbackIds.add(step.id);
+          else rollbackIds.delete(step.id);
+          writeStoredIds(stepStorageKey, rollbackIds);
+          updateStepCounter();
+          setSyncStatus(`Không thể lưu bước. ${error.message}`, "error");
+        } finally {
+          if (activeSession?.status !== "COMPLETED") checkbox.disabled = false;
+        }
+      });
+    });
+
+    applyStepIds(readStoredIds(stepStorageKey));
+  }
+
+  async function restoreStepSession() {
+    if (!sessionApi) {
+      setSyncStatus(contentWarning || "Tiến độ bước đang được lưu trên trình duyệt này.", "local");
+      return;
+    }
+
+    setStepInputsDisabled(true);
+    setSyncStatus("Đang khôi phục tiến độ lắp ráp…", "loading");
+    try {
+      const requestedSessionId = params.get("session");
+      let session = requestedSessionId
+        ? await sessionApi.get(requestedSessionId)
+        : await sessionApi.createOrResume(model.id);
+
+      if (session.robotId !== model.id) {
+        session = await sessionApi.createOrResume(model.id);
+      }
+      if (session.status === "READY") {
+        session = await sessionApi.updateStatus(session.id, "IN_PROGRESS");
+      }
+
+      activeSession = session;
+      applyStepIds(completedStepIdsFromSession(session));
+
+      if (session.status === "PREPARING") {
+        setSyncStatus("Hãy chuẩn bị đủ linh kiện ở trang trước để bắt đầu các bước lắp ráp.", "waiting");
+      } else if (session.status === "COMPLETED") {
+        setSyncStatus("Phiên lắp ráp này đã hoàn thành.", "complete");
+      } else if (session.status === "IN_PROGRESS") {
+        setStepInputsDisabled(false);
+        setSyncStatus("Tiến độ bước đã được đồng bộ với tài khoản.", "saved");
+      } else {
+        setSyncStatus("Phiên lắp ráp hiện không thể tiếp tục.", "waiting");
+      }
+    } catch (error) {
+      activeSession = null;
+      setStepInputsDisabled(false);
+      const message = error.code === "AUTH_REQUIRED"
+        ? "Đăng nhập để lưu trên tài khoản; hiện tiến độ được lưu trên trình duyệt này."
+        : `Không thể đồng bộ tài khoản; đang lưu trên trình duyệt. ${error.message}`;
+      setSyncStatus(contentWarning || message, "local");
+    }
+  }
+
+  renderStepsPanel();
+  void restoreStepSession();
 
   if (!window.THREE || !window.createAssemblyPart) {
     if (statusElement) {
@@ -265,10 +468,28 @@
           removePart(part.id);
         }
         label.classList.toggle("is-installed", checkbox.checked);
+        const installedIds = new Set(
+          [...partsContainer.querySelectorAll("input[data-part-id]:checked")]
+            .map((input) => input.dataset.partId)
+        );
+        writeStoredIds(visualStorageKey, installedIds);
         if (explodedView) setExplodedView(true);
         focusRobot();
         updateProgress();
       });
+    });
+  }
+
+  function restoreVisualAssembly() {
+    const installedIds = readStoredIds(visualStorageKey);
+    model.parts.forEach((part) => {
+      if (!installedIds.has(part.id)) return;
+      const checkbox = partsContainer?.querySelector(`input[data-part-id="${CSS.escape(part.id)}"]`);
+      const object = assemblePart(part);
+      if (!checkbox || !object) return;
+      checkbox.checked = true;
+      checkbox.closest("label")?.classList.add("is-installed");
+      assembledParts.set(part.id, object);
     });
   }
 
@@ -280,6 +501,7 @@
       checkbox.checked = false;
       checkbox.closest("label")?.classList.remove("is-installed");
     });
+    writeStoredIds(visualStorageKey, new Set());
     focusRobot();
     updateProgress();
   }
@@ -334,6 +556,7 @@
   }
 
   renderPartsPanel();
+  restoreVisualAssembly();
   updateProgress();
   focusRobot();
   enablePointerControls();

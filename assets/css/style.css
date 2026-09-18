@@ -1279,7 +1279,7 @@
 
 .assembly-3d-page .assembly-3d-parts {
   gap: 8px;
-  max-height: min(44vh, 450px);
+  max-height: min(26vh, 270px);
   padding-right: 5px;
   scrollbar-color: var(--assembly-line) transparent;
 }
@@ -1348,6 +1348,97 @@
 .assembly-3d-part-copy small {
   color: var(--assembly-muted);
   font-size: 11px;
+}
+
+.assembly-3d-steps-region {
+  display: grid;
+  min-height: 0;
+  gap: 9px;
+  padding-top: 12px;
+  border-top: 1px solid var(--assembly-line);
+}
+
+.assembly-3d-page #assembly-3d-sync-status {
+  margin: 0;
+  padding: 9px 11px;
+  border: 1px solid var(--assembly-line);
+  border-radius: 10px;
+  color: var(--assembly-muted);
+  background: rgb(255 255 255 / 2%);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.assembly-3d-page #assembly-3d-sync-status[data-state="complete"],
+.assembly-3d-page #assembly-3d-sync-status[data-state="saved"] {
+  border-color: rgb(56 211 195 / 35%);
+  color: #c9f7f1;
+}
+
+.assembly-3d-page #assembly-3d-sync-status[data-state="error"] {
+  border-color: rgb(255 135 72 / 45%);
+  color: #ffd3ba;
+}
+
+.assembly-3d-steps {
+  display: grid;
+  gap: 7px;
+  max-height: min(24vh, 230px);
+  overflow: auto;
+  padding-right: 5px;
+  scrollbar-color: var(--assembly-line) transparent;
+}
+
+.assembly-3d-step-item {
+  display: grid;
+  grid-template-columns: 20px 30px minmax(0, 1fr);
+  align-items: start;
+  gap: 9px;
+  padding: 9px 10px;
+  border: 1px solid var(--assembly-line);
+  border-radius: 11px;
+  background: rgb(255 255 255 / 2%);
+}
+
+.assembly-3d-step-item.is-complete {
+  border-color: rgb(56 211 195 / 42%);
+  background: rgb(56 211 195 / 6%);
+}
+
+.assembly-3d-step-item input {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  accent-color: var(--assembly-teal);
+}
+
+.assembly-3d-step-order {
+  display: grid;
+  width: 27px;
+  height: 27px;
+  place-items: center;
+  border-radius: 8px;
+  color: var(--assembly-accent);
+  background: #0d1418;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.assembly-3d-step-copy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.assembly-3d-step-copy strong {
+  color: var(--assembly-text);
+  font-size: 12px;
+}
+
+.assembly-3d-step-copy small {
+  color: var(--assembly-muted);
+  font-size: 10px;
+  line-height: 1.45;
 }
 
 .assembly-3d-page .assembly-3d-progress {
@@ -1463,6 +1554,10 @@
 
   .assembly-3d-page .assembly-3d-parts {
     max-height: 380px;
+  }
+
+  .assembly-3d-steps {
+    max-height: 320px;
   }
 }
 

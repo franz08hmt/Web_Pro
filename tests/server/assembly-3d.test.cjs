@@ -102,3 +102,31 @@ test("the assembly controller loads the parts library and creates every physical
   assert.match(assemblySource, /createAssemblyPart\(THREE, part\.id\)/);
   assert.match(assemblySource, /itemIndex\s*<\s*part\.quantity/);
 });
+
+test("3D assembly exposes an accessible procedural checklist", () => {
+  assert.match(pageSource, /id="assembly-3d-steps-title"/);
+  assert.match(pageSource, /id="assembly-3d-steps"/);
+  assert.match(pageSource, /id="assembly-3d-step-counter"/);
+  assert.match(
+    pageSource,
+    /class="assembly-3d-steps-region"[^>]*aria-labelledby="assembly-3d-steps-title"/
+  );
+  assert.match(
+    pageSource,
+    /id="assembly-3d-sync-status"[^>]*role="status"[^>]*aria-live="polite"/
+  );
+});
+
+test("3D assembly loads live content and persists assembly steps through the session API", () => {
+  assert.match(
+    pageSource,
+    /data\.js[\s\S]*content-api\.js[\s\S]*api\.js[\s\S]*assembly-3d\.js/,
+    "Dữ liệu và API client phải được tải trước controller 3D"
+  );
+  assert.match(assemblySource, /RobotContentApi\.loadRobots\(\)/);
+  assert.match(assemblySource, /model\.stepRecords/);
+  assert.match(assemblySource, /sessionApi\.createOrResume\(model\.id\)/);
+  assert.match(assemblySource, /sessionApi\.updateStatus\([^,]+,\s*"IN_PROGRESS"\)/);
+  assert.match(assemblySource, /sessionApi\.setStepStatus\(/);
+  assert.match(assemblySource, /session\.steps/);
+});

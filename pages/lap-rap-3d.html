@@ -75,6 +75,19 @@
 
         <div id="assembly-3d-parts" class="assembly-3d-parts"></div>
 
+        <section class="assembly-3d-steps-region" aria-labelledby="assembly-3d-steps-title">
+            <div class="assembly-3d-list-heading">
+                <span id="assembly-3d-steps-title">Các bước thực hiện</span>
+                <strong id="assembly-3d-step-counter">0/0 bước</strong>
+            </div>
+
+            <p id="assembly-3d-sync-status" role="status" aria-live="polite">
+                Đang khôi phục tiến độ lắp ráp…
+            </p>
+
+            <div id="assembly-3d-steps" class="assembly-3d-steps"></div>
+        </section>
+
         <div class="assembly-3d-progress">
             <div>
                 <span>Tiến độ hoàn thành</span>
@@ -105,6 +118,10 @@
 
 <!-- Dữ liệu robot -->
 <script src="../assets/js/data.js"></script>
+
+<!-- Dữ liệu Content API và phiên lắp ráp của tài khoản -->
+<script src="../assets/js/content-api.js"></script>
+<script src="../assets/js/api.js"></script>
 
 
 <!-- Cấu hình vị trí 3D -->
