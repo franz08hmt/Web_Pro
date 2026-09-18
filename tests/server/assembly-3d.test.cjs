@@ -12,6 +12,7 @@ const assemblySource = fs.readFileSync(path.join(projectRoot, "assets", "js", "a
 const styleSource = fs.readFileSync(path.join(projectRoot, "assets", "css", "style.css"), "utf8");
 const dataSource = fs.readFileSync(path.join(projectRoot, "assets", "js", "data.js"), "utf8");
 const configSource = fs.readFileSync(path.join(projectRoot, "assets", "js", "assembly-3d-config.js"), "utf8");
+const partsLibraryPath = path.join(projectRoot, "assets", "js", "assembly-3d-parts.js");
 
 function loadAssemblyContract() {
   const context = { window: {} };
@@ -23,7 +24,7 @@ function loadAssemblyContract() {
 test("3D assembly uses the local Three.js bundle and gives a readable fallback when unavailable", () => {
   assert.match(pageSource, /src="\/vendor\/three\/three\.min\.js"/);
   assert.doesNotMatch(pageSource, /cdn\.jsdelivr\.net/);
-  assert.match(assemblySource, /if \(!window\.THREE\)/);
+  assert.match(assemblySource, /if \(!window\.THREE \|\| !window\.createAssemblyPart\)/);
   assert.match(assemblySource, /Không thể tải trình dựng 3D/);
 });
 
@@ -56,4 +57,27 @@ test("every robot component has enough assembly targets for its quantity", () =>
       );
     }
   }
+});
+
+test("the procedural 3D library supports every component used by the robots", () => {
+  assert.ok(fs.existsSync(partsLibraryPath), "Thiếu thư viện assembly-3d-parts.js");
+  const context = { window: {} };
+  vm.runInNewContext(dataSource, context);
+  vm.runInNewContext(fs.readFileSync(partsLibraryPath, "utf8"), context);
+
+  const requiredIds = new Set(
+    context.window.ROBOT_MODELS.flatMap((model) => model.parts.map((part) => part.id))
+  );
+  const supportedIds = new Set(context.window.ASSEMBLY_3D_SUPPORTED_PARTS);
+  assert.deepEqual([...supportedIds].sort(), [...requiredIds].sort());
+});
+
+test("the assembly controller loads the parts library and creates every physical item", () => {
+  assert.match(
+    pageSource,
+    /assembly-3d-parts\.js[\s\S]*assembly-3d\.js/,
+    "Thư viện linh kiện phải được tải trước controller"
+  );
+  assert.match(assemblySource, /createAssemblyPart\(THREE, part\.id\)/);
+  assert.match(assemblySource, /itemIndex\s*<\s*part\.quantity/);
 });
