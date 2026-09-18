@@ -114,22 +114,20 @@ Yêu cầu cookie phiên hợp lệ cho tất cả; thiếu → `401 AUTH_REQUIR
 | `PUT` | `/api/assembly-sessions/:sessionId/components/:componentId` | Upsert `isPrepared` cho một linh kiện. Idempotent. |
 | `PUT` | `/api/assembly-sessions/:sessionId/steps/:stepId` | Upsert `status` cho một bước lắp ráp. Idempotent. |
 
-Mọi thao tác đọc/ghi phải kiểm tra `session.userId === request.user.id`; sai chủ
-sở hữu → `403 FORBIDDEN` (không phải `404`, để phân biệt rõ với "không tồn tại"
-trong log nội bộ dù response trả cùng cấu trúc lỗi).
+Mọi thao tác đọc/ghi phải kiểm tra quyền sở hữu bằng
+`assemblySessions.findOwnedById({ sessionId, userId })`. Phiên không tồn tại và
+phiên thuộc người dùng khác đều trả `404 NOT_FOUND`; không phân biệt hai trường
+hợp này ở HTTP để tránh dò ID phiên của người dùng khác.
 
-**`robotId`:** phải khớp một trong các ID hiện có của Nhi: `line-follower`,
-`obstacle-avoider`, `mini-arm`. ID khác → `422 VALIDATION_ERROR`. Danh sách này
-đọc từ `server/config/known-robots.js` (xem `docs/BACKEND_HANDOFF.md`) — **không
-phải** từ MySQL, vì bảng `robots` của Nhi chưa tồn tại.
+**`robotId`:** phải tồn tại trong bảng `robots`, được kiểm tra qua Content
+Repository của Nhi. ID không tồn tại → `422 VALIDATION_ERROR`. Backend không duy
+trì thêm danh sách robot tĩnh.
 
-**`componentId` / `stepId`:** theo hợp đồng, đây là ID ổn định do API nội dung
-của Nhi cấp phát. **Tại thời điểm viết tài liệu này, `assets/js/data.js` chưa có
-ID này** — `ROBOT_MODELS[].parts[]` chỉ có `{ name, quantity }` và
-`ROBOT_MODELS[].steps[]` là mảng chuỗi thuần. Vì vậy ở lát cắt hiện tại, hai
-endpoint `PUT` chấp nhận **bất kỳ chuỗi non-empty nào** làm `componentId`/`stepId`
-(validate định dạng, không đối chiếu với danh mục thật) và lưu opaque. Xem mục
-"Cần Nhi xác nhận" trong `docs/BACKEND_HANDOFF.md`.
+**`componentId`:** phải thuộc danh sách trả bởi
+`GET /api/robots/:robotId/components`. **`stepId`:** phải thuộc danh sách trả bởi
+`GET /api/robots/:robotId/steps`. ID không thuộc mẫu robot của phiên →
+`422 VALIDATION_ERROR`. Backend không chấp nhận ID tùy ý hoặc suy luận ID từ tên
+hiển thị.
 
 **Enum `AssemblySession.status`:**
 
@@ -150,17 +148,17 @@ nằm trong danh sách trên trả `409 INVALID_STATE_TRANSITION`. Gọi `PATCH`
 **Enum `StepProgress.status`:** `PENDING` (mặc định) | `COMPLETED`.
 
 **`progressPercent`:** tính ở service, làm tròn xuống, bằng
-`round(số component có isPrepared=true / tổng số component bắt buộc của robotId × 100)`.
-Danh sách "tổng số component bắt buộc" đọc từ `server/config/known-robots.js`
-(cùng nguồn với validate `robotId`), **không** tin số phần trăm client gửi lên —
+`floor(số nhóm component có isPrepared=true / tổng số nhóm component bắt buộc của robotId × 100)`.
+Tổng số nhóm lấy từ bảng nối `robot_components` qua Content Repository. `quantity`
+không nhân thêm số ô checklist. Server không tin số phần trăm client gửi lên —
 không endpoint nào nhận `progressPercent` làm input.
 
 **Assembly session response shape:**
 
 ```json
 {
-  "id": "session-uuid",
-  "userId": "user-uuid",
+  "id": "42",
+  "userId": "7",
   "robotId": "line-follower",
   "status": "PREPARING",
   "progressPercent": 25,
@@ -178,15 +176,14 @@ không endpoint nào nhận `progressPercent` làm input.
 `GET /api/assembly-sessions` (danh sách) trả từng phần tử ở dạng rút gọn — bỏ
 `components`/`steps` — kèm `meta: { page, pageSize, total }`.
 
-## Adapter dữ liệu chưa sẵn sàng
+## Trạng thái phụ thuộc dữ liệu
 
-Nếu `NODE_ENV=production` và chưa cấu hình đủ 5 biến MySQL (`DB_HOST`, `DB_PORT`,
-`DB_NAME`, `DB_USER`, `DB_PASSWORD`), mọi route dưới `/api/auth` và
-`/api/assembly-sessions` trả `503 DEPENDENCY_NOT_READY` thay vì âm thầm dùng bộ
-nhớ trong tiến trình. Bộ nhớ trong tiến trình (`InMemory*Repository`) chỉ được
-dùng khi `NODE_ENV` là `development` hoặc `test`, **và** chỉ khi biến
-`ALLOW_IN_MEMORY_STORE=true` được đặt rõ ràng — mặc định là tắt để tránh bật
-nhầm ở môi trường không phải máy dev.
+Auth và phiên lắp ráp dùng trực tiếp adapter MySQL tại
+`server/content/backend-repositories.cjs`; dữ liệu robot/linh kiện/bước dùng
+Content Repository tại `server/content/repository.cjs`. Nếu chưa cấu hình đủ
+năm biến MySQL (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`), các
+route phụ thuộc database trả `503 DEPENDENCY_NOT_READY`; server không âm thầm
+chuyển sang dữ liệu bộ nhớ hoặc danh sách robot tĩnh.
 
 ## Hợp đồng cần chốt trước tích hợp
 

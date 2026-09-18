@@ -9,6 +9,7 @@ const { loadConfig } = require("./config/env");
 const { createLogger } = require("./config/logger");
 const { ApiError } = require("./core/api-error");
 const { createBackendRepositories } = require("./content/backend-repositories.cjs");
+const { createRepository: createContentRepository } = require("./content/repository.cjs");
 const { createDatabasePool } = require("./database/pool");
 const { errorHandler, notFound } = require("./middleware/error-handler");
 const { requestContext } = require("./middleware/request-context");
@@ -21,6 +22,7 @@ function createApp(options = {}) {
   const logger = options.logger || createLogger();
   const database = options.database === undefined ? createDatabasePool(config.database) : options.database;
   const repositories = options.repositories || (database ? createBackendRepositories(database) : null);
+  const contentRepository = options.contentRepository || (database ? createContentRepository(database) : null);
   const app = express();
 
   app.disable("x-powered-by");
@@ -28,6 +30,7 @@ function createApp(options = {}) {
   app.locals.config = config;
   app.locals.logger = logger;
   app.locals.repositories = repositories;
+  app.locals.contentRepository = contentRepository;
 
   app.use(requestContext(logger));
   app.use(helmet());
@@ -52,7 +55,7 @@ function createApp(options = {}) {
     database,
     repositories,
     config,
-    contentRepository: options.contentRepository,
+    contentRepository,
     requireAdmin: options.requireAdmin,
     protectMutation: options.protectMutation
   }));

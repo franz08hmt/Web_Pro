@@ -5,6 +5,8 @@ const { ApiError } = require("../core/api-error");
 const { createAuthMiddleware } = require("../middleware/auth");
 const { createAuthService } = require("../services/auth.service");
 const { createAuthRouter } = require("./auth.routes");
+const { createAssemblySessionService } = require("../services/assembly-session.service");
+const { createAssemblySessionRouter } = require("./assembly-session.routes");
 const { healthRouter } = require("./health.routes");
 const { createContentRouter } = require("../content/index.cjs");
 
@@ -48,6 +50,23 @@ function createApiRouter(options = {}) {
       503,
       "DEPENDENCY_NOT_READY",
       "Dịch vụ xác thực chưa được cấu hình."
+    )));
+  }
+
+  if (authMiddleware && options.repositories?.assemblySessions && options.contentRepository) {
+    const assemblySessionService = createAssemblySessionService({
+      repository: options.repositories.assemblySessions,
+      contentRepository: options.contentRepository
+    });
+    router.use("/assembly-sessions", createAssemblySessionRouter({
+      service: assemblySessionService,
+      middleware: authMiddleware
+    }));
+  } else {
+    router.use("/assembly-sessions", (request, response, next) => next(new ApiError(
+      503,
+      "DEPENDENCY_NOT_READY",
+      "Dịch vụ phiên lắp ráp chưa được cấu hình."
     )));
   }
 

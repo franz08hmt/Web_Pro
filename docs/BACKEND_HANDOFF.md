@@ -7,15 +7,19 @@ hợp (Tài), nội dung/dữ liệu MySQL (Nhi), mô phỏng lắp ráp 2D (Tu�
 Nguyên tắc: **không có TODO chung chung.** Mỗi mục chờ dưới đây có chủ sở hữu rõ
 và tiêu chí nghiệm thu rõ.
 
-## Trạng thái hiện tại (2026-09-16)
+## Trạng thái hiện tại (2026-09-18)
 
-- Backend chạy được, test bằng repository doubles trong bộ nhớ. Repository thật
-  cho MySQL **chưa được viết** — đây chính là phần chờ Nhi.
-- `assets/js/api.js` là điểm gọi API duy nhất từ frontend.
-- Không có mô phỏng 2D thật; Tuấn Anh sẽ gọi `assemblySessionsApi` từ module
-  riêng của mình khi module đó sẵn sàng.
+- Content Router, Content Repository và adapter MySQL cho user, auth session và
+  assembly session của Nhi đã được gắn vào Express chung.
+- Auth session thật đã có register/login/me/logout, cookie `HttpOnly`, phân quyền
+  ADMIN và CSRF cho thao tác ghi quản trị.
+- API phiên lắp ráp đọc robot, linh kiện và bước thật từ MySQL; không còn dùng
+  `server/config/known-robots.js` hay chấp nhận ID tùy ý.
+- Mô phỏng 3D của Tuấn Anh đã được tích hợp. Phần còn lại của Tài là nối
+  `assets/js/api.js`, trang tài khoản và trạng thái mô phỏng với các endpoint
+  phiên thật, rồi kiểm thử end-to-end.
 
-## 1. Cần Nhi xác nhận trước khi viết MySQL adapter thật
+## 1. Hợp đồng MySQL đã được Nhi bàn giao
 
 ### 1.1. Repository contract phải cắm được
 
@@ -43,7 +47,7 @@ AssemblySessionRepository
 Interface đầy đủ (dùng để viết adapter MySQL cắm thay thế in-memory) nằm tại
 `server/repositories/ports/`.
 
-### 1.2. Câu hỏi Nhi cần trả lời bằng schema thật
+### 1.2. Các quyết định schema đã chốt
 
 | # | Câu hỏi | Vì sao Tài cần |
 | --- | --- | --- |
@@ -58,8 +62,9 @@ Interface đầy đủ (dùng để viết adapter MySQL cắm thay thế in-mem
 | 9 | Foreign key `assembly_sessions.user_id -> users.id`, `assembly_sessions.robot_id -> robots.id` dùng `ON DELETE` gì (`CASCADE`/`RESTRICT`)? | Ảnh hưởng hành vi khi xóa user/robot; cần nhất quán với nghiệp vụ thật (không tự quyết định thay Nhi). |
 | 10 | Index phục vụ `listByUser({ userId, status, page })` — có index `(user_id, status, created_at)` không? | Query danh sách phiên sẽ chậm nếu thiếu; Tài không tự thêm index vào schema của Nhi. |
 
-**Cho tới khi 10 mục trên được xác nhận, `server/repositories/mysql/` chỉ có
-class rỗng ném `NotImplementedError` khi gọi — không có SQL đoán mò.**
+Mười mục trên đã được trả lời và triển khai trong migrations, seed, Content
+Repository và `server/content/backend-repositories.cjs`. Chi tiết đối chiếu nằm
+tại `docs/content/TEAM_HANDOFF.md`.
 
 ## 2. Cần Tuấn Anh biết để gọi API phiên lắp ráp
 
@@ -102,10 +107,9 @@ Mọi method trả về Promise, reject bằng object lỗi có `{ code, message
 lỗi thô của `fetch`. Không có method nào biết về Canvas/SVG hay state machine
 2D; module 2D tự quyết định khi nào gọi các hàm trên.
 
-**Đang chờ Tuấn Anh xác nhận:** `componentId`/`stepId` mà mô-đun 2D sẽ gửi lên
-phải khớp đúng ID Nhi cấp phát ở mục 1.2 (#6, #7) — nếu mô-đun 2D dùng ID nội bộ
-khác, cần một bảng ánh xạ ở phía Tuấn Anh trước khi gọi API, backend không tự
-suy luận ánh xạ này.
+Mô-đun lắp ráp phải gửi đúng `componentId` và `stepId` mà Content API trả về.
+Backend kiểm tra hai ID này thuộc đúng robot của phiên và từ chối ID nội bộ hoặc
+ID không tồn tại bằng `422 VALIDATION_ERROR`.
 
 ## 3. Hình dạng lỗi trả cho frontend
 
@@ -124,15 +128,14 @@ cho người dùng — không bao giờ chứa stack trace hay chi tiết nội 
 
 | Biến | Ý nghĩa | Ai cần biết |
 | --- | --- | --- |
-| `ALLOW_IN_MEMORY_STORE` | `true` để bật repository bộ nhớ tạm ở `development`/`test`. Không có tác dụng khi `NODE_ENV=production`. | Tài, và bất kỳ ai chạy backend trước khi MySQL adapter merge. |
 | `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` | Bật MySQL pool thật. Phải điền đủ cả 5. | Nhi, khi schema đã migrate xong trên máy/CI. |
 | `SESSION_TOKEN_TTL_MS` | Thời gian sống của cookie phiên (mặc định 7 ngày, tính bằng mili-giây). | Tài. |
 
 ## 5. Điều kiện coi một mục "đã xong" và có thể gỡ khỏi danh sách chờ
 
-- Mục ở phần 1.2: coi là xong khi Nhi merge migration + seed thật khớp câu trả
-  lời, và `server/repositories/mysql/*.js` thay thế được `InMemory*Repository`
-  mà **không cần sửa service hoặc controller** (đây là lý do tồn tại của
-  repository port — nếu phải sửa service, nghĩa là port đang rò rỉ chi tiết SQL).
-- Mục ở phần 2: coi là xong khi Tuấn Anh xác nhận method list ở trên đủ dùng cho
-  luồng 2D, hoặc yêu cầu bổ sung cụ thể (không phải "thiếu gì đó").
+- Phần dữ liệu Nhi: hoàn thành khi migration/seed chạy, Content API trả đúng ID
+  và adapter MySQL vượt kiểm thử tích hợp.
+- Phần mô phỏng Tuấn Anh: hoàn thành khi 3D tải được, mapping đúng ID Content API,
+  khôi phục tiến độ và lưu mọi thay đổi qua API phiên của Tài.
+- Phần Tài: hoàn thành khi auth, tài khoản, frontend API client và phiên lắp ráp
+  chạy xuyên suốt trên cùng origin, có trạng thái tải/lỗi và toàn bộ test xanh.
