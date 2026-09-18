@@ -57,21 +57,31 @@ function createRepositoryDoubles() {
     async revokeAllForUser() {}
   };
 
-  return { users, authSessions, assemblySessions: {} };
+  return {
+    users,
+    authSessions,
+    assemblySessions: {},
+    setRole(email, role) {
+      const user = usersByEmail.get(email);
+      if (user) user.role = role;
+    }
+  };
 }
 
-async function withAuthServer(run) {
+async function withAuthServer(run, options = {}) {
+  const repositories = createRepositoryDoubles();
   const app = createApp({
     config: loadConfig({ NODE_ENV: "test", SESSION_TOKEN_TTL_MS: "3600000" }),
     database: null,
-    repositories: createRepositoryDoubles(),
-    logger: { info() {}, error() {} }
+    repositories,
+    logger: { info() {}, error() {} },
+    ...options
   });
   const server = http.createServer(app);
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
   const { port } = server.address();
   try {
-    await run(`http://127.0.0.1:${port}`);
+    await run(`http://127.0.0.1:${port}`, repositories);
   } finally {
     await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
   }
@@ -164,4 +174,70 @@ test("auth validation and invalid credentials return stable safe errors", async 
     assert.equal(invalidBody.error.code, "INVALID_CREDENTIALS");
     assert.doesNotMatch(JSON.stringify(invalidBody), /missing@example\.com|passwordHash/i);
   });
+});
+
+test("content administration requires an ADMIN session and a valid CSRF token", async () => {
+  const created = [];
+  const contentRepository = {
+    async list() { return { data: [], meta: { page: 1, limit: 20, total: 0 } }; },
+    async get() { return null; },
+    async parts() { return []; },
+    async create(kind, input) { created.push({ kind, input }); return input; },
+    async update() { throw new Error("Không dùng trong test này."); },
+    async remove() { throw new Error("Không dùng trong test này."); },
+    async setPart() { throw new Error("Không dùng trong test này."); },
+    async removePart() { throw new Error("Không dùng trong test này."); }
+  };
+
+  await withAuthServer(async (baseUrl, repositories) => {
+    const register = await fetch(`${baseUrl}/api/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fullName: "Quản trị viên",
+        email: "admin@example.com",
+        password: "Mat-khau-admin"
+      })
+    });
+    const cookie = sessionCookie(register);
+
+    const userAttempt = await fetch(`${baseUrl}/api/admin/components`, { headers: { Cookie: cookie } });
+    assert.equal(userAttempt.status, 403);
+    assert.equal((await userAttempt.json()).error.code, "FORBIDDEN");
+
+    repositories.setRole("admin@example.com", "ADMIN");
+    const me = await fetch(`${baseUrl}/api/auth/me`, { headers: { Cookie: cookie } });
+    const csrfToken = (await me.json()).csrfToken;
+
+    const adminRead = await fetch(`${baseUrl}/api/admin/components`, { headers: { Cookie: cookie } });
+    assert.equal(adminRead.status, 200);
+
+    const input = {
+      id: "test-component",
+      name: "Linh kiện thử nghiệm",
+      category: "Kiểm thử",
+      image: "/assets/images/components/test.png",
+      description: "Dữ liệu dùng cho kiểm thử quyền quản trị.",
+      specs: {}
+    };
+    const withoutCsrf = await fetch(`${baseUrl}/api/admin/components`, {
+      method: "POST",
+      headers: { Cookie: cookie, "Content-Type": "application/json" },
+      body: JSON.stringify(input)
+    });
+    assert.equal(withoutCsrf.status, 403);
+    assert.equal((await withoutCsrf.json()).error.code, "CSRF_REQUIRED");
+
+    const withCsrf = await fetch(`${baseUrl}/api/admin/components`, {
+      method: "POST",
+      headers: {
+        Cookie: cookie,
+        "Content-Type": "application/json",
+        "X-CSRF-Token": csrfToken
+      },
+      body: JSON.stringify(input)
+    });
+    assert.equal(withCsrf.status, 201);
+    assert.deepEqual(created, [{ kind: "components", input }]);
+  }, { contentRepository });
 });
