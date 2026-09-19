@@ -234,6 +234,9 @@ cũ, không phải bản hiện tại.
 
 Giao diện preview trực tiếp của IntelliJ vẫn dùng được nhưng chỉ dùng dữ liệu dự
 phòng và không thể lưu phiên vào tài khoản. Luồng full-stack phải mở qua port 3000.
+Trên các trang có sidebar, mục Tài khoản hiển thị tên ngắn khi đã đăng nhập.
+Trang chủ đọc phiên cập nhật gần nhất để dẫn về đúng phiên; thanh phần trăm ở đó
+chỉ đo khâu chuẩn bị linh kiện, còn số bước lắp ráp được ghi riêng.
 
 ## Kiểm thử
 
@@ -241,6 +244,7 @@ phòng và không thể lưu phiên vào tài khoản. Luồng full-stack phải
 npm test
 npm run test:ui
 npm run test:ui:sessions
+npm run test:ui:personalization
 node --test tests/content/content.test.cjs tests/content/http.test.cjs tests/content/backend-contract.test.cjs
 node --env-file=server/content/.env tests/content/mysql-smoke.cjs
 node --env-file=server/content/.env tests/content/backend-mysql.cjs

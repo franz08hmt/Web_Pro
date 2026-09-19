@@ -119,6 +119,19 @@
       </figure>
     </section>
 
+    <section id="home-progress" class="home-progress" aria-labelledby="home-progress-title" aria-busy="true">
+      <div>
+        <p class="section-label" id="home-progress-kicker">Góc thực hành</p>
+        <h2 id="home-progress-title">Đang kiểm tra phiên thực hành…</h2>
+        <p id="home-progress-summary">Bạn có thể khám phá các mẫu robot trong lúc chờ.</p>
+        <p id="home-progress-steps" hidden></p>
+      </div>
+      <div class="home-progress-action">
+        <progress id="home-progress-meter" max="100" value="0" aria-label="Tiến độ chuẩn bị linh kiện" hidden></progress>
+        <a id="home-progress-link" class="button" href="pages/mau-robot.html">Xem mẫu robot</a>
+      </div>
+    </section>
+
     <section class="stats-section" aria-label="Số liệu Robot Assembly Lab">
       <dl class="stats-grid">
         <div class="stat-item">
@@ -354,5 +367,7 @@
   <script src="assets/js/explore-data.js"></script>
   <script src="assets/js/explore.js"></script>
   <script src="assets/js/main.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/personalization.js"></script>
 </body>
 </html>

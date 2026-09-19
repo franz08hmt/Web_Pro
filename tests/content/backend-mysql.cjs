@@ -58,6 +58,8 @@ const { createBackendRepositories } = require('../../server/content/backend-repo
     await assemblySessions.updateStatus({ ...input, status: 'COMPLETED' });
     const next = await assemblySessions.createOrResume({ userId: user.id, robotId: 'mini-arm' });
     assert.notEqual(next.id, input.sessionId);
+    await pool.execute('UPDATE assembly_sessions SET updated_at = UTC_TIMESTAMP() + INTERVAL 1 DAY WHERE id = ?', [input.sessionId]);
+    assert.equal((await assemblySessions.listByUser({ userId: user.id, page: 1, pageSize: 1 })).items[0].id, input.sessionId);
     assert.equal((await assemblySessions.listByUser({ userId: user.id, status: 'COMPLETED', page: 1, pageSize: 20 })).total, 1);
     assert.equal((await assemblySessions.listByUser({ userId: other.id, page: 1, pageSize: 20 })).total, 0);
     console.log('Backend MySQL adapters passed: user/auth/session ports, concurrency, ownership, progress, expiry and revocation.');

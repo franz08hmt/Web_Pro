@@ -378,7 +378,7 @@ function createBackendRepositories(pool) {
           `SELECT ${sessionColumns}
            FROM assembly_sessions
            WHERE user_id = ?${filter}
-           ORDER BY created_at DESC, id DESC
+           ORDER BY updated_at DESC, id DESC
            LIMIT ${pageSize} OFFSET ${offset}`,
           args
         );

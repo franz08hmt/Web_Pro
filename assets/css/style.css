@@ -165,6 +165,8 @@
   .nav-list a:hover { color: #fff; background: #1a2124; }
   .nav-list a[aria-current="page"] { color: var(--accent-strong); background: color-mix(in srgb, var(--accent) 12%, #12181b); border-color: color-mix(in srgb, var(--accent) 30%, transparent); }
   .nav-list a[aria-current="page"]::before { content: ""; position: absolute; inset: 8px auto 8px -1px; width: 3px; border-radius: 3px; background: var(--accent); }
+  .nav-list a[data-authenticated="true"]::after { content: ""; position: absolute; top: 8px; right: 8px; width: 9px; height: 9px; border-radius: 50%; background: var(--success); }
+  .nav-list a[data-authenticated="true"] > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   .sidebar-guide { margin: auto 2px 18px; padding: 20px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
   .sidebar-guide > .icon { color: var(--accent-strong); margin-bottom: 12px; }
@@ -264,6 +266,15 @@
   .hotspot-sensor { top: 6%; left: 4%; }
   .hotspot-controller { top: 42%; right: 4%; }
   .hotspot-drive { bottom: 6%; left: 4%; }
+
+  /* Dải tiếp tục thực hành ở trang chủ, tách bạch tiến độ chuẩn bị và bước. */
+  .home-progress { max-width: var(--shell); margin-inline: auto; padding: 28px var(--space); display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 24px; border-bottom: 1px solid var(--line); }
+  .home-progress .section-label { margin-bottom: 8px; }
+  .home-progress h2 { font-size: clamp(22px, 2vw, 28px); }
+  .home-progress p:not(.section-label) { color: var(--muted); }
+  .home-progress #home-progress-steps { color: var(--primary); }
+  .home-progress-action { display: grid; gap: 12px; min-width: 210px; }
+  .home-progress progress { width: 100%; height: 10px; accent-color: var(--accent); }
 
   /* ---------- Dải ảnh đầu trang trong ----------
      Ảnh chỉ phủ phần đầu của main; chữ luôn nằm trên lớp scrim, không bao giờ
@@ -713,8 +724,11 @@
   }
 
   @media (max-width: 767px) {
+    .home-progress { grid-template-columns: 1fr; }
+    .home-progress-action { min-width: 0; }
     .workspace-label { letter-spacing: .06em; }
     .nav-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .nav-list li:last-child { grid-column: span 2; }
     .nav-list a { padding: 10px; justify-content: start; min-height: 46px; }
     .hero { grid-template-columns: 1fr; padding-top: 36px; gap: 28px; }
     .hero h1 { max-width: 19ch; }

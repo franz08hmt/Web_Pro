@@ -183,7 +183,8 @@ không endpoint nào nhận `progressPercent` làm input.
 `components`/`steps`/`assembledPartIds`, thêm `completedStepCount` và
 `totalStepCount` tính theo các bước hiện có của robot — kèm
 `meta: { page, pageSize, total }`. `progressPercent` chỉ là tiến độ chuẩn bị,
-không phải tỷ lệ bước hoặc tỷ lệ bộ phận 3D.
+không phải tỷ lệ bước hoặc tỷ lệ bộ phận 3D. Danh sách sắp theo `updatedAt`
+giảm dần, rồi `id` giảm dần nếu cùng thời điểm cập nhật.
 
 ## Trạng thái phụ thuộc dữ liệu
 
