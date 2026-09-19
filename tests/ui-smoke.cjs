@@ -46,6 +46,7 @@ const pages = ["index.html", "pages/mau-robot.html", "pages/linh-kien.html", "pa
       await page.setViewportSize({ width, height: 1000 });
       for (const file of pages) {
         await page.goto(base + "/" + file);
+        await page.waitForLoadState("networkidle");
         if (file.startsWith("pages/lap-rap-3d.html")) {
           await page.locator("#assembly-3d-parts input").first().waitFor({ state: "visible" });
         }

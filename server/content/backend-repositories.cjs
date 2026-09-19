@@ -202,6 +202,14 @@ function createBackendRepositories(pool) {
       [row.id]
     );
 
+    const [visualParts] = await db.execute(
+      `SELECT component_id AS componentId
+       FROM session_visual_parts
+       WHERE session_id = ?
+       ORDER BY component_id`,
+      [row.id]
+    );
+
     return {
       ...row,
 
@@ -209,6 +217,8 @@ function createBackendRepositories(pool) {
         ...part,
         isPrepared: Boolean(part.isPrepared)
       })),
+
+      assembledPartIds: visualParts.map(part => part.componentId),
 
       steps: steps.map(({ completed, ...step }) => ({
         ...step,
@@ -525,6 +535,40 @@ function createBackendRepositories(pool) {
             completed
           ]
         );
+      });
+    },
+
+    async setVisualPart(input) {
+      if (typeof input.isAssembled !== 'boolean') {
+        throw error(422, 'VALIDATION_ERROR', 'isAssembled phải là boolean.');
+      }
+
+      return change(input, async (connection, row) => {
+        const component = await first(
+          connection,
+          `SELECT component_id
+           FROM robot_components
+           WHERE robot_id = ? AND component_id = ?`,
+          [row.robotId, input.componentId]
+        );
+        if (!component) {
+          throw error(422, 'VALIDATION_ERROR', 'Linh kiện không thuộc robot của phiên.');
+        }
+
+        if (input.isAssembled) {
+          await connection.execute(
+            `INSERT INTO session_visual_parts (session_id, robot_id, component_id)
+             VALUES (?, ?, ?)
+             ON DUPLICATE KEY UPDATE component_id = VALUES(component_id)`,
+            [row.id, row.robotId, input.componentId]
+          );
+        } else {
+          await connection.execute(
+            `DELETE FROM session_visual_parts
+             WHERE session_id = ? AND component_id = ?`,
+            [row.id, input.componentId]
+          );
+        }
       });
     }
   };

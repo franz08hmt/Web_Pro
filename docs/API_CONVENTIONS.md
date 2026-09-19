@@ -108,10 +108,11 @@ Yêu cầu cookie phiên hợp lệ cho tất cả; thiếu → `401 AUTH_REQUIR
 | --- | --- | --- |
 | `POST` | `/api/assembly-sessions` | Tạo phiên mới hoặc tiếp tục phiên `PREPARING`/`READY`/`IN_PROGRESS` gần nhất cho `robotId` của user hiện tại. |
 | `GET` | `/api/assembly-sessions` | Danh sách phiên của user hiện tại. Hỗ trợ `?status=`, `?page=`, `?pageSize=` (mặc định 1/20, tối đa 100). |
-| `GET` | `/api/assembly-sessions/:sessionId` | Lấy một phiên cùng toàn bộ `components` và `steps`. |
+| `GET` | `/api/assembly-sessions/:sessionId` | Lấy một phiên cùng toàn bộ `components`, `steps` và `assembledPartIds`. |
 | `PATCH` | `/api/assembly-sessions/:sessionId` | Đổi `status` của phiên theo enum bên dưới. |
 | `PUT` | `/api/assembly-sessions/:sessionId/components/:componentId` | Upsert `isPrepared` cho một linh kiện. Idempotent. |
 | `PUT` | `/api/assembly-sessions/:sessionId/steps/:stepId` | Upsert `status` cho một bước lắp ráp. Idempotent. |
+| `PUT` | `/api/assembly-sessions/:sessionId/visual-parts/:componentId` | Body `{ "isAssembled": boolean }`. Lưu/gỡ bộ phận trên mô hình 3D của đúng phiên; chỉ khi `IN_PROGRESS`. Idempotent, yêu cầu CSRF. |
 
 Mọi thao tác đọc/ghi phải kiểm tra quyền sở hữu bằng
 `assemblySessions.findOwnedById({ sessionId, userId })`. Phiên không tồn tại và
@@ -147,7 +148,7 @@ nằm trong danh sách trên trả `409 INVALID_STATE_TRANSITION`. Gọi `PATCH`
 **Enum `StepProgress.status`:** `PENDING` (mặc định) | `COMPLETED`.
 
 Chỉ được sửa `session_components` khi phiên đang `PREPARING` hoặc `READY`. Chỉ
-được sửa `session_steps` khi phiên đang `IN_PROGRESS`. Phiên `COMPLETED` và
+được sửa `session_steps` và `session_visual_parts` khi phiên đang `IN_PROGRESS`. Phiên `COMPLETED` và
 `ABANDONED` là bất biến; thao tác ghi không phù hợp trả
 `409 INVALID_STATE_TRANSITION`.
 
@@ -172,13 +173,17 @@ không endpoint nào nhận `progressPercent` làm input.
   "steps": [
     { "stepId": "step-1", "status": "PENDING", "updatedAt": "2026-09-16T00:00:00.000Z" }
   ],
+  "assembledPartIds": ["chassis-2wd"],
   "createdAt": "2026-09-16T00:00:00.000Z",
   "updatedAt": "2026-09-16T00:00:00.000Z"
 }
 ```
 
 `GET /api/assembly-sessions` (danh sách) trả từng phần tử ở dạng rút gọn — bỏ
-`components`/`steps` — kèm `meta: { page, pageSize, total }`.
+`components`/`steps`/`assembledPartIds`, thêm `completedStepCount` và
+`totalStepCount` tính theo các bước hiện có của robot — kèm
+`meta: { page, pageSize, total }`. `progressPercent` chỉ là tiến độ chuẩn bị,
+không phải tỷ lệ bước hoặc tỷ lệ bộ phận 3D.
 
 ## Trạng thái phụ thuộc dữ liệu
 

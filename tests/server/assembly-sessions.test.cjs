@@ -53,6 +53,7 @@ function createRepositories() {
             status: "PREPARING",
             components: [],
             steps: [],
+            assembledPartIds: [],
             createdAt: new Date(),
             updatedAt: new Date()
           };
@@ -91,6 +92,16 @@ function createRepositories() {
         const current = session.steps.find((item) => item.stepId === stepId);
         if (current) current.status = status;
         else session.steps.push({ stepId, status, updatedAt: new Date() });
+        return structuredClone(session);
+      },
+      async setVisualPart({ sessionId, userId, componentId, isAssembled }) {
+        const session = sessions.get(sessionId);
+        assert.equal(session.userId, userId);
+        const ids = new Set(session.assembledPartIds);
+        if (isAssembled) ids.add(componentId);
+        else ids.delete(componentId);
+        session.assembledPartIds = [...ids];
+        session.updatedAt = new Date();
         return structuredClone(session);
       }
     }
@@ -223,12 +234,37 @@ test("assembly session API persists preparation and completes the documented sta
     assert.equal(ready.status, "READY");
     assert.equal(ready.progressPercent, 100);
 
+    const prematureVisual = await fetch(`${baseUrl}/api/assembly-sessions/${created.id}/visual-parts/arduino-uno`, {
+      method: "PUT", headers: client.headers, body: JSON.stringify({ isAssembled: true })
+    });
+    assert.equal(prematureVisual.status, 409);
+
     const start = await fetch(`${baseUrl}/api/assembly-sessions/${created.id}`, {
       method: "PATCH",
       headers: client.headers,
       body: JSON.stringify({ status: "IN_PROGRESS" })
     });
     assert.equal((await start.json()).data.status, "IN_PROGRESS");
+
+    const visual = await fetch(`${baseUrl}/api/assembly-sessions/${created.id}/visual-parts/arduino-uno`, {
+      method: "PUT", headers: client.headers, body: JSON.stringify({ isAssembled: true })
+    });
+    assert.equal(visual.status, 200);
+    assert.deepEqual((await visual.json()).data.assembledPartIds, ["arduino-uno"]);
+    const restored = await fetch(`${baseUrl}/api/assembly-sessions/${created.id}`, {
+      headers: { Cookie: client.cookie }
+    });
+    assert.deepEqual((await restored.json()).data.assembledPartIds, ["arduino-uno"]);
+
+    const foreignVisual = await fetch(`${baseUrl}/api/assembly-sessions/${created.id}/visual-parts/arduino-uno`, {
+      method: "PUT", headers: anotherUser.headers, body: JSON.stringify({ isAssembled: true })
+    });
+    assert.equal(foreignVisual.status, 404);
+
+    const invalidVisual = await fetch(`${baseUrl}/api/assembly-sessions/${created.id}/visual-parts/not-a-part`, {
+      method: "PUT", headers: client.headers, body: JSON.stringify({ isAssembled: true })
+    });
+    assert.equal(invalidVisual.status, 422);
 
     await fetch(`${baseUrl}/api/assembly-sessions/${created.id}/steps/line-follower-step-1`, {
       method: "PUT",
@@ -243,6 +279,12 @@ test("assembly session API persists preparation and completes the documented sta
     const completed = (await finalStep.json()).data;
     assert.equal(completed.status, "COMPLETED");
     assert.equal(completed.progressPercent, 100);
+    assert.deepEqual(completed.assembledPartIds, ["arduino-uno"]);
+
+    const completedVisual = await fetch(`${baseUrl}/api/assembly-sessions/${created.id}/visual-parts/arduino-uno`, {
+      method: "PUT", headers: client.headers, body: JSON.stringify({ isAssembled: false })
+    });
+    assert.equal(completedVisual.status, 409);
 
     const mutateCompletedPreparation = await fetch(
       `${baseUrl}/api/assembly-sessions/${created.id}/components/arduino-uno`,
@@ -283,5 +325,8 @@ test("assembly session API persists preparation and completes the documented sta
     assert.deepEqual(listBody.meta, { page: 1, pageSize: 20, total: 1 });
     assert.equal(listBody.data[0].components, undefined);
     assert.equal(listBody.data[0].steps, undefined);
+    assert.equal(listBody.data[0].completedStepCount, 2);
+    assert.equal(listBody.data[0].totalStepCount, 2);
+    assert.equal(listBody.data[0].assembledPartIds, undefined);
   });
 });

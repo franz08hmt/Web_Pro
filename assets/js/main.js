@@ -155,6 +155,8 @@ async function setupAssembly() {
   const sessionApi = window.RobotAssemblyApi?.assemblySessions;
   let activeSession = null;
   let selectionRevision = 0;
+  const params = new URLSearchParams(window.location.search);
+  let requestedSessionId = params.get("session");
 
   const DIAL_LENGTH = 339.29; // chu vi đường tròn bán kính 54
 
@@ -172,7 +174,7 @@ async function setupAssembly() {
       `<option value="${escapeHtml(model.id)}">${escapeHtml(model.name)} · ${escapeHtml(model.level)}</option>`
   ).join("");
 
-  const requestedModel = new URLSearchParams(window.location.search).get("model");
+  const requestedModel = params.get("model");
   const storedModel = storage.read("ral.model");
 
   // Query string do người dùng vừa bấm luôn được ưu tiên hơn trạng thái đã lưu.
@@ -292,8 +294,16 @@ async function setupAssembly() {
   async function restoreSession() {
     const revision = ++selectionRevision;
     activeSession = null;
+    let restoreError = false;
     const inputs = [...checklist.querySelectorAll("input[data-component-id]")];
     if (!sessionApi) {
+      if (requestedSessionId) {
+        inputs.forEach((input) => { input.disabled = true; });
+        if (resetButton) resetButton.disabled = true;
+        if (start3DButton) start3DButton.hidden = true;
+        updateProgress(false, "Không thể mở phiên đã chọn vì API phiên chưa sẵn sàng.");
+        return;
+      }
       updateProgress(false, "Tiến độ đang được lưu trên trình duyệt này.");
       return;
     }
@@ -301,17 +311,36 @@ async function setupAssembly() {
     inputs.forEach((input) => { input.disabled = true; });
     updateProgress(false, "Đang khôi phục tiến độ đã lưu…");
     try {
-      const session = await sessionApi.createOrResume(modelSelect.value);
+      const session = requestedSessionId
+        ? await sessionApi.get(requestedSessionId)
+        : await sessionApi.createOrResume(modelSelect.value);
       if (revision !== selectionRevision) return;
+      if (session.robotId !== modelSelect.value) {
+        throw new Error("Phiên này không thuộc mẫu robot đã chọn.");
+      }
       applySession(session, "Đã đồng bộ tiến độ với tài khoản của bạn.");
+      if (["IN_PROGRESS", "COMPLETED", "ABANDONED"].includes(session.status)) {
+        status.textContent = session.status === "COMPLETED"
+          ? "Phiên đã hoàn thành; chỉ xem tiến độ chuẩn bị."
+          : session.status === "ABANDONED"
+            ? "Phiên đã dừng; không thể chỉnh sửa."
+            : "Phiên đang lắp ráp 3D; phần chuẩn bị chỉ để xem.";
+        if (session.status === "ABANDONED" && start3DButton) start3DButton.hidden = true;
+      }
     } catch (error) {
       if (revision !== selectionRevision) return;
+      restoreError = Boolean(requestedSessionId);
       const message = error.code === "AUTH_REQUIRED"
-        ? "Đăng nhập để lưu tiến độ trên tài khoản; hiện đang lưu trên trình duyệt này."
-        : `Không thể đồng bộ tiến độ; đang dùng dữ liệu trên trình duyệt. ${error.message}`;
+        ? (restoreError ? "Đăng nhập để mở đúng phiên đã chọn." : "Đăng nhập để lưu tiến độ trên tài khoản; hiện đang lưu trên trình duyệt này.")
+        : (restoreError ? `Không thể mở phiên đã chọn. ${error.message}` : `Không thể đồng bộ tiến độ; đang dùng dữ liệu trên trình duyệt. ${error.message}`);
       updateProgress(false, message);
+      if (restoreError && start3DButton) start3DButton.hidden = true;
     } finally {
-      if (revision === selectionRevision) inputs.forEach((input) => { input.disabled = false; });
+      if (revision === selectionRevision) {
+        const readOnly = restoreError || (activeSession && !["PREPARING", "READY"].includes(activeSession.status));
+        inputs.forEach((input) => { input.disabled = Boolean(readOnly); });
+        if (resetButton) resetButton.disabled = Boolean(readOnly);
+      }
     }
   }
 
@@ -339,6 +368,11 @@ async function setupAssembly() {
   });
 
   modelSelect.addEventListener("change", async () => {
+    requestedSessionId = null;
+    const url = new URL(window.location.href);
+    url.searchParams.set("model", modelSelect.value);
+    url.searchParams.delete("session");
+    window.history.replaceState(null, "", url);
     storage.write("ral.model", modelSelect.value);
     renderSelectedModel(true);
     await restoreSession();

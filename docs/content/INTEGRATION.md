@@ -31,9 +31,10 @@ Không chạy các test này bằng cấu hình production. Không commit `.env`
 Cài mới: tạo DB utf8mb4 rồi chạy **một** trong hai cách:
 
 1. `database/schema.sql`, sau đó `database/seed.sql`.
-2. Các migration 001, 002 theo thứ tự, sau đó `database/seed.sql`.
+2. Các migration 001, 002, 003 theo thứ tự, sau đó `database/seed.sql`.
 
-DB đã có 001: chỉ chạy `database/migrations/002_backend_contract.sql`.
+DB đã có 001: chạy migration 002 rồi 003. DB đã có 002: chỉ chạy
+`database/migrations/003_session_visual_parts.sql`; không chạy lại schema/seed.
 Đọc `schema_migrations` trước khi áp dụng. DDL MySQL tự commit; nếu lỗi giữa chừng,
 kiểm tra trạng thái từng thay đổi trước khi chạy tiếp. Seed chỉ nạp một lần trên DB mới.
 Khi lỗi seed, ROLLBACK trong cùng kết nối; không dùng `--force`.
@@ -61,7 +62,7 @@ app.use('/api', createContentRouter({
 
 Điều kiện tích hợp cần Tài thực hiện:
 
-- MySQL đã có migration 002; pool dùng UTC, `timezone: 'Z'`, khuyến nghị
+- MySQL đã có migration 003; pool dùng UTC, `timezone: 'Z'`, khuyến nghị
   `supportBigNumbers: true, bigNumberStrings: true`. Adapter CAST ID sang chuỗi.
 - `requireAdmin` xác minh phiên server, kiểm tra role `ADMIN`, trả 401/403.
 - `protectMutation` kiểm tra CSRF/Origin; không dùng middleware demo trong production.

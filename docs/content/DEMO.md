@@ -33,8 +33,9 @@ SOURCE E:/Java/web/Web_Pro/database/schema.sql;
 SOURCE E:/Java/web/Web_Pro/database/seed.sql;
 ```
 
-Sửa đường dẫn SOURCE theo máy. Nếu đã có migration 001, chỉ SOURCE migration 002;
-không nạp lại schema/seed vào DB hiện có. Cấu hình `.env` theo `.env.example`, dùng
+Sửa đường dẫn SOURCE theo máy. Nếu DB đã có migration 001, áp dụng 002 rồi 003;
+nếu đã có 002, chỉ áp dụng `database/migrations/003_session_visual_parts.sql`.
+Không nạp lại schema/seed vào DB hiện có. Cấu hình `.env` theo `.env.example`, dùng
 tài khoản được cấp quyền trên DB test. Không đưa mật khẩu vào Git.
 
 ## Kịch bản 5–7 phút
@@ -43,7 +44,7 @@ tài khoản được cấp quyền trên DB test. Không đưa mật khẩu và
    truy cập MySQL để backend của nhóm dùng chung.”
 2. Mở `docs/erd.md`: giải thích robot_components là quan hệ nhiều-nhiều có quantity;
    session_steps/session_components dùng FK kép để không lưu tiến độ sai robot.
-   Schema hiện tại có 11 bảng: 10 nghiệp vụ và schema_migrations.
+   Schema hiện tại có 12 bảng: 11 nghiệp vụ và schema_migrations.
 3. Trên trang admin, chọn robot và chỉ ra danh sách linh kiện bắt buộc. Mở
    `/api/robots`, `/api/robots/mini-arm/components`, `/api/robots/mini-arm/steps`
    trên cùng origin của demo để cho thấy JSON đến từ database.
@@ -95,7 +96,7 @@ lưu ảnh ở `tests/content/artifacts/` (Git bỏ qua), đóng trình duyệt 
 
 - Trang báo chưa đăng nhập: mở đúng link có key từ terminal, không mở file HTML trực tiếp.
 - ECONNREFUSED: kiểm tra dịch vụ MySQL và CONTENT_TEST_DB_PORT.
-- Thiếu migration 002: kiểm tra schema_migrations rồi áp dụng đúng migration còn thiếu.
+- Thiếu migration 002/003: kiểm tra schema_migrations rồi áp dụng đúng migration còn thiếu.
 - 409 khi xóa: gỡ các quan hệ trước; bản ghi có tiến độ được giữ lại theo thiết kế.
-- Thay đổi admin chưa hiện ngoài trang công khai: frontend công khai vẫn dùng data.js,
-  cần Tài nối API; demo này tập trung vào phần quản trị và database.
+- Thay đổi admin chưa hiện ngoài trang công khai: kiểm tra frontend đang mở cùng origin
+  với API, sau đó tải lại trang; demo này tập trung vào phần quản trị và database.

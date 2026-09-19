@@ -440,6 +440,17 @@
   .account-role { width: fit-content; padding: 4px 8px; border: 1px solid var(--line-strong); border-radius: 5px; font-size: 13px; }
   .account-session-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
   .account-session-actions .button { flex: 1; min-width: 140px; text-align: center; }
+  .account-history { display: grid; gap: 12px; margin-top: 18px; border-top: 1px solid var(--line); padding-top: 18px; }
+  .account-history h2 { font-size: 20px; }
+  #account-history-status { color: var(--muted); font-size: 14px; }
+  .account-history-list { display: grid; gap: 12px; padding: 0; list-style: none; }
+  .account-history-list li { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+  .account-history-list img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 6px; }
+  .account-history-list strong { font-size: 17px; }
+  .account-history-list small { color: var(--muted); }
+  .account-history-list progress { width: 100%; }
+  .account-history-list a { color: var(--accent-strong); text-decoration: underline; }
+  #account-history-more[hidden] { display: none; }
 
   /* ---------- Ô ảnh: chỉ ảnh, không chữ, không lớp phủ ---------- */
   .account-visual { position: relative; min-height: 520px; background: var(--bg-raised); }

@@ -14,6 +14,7 @@ function createAssemblySessionRouter({ service, middleware }) {
   router.patch("/:sessionId", middleware.protectMutation, controller.updateStatus);
   router.put("/:sessionId/components/:componentId", middleware.protectMutation, controller.setComponent);
   router.put("/:sessionId/steps/:stepId", middleware.protectMutation, controller.setStep);
+  router.put("/:sessionId/visual-parts/:componentId", middleware.protectMutation, controller.setVisualPart);
 
   return router;
 }

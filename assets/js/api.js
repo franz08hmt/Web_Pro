@@ -119,6 +119,13 @@
         csrf: true,
         body: { status }
       })).data;
+    },
+    async setVisualPart(sessionId, componentId, isAssembled) {
+      return (await request(`/assembly-sessions/${segment(sessionId)}/visual-parts/${segment(componentId)}`, {
+        method: "PUT",
+        csrf: true,
+        body: { isAssembled }
+      })).data;
     }
   });
 

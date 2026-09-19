@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Đăng nhập hoặc tạo tài khoản Robot Assembly Lab để chuẩn bị cho tính năng lưu tiến độ lắp ráp">
+  <meta name="description" content="Đăng nhập Robot Assembly Lab để xem lịch sử và tiếp tục đúng phiên lắp ráp của bạn">
   <title>Tài khoản | Robot Assembly Lab</title><link rel="stylesheet" href="../assets/css/style.css">
   <meta name="theme-color" content="#0e1215">
   <link rel="icon" href="../assets/icons/cpu-chip.svg" type="image/svg+xml">
@@ -31,9 +31,15 @@
           <span id="account-user-email"></span>
           <span class="account-role" id="account-user-role"></span>
           <div class="account-session-actions">
-            <a class="button" href="lap-rap.html">Tiếp tục lắp ráp</a>
+            <a class="button" href="mau-robot.html">Chọn mẫu robot</a>
             <button class="button button-secondary" id="logout-button" type="button">Đăng xuất</button>
           </div>
+          <section class="account-history" aria-labelledby="account-history-title">
+            <h2 id="account-history-title">Lịch sử thực hành</h2>
+            <p id="account-history-status" role="status" aria-live="polite">Đang tải các phiên lắp ráp…</p>
+            <ol id="account-history" class="account-history-list"></ol>
+            <button id="account-history-more" class="button button-secondary" type="button" hidden>Xem thêm phiên</button>
+          </section>
         </section>
 
         <div id="account-entry">
@@ -92,6 +98,8 @@
       <img src="../assets/images/robots/robot-arm-mini.png" alt="Cánh tay robot mini" width="1024" height="1024" fetchpriority="high" decoding="async">
     </aside>
   </main>
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/content-api.js"></script>
   <script src="../assets/js/api.js"></script>
   <script src="../assets/js/account.js"></script>
 </body>

@@ -25,3 +25,9 @@ test("assembly preparation restores and persists component IDs through the sessi
   assert.match(source, /data-component-id/);
   assert.match(source, /AUTH_REQUIRED/);
 });
+
+test("assembly preparation restores the exact requested session instead of creating another", () => {
+  assert.match(source, /params\.get\("session"\)/);
+  assert.match(source, /sessionApi\.get\(requestedSessionId\)/);
+  assert.match(source, /session\.robotId !== modelSelect\.value/);
+});

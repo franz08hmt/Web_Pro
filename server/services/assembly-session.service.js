@@ -87,10 +87,22 @@ function createAssemblySessionService({ repository, contentRepository }) {
     async list({ userId, page, pageSize, status }) {
       const result = await repository.listByUser({ userId, page, pageSize, status });
       const items = [];
+      const stepCounts = new Map();
       for (const session of result.items) {
         const detail = await show(session);
-        const { components, steps, ...summary } = detail;
-        items.push(summary);
+        if (!stepCounts.has(detail.robotId)) {
+          stepCounts.set(detail.robotId, await stepRecords(detail.robotId));
+        }
+        const requiredSteps = stepCounts.get(detail.robotId);
+        const completedIds = new Set(
+          detail.steps.filter((step) => step.status === "COMPLETED").map((step) => step.stepId)
+        );
+        const { components, steps, assembledPartIds, ...summary } = detail;
+        items.push({
+          ...summary,
+          completedStepCount: requiredSteps.filter((step) => completedIds.has(step.id)).length,
+          totalStepCount: requiredSteps.length
+        });
       }
       return { items, total: result.total };
     },
@@ -143,6 +155,16 @@ function createAssemblySessionService({ repository, contentRepository }) {
         updated = await repository.updateStatus({ sessionId, userId, status: "COMPLETED" });
       }
       return show(updated);
+    },
+
+    async setVisualPart({ sessionId, userId, componentId, isAssembled }) {
+      const current = await owned(sessionId, userId);
+      if (current.status !== "IN_PROGRESS") throw invalidTransition();
+      const relations = await componentRelations(current.robotId);
+      if (!relations.some((item) => item.componentId === componentId)) {
+        throw new ApiError(422, "VALIDATION_ERROR", "Linh kiện không thuộc robot của phiên.");
+      }
+      return show(await repository.setVisualPart({ sessionId, userId, componentId, isAssembled }));
     }
   };
 }

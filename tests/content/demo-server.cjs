@@ -19,8 +19,8 @@ async function startDemo({ port = Number(process.env.CONTENT_DEMO_PORT || 0) } =
   });
   let server;
   try {
-    await connection.execute("SELECT version FROM schema_migrations WHERE version = '002_backend_contract'").then(([rows]) => {
-      if (!rows.length) throw Error('Apply migration 002_backend_contract before demo.');
+    await connection.execute("SELECT version FROM schema_migrations WHERE version = '003_session_visual_parts'").then(([rows]) => {
+      if (!rows.length) throw Error('Apply migration 003_session_visual_parts before demo.');
     });
     await connection.beginTransaction();
     const app = express();

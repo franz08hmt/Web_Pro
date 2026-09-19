@@ -77,11 +77,16 @@ erDiagram
 
     ASSEMBLY_STEPS ||--o{ SESSION_STEPS : contains
 
+    ASSEMBLY_SESSIONS ||--o{ SESSION_VISUAL_PARTS : displays
+
+    ROBOT_COMPONENTS ||--o{ SESSION_VISUAL_PARTS : validates
+
     ROBOTS o|--o{ LIBRARY_RESOURCES : has
 ```
 
 Khóa ngoại kép: `(session_id, robot_id)` tham chiếu `assembly_sessions(id, robot_id)`;
 `session_components(robot_id, component_id)` tham chiếu `robot_components`;
-`session_steps(robot_id, step_id)` tham chiếu `assembly_steps(robot_id, id)`.
+`session_steps(robot_id, step_id)` tham chiếu `assembly_steps(robot_id, id)`;
+`session_visual_parts(robot_id, component_id)` tham chiếu `robot_components`.
 Các khóa BIGINT là UNSIGNED, serialize ra API thành chuỗi. Xem `content/DATABASE.md`
-và `content/TEAM_HANDOFF.md` cho ánh xạ SQL/API và migration 002.
+và `content/TEAM_HANDOFF.md` cho ánh xạ SQL/API và migrations 002–003.

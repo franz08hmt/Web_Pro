@@ -69,7 +69,7 @@ test("assembly client exposes the complete session contract", async () => {
   const calls = [];
   const client = loadClient(async (rawUrl, options = {}) => {
     const url = new URL(rawUrl);
-    calls.push({ path: url.pathname + url.search, method: options.method || "GET", body: options.body });
+    calls.push({ path: url.pathname + url.search, method: options.method || "GET", body: options.body, headers: options.headers });
     if (url.pathname === "/api/auth/me") {
       return response({ data: { user: { id: "1" } }, csrfToken: "csrf-token" });
     }
@@ -84,6 +84,7 @@ test("assembly client exposes the complete session contract", async () => {
   await client.assemblySessions.updateStatus("42", "IN_PROGRESS");
   await client.assemblySessions.setComponentPrepared("42", "arduino-uno", true);
   await client.assemblySessions.setStepStatus("42", "line-follower-step-1", "COMPLETED");
+  await client.assemblySessions.setVisualPart("42", "arduino-uno", true);
 
   assert.deepEqual(JSON.parse(JSON.stringify(list)), {
     items: [{ id: "42" }],
@@ -95,8 +96,11 @@ test("assembly client exposes the complete session contract", async () => {
     "GET /api/auth/me",
     "PATCH /api/assembly-sessions/42",
     "PUT /api/assembly-sessions/42/components/arduino-uno",
-    "PUT /api/assembly-sessions/42/steps/line-follower-step-1"
+    "PUT /api/assembly-sessions/42/steps/line-follower-step-1",
+    "PUT /api/assembly-sessions/42/visual-parts/arduino-uno"
   ]);
+  assert.equal(calls.at(-1).headers["X-CSRF-Token"], "csrf-token");
+  assert.deepEqual(JSON.parse(calls.at(-1).body), { isAssembled: true });
 });
 
 test("client normalizes API and network failures for the UI", async () => {

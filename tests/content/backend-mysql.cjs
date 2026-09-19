@@ -43,9 +43,16 @@ const { createBackendRepositories } = require('../../server/content/backend-repo
     await assert.rejects(assemblySessions.upsertStepProgress({ ...input, stepId: 'line-follower-step-1', status: 'COMPLETED' }), { status: 422 });
     for (let i = 0; i < 2; i++) await assemblySessions.upsertComponentProgress({ ...input, componentId: 'sg90', isPrepared: true });
     await assemblySessions.upsertStepProgress({ ...input, stepId: 'mini-arm-step-1', status: 'COMPLETED' });
+    await assemblySessions.setVisualPart({ ...input, componentId: 'sg90', isAssembled: true });
     let restored = await assemblySessions.findOwnedById(input);
     assert.equal(restored.components.length, 1); assert.equal(restored.components[0].isPrepared, true);
     assert.equal(restored.steps[0].status, 'COMPLETED'); assert.ok(restored.steps[0].updatedAt instanceof Date);
+    assert.deepEqual(restored.assembledPartIds, ['sg90']);
+    await assert.rejects(assemblySessions.setVisualPart({ ...input, userId: other.id, componentId: 'sg90', isAssembled: true }), { status: 404 });
+    await assert.rejects(assemblySessions.setVisualPart({ ...input, componentId: 'line-sensor', isAssembled: true }), { status: 422 });
+    await assemblySessions.setVisualPart({ ...input, componentId: 'sg90', isAssembled: false });
+    restored = await assemblySessions.findOwnedById(input);
+    assert.deepEqual(restored.assembledPartIds, []);
     restored = await assemblySessions.upsertStepProgress({ ...input, stepId: 'mini-arm-step-1', status: 'PENDING' });
     assert.equal(restored.steps[0].status, 'PENDING');
     await assemblySessions.updateStatus({ ...input, status: 'COMPLETED' });

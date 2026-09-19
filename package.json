@@ -11,7 +11,8 @@
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
     "test": "node --test tests/server/**/*.test.cjs",
-    "test:ui": "node tests/ui-smoke.cjs"
+    "test:ui": "node tests/ui-smoke.cjs",
+    "test:ui:sessions": "node tests/ui-session-flow.cjs"
   },
   "dependencies": {
     "cors": "^2.8.5",

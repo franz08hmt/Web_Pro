@@ -131,6 +131,13 @@ test("3D assembly loads live content and persists assembly steps through the ses
   assert.match(assemblySource, /session\.steps/);
 });
 
+test("3D assembly restores visual parts from the owned session and persists each toggle", () => {
+  assert.match(assemblySource, /session\.assembledPartIds/);
+  assert.match(assemblySource, /sessionApi\.setVisualPart\(/);
+  assert.match(assemblySource, /requestedSessionId/);
+  assert.doesNotMatch(assemblySource, /session\.robotId !== model\.id\)\s*\{\s*session = await sessionApi\.createOrResume/);
+});
+
 test("3D assembly renders API-provided component text without HTML injection", () => {
   assert.doesNotMatch(assemblySource, /copy\.innerHTML/);
   assert.match(assemblySource, /partName\.textContent\s*=\s*part\.name/);

@@ -217,6 +217,12 @@ Trong MySQL Workbench, tạo database UTF-8 `robot_assembly_lab`, mở và chạ
 trong `.env`; không commit file này. Có thể dùng tên database khác nếu `DB_NAME`
 khớp với database vừa tạo.
 
+Nếu database đã có migration 002 và dữ liệu người dùng, **không chạy lại schema/seed**:
+kiểm tra `schema_migrations`, sau đó chỉ chạy
+`database/migrations/003_session_visual_parts.sql` một lần để lưu trạng thái mô hình 3D.
+Các ô 3D từng lưu trong `localStorage` trước migration không được tự nhập vào phiên
+MySQL, vì dữ liệu cũ không gắn với ID phiên; tiến độ chuẩn bị và bước trên server vẫn giữ nguyên.
+
 ```powershell
 npm run dev
 ```
@@ -234,6 +240,7 @@ phòng và không thể lưu phiên vào tài khoản. Luồng full-stack phải
 ```powershell
 npm test
 npm run test:ui
+npm run test:ui:sessions
 node --test tests/content/content.test.cjs tests/content/http.test.cjs tests/content/backend-contract.test.cjs
 node --env-file=server/content/.env tests/content/mysql-smoke.cjs
 node --env-file=server/content/.env tests/content/backend-mysql.cjs

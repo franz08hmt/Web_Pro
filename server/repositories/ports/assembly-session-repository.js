@@ -23,6 +23,7 @@ const { NotImplementedError } = require("../../core/not-implemented-error");
  * @property {SessionStatus} status
  * @property {ComponentProgressRecord[]} components
  * @property {StepProgressRecord[]} steps
+ * @property {string[]} assembledPartIds
  * @property {Date} createdAt
  * @property {Date} updatedAt
  */
@@ -80,6 +81,15 @@ class AssemblySessionRepositoryPort {
    */
   async upsertStepProgress(input) {
     throw new NotImplementedError("AssemblySessionRepositoryPort", "upsertStepProgress");
+  }
+
+  /**
+   * Lưu trạng thái bộ phận 3D của đúng phiên; false gỡ khỏi mô hình.
+   * @param {{ sessionId: string, userId: string, componentId: string, isAssembled: boolean }} input
+   * @returns {Promise<AssemblySessionRecord>}
+   */
+  async setVisualPart(input) {
+    throw new NotImplementedError("AssemblySessionRepositoryPort", "setVisualPart");
   }
 }
 

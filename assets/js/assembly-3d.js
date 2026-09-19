@@ -36,6 +36,7 @@
   const zoomOutButton = document.querySelector("#assembly-3d-zoom-out");
   const explodeButton = document.querySelector("#assembly-3d-explode");
   const sessionApi = window.RobotAssemblyApi?.assemblySessions;
+  const requestedSessionId = params.get("session");
   let activeSession = null;
 
   const stepRecords = Array.isArray(model?.stepRecords) && model.stepRecords.length > 0
@@ -89,6 +90,13 @@
     stepsContainer?.querySelectorAll("input[data-step-id]").forEach((input) => {
       input.disabled = disabled;
     });
+  }
+
+  function setPartInputsDisabled(disabled) {
+    partsContainer?.querySelectorAll("input[data-part-id]").forEach((input) => {
+      input.disabled = disabled;
+    });
+    if (resetButton) resetButton.disabled = disabled;
   }
 
   function applyStepIds(completedIds) {
@@ -161,6 +169,7 @@
           applyStepIds(completedStepIdsFromSession(activeSession));
           if (activeSession.status === "COMPLETED") {
             setStepInputsDisabled(true);
+            setPartInputsDisabled(true);
             setSyncStatus("Đã hoàn thành và lưu toàn bộ quy trình lắp ráp.", "complete");
           } else {
             setSyncStatus("Đã lưu bước lắp ráp vào tài khoản.", "saved");
@@ -185,20 +194,27 @@
 
   async function restoreStepSession() {
     if (!sessionApi) {
+      if (requestedSessionId) {
+        setStepInputsDisabled(true);
+        setPartInputsDisabled(true);
+        setSyncStatus("Không thể mở phiên đã chọn vì API phiên chưa sẵn sàng.", "error");
+        return;
+      }
+      if (window.THREE && window.createAssemblyPart) restoreVisualAssembly(readStoredIds(visualStorageKey));
       setSyncStatus(contentWarning || "Tiến độ bước đang được lưu trên trình duyệt này.", "local");
       return;
     }
 
     setStepInputsDisabled(true);
+    setPartInputsDisabled(true);
     setSyncStatus("Đang khôi phục tiến độ lắp ráp…", "loading");
     try {
-      const requestedSessionId = params.get("session");
       let session = requestedSessionId
         ? await sessionApi.get(requestedSessionId)
         : await sessionApi.createOrResume(model.id);
 
       if (session.robotId !== model.id) {
-        session = await sessionApi.createOrResume(model.id);
+        throw new Error("Phiên này không thuộc mẫu robot đã chọn.");
       }
       if (session.status === "READY") {
         session = await sessionApi.updateStatus(session.id, "IN_PROGRESS");
@@ -206,6 +222,9 @@
 
       activeSession = session;
       applyStepIds(completedStepIdsFromSession(session));
+      if (window.THREE && window.createAssemblyPart) {
+        restoreVisualAssembly(new Set(session.assembledPartIds || []));
+      }
 
       if (session.status === "PREPARING") {
         setSyncStatus("Hãy chuẩn bị đủ linh kiện ở trang trước để bắt đầu các bước lắp ráp.", "waiting");
@@ -213,24 +232,32 @@
         setSyncStatus("Phiên lắp ráp này đã hoàn thành.", "complete");
       } else if (session.status === "IN_PROGRESS") {
         setStepInputsDisabled(false);
+        setPartInputsDisabled(false);
         setSyncStatus("Tiến độ bước đã được đồng bộ với tài khoản.", "saved");
       } else {
         setSyncStatus("Phiên lắp ráp hiện không thể tiếp tục.", "waiting");
       }
     } catch (error) {
       activeSession = null;
-      setStepInputsDisabled(false);
-      const message = error.code === "AUTH_REQUIRED"
+      const canUseLocal = !requestedSessionId;
+      setStepInputsDisabled(canUseLocal ? false : true);
+      setPartInputsDisabled(canUseLocal ? false : true);
+      if (canUseLocal && window.THREE && window.createAssemblyPart) {
+        restoreVisualAssembly(readStoredIds(visualStorageKey));
+      }
+      const message = error.code === "AUTH_REQUIRED" && canUseLocal
         ? "Đăng nhập để lưu trên tài khoản; hiện tiến độ được lưu trên trình duyệt này."
-        : `Không thể đồng bộ tài khoản; đang lưu trên trình duyệt. ${error.message}`;
-      setSyncStatus(contentWarning || message, "local");
+        : canUseLocal
+          ? `Không thể đồng bộ tài khoản; đang lưu trên trình duyệt. ${error.message}`
+          : `Không thể mở phiên đã chọn. ${error.message}`;
+      setSyncStatus(canUseLocal ? contentWarning || message : message, canUseLocal ? "local" : "error");
     }
   }
 
   renderStepsPanel();
-  void restoreStepSession();
 
   if (!window.THREE || !window.createAssemblyPart) {
+    void restoreStepSession();
     if (statusElement) {
       statusElement.textContent = "Không thể tải trình dựng 3D. Hãy làm mới trang hoặc kiểm tra cấu hình máy chủ.";
     }
@@ -463,7 +490,7 @@
       label.append(checkbox, order, copy);
       partsContainer.append(label);
 
-      checkbox.addEventListener("change", () => {
+      checkbox.addEventListener("change", async () => {
         if (checkbox.checked) {
           const object = assemblePart(part);
           if (object) assembledParts.set(part.id, object);
@@ -476,16 +503,42 @@
           [...partsContainer.querySelectorAll("input[data-part-id]:checked")]
             .map((input) => input.dataset.partId)
         );
-        writeStoredIds(visualStorageKey, installedIds);
+        if (!activeSession) writeStoredIds(visualStorageKey, installedIds);
         if (explodedView) setExplodedView(true);
         focusRobot();
         updateProgress();
+        if (!activeSession || !sessionApi) return;
+
+        setPartInputsDisabled(true);
+        setSyncStatus("Đang lưu mô hình 3D…", "loading");
+        let verified = true;
+        try {
+          activeSession = await sessionApi.setVisualPart(activeSession.id, part.id, checkbox.checked);
+          setSyncStatus("Đã lưu mô hình 3D vào tài khoản.", "saved");
+        } catch (error) {
+          try {
+            activeSession = await sessionApi.get(activeSession.id);
+            restoreVisualAssembly(new Set(activeSession.assembledPartIds || []));
+          } catch {
+            verified = false;
+            setSyncStatus("Không thể xác nhận trạng thái 3D. Hãy tải lại trang trước khi tiếp tục.", "error");
+            return;
+          }
+          setSyncStatus(`Không thể lưu mô hình 3D. ${error.message}`, "error");
+        } finally {
+          setPartInputsDisabled(!verified || activeSession?.status !== "IN_PROGRESS");
+        }
       });
     });
   }
 
-  function restoreVisualAssembly() {
-    const installedIds = readStoredIds(visualStorageKey);
+  function restoreVisualAssembly(installedIds) {
+    assembledParts.forEach((object) => robotGroup.remove(object));
+    assembledParts.clear();
+    partsContainer?.querySelectorAll("input[data-part-id]").forEach((checkbox) => {
+      checkbox.checked = false;
+      checkbox.closest("label")?.classList.remove("is-installed");
+    });
     model.parts.forEach((part) => {
       if (!installedIds.has(part.id)) return;
       const checkbox = partsContainer?.querySelector(`input[data-part-id="${CSS.escape(part.id)}"]`);
@@ -495,19 +548,40 @@
       checkbox.closest("label")?.classList.add("is-installed");
       assembledParts.set(part.id, object);
     });
-  }
-
-  function resetAssembly() {
-    assembledParts.forEach((object) => robotGroup.remove(object));
-    assembledParts.clear();
-    setExplodedView(false);
-    partsContainer?.querySelectorAll("input[type='checkbox']").forEach((checkbox) => {
-      checkbox.checked = false;
-      checkbox.closest("label")?.classList.remove("is-installed");
-    });
-    writeStoredIds(visualStorageKey, new Set());
+    if (explodedView) setExplodedView(true);
     focusRobot();
     updateProgress();
+  }
+
+  async function resetAssembly() {
+    const previousIds = [...assembledParts.keys()];
+    restoreVisualAssembly(new Set());
+    setExplodedView(false);
+    if (!activeSession || !sessionApi) {
+      writeStoredIds(visualStorageKey, new Set());
+      return;
+    }
+
+    setPartInputsDisabled(true);
+    setSyncStatus("Đang đặt lại mô hình 3D…", "loading");
+    let verified = true;
+    try {
+      for (const partId of previousIds) {
+        activeSession = await sessionApi.setVisualPart(activeSession.id, partId, false);
+      }
+      setSyncStatus("Đã đặt lại mô hình 3D trong tài khoản.", "saved");
+    } catch (error) {
+      try {
+        activeSession = await sessionApi.get(activeSession.id);
+        restoreVisualAssembly(new Set(activeSession.assembledPartIds || []));
+      } catch {
+        verified = false;
+        restoreVisualAssembly(new Set(previousIds));
+      }
+      setSyncStatus(`Không thể đặt lại toàn bộ mô hình. ${error.message}`, "error");
+    } finally {
+      setPartInputsDisabled(!verified || activeSession?.status !== "IN_PROGRESS");
+    }
   }
 
   function rotateCamera(delta) {
@@ -560,7 +634,6 @@
   }
 
   renderPartsPanel();
-  restoreVisualAssembly();
   updateProgress();
   focusRobot();
   enablePointerControls();
@@ -573,6 +646,7 @@
   explodeButton?.addEventListener("click", () => setExplodedView(!explodedView));
   window.addEventListener("resize", resizeRenderer);
   resizeRenderer();
+  void restoreStepSession();
 
   function animate() {
     requestAnimationFrame(animate);

@@ -26,7 +26,12 @@ const mysql = require('../../server/content/node_modules/mysql2/promise');
     assert.equal(progress.completed, 1); assert.ok(progress.updated_at);
     const [upgraded] = await c.query('SHOW TABLES');
     assert.equal(upgraded.length, 11);
-    console.log('PASS upgrade 001 -> 002 preserves legacy sessions and progress (11 tables).');
+    await c.query(sql('migrations/003_session_visual_parts.sql'));
+    const [latest] = await c.query('SHOW TABLES');
+    assert.equal(latest.length, 12);
+    const [[visual]] = await c.execute('SELECT COUNT(*) AS total FROM session_visual_parts');
+    assert.equal(visual.total, 0);
+    console.log('PASS upgrade 001 -> 002 -> 003 preserves legacy sessions and progress (12 tables).');
   } finally {
     try { if (created) await c.query(`DROP DATABASE \`${name}\``); }
     finally { await c.end(); }

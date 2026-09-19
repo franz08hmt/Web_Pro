@@ -106,6 +106,20 @@ function createAssemblySessionController(service) {
         });
         response.json({ data });
       } catch (error) { next(error); }
+    },
+
+    async setVisualPart(request, response, next) {
+      try {
+        const body = objectBody(request.body, ["isAssembled"]);
+        if (typeof body.isAssembled !== "boolean") throw validationError("isAssembled phải là boolean.");
+        const data = await service.setVisualPart({
+          sessionId: sessionId(request.params.sessionId),
+          userId: request.user.id,
+          componentId: slug(request.params.componentId, "componentId"),
+          isAssembled: body.isAssembled
+        });
+        response.json({ data });
+      } catch (error) { next(error); }
     }
   };
 }
