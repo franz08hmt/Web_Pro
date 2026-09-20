@@ -18,7 +18,12 @@ Mục tiêu của giai đoạn này là chuyển dữ liệu tĩnh sang cơ sở
 
 Trạng thái hiện tại: Content API, đăng nhập bằng cookie phiên, phân quyền quản trị,
 phiên lắp ráp và đồng bộ tiến độ từ trang chuẩn bị đến phòng 3D đã được tích hợp
-trên nhánh `integration/fullstack-v2`.
+trên nhánh `integration/fullstack-v2`. Trang quản trị nội dung (`pages/admin-content.html`)
+đã dùng chung design system, có cổng đăng nhập rõ lý do, kiểm chứng JSON tại chỗ và
+lối mở trang công khai để đối chiếu dữ liệu vừa lưu; chú thích nổi dùng chung cho
+nút icon, mã trạng thái phiên và ký hiệu nối dây; hiệu ứng hỗ trợ đọc trạng thái
+(lắp linh kiện 3D vào vị trí, camera nội suy, thanh tiến độ mượt, khung xương khi
+đang tải) đều tôn trọng `prefers-reduced-motion`.
 
 ## Phạm vi nghiệp vụ giai đoạn 2
 
@@ -238,6 +243,21 @@ Trên các trang có sidebar, mục Tài khoản hiển thị tên ngắn khi đ
 Trang chủ đọc phiên cập nhật gần nhất để dẫn về đúng phiên; thanh phần trăm ở đó
 chỉ đo khâu chuẩn bị linh kiện, còn số bước lắp ráp được ghi riêng.
 
+### Tài khoản quản trị cho `pages/admin-content.html`
+
+Đăng ký trên website luôn tạo role `USER`, nên khu vực quản trị không mở được
+bằng tài khoản vừa đăng ký. Chuẩn bị trước bằng một trong hai lệnh:
+
+```powershell
+npm run create-admin -- --email=admin@robotlab.local --name="Quản trị nội dung"
+npm run create-admin -- --email=tai-khoan-da-co@example.com --promote
+```
+
+Lệnh đầu tạo tài khoản quản trị mới và hỏi mật khẩu trực tiếp (không hiện trên
+màn hình, không lưu vào lịch sử shell, không đọc từ tham số dòng lệnh). Lệnh sau
+nâng quyền cho một tài khoản đã đăng ký sẵn. Nếu mở trang mà chưa đăng nhập hoặc
+đang dùng tài khoản `USER`, trang sẽ hiện đúng lý do kèm lối sang trang đăng nhập.
+
 ## Kiểm thử
 
 ```powershell
@@ -245,6 +265,7 @@ npm test
 npm run test:ui
 npm run test:ui:sessions
 npm run test:ui:personalization
+npm run test:ui:phase3
 node --test tests/content/content.test.cjs tests/content/http.test.cjs tests/content/backend-contract.test.cjs
 node --env-file=server/content/.env tests/content/mysql-smoke.cjs
 node --env-file=server/content/.env tests/content/backend-mysql.cjs
