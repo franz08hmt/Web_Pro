@@ -237,17 +237,63 @@ async function setupAssembly() {
     if (persist) savePartsState(items);
   }
 
+  /* Bảng nối dây đầy ký hiệu chỉ người đã học điện tử mới đọc được. Chú thích
+     giải nghĩa từng ký hiệu ngay tại chỗ, nhưng chữ gốc vẫn giữ nguyên để
+     người dùng đối chiếu được với chân in trên mạch thật. */
+  const WIRING_GLOSSARY = new Map([
+    ["HC-SR04", "HC-SR04 — cảm biến siêu âm, đo khoảng cách bằng thời gian dội của xung."],
+    ["L298N", "L298N — module cầu H, nhận tín hiệu điều khiển và cấp dòng lớn cho động cơ."],
+    ["VCC", "VCC — chân cấp nguồn dương cho module; ở bài này lấy 5V từ Arduino."],
+    ["GND", "GND — chân mass, mức 0V. Mọi module phải nối chung GND thì tín hiệu mới đúng."],
+    ["PWM", "PWM — điều chế độ rộng xung, dùng chỉnh tốc độ động cơ thay vì chỉ bật/tắt."],
+    ["TRIG", "TRIG — chân kích, nhận xung 10 µs để cảm biến phát sóng siêu âm."],
+    ["ECHO", "ECHO — chân phản hồi, độ rộng xung tỉ lệ với khoảng cách đo được."],
+    ["ENA", "ENA — chân cho phép kênh A của L298N, nhận PWM để chỉnh tốc độ."],
+    ["ENB", "ENB — chân cho phép kênh B của L298N, nhận PWM để chỉnh tốc độ."],
+    ["IN1", "IN1 — cùng IN2 quyết định chiều quay của kênh động cơ A."],
+    ["IN2", "IN2 — cùng IN1 quyết định chiều quay của kênh động cơ A."],
+    ["IN3", "IN3 — cùng IN4 quyết định chiều quay của kênh động cơ B."],
+    ["IN4", "IN4 — cùng IN3 quyết định chiều quay của kênh động cơ B."]
+  ]);
+  // Ký hiệu dài đứng trước để HC-SR04 không bị cắt rời thành các mảnh ngắn hơn.
+  const WIRING_PATTERN = new RegExp(`(${[...WIRING_GLOSSARY.keys()].join("|")})`, "g");
+
+  function annotateWiring(text) {
+    const fragment = document.createDocumentFragment();
+    let lastIndex = 0;
+    for (const match of String(text).matchAll(WIRING_PATTERN)) {
+      if (match.index > lastIndex) {
+        fragment.append(text.slice(lastIndex, match.index));
+      }
+      const term = document.createElement("abbr");
+      term.textContent = match[0];
+      term.dataset.tooltip = WIRING_GLOSSARY.get(match[0]);
+      fragment.append(term);
+      lastIndex = match.index + match[0].length;
+    }
+    fragment.append(text.slice(lastIndex));
+    return fragment;
+  }
+
   function renderWiring(model) {
     if (!wiringBody) return;
 
     const rows = model.wiring || [];
-    wiringBody.innerHTML = rows.map((row) => `
-      <tr>
-        <th scope="row"><span class="pin-code">${escapeHtml(row.pin)}</span></th>
-        <td>${escapeHtml(row.target)}</td>
-        <td>${escapeHtml(row.note)}</td>
-      </tr>
-    `).join("");
+    wiringBody.replaceChildren(...rows.map((row) => {
+      const tr = document.createElement("tr");
+      const pin = document.createElement("th");
+      pin.scope = "row";
+      const code = document.createElement("span");
+      code.className = "pin-code";
+      code.append(annotateWiring(row.pin));
+      pin.append(code);
+      const target = document.createElement("td");
+      target.append(annotateWiring(row.target));
+      const note = document.createElement("td");
+      note.append(annotateWiring(row.note));
+      tr.append(pin, target, note);
+      return tr;
+    }));
 
     if (wiringCaption) {
       wiringCaption.textContent = `Sơ đồ nối dây của ${model.name}: ${rows.length} kết nối cần thực hiện.`;

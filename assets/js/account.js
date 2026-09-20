@@ -80,10 +80,21 @@
     const name = document.createElement("strong");
     name.textContent = model?.name || session.robotId;
     const state = document.createElement("span");
+    state.className = "status-badge";
+    state.dataset.state = session.status;
     state.textContent = ({
       PREPARING: "Đang chuẩn bị", READY: "Đã đủ linh kiện", IN_PROGRESS: "Đang lắp ráp",
       COMPLETED: "Đã hoàn thành", ABANDONED: "Đã dừng"
     })[session.status] || session.status;
+    // Nhãn tiếng Việt vẫn hiện; chú thích nói thêm mã trạng thái thật và điều
+    // kiện chuyển trạng thái, vì đó là thứ không đoán được từ nhãn.
+    state.dataset.tooltip = ({
+      PREPARING: "PREPARING — phiên mới mở, đang tick linh kiện ở bảng chuẩn bị.",
+      READY: "READY — đã tick đủ linh kiện bắt buộc, vào được phòng lắp ráp 3D.",
+      IN_PROGRESS: "IN_PROGRESS — đang lắp trong phòng 3D, tiến độ từng bước lưu vào tài khoản.",
+      COMPLETED: "COMPLETED — đã hoàn thành toàn bộ các bước của mẫu robot này.",
+      ABANDONED: "ABANDONED — phiên đã dừng và không nhận thêm thay đổi."
+    })[session.status] || `Mã trạng thái: ${session.status}`;
     const date = document.createElement("small");
     const updated = new Date(session.updatedAt);
     date.textContent = Number.isNaN(updated.getTime()) ? "" : `Cập nhật ${updated.toLocaleDateString("vi-VN")}`;
@@ -106,9 +117,27 @@
     return item;
   }
 
+  /* Danh sách phiên bắt đầu từ rỗng và chỉ có sau khi API trả lời, nên khung
+     xương ở đây phản ánh đúng thời gian chờ thật thay vì là hoạt ảnh trang trí. */
+  function showHistorySkeleton(rows) {
+    const holder = document.createElement("li");
+    holder.className = "history-skeleton";
+    holder.setAttribute("aria-hidden", "true");
+    const list = document.createElement("div");
+    list.className = "skeleton-list";
+    for (let index = 0; index < rows; index += 1) {
+      const row = document.createElement("div");
+      row.className = "skeleton skeleton-card";
+      list.append(row);
+    }
+    holder.append(list);
+    historyList.append(holder);
+  }
+
   async function loadHistory(page, revision) {
     historyMore.disabled = true;
     historyStatus.textContent = "Đang tải các phiên lắp ráp…";
+    if (page === 1) showHistorySkeleton(2);
     try {
       const [result, liveModels] = await Promise.all([
         api.assemblySessions.list({ page, pageSize: 5 }),
@@ -127,6 +156,8 @@
       if (revision !== historyRevision) return;
       historyStatus.textContent = `Không thể tải lịch sử. ${error.message}`;
     } finally {
+      // Gỡ ở đây để khung xương không kẹt lại khi API lỗi hoặc khi phiên đã đổi.
+      historyList.querySelector(".history-skeleton")?.remove();
       if (revision === historyRevision) historyMore.disabled = false;
     }
   }

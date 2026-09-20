@@ -540,8 +540,16 @@
   #progress-value { color: var(--accent-strong); font-size: 28px; font-weight: 600; }
   progress { display: block; width: 100%; height: 10px; border: 0; border-radius: 10px; overflow: hidden; appearance: none; background: var(--surface-2); }
   progress::-webkit-progress-bar { background: var(--surface-2); }
-  progress::-webkit-progress-value { background: var(--accent); border-radius: 10px; }
-  progress::-moz-progress-bar { background: var(--accent); border-radius: 10px; }
+  /* Thanh tiến độ chạy tới giá trị mới thay vì nhảy: người dùng thấy rõ thao
+     tác vừa rồi làm tiến độ tăng hay giảm. Khối giảm chuyển động sẽ tắt phần này. */
+  progress::-webkit-progress-value {
+    background: var(--accent); border-radius: 10px;
+    transition: inline-size 240ms cubic-bezier(.22,.61,.36,1), background-color 240ms ease;
+  }
+  progress::-moz-progress-bar {
+    background: var(--accent); border-radius: 10px;
+    transition: inline-size 240ms cubic-bezier(.22,.61,.36,1), background-color 240ms ease;
+  }
   .status-message { font-size: 14px; color: var(--muted); margin-top: 10px; }
   .status-message.is-complete { color: var(--success); }
 
@@ -597,6 +605,63 @@
   .footer-social-link { display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--line); padding: 14px 0; min-height: 46px; font-size: 15px; color: #dde5e2; }
   .footer-social-link .icon { width: 18px; height: 18px; flex-basis: 18px; }
   .footer-bottom { display: flex; justify-content: space-between; gap: 16px; max-width: var(--shell); margin: 32px auto 0; padding-top: 20px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+
+  /* ---------- Chú thích nổi ---------- */
+  .tooltip-bubble {
+    position: fixed; z-index: 90; max-width: 264px; padding: 9px 12px;
+    background: var(--surface-2); color: var(--ink);
+    border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+    box-shadow: 0 10px 26px rgb(0 0 0 / .42);
+    font-size: 13px; line-height: 1.45; text-align: left;
+    pointer-events: none; opacity: 0;
+    transition: opacity 140ms ease;
+  }
+  .tooltip-bubble.is-visible { opacity: 1; }
+  /* Mũi nhọn đổi hướng theo vị trí đã chọn trong tooltip.js. */
+  .tooltip-bubble::after {
+    content: ""; position: absolute; left: 50%; width: 8px; height: 8px;
+    margin-left: -4px; background: inherit; border: inherit; transform: rotate(45deg);
+  }
+  .tooltip-bubble[data-placement="above"]::after { bottom: -5px; border-top: 0; border-left: 0; }
+  .tooltip-bubble[data-placement="below"]::after { top: -5px; border-bottom: 0; border-right: 0; }
+
+  /* Từ viết tắt có chú thích: gạch chân chấm để người đọc biết có thể xem thêm. */
+  abbr[data-tooltip] { text-decoration: underline dotted var(--line-strong); text-underline-offset: 3px; cursor: help; }
+
+  /* ---------- Nút chỉ có icon ---------- */
+  .icon-button {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; flex-shrink: 0;
+    color: var(--muted); background: var(--surface);
+    border: 1px solid var(--line); border-radius: var(--radius-sm);
+    transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease;
+  }
+  .icon-button:hover { color: var(--ink); background: var(--surface-2); border-color: var(--line-strong); }
+  .icon-button .icon { width: 18px; height: 18px; }
+
+  /* ---------- Huy hiệu trạng thái ---------- */
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 4px 11px; border-radius: 999px;
+    font-size: 12px; font-weight: 600; letter-spacing: .04em;
+    border: 1px solid var(--line-strong); background: var(--surface-2); color: var(--muted);
+  }
+  .status-badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .status-badge[data-state="IN_PROGRESS"] { color: var(--accent-strong); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+  .status-badge[data-state="COMPLETED"] { color: var(--success); border-color: color-mix(in srgb, var(--success) 45%, var(--line)); }
+  .status-badge[data-state="ABANDONED"] { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 45%, var(--line)); }
+
+  /* ---------- Khung xương khi chờ API ---------- */
+  .skeleton-list { display: grid; gap: 12px; }
+  .skeleton {
+    border-radius: var(--radius-sm);
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 50%, var(--surface) 75%);
+    background-size: 280% 100%;
+    animation: skeleton-sweep 1400ms linear infinite;
+  }
+  .skeleton-row { height: 56px; }
+  .skeleton-card { height: 232px; }
+  @keyframes skeleton-sweep { to { background-position: -280% 0; } }
 }
 
 @layer motion {

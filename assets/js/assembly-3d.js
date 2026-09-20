@@ -360,6 +360,58 @@
   const assembledParts = new Map();
   let explodedView = false;
 
+  /* Chuyển động ngắn để người xem thấy rõ linh kiện nào vừa thay đổi.
+     Mọi tween đều chạy trong vòng render sẵn có, không tạo thêm vòng lặp mới.
+     Khi người dùng chọn giảm chuyển động, tween nhảy thẳng tới trạng thái cuối. */
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const tweens = new Set();
+
+  function easeOut(ratio) {
+    return 1 - Math.pow(1 - ratio, 3);
+  }
+
+  function tween(duration, onUpdate, onDone) {
+    if (reducedMotion.matches) {
+      onUpdate(1);
+      onDone?.();
+      return;
+    }
+    tweens.add({ start: performance.now(), duration, onUpdate, onDone });
+  }
+
+  function advanceTweens(now) {
+    for (const item of tweens) {
+      const ratio = item.duration > 0 ? Math.min(1, (now - item.start) / item.duration) : 1;
+      item.onUpdate(easeOut(ratio));
+      if (ratio < 1) continue;
+      tweens.delete(item);
+      item.onDone?.();
+    }
+  }
+
+  // Làm nổi linh kiện vừa lắp bằng ánh sáng phát ra rồi trả lại màu gốc.
+  // Vật liệu được tạo riêng cho từng linh kiện nên không ảnh hưởng phần khác.
+  function highlightPart(group) {
+    const materials = [];
+    group.traverse((object) => {
+      if (object.material?.emissive) {
+        materials.push([object.material, object.material.emissive.getHex()]);
+        object.material.emissive.setHex(0xff8b4b);
+      }
+    });
+    if (materials.length === 0) return;
+    tween(700, (ratio) => {
+      materials.forEach(([material]) => {
+        material.emissiveIntensity = 1 - ratio;
+      });
+    }, () => {
+      materials.forEach(([material, hex]) => {
+        material.emissive.setHex(hex);
+        material.emissiveIntensity = 1;
+      });
+    });
+  }
+
   function getTargets(partId) {
     const target = assemblyConfig[model.id]?.[partId]?.target;
     if (!target) return [];
@@ -373,7 +425,7 @@
     object.scale.setScalar(scale);
   }
 
-  function assemblePart(part) {
+  function assemblePart(part, animated = false) {
     const targets = getTargets(part.id);
     const partGroup = new THREE.Group();
     partGroup.name = `${part.id}-group`;
@@ -388,6 +440,22 @@
 
     if (partGroup.children.length === 0) return null;
     robotGroup.add(partGroup);
+
+    // Chỉ chạy khi người dùng tự tick: lúc khôi phục phiên đã lưu, cả mô hình
+    // phải hiện ngay ở trạng thái cuối thay vì diễn lại toàn bộ quá trình lắp.
+    if (animated && !explodedView) {
+      partGroup.position.y = 1.05;
+      partGroup.scale.setScalar(0.88);
+      tween(340, (ratio) => {
+        partGroup.position.y = 1.05 * (1 - ratio);
+        partGroup.scale.setScalar(0.88 + 0.12 * ratio);
+      }, () => {
+        partGroup.position.y = 0;
+        partGroup.scale.setScalar(1);
+        highlightPart(partGroup);
+      });
+    }
+
     return partGroup;
   }
 
@@ -401,22 +469,27 @@
   function setExplodedView(nextValue) {
     explodedView = Boolean(nextValue) && assembledParts.size > 0;
 
+    // Gom sẵn điểm đầu và điểm cuối rồi chạy một tween duy nhất: các nhóm linh
+    // kiện phải giãn ra và khép lại cùng nhịp, không lệch pha từng cái.
+    const moves = [];
     model.parts.forEach((part, index) => {
       const object = assembledParts.get(part.id);
       if (!object) return;
-      if (!explodedView) {
-        object.position.set(0, 0, 0);
-        return;
-      }
 
-      const angle = (index / Math.max(model.parts.length, 1)) * Math.PI * 2 - Math.PI / 3;
-      const radius = model.id === "mini-arm" ? 1.7 : 1.8;
-      object.position.set(
-        Math.cos(angle) * radius,
-        0.25 + (index % 2) * 0.22,
-        Math.sin(angle) * radius
-      );
+      const to = new THREE.Vector3(0, 0, 0);
+      if (explodedView) {
+        const angle = (index / Math.max(model.parts.length, 1)) * Math.PI * 2 - Math.PI / 3;
+        const radius = model.id === "mini-arm" ? 1.7 : 1.8;
+        to.set(Math.cos(angle) * radius, 0.25 + (index % 2) * 0.22, Math.sin(angle) * radius);
+      }
+      moves.push({ object, from: object.position.clone(), to });
     });
+
+    if (moves.length > 0) {
+      tween(420, (ratio) => {
+        moves.forEach((move) => move.object.position.lerpVectors(move.from, move.to, ratio));
+      }, focusRobot);
+    }
 
     if (explodeButton) {
       explodeButton.setAttribute("aria-pressed", String(explodedView));
@@ -466,9 +539,21 @@
     if (!partsContainer) return;
     partsContainer.replaceChildren();
 
+    // Mô tả linh kiện nằm ở danh mục chung; tra theo ID để chú thích nói đúng
+    // vai trò của bộ phận thay vì lặp lại tên đã hiển thị sẵn.
+    const descriptions = new Map(
+      (window.COMPONENTS_DATA || []).map((item) => [item.id, item.description])
+    );
+
     model.parts.forEach((part, index) => {
       const label = document.createElement("label");
       label.className = "assembly-3d-part-item";
+
+      const description = descriptions.get(part.id);
+      label.dataset.tooltip = [
+        `${part.name} · ${part.quantity} linh kiện`,
+        description
+      ].filter(Boolean).join(" — ");
 
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
@@ -492,7 +577,7 @@
 
       checkbox.addEventListener("change", async () => {
         if (checkbox.checked) {
-          const object = assemblePart(part);
+          const object = assemblePart(part, true);
           if (object) assembledParts.set(part.id, object);
           else checkbox.checked = false;
         } else {
@@ -584,14 +669,23 @@
     }
   }
 
+  // Nút bấm đổi góc nhìn theo từng nấc nên được nội suy; kéo chuột thì không,
+  // vì thao tác kéo đã bám sát con trỏ theo thời gian thực.
   function rotateCamera(delta) {
-    cameraState.azimuth += delta;
-    updateCamera();
+    const from = cameraState.azimuth;
+    tween(260, (ratio) => {
+      cameraState.azimuth = from + delta * ratio;
+      updateCamera();
+    });
   }
 
   function zoomCamera(delta) {
-    cameraState.radius = THREE.MathUtils.clamp(cameraState.radius + delta, 3.4, 10);
-    updateCamera();
+    const from = cameraState.radius;
+    const to = THREE.MathUtils.clamp(from + delta, 3.4, 10);
+    tween(260, (ratio) => {
+      cameraState.radius = from + (to - from) * ratio;
+      updateCamera();
+    });
   }
 
   function enablePointerControls() {
@@ -648,8 +742,9 @@
   resizeRenderer();
   void restoreStepSession();
 
-  function animate() {
+  function animate(now) {
     requestAnimationFrame(animate);
+    advanceTweens(now ?? performance.now());
     renderer.render(scene, camera);
   }
   animate();

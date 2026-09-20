@@ -89,13 +89,17 @@
       toggle.setAttribute("aria-label", collapsed ? "Mở rộng thanh điều hướng" : "Thu gọn thanh điều hướng");
       if (label) label.textContent = "Thu gọn";
 
+      toggle.dataset.tooltip = collapsed ? "Mở rộng thanh điều hướng" : "Thu gọn thanh điều hướng";
+
       // Khi chỉ còn icon, giữ chú thích nổi để người dùng vẫn biết từng mục là trang nào.
+      // Dùng data-tooltip thay cho title: hiện ngay, đọc được trên nền tối và
+      // không chờ độ trễ mặc định của trình duyệt.
       links.forEach((link) => {
         const text = (link.textContent || "").trim();
         if (collapsed) {
-          link.setAttribute("title", text);
+          link.dataset.tooltip = text;
         } else {
-          link.removeAttribute("title");
+          delete link.dataset.tooltip;
         }
       });
 

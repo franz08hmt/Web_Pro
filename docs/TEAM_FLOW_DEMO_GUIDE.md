@@ -167,7 +167,26 @@ Chỉ lần lượt: `server/app.js` (route `/vendor/three`) → `pages/lap-rap-
 4. Tick lần lượt các nhóm linh kiện. Khi đủ, chỉ `READY`/100%; giải thích đây là server tính.
 5. Chọn sang **Lắp ráp 3D**, URL phải có `session=<id>`. Bật một part và đánh dấu bước; reload trang để chứng minh part/bước vẫn còn.
 6. Mở **Tài khoản** rồi **Trang chủ**, bấm **Tiếp tục** để chứng minh link mở đúng ID phiên.
-7. Nếu có tài khoản ADMIN, vào `pages/admin-content.html`, sửa một field không nhạy cảm và reload trang catalog để chứng minh Content API.
+7. Vào `pages/admin-content.html` bằng tài khoản ADMIN, sửa một field không nhạy cảm, rồi bấm **Kiểm chứng trên trang công khai** để mở tab đối chiếu — chứng minh dữ liệu đi thẳng từ MySQL ra trang công khai.
+
+### Chuẩn bị tài khoản ADMIN trước buổi demo
+
+Đăng ký trên website luôn tạo role `USER` (`server/services/auth.service.js`), nên
+khu vực quản trị **không thể** mở bằng tài khoản vừa đăng ký. Chuẩn bị trước bằng một
+trong hai lệnh sau, chạy một lần trên máy demo:
+
+```powershell
+npm run create-admin -- --email=admin@robotlab.local --name="Quản trị nội dung"
+npm run create-admin -- --email=tai-khoan-da-co@example.com --promote
+```
+
+Lệnh thứ nhất tạo tài khoản quản trị mới và hỏi mật khẩu trực tiếp (không hiện trên
+màn hình, không lưu vào lịch sử shell). Lệnh thứ hai nâng quyền cho một tài khoản đã
+đăng ký sẵn. Giữ lại **cả hai** tài khoản khi demo: một `USER` để diễn luồng sinh
+viên, một `ADMIN` để diễn luồng quản trị — đó là cách cho thấy phân quyền có thật.
+
+Nếu mở trang quản trị mà chưa đăng nhập hoặc đang dùng tài khoản `USER`, trang sẽ
+hiện đúng lý do kèm lối sang trang đăng nhập, không phải màn hình trắng.
 
 ## 9. Điều cần nói trung thực nếu bị hỏi sâu
 
@@ -184,6 +203,7 @@ npm test
 npm run test:ui
 npm run test:ui:sessions
 npm run test:ui:personalization
+npm run test:ui:phase3
 ```
 
 Nếu MySQL chưa kết nối, kiểm tra `/api/health` trước. Nếu trả `not_configured`, kiểm tra đủ năm biến `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` trong môi trường chạy server; không đưa file `.env` vào Git.

@@ -10,10 +10,12 @@
   "scripts": {
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
+    "create-admin": "node database/create-admin.cjs",
     "test": "node --test tests/server/**/*.test.cjs",
     "test:ui": "node tests/ui-smoke.cjs",
     "test:ui:sessions": "node tests/ui-session-flow.cjs",
-    "test:ui:personalization": "node tests/ui-personalization.cjs"
+    "test:ui:personalization": "node tests/ui-personalization.cjs",
+    "test:ui:phase3": "node tests/ui-phase3.cjs"
   },
   "dependencies": {
     "cors": "^2.8.5",

@@ -15,12 +15,15 @@
             rel="stylesheet"
             href="../assets/css/style.css"
     >
+
+    <script src="../assets/js/tooltip.js" defer></script>
 </head>
 
 <body class="assembly-3d-page">
 
 <header class="assembly-3d-header">
-    <a class="assembly-3d-back" href="lap-rap.html">
+    <a class="assembly-3d-back" href="lap-rap.html"
+       data-tooltip="Về bảng chuẩn bị linh kiện. Tiến độ 3D đã lưu vẫn được giữ nguyên.">
         <span aria-hidden="true">←</span>
         Quay lại thư viện
     </a>
@@ -46,12 +49,17 @@
         <div id="assembly-3d-canvas"></div>
 
         <div class="assembly-3d-toolbar" role="group" aria-label="Điều khiển góc nhìn mô hình">
-            <button id="assembly-3d-rotate-left" type="button" aria-label="Xoay mô hình sang trái">↶</button>
-            <button id="assembly-3d-focus" type="button" aria-label="Căn giữa mô hình">◎</button>
-            <button id="assembly-3d-rotate-right" type="button" aria-label="Xoay mô hình sang phải">↷</button>
+            <button id="assembly-3d-rotate-left" type="button" aria-label="Xoay mô hình sang trái"
+                    data-tooltip="Xoay sang trái">↶</button>
+            <button id="assembly-3d-focus" type="button" aria-label="Căn giữa mô hình"
+                    data-tooltip="Căn mô hình vào giữa khung nhìn">◎</button>
+            <button id="assembly-3d-rotate-right" type="button" aria-label="Xoay mô hình sang phải"
+                    data-tooltip="Xoay sang phải">↷</button>
             <span aria-hidden="true"></span>
-            <button id="assembly-3d-zoom-out" type="button" aria-label="Thu nhỏ mô hình">−</button>
-            <button id="assembly-3d-zoom-in" type="button" aria-label="Phóng to mô hình">+</button>
+            <button id="assembly-3d-zoom-out" type="button" aria-label="Thu nhỏ mô hình"
+                    data-tooltip="Thu nhỏ">−</button>
+            <button id="assembly-3d-zoom-in" type="button" aria-label="Phóng to mô hình"
+                    data-tooltip="Phóng to">+</button>
         </div>
 
         <p class="assembly-3d-view-hint">Kéo để xoay · Cuộn để thu phóng</p>
@@ -97,10 +105,12 @@
         </div>
 
         <div class="assembly-3d-panel-actions">
-            <button id="assembly-3d-explode" type="button" aria-pressed="false">
+            <button id="assembly-3d-explode" type="button" aria-pressed="false"
+                    data-tooltip="Giãn các nhóm linh kiện ra xa nhau để nhìn rõ từng bộ phận. Không làm thay đổi tiến độ.">
                 Tách linh kiện
             </button>
-            <button id="assembly-3d-reset" type="button">
+            <button id="assembly-3d-reset" type="button"
+                    data-tooltip="Gỡ toàn bộ linh kiện khỏi mô hình và xóa tiến độ 3D đã lưu của phiên này.">
                 Lắp lại từ đầu
             </button>
         </div>
