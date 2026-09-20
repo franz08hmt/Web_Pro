@@ -38,23 +38,6 @@ const storage = {
   }
 };
 
-// Render trang Linh Kiện (pages/linh-kien.html)
-function setupComponents() {
-  const componentContainer = document.querySelector("#component-list");
-  if (!componentContainer || componentsData.length === 0) return;
-
-  componentContainer.innerHTML = componentsData.map((item) => `
-    <article class="card component-card">
-      <figure class="media-placeholder card-image">
-        <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" width="1024" height="1024" loading="lazy" decoding="async">
-      </figure>
-      <span class="card-kicker">${escapeHtml(item.category)}</span>
-      <h3>${escapeHtml(item.name)}</h3>
-      <p>${escapeHtml(item.description)}</p>
-    </article>
-  `).join("");
-}
-
 // Bổ sung bảng thông số kỹ thuật vào các thẻ linh kiện tĩnh.
 // Số lượng thẻ trong HTML không thay đổi, chỉ thêm nội dung bên trong.
 function setupComponentSpecs() {
@@ -456,7 +439,6 @@ async function setupAssembly() {
 }
 
 // Khởi chạy hệ thống
-setupComponents();
 setupComponentSpecs();
 setupCompareTable();
 setupCatalog();

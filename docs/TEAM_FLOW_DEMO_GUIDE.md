@@ -195,6 +195,14 @@ hiện đúng lý do kèm lối sang trang đăng nhập, không phải màn hì
 - Three.js model hiện là mô hình procedural minh họa theo component, không tuyên bố là bản CAD/GLB có kích thước cơ khí chính xác.
 - Không nêu mật khẩu, chuỗi kết nối DB hay nội dung `.env` khi trình bày.
 
+## 9b. Nhật ký lỗi đã tìm và xử lý
+
+Ghi lại đây để nhóm không hỏi lại câu đã trả lời và không nhầm là bug đang mở.
+
+| Ngày | Ai phát hiện | Mô tả | Nguyên nhân | Cách xử lý | Bằng chứng |
+| --- | --- | --- | --- | --- | --- |
+| 2026-09-21 | Phạm Tuấn Anh | Nghi ngờ hàm khởi tạo trang Linh kiện gọi sai vùng chứa (catalog). | `setupComponents()` trong `main.js` trỏ tới `#component-list`, một ID từ bản HTML trước đợt redesign UI (`f97f2d7`). Trang `linh-kien.html` đã đổi sang `#component-catalog` từ đó; hàm không còn tìm thấy phần tử nên luôn thoát sớm — **vô hại nhưng là code chết**, không phải bug hiển thị cho người dùng thấy. | Xóa hẳn `setupComponents()` và lệnh gọi ở cuối `main.js`, không sửa lại ID. Lý do không sửa ID: nếu trỏ đúng `#component-catalog`, hàm sẽ ghi đè 9 thẻ tĩnh dự phòng bằng dữ liệu không có `data-component-id`, làm hỏng phần thông số kỹ thuật, rồi bị `component-catalog-api.js` ghi đè lần nữa ngay sau — gây nháy nội dung sai trước khi API tải xong. Trang Linh kiện hiện chỉ còn hai đường vẽ dữ liệu: thẻ tĩnh dự phòng có sẵn trong HTML (được `setupComponentSpecs()` bổ sung thông số), và `component-catalog-api.js` thay toàn bộ bằng dữ liệu thật khi Content API sẵn sàng. | `assets/js/main.js` (đã xóa hàm `setupComponents`); `pages/linh-kien.html` dòng 107 (`#component-catalog`); `assets/js/component-catalog-api.js`. Kiểm chứng lại: `npm run test:ui`, `npm test`. |
+
 ## 10. Lệnh kiểm chứng trước khi bảo vệ
 
 ```powershell
