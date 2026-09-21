@@ -22,7 +22,7 @@ function loadAssemblyContract() {
 }
 
 test("3D assembly uses the local Three.js bundle and gives a readable fallback when unavailable", () => {
-  assert.match(pageSource, /src="\/vendor\/three\/three\.min\.js"/);
+  assert.match(pageSource, /src="\/vendor\/three\/three\.min\.js\?v=20260921\.1"/);
   assert.doesNotMatch(pageSource, /cdn\.jsdelivr\.net/);
   assert.match(assemblySource, /if \(!window\.THREE \|\| !window\.createAssemblyPart\)/);
   assert.match(assemblySource, /Không thể tải trình dựng 3D/);

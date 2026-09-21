@@ -35,6 +35,24 @@ test("request encoding filter does not rewrite static frontend resources", () =>
   assert.match(filterSource, /"\/api\/\*"/);
 });
 
+test("HTML pages cache-bust every local JavaScript resource", () => {
+  const htmlPaths = [
+    path.join(projectRoot, "index.html"),
+    ...fs.readdirSync(path.join(projectRoot, "pages"))
+      .filter((name) => name.endsWith(".html"))
+      .map((name) => path.join(projectRoot, "pages", name))
+  ];
+
+  for (const htmlPath of htmlPaths) {
+    const html = fs.readFileSync(htmlPath, "utf8");
+    const localScripts = [...html.matchAll(/<script[^>]+src="((?:\.\.\/)?assets\/[^"?]+\.js|\/vendor\/[^"?]+\.js)(?:\?[^\"]*)?"/g)];
+
+    for (const [, source] of localScripts) {
+      assert.match(html, new RegExp(`${source.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\?v=20260921\\.1`), `${path.basename(htmlPath)} must refresh ${source}`);
+    }
+  }
+});
+
 test("Tomcat exploded frontend preserves the source bytes", (context) => {
   const sourcePath = path.join(projectRoot, "index.html");
   const deployedPath = path.join(
