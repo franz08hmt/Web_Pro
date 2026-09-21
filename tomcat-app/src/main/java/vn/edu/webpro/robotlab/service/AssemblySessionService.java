@@ -10,4 +10,7 @@ public final class AssemblySessionService {
     public AssemblySessionService(AssemblySessionDao sessions,RobotDao robots){this.sessions=sessions;this.robots=robots;}
     public AssemblySession create(long userId,String robotId)throws SQLException{if(robotId==null||!robotId.matches("[a-z0-9]+(?:-[a-z0-9]+)*")||!robots.exists(robotId))throw new IllegalArgumentException("robot");return sessions.createOrResume(userId,robotId);}
     public AssemblySession get(long userId,long sessionId)throws SQLException{AssemblySession value=sessions.find(sessionId,userId);if(value==null)throw new IllegalArgumentException("missing");return value;}
+    public AssemblySession component(long userId,long sessionId,String componentId,boolean prepared)throws SQLException{return sessions.setComponent(sessionId,userId,componentId,prepared);}
+    public AssemblySession step(long userId,long sessionId,String stepId,String status)throws SQLException{return sessions.setStep(sessionId,userId,stepId,status);}
+    public AssemblySession visual(long userId,long sessionId,String componentId,boolean assembled)throws SQLException{return sessions.setVisual(sessionId,userId,componentId,assembled);}
 }
