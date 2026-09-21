@@ -7,6 +7,7 @@ import java.util.Map;
 
 /** Centralizes JDBC connection configuration outside controllers and JSPs. */
 public final class DatabaseConnectionFactory {
+    private static final String MYSQL_DRIVER = "com.mysql.cj.jdbc.Driver";
     private final Map<String, String> environment;
 
     public DatabaseConnectionFactory(Map<String, String> environment) {
@@ -22,10 +23,20 @@ public final class DatabaseConnectionFactory {
         if (!isConfigured()) {
             throw new IllegalStateException("Database configuration is incomplete.");
         }
+        ensureDriverLoaded();
         String url = "jdbc:mysql://" + environment.get("DB_HOST") + ":" + environment.get("DB_PORT")
                 + "/" + environment.get("DB_NAME")
                 + "?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Ho_Chi_Minh";
         return DriverManager.getConnection(url, environment.get("DB_USER"), environment.get("DB_PASSWORD"));
+    }
+
+    /** Tomcat needs an explicit driver load when the connector lives in WEB-INF/lib. */
+    public static void ensureDriverLoaded() throws SQLException {
+        try {
+            Class.forName(MYSQL_DRIVER);
+        } catch (ClassNotFoundException exception) {
+            throw new SQLException("MySQL JDBC driver is unavailable in WEB-INF/lib.", exception);
+        }
     }
 
     private boolean hasValue(String key) {

@@ -1,12 +1,13 @@
 package vn.edu.webpro.robotlab.model;
 
 import java.util.Map;
+import vn.edu.webpro.robotlab.dao.DatabaseConnectionFactory;
 import vn.edu.webpro.robotlab.service.DatabaseHealthService;
 import vn.edu.webpro.robotlab.service.PasswordService;
 
 /** Lightweight no-dependency test, runnable with the JDK before Maven is installed. */
 public final class HealthPayloadTest {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         HealthPayload payload = new HealthPayload("robot-assembly-lab-api", "ok", "connected");
         String expected = "{\"data\":{\"service\":\"robot-assembly-lab-api\",\"status\":\"ok\",\"database\":\"connected\"}}";
         if (!expected.equals(payload.toJson())) {
@@ -17,6 +18,8 @@ public final class HealthPayloadTest {
         if (!"not_configured".equals(databaseStatus)) {
             throw new AssertionError("A missing database configuration must not attempt a connection.");
         }
+
+        DatabaseConnectionFactory.ensureDriverLoaded();
 
         Component component = new Component("battery-holder", "Hộp pin AA 4", "Nguồn điện",
                 "/assets/images/battery.png", "Cấp nguồn.", "{\"Cấu hình\":\"4 viên AA\"}");
