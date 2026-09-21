@@ -42,4 +42,12 @@ public final class ComponentDao {
             }
         }
     }
+
+    public boolean remove(String componentId) throws SQLException {
+        try (Connection connection = connections.openConnection();
+             PreparedStatement statement = connection.prepareStatement("DELETE FROM components WHERE id = ?")) {
+            statement.setString(1, componentId);
+            return statement.executeUpdate() > 0;
+        }
+    }
 }
