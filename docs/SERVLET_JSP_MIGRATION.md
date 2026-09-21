@@ -69,6 +69,7 @@ JSP hoặc Git.
 
 - Kiểm tra JSON: `http://localhost:8080/api/health`
 - Xem luồng MVC: `http://localhost:8080/architecture`
+- Xem phiên đăng nhập/JSP: `http://localhost:8080/account`
 
 ## Không làm trong đợt này
 
