@@ -56,11 +56,6 @@
                             <directory>${project.basedir}/../pages</directory>
                             <targetPath>pages</targetPath>
                         </resource>
-                        <resource>
-                            <directory>${project.basedir}/../node_modules/three/build</directory>
-                            <includes><include>three.min.js</include></includes>
-                            <targetPath>vendor/three</targetPath>
-                        </resource>
                     </webResources>
                 </configuration>
             </plugin>
