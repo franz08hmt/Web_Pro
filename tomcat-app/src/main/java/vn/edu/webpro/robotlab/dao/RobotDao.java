@@ -51,6 +51,7 @@ public final class RobotDao {
         }
         return parts;
     }
+    public boolean hasComponent(String robotId,String componentId)throws SQLException{try(Connection c=connections.openConnection();PreparedStatement s=c.prepareStatement("SELECT component_id FROM robot_components WHERE robot_id=? AND component_id=?")){s.setString(1,robotId);s.setString(2,componentId);try(ResultSet r=s.executeQuery()){return r.next();}}}
 
     public Robot create(Robot robot)throws SQLException{try(Connection c=connections.openConnection();PreparedStatement s=c.prepareStatement("INSERT INTO robots (id,name,level,summary,image,build_time,main_sensor,skills,wiring) VALUES (?,?,?,?,?,?,?,?,CAST(? AS JSON))")){bind(s,robot,false);s.executeUpdate();return robot;}}
     public Robot update(String id,Robot robot)throws SQLException{try(Connection c=connections.openConnection();PreparedStatement s=c.prepareStatement("UPDATE robots SET name=?,level=?,summary=?,image=?,build_time=?,main_sensor=?,skills=?,wiring=CAST(? AS JSON) WHERE id=?")){bind(s,robot,true);s.setString(9,id);if(s.executeUpdate()==0)return null;return new Robot(id,robot.name(),robot.level(),robot.summary(),robot.image(),robot.buildTime(),robot.mainSensor(),robot.skills(),robot.wiringJson());}}
