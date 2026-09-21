@@ -364,7 +364,7 @@
 
   .feature-list { padding: 0; list-style: none; }
   .feature-list li { display: flex; gap: 12px; padding: 15px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
-  .feature-list li::before { content: "✓"; color: var(--success); flex-shrink: 0; }
+  .feature-list li::before { content: "\2713"; color: var(--success); flex-shrink: 0; }
 
   .final-cta { display: flex; align-items: center; justify-content: space-between; gap: 32px; border-block: 1px solid var(--line); background: var(--bg-raised); }
   .final-cta h2 { max-width: 26ch; }
@@ -480,7 +480,7 @@
   /* Trạng thái chọn không chỉ dựa vào màu: thêm viền dày và dấu tick. */
   .filter-button.is-active { color: #14181a; background: var(--accent); border-color: var(--accent); font-weight: 600; }
   .filter-button.is-active span { color: #14181a; background: rgb(255 255 255 / .35); }
-  .filter-button.is-active::before { content: "✓"; font-weight: 700; }
+  .filter-button.is-active::before { content: "\2713"; font-weight: 700; }
 
   /* ---------- Bảng dữ liệu ---------- */
   .table-scroll:focus-visible { outline: 3px solid var(--accent-strong); outline-offset: 2px; }

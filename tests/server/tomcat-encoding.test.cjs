@@ -53,6 +53,28 @@ test("HTML pages cache-bust every local JavaScript resource", () => {
   }
 });
 
+test("HTML pages cache-bust every local stylesheet", () => {
+  const htmlPaths = [
+    path.join(projectRoot, "index.html"),
+    ...fs.readdirSync(path.join(projectRoot, "pages"))
+      .filter((name) => name.endsWith(".html"))
+      .map((name) => path.join(projectRoot, "pages", name))
+  ];
+
+  for (const htmlPath of htmlPaths) {
+    const html = fs.readFileSync(htmlPath, "utf8");
+    const localStylesheets = [...html.matchAll(/<link[^>]+href="((?:\.\.\/)?assets\/[^"?]+\.css)(?:\?[^\"]*)?"[^>]*>/gs)];
+
+    for (const [, source] of localStylesheets) {
+      assert.match(
+        html,
+        new RegExp(`${source.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\?v=20260921\\.2`),
+        `${path.basename(htmlPath)} must refresh ${source}`
+      );
+    }
+  }
+});
+
 test("Tomcat exploded frontend preserves the source bytes", (context) => {
   const sourcePath = path.join(projectRoot, "index.html");
   const deployedPath = path.join(
