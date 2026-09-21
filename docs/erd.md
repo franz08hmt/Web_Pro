@@ -44,20 +44,16 @@ erDiagram
         VARCHAR step_id PK, FK
     }
 
+    SESSION_VISUAL_PARTS {
+        BIGINT_UNSIGNED session_id PK, FK
+        VARCHAR robot_id FK
+        VARCHAR component_id PK, FK
+    }
+
     LIBRARY_RESOURCES {
         VARCHAR id PK
         VARCHAR robot_id FK
     }
-
-    AUTH_SESSIONS {
-        BIGINT_UNSIGNED id PK
-        BIGINT_UNSIGNED user_id FK
-        CHAR token_hash UK
-        DATETIME expires_at
-        DATETIME revoked_at
-    }
-
-    USERS ||--o{ AUTH_SESSIONS : authenticates
 
     USERS ||--o{ ASSEMBLY_SESSIONS : creates
 
@@ -88,5 +84,6 @@ Khóa ngoại kép: `(session_id, robot_id)` tham chiếu `assembly_sessions(id,
 `session_components(robot_id, component_id)` tham chiếu `robot_components`;
 `session_steps(robot_id, step_id)` tham chiếu `assembly_steps(robot_id, id)`;
 `session_visual_parts(robot_id, component_id)` tham chiếu `robot_components`.
-Các khóa BIGINT là UNSIGNED, serialize ra API thành chuỗi. Xem `content/DATABASE.md`
-và `content/TEAM_HANDOFF.md` cho ánh xạ SQL/API và migrations 002–003.
+Các khóa BIGINT là UNSIGNED. Xác thực runtime dùng `HttpSession` do Tomcat quản
+lý; bảng `users` chỉ lưu tài khoản, mật khẩu đã băm và role. Xem
+`database/schema.sql` và `docs/ARCHITECTURE.md` để đối chiếu SQL với DAO.

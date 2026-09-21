@@ -19,5 +19,5 @@ mục "Nguồn hình ảnh" trong `pages/thu-vien.html` và trong file này.
 
 ## Ảnh khác của dự án
 
-Ảnh trong `assets/images/robots/`, `assets/images/components/` và
-`assets/images/assembly/` là tài nguyên sẵn có của nhóm, không thuộc phạm vi file này.
+Ảnh trong `assets/images/robots/` và `assets/images/components/` là tài nguyên
+sẵn có của nhóm, không thuộc phạm vi file này.

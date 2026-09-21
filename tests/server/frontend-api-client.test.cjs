@@ -20,7 +20,7 @@ function response(body, status = 200) {
 }
 
 function loadClient(fetch) {
-  const window = { location: { origin: "http://127.0.0.1:3000" } };
+  const window = { location: { origin: "http://localhost:8080" } };
   const document = { querySelector() { return null; } };
   vm.runInNewContext(clientSource, {
     AbortController,

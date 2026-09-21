@@ -1,279 +1,105 @@
 # Robot Assembly Lab
 
-Robot Assembly Lab là website hỗ trợ người học lựa chọn mô hình robot, đối chiếu linh kiện và thực hiện quy trình lắp ráp theo từng bước. Phiên bản đầu tiên được xây dựng bằng HTML, CSS và JavaScript thuần; giai đoạn tiếp theo mở rộng thành ứng dụng full-stack có API, cơ sở dữ liệu, tài khoản người dùng và khả năng lưu tiến độ.
+Ứng dụng Web Java giúp người học chọn mô hình robot, tra cứu linh kiện, thực hiện
+các bước lắp ráp và lưu tiến độ. Runtime duy nhất của dự án là **Java Servlet/JSP
+trên Tomcat 9**; Node.js không chạy backend.
 
-## Trạng thái dự án
-
-### Giai đoạn 1 — Nền tảng web tĩnh
-
-- Hoàn thiện giao diện dùng chung, responsive và nội dung cho các trang chính.
-- Cung cấp ba mô hình: Robot dò đường, Robot tránh vật cản và Cánh tay robot mini.
-- Hỗ trợ tìm kiếm mô hình, lọc linh kiện và kiểm tra danh sách linh kiện bắt buộc.
-- Hiển thị tiến độ chuẩn bị và hướng dẫn lắp ráp theo thứ tự.
-- Có trang chuẩn bị linh kiện và phòng lắp ráp 3D cho ba mẫu robot.
-
-### Giai đoạn 2 — Ứng dụng full-stack
-
-Mục tiêu của giai đoạn này là chuyển dữ liệu tĩnh sang cơ sở dữ liệu, cung cấp REST API, quản lý tài khoản và lưu lại tiến độ lắp ráp của từng người dùng.
-
-Trạng thái hiện tại: Content API, đăng nhập bằng cookie phiên, phân quyền quản trị,
-phiên lắp ráp và đồng bộ tiến độ từ trang chuẩn bị đến phòng 3D đã được tích hợp
-trên nhánh `integration/fullstack-v2`. Trang quản trị nội dung (`pages/admin-content.html`)
-đã dùng chung design system, có cổng đăng nhập rõ lý do, kiểm chứng JSON tại chỗ và
-lối mở trang công khai để đối chiếu dữ liệu vừa lưu; chú thích nổi dùng chung cho
-nút icon, mã trạng thái phiên và ký hiệu nối dây; hiệu ứng hỗ trợ đọc trạng thái
-(lắp linh kiện 3D vào vị trí, camera nội suy, thanh tiến độ mượt, khung xương khi
-đang tải) đều tôn trọng `prefers-reduced-motion`.
-
-## Phạm vi nghiệp vụ giai đoạn 2
-
-### Chức năng bắt buộc
-
-- Đăng ký, đăng nhập, đăng xuất và xác định người dùng hiện tại.
-- Tra cứu mô hình robot, linh kiện, các bước lắp ráp và tài nguyên kỹ thuật từ API.
-- Lưu quan hệ giữa mô hình và linh kiện kèm số lượng bắt buộc.
-- Tạo một phiên lắp ráp cho mô hình được chọn.
-- Lưu trạng thái linh kiện đã chuẩn bị và bước lắp ráp đã hoàn thành.
-- Khôi phục tiến độ khi người dùng đăng nhập lại.
-- Thực hiện mô phỏng lắp ráp 3D và đồng bộ từng bước với phiên lắp ráp.
-- Cung cấp chức năng quản trị nội dung cơ bản cho mô hình, linh kiện, bước lắp ráp và thư viện.
-
-### Chưa đưa vào giai đoạn 2
-
-- Thanh toán và mua bán linh kiện.
-- Chat, mạng xã hội hoặc hệ thống đánh giá công khai.
-- Tích hợp phần cứng robot thực tế qua Bluetooth hoặc cổng nối tiếp.
-
-Các chức năng ngoài phạm vi chỉ được bổ sung sau khi nhóm thống nhất và giảng viên xác nhận.
-
-## Kiến trúc kỹ thuật đề xuất
-
-Để tận dụng kiến thức JavaScript hiện có và hạn chế thay đổi giao diện, nhóm ưu tiên kiến trúc sau:
-
-- **Frontend:** HTML5, CSS3 và JavaScript theo mô-đun.
-- **Backend:** Node.js 20+ và Express.
-- **Database:** MySQL 8+.
-- **Giao tiếp:** REST API sử dụng JSON.
-- **Xác thực:** cookie `HttpOnly` và session hoặc token được quản lý phía server; không lưu token nhạy cảm trong `localStorage`.
-- **Quản lý cấu hình:** biến môi trường, không commit mật khẩu hoặc chuỗi kết nối.
-
-Nếu môn học yêu cầu Java/Spring Boot, nhóm giữ nguyên mô hình dữ liệu và hợp đồng API bên dưới, chỉ thay lớp backend.
+## Kiến trúc đúng theo học phần
 
 ```text
-Trình duyệt
-   |
-   | HTTP / JSON
-   v
-Express REST API
-   |
-   | Truy vấn có tham số
-   v
+Browser (HTML/CSS/JavaScript hoặc JSP)
+        │ HTTP request / JSON
+        ▼
+Servlet Controller
+        ▼
+Service (nghiệp vụ, validation, trạng thái)
+        ▼
+DAO (JDBC + PreparedStatement)
+        ▼
 MySQL
 ```
 
-## Mô hình dữ liệu dự kiến
+- Java 17, Servlet API 4.0.1 (`javax.servlet`), JSP và Tomcat 9.
+- Maven đóng gói WAR; MySQL Connector/J nằm trong `WEB-INF/lib`.
+- `HttpSession`/cookie `JSESSIONID` giữ trạng thái đăng nhập; request ghi dùng CSRF.
+- REST API trả JSON; `/account` và `/architecture` minh họa Servlet chuyển tiếp JSP.
+- Three.js được lưu tại `assets/vendor/three`, không phụ thuộc `node_modules` khi chạy.
 
-| Bảng | Mục đích |
-|---|---|
-| `users` | Tài khoản, mật khẩu đã băm và vai trò người dùng |
-| `robots` | Thông tin mô hình, độ khó, mô tả và hình ảnh |
-| `components` | Danh mục linh kiện và thông tin kỹ thuật |
-| `robot_components` | Số lượng linh kiện bắt buộc của từng mô hình |
-| `assembly_steps` | Các bước lắp ráp có thứ tự và dữ liệu minh họa |
-| `assembly_sessions` | Phiên thực hành của một người dùng với một mô hình |
-| `session_components` | Trạng thái linh kiện đã chuẩn bị trong từng phiên |
-| `session_steps` | Trạng thái hoàn thành của từng bước lắp ráp |
-| `library_resources` | Hình ảnh, tài liệu và đường dẫn tham khảo |
+Giải thích chi tiết và vị trí code: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-Mọi thay đổi schema phải có migration và dữ liệu mẫu tương ứng. Dữ liệu trong `assets/js/data.js` sẽ được dùng làm nguồn seed ban đầu trước khi ngừng sử dụng như nguồn dữ liệu chính.
-
-## REST API dự kiến
-
-| Nhóm | Endpoint chính | Phụ trách |
-|---|---|---|
-| Xác thực | `/api/auth/register`, `/login`, `/logout`, `/me` | Tài |
-| Mô hình | `/api/robots`, `/api/robots/:id` | Nhi |
-| Linh kiện | `/api/components`, `/api/components/:id` | Nhi |
-| Thư viện | `/api/library-resources` | Nhi |
-| Quản trị nội dung | `/api/admin/robots`, `/components`, `/steps`, `/library-resources` | Nhi, Tài review |
-| Phiên lắp ráp | `/api/assembly-sessions` | Tài |
-| Tiến độ linh kiện | `/api/assembly-sessions/:id/components/:componentId` | Tài |
-| Tiến độ từng bước | `/api/assembly-sessions/:id/steps/:stepId` | Tài |
-
-API phải trả về định dạng lỗi thống nhất, kiểm tra dữ liệu đầu vào và sử dụng đúng mã trạng thái HTTP.
-
-## Phân công giai đoạn 2
-
-### Huỳnh Minh Tài — Backend nền tảng và tích hợp
-
-Nhánh đề xuất: `feature/tai-backend-integration`
-
-- Khởi tạo Express, cấu hình môi trường và cấu trúc backend.
-- Xây dựng middleware lỗi, logging, CORS và quy ước response chung.
-- Phát triển đăng ký, đăng nhập, đăng xuất và phân quyền người dùng/quản trị viên.
-- Xây dựng API phiên lắp ráp và kết nối frontend với API dùng chung.
-- Tích hợp các nhánh, review Pull Request, kiểm thử luồng tổng thể và chuẩn bị triển khai.
-- Duy trì design system, header, footer và trải nghiệm nhất quán trên toàn website.
-
-### Văn Phạm Thảo Nhi — Cơ sở dữ liệu, API nội dung và trang quản trị
-
-Nhánh đề xuất: `feature/nhi-database-content-api`
-
-- Thiết kế ERD, data dictionary, khóa chính/khóa ngoại và ràng buộc dữ liệu.
-- Viết migration, `schema.sql`, `seed.sql` và chuyển dữ liệu mẫu từ `data.js` vào MySQL.
-- Phát triển API mô hình, linh kiện, quan hệ linh kiện, bước lắp ráp và thư viện.
-- Thực hiện CRUD quản trị nội dung và kiểm tra dữ liệu đầu vào.
-- Chuẩn hóa mô tả kỹ thuật, đường dẫn hình ảnh và nội dung hướng dẫn.
-- Viết tài liệu API và bộ dữ liệu kiểm thử cho các trường hợp hợp lệ/không hợp lệ.
-
-Đây là nhóm công việc độc lập và có khối lượng lớn hơn giai đoạn trước, giúp cân bằng nhiệm vụ trong nhóm.
-
-### Phạm Tuấn Anh — Tương tác lắp ráp 3D
-
-Nhánh đã tích hợp: `feature/tuananh-operation-responsive`
-
-- Hoàn thiện vùng lắp ráp 3D bằng Three.js theo thiết kế đã thống nhất.
-- Dựng hình học linh kiện, góc nhìn, thu phóng và chế độ tách linh kiện.
-- Tách logic mô phỏng khỏi `main.js` để giảm conflict khi tích hợp.
-- Tài nối mô phỏng với Content API và API phiên để lưu/khôi phục tiến độ.
-- Hoàn thiện thao tác chuột, bàn phím, cảm ứng và responsive.
-- Viết kiểm thử cho trạng thái bước, reset, tiếp tục và hoàn thành mô hình.
-
-Tuấn Anh không nhận thêm CRUD hoặc xác thực trong giai đoạn đầu để tập trung vào phần tương tác khó nhất.
-
-## Thứ tự triển khai và phụ thuộc
-
-1. **Chốt bản web tĩnh:** merge `feature/ui-enhancement-phase-1` vào `integration/group-website`, kiểm thử và merge nhánh tích hợp vào `main`. Gắn tag `v1.0-static` để có điểm khôi phục.
-2. **Chốt hợp đồng dữ liệu:** Nhi hoàn thành ERD và dữ liệu seed; cả nhóm review trước khi viết API.
-3. **Khởi tạo backend:** Tài tạo Express, kết nối MySQL, middleware và cấu hình môi trường.
-4. **API nội dung:** Nhi triển khai API đọc trước, sau đó bổ sung CRUD quản trị.
-5. **Xác thực và phiên lắp ráp:** Tài triển khai tài khoản, phân quyền và API lưu phiên.
-6. **Tích hợp mô phỏng 3D:** Tuấn Anh cung cấp mô hình; Tài nối Content API và API phiên thật.
-7. **Kiểm thử và phát hành:** kiểm tra bảo mật, responsive, dữ liệu, luồng người dùng và tài liệu cài đặt.
-
-Nhi và Tài phải thống nhất schema/response trước khi Tuấn Anh tích hợp lưu tiến độ. Không đổi tên field API sau khi đã chốt nếu chưa thông báo và cập nhật tài liệu.
-
-## Cấu trúc thư mục mục tiêu
+## Thư mục cần biết
 
 ```text
-robot-engine-website/
-|-- index.html
-|-- pages/
-|-- assets/
-|   |-- css/
-|   |-- images/
-|   `-- js/
-|       |-- api.js
-|       |-- main.js
-|       `-- assembly-3d.js
-|-- server/
-|   |-- app.js
-|   |-- routes/
-|   |-- controllers/
-|   |-- services/
-|   |-- repositories/
-|   `-- middleware/
-|-- database/
-|   |-- migrations/
-|   |-- schema.sql
-|   `-- seed.sql
-|-- tests/
-|-- .env.example
-|-- package.json
-`-- README.md
+tomcat-app/
+  pom.xml
+  src/main/java/vn/edu/webpro/robotlab/
+    controller/   Servlet nhận request, trả response/forward JSP
+    service/      Nghiệp vụ và validation
+    dao/          JDBC, SQL và ánh xạ dữ liệu
+    model/        Model Java
+    filter/       UTF-8, request context, xử lý lỗi chung
+  src/main/webapp/WEB-INF/views/   JSP không truy cập trực tiếp
+assets/           CSS, JavaScript, ảnh và Three.js cục bộ
+pages/            Các view HTML phía client
+database/         Schema, seed và migration MySQL
+docs/             Kiến trúc, API, ERD và kịch bản thuyết trình
+tests/server/     Kiểm tra tĩnh tùy chọn cho frontend/cấu hình WAR
 ```
 
-Nền Express, middleware bảo mật, Content API, xác thực, phiên lắp ráp, migration,
-seed và giao diện 3D hiện đã được tích hợp.
+## Chạy bằng IntelliJ + Tomcat
 
-## Quy trình Git
+Yêu cầu: JDK 17, Tomcat 9 và MySQL 8.
 
-- Không phát triển tính năng trực tiếp trên `main`.
-- Giai đoạn full-stack sử dụng nhánh tích hợp `integration/fullstack-v2`.
-- Mỗi thành viên tạo nhánh riêng từ cùng một commit nền đã được chốt trên `main`.
-- Mỗi Pull Request chỉ tập trung vào một mô-đun và phải mô tả schema/API bị ảnh hưởng.
-- Trước khi merge phải chạy kiểm tra cú pháp, test liên quan và `git diff --check`.
-- Không commit `.env`, mật khẩu, token, dữ liệu cá nhân hoặc file database cục bộ.
+1. Tạo database UTF-8, chọn database đó rồi chạy `database/schema.sql` và
+   `database/seed.sql`. Với database cũ, chỉ chạy migration chưa có trong
+   `schema_migrations`.
+2. Trong cấu hình Tomcat, tab **Startup/Connection → Run → Environment Variables**,
+   nhập đủ `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` theo
+   `.env.example`. Tomcat không tự đọc `.env`.
+3. Trong **Deployment**, thêm artifact `robot-assembly-lab-tomcat:war exploded`
+   và đặt **Application context** là `/` vì frontend gọi API cùng origin tại `/api`.
+4. Chạy cấu hình Tomcat, không chạy `index.html` và không dùng `npm run dev`.
+5. Mở `http://localhost:8080/`. Kiểm tra kết nối tại
+   `http://localhost:8080/api/health`.
 
-## Tiêu chí hoàn thành giai đoạn 2
-
-- Project chạy được từ hướng dẫn trong README trên một máy mới.
-- Database có migration và seed tái tạo được dữ liệu mẫu.
-- API có validation, xử lý lỗi và không trả về mật khẩu hoặc thông tin nhạy cảm.
-- Người dùng có thể đăng nhập, chọn mô hình và lưu/khôi phục tiến độ.
-- Quản trị viên có thể quản lý nội dung cốt lõi.
-- Mô phỏng 3D hoạt động với chuột, bàn phím và responsive cơ bản.
-- Giao diện hoạt động ổn định tại các mốc 375px, 768px, 1024px và 1440px.
-- Không có liên kết hỏng, conflict marker hoặc lỗi JavaScript nghiêm trọng.
-- Pull Request được ít nhất một thành viên khác review trước khi merge.
-
-## Chạy trên máy mới (Windows PowerShell)
-
-Yêu cầu: Node.js 20+, MySQL 8+ và Google Chrome. Chạy từ thư mục gốc dự án:
+Có thể build ngoài IntelliJ bằng:
 
 ```powershell
-npm ci
-npm ci --prefix server/content
-Copy-Item .env.example .env
+mvn -f tomcat-app/pom.xml clean package
 ```
 
-Trong MySQL Workbench, tạo database UTF-8 `robot_assembly_lab`, mở và chạy
-`database/schema.sql`, sau đó chạy `database/seed.sql`. Điền đúng năm biến `DB_*`
-trong `.env`; không commit file này. Có thể dùng tên database khác nếu `DB_NAME`
-khớp với database vừa tạo.
+WAR được tạo tại `tomcat-app/target/robot-assembly-lab.war`.
 
-Nếu database đã có migration 002 và dữ liệu người dùng, **không chạy lại schema/seed**:
-kiểm tra `schema_migrations`, sau đó chỉ chạy
-`database/migrations/003_session_visual_parts.sql` một lần để lưu trạng thái mô hình 3D.
-Các ô 3D từng lưu trong `localStorage` trước migration không được tự nhập vào phiên
-MySQL, vì dữ liệu cũ không gắn với ID phiên; tiến độ chuẩn bị và bước trên server vẫn giữ nguyên.
+## Tài khoản quản trị
+
+Đăng ký trên giao diện tạo tài khoản thường. Sau đó cập nhật quyền trong MySQL:
+
+```sql
+UPDATE users
+SET role = 'admin'
+WHERE email = 'admin@example.com';
+```
+
+Đăng xuất rồi đăng nhập lại để `HttpSession` nhận role mới. Trang quản trị là
+`/pages/admin-content.html`.
+
+## Kiểm tra
+
+Kiểm tra chính là build Maven:
 
 ```powershell
-npm run dev
+mvn -f tomcat-app/pom.xml clean package
 ```
 
-Mở `http://127.0.0.1:3000/`. Kiểm tra
-`http://127.0.0.1:3000/api/health`: `database` phải là `"connected"`. Server phải
-tiếp tục chạy trong terminal; thông báo `Cannot GET /` chỉ xuất hiện ở bản backend
-cũ, không phải bản hiện tại.
-
-Giao diện preview trực tiếp của IntelliJ vẫn dùng được nhưng chỉ dùng dữ liệu dự
-phòng và không thể lưu phiên vào tài khoản. Luồng full-stack phải mở qua port 3000.
-Trên các trang có sidebar, mục Tài khoản hiển thị tên ngắn khi đã đăng nhập.
-Trang chủ đọc phiên cập nhật gần nhất để dẫn về đúng phiên; thanh phần trăm ở đó
-chỉ đo khâu chuẩn bị linh kiện, còn số bước lắp ráp được ghi riêng.
-
-### Tài khoản quản trị cho `pages/admin-content.html`
-
-Đăng ký trên website luôn tạo role `USER`, nên khu vực quản trị không mở được
-bằng tài khoản vừa đăng ký. Chuẩn bị trước bằng một trong hai lệnh:
-
-```powershell
-npm run create-admin -- --email=admin@robotlab.local --name="Quản trị nội dung"
-npm run create-admin -- --email=tai-khoan-da-co@example.com --promote
-```
-
-Lệnh đầu tạo tài khoản quản trị mới và hỏi mật khẩu trực tiếp (không hiện trên
-màn hình, không lưu vào lịch sử shell, không đọc từ tham số dòng lệnh). Lệnh sau
-nâng quyền cho một tài khoản đã đăng ký sẵn. Nếu mở trang mà chưa đăng nhập hoặc
-đang dùng tài khoản `USER`, trang sẽ hiện đúng lý do kèm lối sang trang đăng nhập.
-
-## Kiểm thử
+Nếu máy có Node.js 20, có thể chạy thêm các kiểm tra tĩnh; đây không phải runtime:
 
 ```powershell
 npm test
-npm run test:ui
-npm run test:ui:sessions
-npm run test:ui:personalization
-npm run test:ui:phase3
-node --test tests/content/content.test.cjs tests/content/http.test.cjs tests/content/backend-contract.test.cjs
-node --env-file=server/content/.env tests/content/mysql-smoke.cjs
-node --env-file=server/content/.env tests/content/backend-mysql.cjs
-npm audit --omit=dev --audit-level=high
 ```
 
-`npm run test:ui` tự mở server ở một port trống và dùng Chrome đã cài; không cần
-chạy `npm run dev` song song. Hai lệnh MySQL cuối dùng database `_test` riêng theo
-`server/content/.env.example`, không dùng database production.
+## Tài liệu bảo vệ bài
 
-Quy ước request/response ở [docs/API_CONVENTIONS.md](docs/API_CONVENTIONS.md).
+- [Kiến trúc và luồng request/response](docs/ARCHITECTURE.md)
+- [Quy ước và danh sách API](docs/API_CONVENTIONS.md)
+- [ERD](docs/erd.md)
+- [Luồng demo và câu hỏi giảng viên](docs/TEAM_FLOW_DEMO_GUIDE.md)

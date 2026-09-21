@@ -1,8 +1,0 @@
-{
-  "name": "robot-lab-content",
-  "version": "1.0.0",
-  "private": true,
-  "main": "index.cjs",
-  "scripts": {"test": "node --test ../../tests/content/*.test.cjs"},
-  "devDependencies": {"express": "^5.1.0", "mysql2": "^3.14.0"}
-}

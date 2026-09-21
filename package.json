@@ -1,32 +1,12 @@
 {
-  "name": "robot-assembly-lab",
+  "name": "robot-assembly-lab-source-checks",
   "version": "2.0.0",
   "private": true,
-  "description": "REST API nền tảng cho Robot Assembly Lab.",
-  "main": "server/index.js",
+  "description": "Optional source-level regression checks for the Java Servlet/JSP application.",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "start": "node server/index.js",
-    "dev": "node --watch server/index.js",
-    "create-admin": "node database/create-admin.cjs",
-    "test": "node --test tests/server/**/*.test.cjs",
-    "test:ui": "node tests/ui-smoke.cjs",
-    "test:ui:sessions": "node tests/ui-session-flow.cjs",
-    "test:ui:personalization": "node tests/ui-personalization.cjs",
-    "test:ui:phase3": "node tests/ui-phase3.cjs"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^16.6.1",
-    "express": "^5.1.0",
-    "express-rate-limit": "^8.0.1",
-    "helmet": "^8.1.0",
-    "mysql2": "^3.14.3",
-    "three": "^0.149.0"
-  },
-  "devDependencies": {
-    "playwright-core": "^1.63.0"
+    "test": "node --test tests/server/**/*.test.cjs"
   }
 }
