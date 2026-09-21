@@ -1,0 +1,3 @@
+package vn.edu.webpro.robotlab.service;
+import java.sql.SQLException;import java.util.List;import vn.edu.webpro.robotlab.dao.LibraryResourceDao;import vn.edu.webpro.robotlab.model.LibraryResource;
+public final class LibraryResourceService{private final LibraryResourceDao resources;public LibraryResourceService(LibraryResourceDao resources){this.resources=resources;}public List<LibraryResource> list(int page,int limit,String robotId)throws SQLException{if(page<1||page>100000||limit<1||limit>100)throw new IllegalArgumentException();return resources.list(limit,(page-1)*limit,robotId);}public long count(String robotId)throws SQLException{return resources.count(robotId);}}
