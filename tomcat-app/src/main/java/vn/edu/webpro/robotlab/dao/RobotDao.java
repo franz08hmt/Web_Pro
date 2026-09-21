@@ -52,6 +52,11 @@ public final class RobotDao {
         return parts;
     }
 
+    public Robot create(Robot robot)throws SQLException{try(Connection c=connections.openConnection();PreparedStatement s=c.prepareStatement("INSERT INTO robots (id,name,level,summary,image,build_time,main_sensor,skills,wiring) VALUES (?,?,?,?,?,?,?,?,CAST(? AS JSON))")){bind(s,robot,false);s.executeUpdate();return robot;}}
+    public Robot update(String id,Robot robot)throws SQLException{try(Connection c=connections.openConnection();PreparedStatement s=c.prepareStatement("UPDATE robots SET name=?,level=?,summary=?,image=?,build_time=?,main_sensor=?,skills=?,wiring=CAST(? AS JSON) WHERE id=?")){bind(s,robot,true);s.setString(9,id);if(s.executeUpdate()==0)return null;return new Robot(id,robot.name(),robot.level(),robot.summary(),robot.image(),robot.buildTime(),robot.mainSensor(),robot.skills(),robot.wiringJson());}}
+    public boolean remove(String id)throws SQLException{try(Connection c=connections.openConnection();PreparedStatement s=c.prepareStatement("DELETE FROM robots WHERE id=?")){s.setString(1,id);return s.executeUpdate()>0;}}
+    private void bind(PreparedStatement s,Robot r,boolean withoutId)throws SQLException{int p=1;if(!withoutId)s.setString(p++,r.id());s.setString(p++,r.name());s.setString(p++,r.level());s.setString(p++,r.summary());s.setString(p++,r.image());s.setString(p++,r.buildTime());s.setString(p++,r.mainSensor());s.setString(p++,r.skills());s.setString(p,r.wiringJson());}
+
     private Robot map(ResultSet row) throws SQLException {
         return new Robot(row.getString("id"), row.getString("name"), row.getString("level"),
                 row.getString("summary"), row.getString("image"), row.getString("build_time"),
