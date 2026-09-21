@@ -37,4 +37,10 @@ public final class Json {
         String trimmed = value.trim();
         return trimmed.startsWith("{") && trimmed.endsWith("}") ? trimmed : "{}";
     }
+
+    public static String arrayOrEmpty(String value) {
+        if (value == null) return "[]";
+        String trimmed = value.trim();
+        return trimmed.startsWith("[") && trimmed.endsWith("]") ? trimmed : "[]";
+    }
 }

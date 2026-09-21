@@ -22,5 +22,11 @@ public final class HealthPayloadTest {
         if (!component.toJson().contains("\"specs\":{\"Cấu hình\":\"4 viên AA\"}")) {
             throw new AssertionError("Component JSON must keep MySQL JSON columns as JSON objects.");
         }
+
+        Robot robot = new Robot("line-follower", "Robot dò đường", "Cơ bản", "Theo vạch", "/assets/robot.png",
+                "90 phút", "Cảm biến line", "PWM", "[\"VCC\",\"GND\"]");
+        if (!robot.toJson().contains("\"wiring\":[\"VCC\",\"GND\"]")) {
+            throw new AssertionError("Robot JSON must keep MySQL JSON columns as arrays.");
+        }
     }
 }
