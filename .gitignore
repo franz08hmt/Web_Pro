@@ -5,6 +5,7 @@ Thumbs.db
 *.log
 node_modules/
 coverage/
+target/
 .env
 .env.local
 .env.*.local

@@ -20,3 +20,10 @@
 - [x] Chú thích nổi dùng chung cho nút icon, trạng thái phiên và ký hiệu nối dây.
 - [x] Hiệu ứng hỗ trợ: lắp linh kiện vào vị trí, tách/ghép và camera 3D, thanh tiến độ.
 - [x] Test riêng cho đợt 3: `npm run test:ui:phase3`.
+
+## Chuyển sang Servlet/JSP trên Tomcat
+
+- [ ] Lát cắt 1: Maven WAR, health servlet, JSP minh họa MVC và static resources.
+- [ ] Lát cắt 2: DAO JDBC và API đọc content/robot/linh kiện/bước.
+- [ ] Lát cắt 3: HttpSession, xác thực và phiên lắp ráp.
+- [ ] Lát cắt 4: phòng 3D/admin gọi Servlet API, kiểm thử parity và nghiệm thu.

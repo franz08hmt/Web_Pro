@@ -67,3 +67,27 @@ service/controller.
 - Sau API phiên: tạo/tiếp tục/lưu tiến độ/tải lại chạy bằng double và MySQL adapter.
 - Sau frontend: đăng nhập -> chọn robot -> lưu -> tải lại -> hoàn thành hoạt động
   xuyên suốt trên cùng origin.
+
+---
+
+# Chuyển runtime môn học về Servlet/JSP (Tomcat 9)
+
+## Bối cảnh và quyết định
+
+Giảng viên yêu cầu cấu trúc Java/Tomcat theo nội dung học phần. Runtime Node/Express
+đã tích hợp được giữ nguyên làm đối chiếu trong lúc chuyển dần; bản nộp mới là
+Maven WAR Java 17 chạy trên Tomcat 9 với `javax.servlet`.
+
+## Thứ tự triển khai
+
+1. Thêm `tomcat-app` có Servlet, Service, DAO JDBC, JSP và static resources;
+   kiểm chứng health API + một trang JSP qua Tomcat.
+2. Chuyển API đọc nội dung từ MySQL sang DAO JDBC, giữ contract `/api`.
+3. Chuyển auth/HttpSession và assembly session, sau đó nối lại phòng 3D.
+4. Chuyển admin CRUD, kiểm thử contract và chuẩn bị luồng giải thích với cô.
+
+## Ràng buộc
+
+- Không xóa Node hoặc đổi schema hiện hữu khi Java chưa đạt parity.
+- Servlet/controller không viết SQL; DAO dùng `PreparedStatement`.
+- JSP nằm trong `WEB-INF/views`; response JSON giữ envelope hiện có.
