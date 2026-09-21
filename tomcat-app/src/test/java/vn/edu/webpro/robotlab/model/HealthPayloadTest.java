@@ -16,5 +16,11 @@ public final class HealthPayloadTest {
         if (!"not_configured".equals(databaseStatus)) {
             throw new AssertionError("A missing database configuration must not attempt a connection.");
         }
+
+        Component component = new Component("battery-holder", "Hộp pin AA 4", "Nguồn điện",
+                "/assets/images/battery.png", "Cấp nguồn.", "{\"Cấu hình\":\"4 viên AA\"}");
+        if (!component.toJson().contains("\"specs\":{\"Cấu hình\":\"4 viên AA\"}")) {
+            throw new AssertionError("Component JSON must keep MySQL JSON columns as JSON objects.");
+        }
     }
 }
