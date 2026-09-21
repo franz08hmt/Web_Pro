@@ -13,6 +13,28 @@ test("project tooling is pinned to UTF-8", () => {
   assert.match(editorConfig, /^charset\s*=\s*utf-8$/im);
 });
 
+test("request encoding filter does not rewrite static frontend resources", () => {
+  const filterSource = fs.readFileSync(
+    path.join(
+      projectRoot,
+      "tomcat-app",
+      "src",
+      "main",
+      "java",
+      "vn",
+      "edu",
+      "webpro",
+      "robotlab",
+      "filter",
+      "RequestContextFilter.java"
+    ),
+    "utf8"
+  );
+
+  assert.doesNotMatch(filterSource, /@WebFilter\("\/\*"\)/);
+  assert.match(filterSource, /"\/api\/\*"/);
+});
+
 test("Tomcat exploded frontend preserves the source bytes", (context) => {
   const sourcePath = path.join(projectRoot, "index.html");
   const deployedPath = path.join(

@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import vn.edu.webpro.robotlab.web.ApiResponses;
 
 /** Cross-cutting HTTP work: encoding, request correlation and safe fallback errors. */
-@WebFilter("/*")
+@WebFilter(urlPatterns = {"/api/*", "/account", "/architecture"})
 public final class RequestContextFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
