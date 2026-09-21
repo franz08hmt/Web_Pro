@@ -43,4 +43,25 @@ public final class Json {
         String trimmed = value.trim();
         return trimmed.startsWith("[") && trimmed.endsWith("]") ? trimmed : "[]";
     }
+
+    /** Small strict parser for the flat JSON body accepted by the auth API. */
+    public static String stringField(String body, String key) {
+        if (body == null) throw new IllegalArgumentException("invalid-json");
+        String marker = "\"" + key + "\"";
+        int keyStart = body.indexOf(marker);
+        if (keyStart < 0) throw new IllegalArgumentException("missing-" + key);
+        int colon = body.indexOf(':', keyStart + marker.length());
+        int quote = colon < 0 ? -1 : body.indexOf('"', colon + 1);
+        if (quote < 0) throw new IllegalArgumentException("invalid-json");
+        StringBuilder value = new StringBuilder();
+        boolean escaped = false;
+        for (int index = quote + 1; index < body.length(); index++) {
+            char character = body.charAt(index);
+            if (escaped) { value.append(character); escaped = false; continue; }
+            if (character == '\\') { escaped = true; continue; }
+            if (character == '"') return value.toString();
+            value.append(character);
+        }
+        throw new IllegalArgumentException("invalid-json");
+    }
 }

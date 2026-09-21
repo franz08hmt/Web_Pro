@@ -2,6 +2,7 @@ package vn.edu.webpro.robotlab.model;
 
 import java.util.Map;
 import vn.edu.webpro.robotlab.service.DatabaseHealthService;
+import vn.edu.webpro.robotlab.service.PasswordService;
 
 /** Lightweight no-dependency test, runnable with the JDK before Maven is installed. */
 public final class HealthPayloadTest {
@@ -27,6 +28,12 @@ public final class HealthPayloadTest {
                 "90 phút", "Cảm biến line", "PWM", "[\"VCC\",\"GND\"]");
         if (!robot.toJson().contains("\"wiring\":[\"VCC\",\"GND\"]")) {
             throw new AssertionError("Robot JSON must keep MySQL JSON columns as arrays.");
+        }
+
+        PasswordService passwords = new PasswordService();
+        String hash = passwords.hash("MatKhauAnToan123!");
+        if (!passwords.verify("MatKhauAnToan123!", hash) || passwords.verify("sai-mat-khau", hash)) {
+            throw new AssertionError("PBKDF2 must verify only the original password.");
         }
     }
 }
