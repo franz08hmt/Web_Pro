@@ -64,4 +64,21 @@ public final class Json {
         }
         throw new IllegalArgumentException("invalid-json");
     }
+
+    public static String objectField(String body, String key) {
+        String marker = "\"" + key + "\"";
+        int keyStart = body == null ? -1 : body.indexOf(marker);
+        int colon = keyStart < 0 ? -1 : body.indexOf(':', keyStart + marker.length());
+        int start = colon < 0 ? -1 : body.indexOf('{', colon + 1);
+        if (start < 0) throw new IllegalArgumentException("missing-" + key);
+        int depth = 0; boolean quoted = false; boolean escaped = false;
+        for (int index = start; index < body.length(); index++) {
+            char character = body.charAt(index);
+            if (quoted) { if (escaped) escaped = false; else if (character == '\\') escaped = true; else if (character == '"') quoted = false; continue; }
+            if (character == '"') { quoted = true; continue; }
+            if (character == '{') depth++;
+            if (character == '}' && --depth == 0) return body.substring(start, index + 1);
+        }
+        throw new IllegalArgumentException("invalid-json");
+    }
 }

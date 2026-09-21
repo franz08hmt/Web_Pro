@@ -50,4 +50,6 @@ public final class ComponentDao {
             return statement.executeUpdate() > 0;
         }
     }
+    public Component create(Component component) throws SQLException { try(Connection c=connections.openConnection();PreparedStatement s=c.prepareStatement("INSERT INTO components (id,name,category,image,description,specs) VALUES (?,?,?,?,?,CAST(? AS JSON))")){s.setString(1,component.id());s.setString(2,component.name());s.setString(3,component.category());s.setString(4,component.image());s.setString(5,component.description());s.setString(6,component.specsJson());s.executeUpdate();return component;} }
+    public Component update(String id,Component component) throws SQLException { try(Connection c=connections.openConnection();PreparedStatement s=c.prepareStatement("UPDATE components SET name=?,category=?,image=?,description=?,specs=CAST(? AS JSON) WHERE id=?")){s.setString(1,component.name());s.setString(2,component.category());s.setString(3,component.image());s.setString(4,component.description());s.setString(5,component.specsJson());s.setString(6,id);if(s.executeUpdate()==0)return null;return new Component(id,component.name(),component.category(),component.image(),component.description(),component.specsJson());} }
 }
