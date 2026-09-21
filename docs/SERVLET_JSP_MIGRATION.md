@@ -77,3 +77,15 @@ JSP hoặc Git.
 - Không chạy lại `database/schema.sql`, seed hoặc migration trên database đang
   có dữ liệu.
 - Không commit mật khẩu hay file `.env`.
+
+## Mapping để trình bày request/response
+
+| Request | Controller | Service/DAO | Response |
+| --- | --- | --- | --- |
+| `GET /api/robots` | `RobotServlet` | `RobotService` → `RobotDao` | `{ data, meta }` JSON |
+| `POST /api/auth/login` | `AuthServlet` | `AuthService` → `UserDao` | User JSON + `JSESSIONID` |
+| `POST /api/assembly-sessions` | `AssemblySessionServlet` | `AssemblySessionService` → `AssemblySessionDao` | Phiên của user trong `HttpSession` |
+| `GET /account` | `AccountPageServlet` | `HttpSession` | `request.setAttribute` → `account.jsp` |
+
+`RequestContextFilter` chạy trước servlet: đặt UTF-8, `X-Request-Id` và chặn
+lỗi chưa xử lý để API không trả stack trace. Không có SQL trong JSP hoặc filter.
