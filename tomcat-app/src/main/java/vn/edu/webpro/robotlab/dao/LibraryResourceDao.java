@@ -1,3 +1,120 @@
 package vn.edu.webpro.robotlab.dao;
-import java.sql.*;import java.util.*;import vn.edu.webpro.robotlab.model.LibraryResource;
-public final class LibraryResourceDao{private final DatabaseConnectionFactory connections;public LibraryResourceDao(DatabaseConnectionFactory connections){this.connections=connections;}public List<LibraryResource> list(int limit,int offset,String robotId)throws SQLException{String sql="SELECT id,robot_id,title,type,url,description FROM library_resources"+(robotId==null?"":" WHERE robot_id=?")+" ORDER BY id LIMIT ? OFFSET ?";List<LibraryResource> data=new ArrayList<>();try(Connection c=connections.openConnection();PreparedStatement s=c.prepareStatement(sql)){int p=1;if(robotId!=null)s.setString(p++,robotId);s.setInt(p++,limit);s.setInt(p,offset);try(ResultSet r=s.executeQuery()){while(r.next())data.add(row(r));}}return data;}public long count(String robotId)throws SQLException{try(Connection c=connections.openConnection();PreparedStatement s=c.prepareStatement("SELECT COUNT(*) FROM library_resources"+(robotId==null?"":" WHERE robot_id=?"))){if(robotId!=null)s.setString(1,robotId);try(ResultSet r=s.executeQuery()){r.next();return r.getLong(1);}}}public LibraryResource create(LibraryResource x)throws SQLException{try(Connection c=connections.openConnection();PreparedStatement s=c.prepareStatement("INSERT INTO library_resources (id,robot_id,title,type,url,description) VALUES (?,?,?,?,?,?)")){bind(s,x,false);s.executeUpdate();return x;}}public LibraryResource update(String id,LibraryResource x)throws SQLException{try(Connection c=connections.openConnection();PreparedStatement s=c.prepareStatement("UPDATE library_resources SET robot_id=?,title=?,type=?,url=?,description=? WHERE id=?")){bind(s,x,true);s.setString(6,id);if(s.executeUpdate()==0)return null;return new LibraryResource(id,x.robotId(),x.title(),x.type(),x.url(),x.description());}}public boolean remove(String id)throws SQLException{try(Connection c=connections.openConnection();PreparedStatement s=c.prepareStatement("DELETE FROM library_resources WHERE id=?")){s.setString(1,id);return s.executeUpdate()>0;}}private LibraryResource row(ResultSet r)throws SQLException{return new LibraryResource(r.getString("id"),r.getString("robot_id"),r.getString("title"),r.getString("type"),r.getString("url"),r.getString("description"));}private void bind(PreparedStatement s,LibraryResource x,boolean noId)throws SQLException{int p=1;if(!noId)s.setString(p++,x.id());s.setString(p++,x.robotId());s.setString(p++,x.title());s.setString(p++,x.type());s.setString(p++,x.url());s.setString(p,x.description());}}
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import vn.edu.webpro.robotlab.model.LibraryResource;
+
+/**
+ * Truy cập bảng library_resources bằng JDBC.
+ *
+ * Toàn bộ giá trị do người dùng nhập đều đi qua tham số "?" của
+ * PreparedStatement, không nối chuỗi vào câu SQL.
+ */
+public final class LibraryResourceDao {
+    private final DatabaseConnectionFactory connections;
+
+    public LibraryResourceDao(DatabaseConnectionFactory connections) {
+        this.connections = connections;
+    }
+
+    public List<LibraryResource> list(int limit, int offset, String robotId) throws SQLException {
+        // Chỉ mệnh đề WHERE cố định được ghép thêm, giá trị robotId vẫn là tham số.
+        String sql = "SELECT id, robot_id, title, type, url, description FROM library_resources"
+                + (robotId == null ? "" : " WHERE robot_id = ?")
+                + " ORDER BY id LIMIT ? OFFSET ?";
+
+        List<LibraryResource> data = new ArrayList<>();
+        try (Connection connection = connections.openConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            int index = 1;
+            if (robotId != null) statement.setString(index++, robotId);
+            statement.setInt(index++, limit);
+            statement.setInt(index, offset);
+
+            try (ResultSet rows = statement.executeQuery()) {
+                while (rows.next()) data.add(map(rows));
+            }
+        }
+        return data;
+    }
+
+    public long count(String robotId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM library_resources"
+                + (robotId == null ? "" : " WHERE robot_id = ?");
+
+        try (Connection connection = connections.openConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            if (robotId != null) statement.setString(1, robotId);
+
+            try (ResultSet rows = statement.executeQuery()) {
+                rows.next();
+                return rows.getLong(1);
+            }
+        }
+    }
+
+    public LibraryResource create(LibraryResource resource) throws SQLException {
+        String sql = "INSERT INTO library_resources (id, robot_id, title, type, url, description)"
+                + " VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (Connection connection = connections.openConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            bind(statement, resource, false);
+            statement.executeUpdate();
+            return resource;
+        }
+    }
+
+    public LibraryResource update(String id, LibraryResource resource) throws SQLException {
+        String sql = "UPDATE library_resources"
+                + " SET robot_id = ?, title = ?, type = ?, url = ?, description = ?"
+                + " WHERE id = ?";
+
+        try (Connection connection = connections.openConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            bind(statement, resource, true);
+            statement.setString(6, id);
+            if (statement.executeUpdate() == 0) return null;
+
+            return new LibraryResource(id, resource.robotId(), resource.title(),
+                    resource.type(), resource.url(), resource.description());
+        }
+    }
+
+    public boolean remove(String id) throws SQLException {
+        try (Connection connection = connections.openConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement("DELETE FROM library_resources WHERE id = ?")) {
+            statement.setString(1, id);
+            return statement.executeUpdate() > 0;
+        }
+    }
+
+    private LibraryResource map(ResultSet rows) throws SQLException {
+        return new LibraryResource(
+                rows.getString("id"),
+                rows.getString("robot_id"),
+                rows.getString("title"),
+                rows.getString("type"),
+                rows.getString("url"),
+                rows.getString("description")
+        );
+    }
+
+    /* INSERT có cột id ở đầu, UPDATE thì không — skipId cho biết nên bắt đầu
+       gán tham số từ vị trí nào. */
+    private void bind(PreparedStatement statement, LibraryResource resource, boolean skipId)
+            throws SQLException {
+        int index = 1;
+        if (!skipId) statement.setString(index++, resource.id());
+        statement.setString(index++, resource.robotId());
+        statement.setString(index++, resource.title());
+        statement.setString(index++, resource.type());
+        statement.setString(index++, resource.url());
+        statement.setString(index, resource.description());
+    }
+}

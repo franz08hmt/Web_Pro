@@ -11,7 +11,7 @@ Java biểu diễn dữ liệu, DAO dùng JDBC truy cập MySQL.
 | MVC / Model 2 | Controller không viết SQL; JSP không truy cập database | `controller/`, `service/`, `dao/`, `model/`, `WEB-INF/views/` |
 | Servlet | `@WebServlet`, `doGet`, `doPost`, `doPut`, `doDelete`, override `service` cho PATCH | `tomcat-app/src/main/java/.../controller/` |
 | Request/Response | Đọc query/path/body từ `HttpServletRequest`; đặt status/content type và JSON vào `HttpServletResponse` | `controller/*Servlet.java`, `web/ApiResponses.java` |
-| JSP/EL | Servlet đặt request attribute rồi forward vào JSP nằm dưới `WEB-INF` | `AccountPageServlet`, `ArchitectureServlet`, `WEB-INF/views/` |
+| JSP/EL/JSTL | Servlet đặt request attribute rồi forward vào JSP nằm dưới `WEB-INF`; JSTL `<c:forEach>` duyệt danh sách lấy từ database | `RobotCatalogPageServlet`, `ComponentCatalogPageServlet`, `AccountPageServlet`, `ArchitectureServlet`, `WEB-INF/views/` |
 | Session/Cookie | Tomcat tạo `JSESSIONID`; `HttpSession` lưu `User` và CSRF token | `AuthServlet`, `AssemblySessionServlet`, `AdminAccess` |
 | Filter | Chuẩn hóa UTF-8, gắn request ID và xử lý lỗi chung | `filter/RequestContextFilter.java` |
 | JDBC | Mở `Connection`, dùng `PreparedStatement`, `ResultSet`, đóng bằng try-with-resources | `dao/` |
@@ -54,6 +54,35 @@ trực tiếp file JSP và bỏ qua controller.
 
 `GET /architecture` dùng cùng kiểu luồng qua `ArchitectureServlet` và
 `architecture.jsp`; đây là trang minh họa kiến trúc ngay trong ứng dụng.
+
+### Hai trang JSP đọc thẳng từ database
+
+`GET /robots` và `GET /components` là ví dụ đầy đủ nhất của luồng truyền thống,
+vì dữ liệu đi hết từ MySQL ra tới HTML mà không cần JavaScript:
+
+```text
+Trình duyệt gửi GET /components?page=2
+  → ComponentCatalogPageServlet.doGet(request, response)
+  → đọc tham số page từ HttpServletRequest
+  → ComponentService.list() kiểm tra phân trang
+  → ComponentDao chạy PreparedStatement trên MySQL
+  → request.setAttribute("components", ...) đưa dữ liệu sang view
+  → RequestDispatcher.forward() tới /WEB-INF/views/components.jsp
+  → JSP dùng JSTL <c:forEach> sinh bảng HTML
+  → HttpServletResponse trả HTML đã dựng sẵn
+```
+
+Khác biệt cần nói rõ khi bảo vệ: `/api/components` trả **JSON** cho JavaScript
+render, còn `/components` trả **HTML đã dựng ở server**. Cùng một Service và DAO,
+chỉ khác lớp view. JSP dùng JSTL nên cần thư viện `javax.servlet:jstl` khai báo
+trong `tomcat-app/pom.xml`; Tomcat 9 không có sẵn thư viện này.
+
+> **Lưu ý khi viết JSP:** biểu thức EL kiểu `${user.fullName}` được EL 3.0 của
+> Tomcat 9 phân giải qua `BeanELResolver`, tức là chỉ nhận getter JavaBean
+> (`getFullName()`). Java `record` chỉ sinh accessor `fullName()`, nên các model
+> dùng trong JSP (`User`, `Robot`, `Component`) phải khai báo thêm getter, nếu
+> không trang sẽ trả HTTP 500 kèm `PropertyNotFoundException`. Lỗi này chỉ xuất
+> hiện lúc chạy vì JSP được biên dịch khi có request, `mvn package` không bắt được.
 
 ## 4. Xác thực và phiên lắp ráp
 

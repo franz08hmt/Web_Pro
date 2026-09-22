@@ -1,3 +1,142 @@
 package vn.edu.webpro.robotlab.controller;
-import java.io.IOException;import java.sql.SQLException;import javax.servlet.annotation.WebServlet;import javax.servlet.http.*;import vn.edu.webpro.robotlab.dao.*;import vn.edu.webpro.robotlab.model.Robot;import vn.edu.webpro.robotlab.web.*;
-@WebServlet("/api/admin/robots/*") public final class AdminRobotServlet extends HttpServlet{private final RobotDao robots=new RobotDao(new DatabaseConnectionFactory(System.getenv()));@Override protected void doGet(HttpServletRequest q,HttpServletResponse p)throws IOException{if(AdminAccess.requireAdmin(q,p)==null)return;try{var data=robots.list(100,0);String json=data.stream().map(Robot::toJson).reduce((a,b)->a+","+b).orElse("");ApiResponses.json(p,200,"{\"data\":["+json+"],\"meta\":{\"page\":1,\"limit\":100,\"total\":"+robots.count()+"}}");}catch(SQLException e){ApiResponses.error(p,503,"DEPENDENCY_NOT_READY","Cơ sở dữ liệu chưa được cấu hình.");}}@Override protected void doPost(HttpServletRequest q,HttpServletResponse p)throws IOException{write(q,p,null,true);}@Override protected void doDelete(HttpServletRequest q,HttpServletResponse p)throws IOException{if(AdminAccess.requireAdmin(q,p)==null||!AdminAccess.requireCsrf(q,p))return;String id=q.getPathInfo()==null?"":q.getPathInfo().substring(1);try{if(!robots.remove(id)){ApiResponses.error(p,404,"NOT_FOUND","Không tìm thấy nội dung.");return;}p.setStatus(204);}catch(SQLException e){ApiResponses.error(p,409,"RELATION_CONFLICT","Không thể xóa robot đang được sử dụng.");}}@Override protected void service(HttpServletRequest q,HttpServletResponse p)throws javax.servlet.ServletException,IOException{if("PATCH".equals(q.getMethod())){write(q,p,q.getPathInfo()==null?null:q.getPathInfo().substring(1),false);return;}super.service(q,p);}private void write(HttpServletRequest q,HttpServletResponse p,String old,boolean creating)throws IOException{if(AdminAccess.requireAdmin(q,p)==null||!AdminAccess.requireCsrf(q,p))return;try{String body=q.getReader().lines().reduce("",(a,b)->a+b);Robot r=input(body,creating?null:old);Robot saved=creating?robots.create(r):robots.update(old,r);if(saved==null){ApiResponses.error(p,404,"NOT_FOUND","Không tìm thấy nội dung.");return;}ApiResponses.json(p,creating?201:200,"{\"data\":"+saved.toJson()+"}");}catch(IllegalArgumentException e){ApiResponses.error(p,422,"VALIDATION_ERROR","Dữ liệu robot không hợp lệ.");}catch(SQLException e){ApiResponses.error(p,409,"CONFLICT","Không thể lưu robot.");}}private Robot input(String b,String old){String id=old==null?Json.stringField(b,"id").trim():old;if(!id.matches("[a-z0-9]+(?:-[a-z0-9]+)*"))throw new IllegalArgumentException();String name=Json.stringField(b,"name").trim(),level=Json.stringField(b,"level").trim(),summary=Json.stringField(b,"summary").trim(),image=Json.stringField(b,"image").trim(),time=Json.stringField(b,"buildTime").trim(),sensor=Json.stringField(b,"mainSensor").trim(),skills=Json.stringField(b,"skills").trim(),wiring=Json.objectField(b,"wiring");if(!java.util.Set.of("Cơ bản","Trung bình","Nâng cao").contains(level)||name.isEmpty()||summary.isEmpty())throw new IllegalArgumentException();return new Robot(id,name,level,summary,image,time,sensor,skills,wiring);}}
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Set;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import vn.edu.webpro.robotlab.dao.DatabaseConnectionFactory;
+import vn.edu.webpro.robotlab.dao.RobotDao;
+import vn.edu.webpro.robotlab.model.Robot;
+import vn.edu.webpro.robotlab.web.AdminAccess;
+import vn.edu.webpro.robotlab.web.ApiResponses;
+import vn.edu.webpro.robotlab.web.Json;
+
+/**
+ * CRUD quản trị mô hình robot.
+ *
+ * Mọi phương thức đều đi qua AdminAccess: phải đăng nhập bằng tài khoản ADMIN,
+ * và các thao tác ghi còn phải kèm CSRF token khớp với phiên.
+ */
+@WebServlet("/api/admin/robots/*")
+public final class AdminRobotServlet extends HttpServlet {
+    private static final int HTTP_UNPROCESSABLE_ENTITY = 422;
+    private static final int LIST_LIMIT = 100;
+    private static final Set<String> LEVELS = Set.of("Cơ bản", "Trung bình", "Nâng cao");
+    private static final String ID_PATTERN = "[a-z0-9]+(?:-[a-z0-9]+)*";
+
+    private final RobotDao robots = new RobotDao(new DatabaseConnectionFactory(System.getenv()));
+
+    /* HttpServlet không có doPatch(), nên PATCH được tách khỏi service(). */
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        if ("PATCH".equals(request.getMethod())) {
+            write(request, response, pathId(request), false);
+            return;
+        }
+        super.service(request, response);
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if (AdminAccess.requireAdmin(request, response) == null) return;
+
+        try {
+            List<Robot> data = robots.list(LIST_LIMIT, 0);
+            String json = data.stream()
+                    .map(Robot::toJson)
+                    .reduce((left, right) -> left + "," + right)
+                    .orElse("");
+            ApiResponses.json(response, HttpServletResponse.SC_OK,
+                    "{\"data\":[" + json + "],\"meta\":{\"page\":1,\"limit\":" + LIST_LIMIT
+                            + ",\"total\":" + robots.count() + "}}");
+        } catch (SQLException exception) {
+            ApiResponses.error(response, HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                    "DEPENDENCY_NOT_READY", "Cơ sở dữ liệu chưa được cấu hình.");
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        write(request, response, null, true);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if (AdminAccess.requireAdmin(request, response) == null) return;
+        if (!AdminAccess.requireCsrf(request, response)) return;
+
+        String id = pathId(request) == null ? "" : pathId(request);
+        try {
+            if (!robots.remove(id)) {
+                ApiResponses.error(response, HttpServletResponse.SC_NOT_FOUND,
+                        "NOT_FOUND", "Không tìm thấy nội dung.");
+                return;
+            }
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        } catch (SQLException exception) {
+            // Khóa ngoại chặn xóa khi robot còn được tham chiếu ở bảng khác.
+            ApiResponses.error(response, HttpServletResponse.SC_CONFLICT,
+                    "RELATION_CONFLICT", "Không thể xóa robot đang được sử dụng.");
+        }
+    }
+
+    /** Dùng chung cho POST (tạo mới) và PATCH (cập nhật theo ID cũ). */
+    private void write(HttpServletRequest request, HttpServletResponse response,
+                       String existingId, boolean creating) throws IOException {
+        if (AdminAccess.requireAdmin(request, response) == null) return;
+        if (!AdminAccess.requireCsrf(request, response)) return;
+
+        try {
+            String body = request.getReader().lines().reduce("", (left, right) -> left + right);
+            Robot input = readRobot(body, creating ? null : existingId);
+            Robot saved = creating ? robots.create(input) : robots.update(existingId, input);
+
+            if (saved == null) {
+                ApiResponses.error(response, HttpServletResponse.SC_NOT_FOUND,
+                        "NOT_FOUND", "Không tìm thấy nội dung.");
+                return;
+            }
+            ApiResponses.json(response,
+                    creating ? HttpServletResponse.SC_CREATED : HttpServletResponse.SC_OK,
+                    "{\"data\":" + saved.toJson() + "}");
+        } catch (IllegalArgumentException exception) {
+            ApiResponses.error(response, HTTP_UNPROCESSABLE_ENTITY,
+                    "VALIDATION_ERROR", "Dữ liệu robot không hợp lệ.");
+        } catch (SQLException exception) {
+            ApiResponses.error(response, HttpServletResponse.SC_CONFLICT,
+                    "CONFLICT", "Không thể lưu robot.");
+        }
+    }
+
+    /* Kiểm tra dữ liệu ngay tại biên HTTP: ID phải là slug, độ khó phải nằm
+       trong danh sách cho phép, tên và mô tả không được rỗng. */
+    private Robot readRobot(String body, String existingId) {
+        String id = existingId == null ? Json.stringField(body, "id").trim() : existingId;
+        if (!id.matches(ID_PATTERN)) throw new IllegalArgumentException("id");
+
+        String name = Json.stringField(body, "name").trim();
+        String level = Json.stringField(body, "level").trim();
+        String summary = Json.stringField(body, "summary").trim();
+        String image = Json.stringField(body, "image").trim();
+        String buildTime = Json.stringField(body, "buildTime").trim();
+        String mainSensor = Json.stringField(body, "mainSensor").trim();
+        String skills = Json.stringField(body, "skills").trim();
+        String wiring = Json.objectField(body, "wiring");
+
+        if (!LEVELS.contains(level) || name.isEmpty() || summary.isEmpty()) {
+            throw new IllegalArgumentException("fields");
+        }
+        return new Robot(id, name, level, summary, image, buildTime, mainSensor, skills, wiring);
+    }
+
+    private String pathId(HttpServletRequest request) {
+        String path = request.getPathInfo();
+        return path == null ? null : path.substring(1);
+    }
+}

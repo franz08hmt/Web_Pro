@@ -18,7 +18,7 @@ public final class AccountPageServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         Object value = session == null ? null : session.getAttribute("user");
         if (!(value instanceof User user)) {
-            response.sendRedirect(request.getContextPath() + "/pages/dang-nhap.html");
+            response.sendRedirect(request.getContextPath() + "/pages/tai-khoan.html");
             return;
         }
 

@@ -21,6 +21,12 @@
             <version>4.0.1</version>
             <scope>provided</scope>
         </dependency>
+        <!-- JSTL for the server-rendered JSP views; Tomcat 9 does not ship it. -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
         <!-- JDBC driver only; all SQL remains in DAO classes. -->
         <dependency>
             <groupId>com.mysql</groupId>

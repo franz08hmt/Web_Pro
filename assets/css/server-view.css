@@ -1,0 +1,140 @@
+/* Giao diện cho các trang do Servlet dựng sẵn ở server (JSP dưới WEB-INF).
+   Tách khỏi style.css vì các trang này cố ý giữ HTML tối giản để khi bảo vệ bài
+   có thể xem source và thấy rõ phần do JSP sinh ra. */
+
+:root {
+    --ink: #17252f;
+    --muted: #5b6f7c;
+    --line: #d5dfe6;
+    --accent: #1f6feb;
+    --warn-bg: #fff3f3;
+    --warn-line: #d4404a;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.55;
+    color: var(--ink);
+    max-width: 1080px;
+    margin: 3rem auto;
+    padding: 0 1.5rem;
+}
+
+h1 {
+    font-size: 1.75rem;
+    margin-bottom: .75rem;
+}
+
+.lead {
+    color: var(--muted);
+    border-left: 3px solid var(--accent);
+    padding-left: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+code {
+    background: #eef2f5;
+    padding: .1rem .35rem;
+    border-radius: .25rem;
+    font-size: .92em;
+}
+
+.notice {
+    background: #eef5fb;
+    border: 1px solid var(--line);
+    border-radius: .4rem;
+    padding: .7rem 1rem;
+    margin: 1rem 0;
+}
+
+.notice-error {
+    background: var(--warn-bg);
+    border-color: var(--warn-line);
+    color: #8c1b23;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+caption {
+    text-align: left;
+    color: var(--muted);
+    padding-bottom: .5rem;
+    font-size: .9rem;
+}
+
+th,
+td {
+    border: 1px solid var(--line);
+    padding: .6rem .7rem;
+    text-align: left;
+    vertical-align: top;
+}
+
+thead th {
+    background: #f2f6f9;
+}
+
+tbody tr:nth-child(even) {
+    background: #fafcfd;
+}
+
+.summary {
+    display: block;
+    color: var(--muted);
+    font-size: .88rem;
+    margin-top: .2rem;
+}
+
+.thumb img {
+    object-fit: contain;
+    background: #f2f6f9;
+    border-radius: .3rem;
+}
+
+.paging,
+.links {
+    margin-top: 1.25rem;
+}
+
+.paging a,
+.links a {
+    color: var(--accent);
+}
+
+@media (max-width: 720px) {
+    body {
+        margin: 1.5rem auto;
+    }
+
+    table,
+    thead,
+    tbody,
+    tr,
+    th,
+    td {
+        display: block;
+    }
+
+    thead {
+        display: none;
+    }
+
+    tr {
+        border: 1px solid var(--line);
+        border-radius: .4rem;
+        margin-bottom: .85rem;
+    }
+
+    td {
+        border: 0;
+        border-bottom: 1px solid var(--line);
+    }
+
+    td:last-child {
+        border-bottom: 0;
+    }
+}

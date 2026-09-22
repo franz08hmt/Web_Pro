@@ -14,14 +14,20 @@ phiên lắp ráp → phòng 3D.
 ## Kịch bản demo ngắn
 
 1. Chạy Tomcat và mở `/api/health`; chỉ ra response JSON và trạng thái database.
-2. Mở trang robot; DevTools Network cho thấy `GET /api/robots`.
-3. Trong code, đi theo `RobotServlet → RobotService → RobotDao → MySQL`.
-4. Đăng ký/đăng nhập; mở `/api/auth/me`, giải thích `JSESSIONID`, `HttpSession`
+2. Mở `/components` — trang này do Servlet dựng sẵn ở server. Xem source trang
+   (Ctrl+U) để thấy bảng HTML đã có đủ dữ liệu, không có JavaScript nào gọi API.
+   Đây là câu trả lời trực tiếp cho “setAttribute và forward nằm ở đâu”.
+3. Mở trang robot; DevTools Network cho thấy `GET /api/robots`.
+4. Trong code, đi theo `RobotServlet → RobotService → RobotDao → MySQL`.
+5. Đăng ký/đăng nhập; mở `/api/auth/me`, giải thích `JSESSIONID`, `HttpSession`
    và CSRF token.
-5. Chọn robot, tick linh kiện; mỗi thay đổi gọi API phiên và lưu MySQL.
-6. Vào phòng 3D, lắp/gỡ part; reload trang để chứng minh trạng thái được khôi phục.
-7. Đăng nhập admin, CRUD một nội dung rồi quay lại trang công khai để kiểm tra.
-8. Mở `/account` hoặc `/architecture` để minh họa Servlet forward tới JSP.
+6. Mở `/account` — Servlet đọc `User` từ `HttpSession`, đặt vào request rồi
+   forward sang `account.jsp`. Chưa đăng nhập thì bị redirect về trang đăng nhập.
+7. Chọn robot, tick linh kiện; mỗi thay đổi gọi API phiên và lưu MySQL.
+8. Vào phòng 3D, lắp/gỡ part; reload trang để chứng minh trạng thái được khôi phục.
+9. Đăng nhập admin, CRUD một nội dung rồi mở lại `/components` để thấy dữ liệu
+   mới xuất hiện ngay trong HTML do server dựng.
+10. Mở `/architecture` để tóm tắt lại toàn bộ luồng.
 
 ## Câu hỏi thường gặp
 
@@ -51,9 +57,25 @@ Chỉ DAO mở JDBC connection và viết SQL. Chuỗi chuẩn là
 
 ### “JSP được dùng ở đâu?”
 
-`AccountPageServlet` forward tới `WEB-INF/views/account.jsp`;
-`ArchitectureServlet` forward tới `architecture.jsp`. Đặt JSP dưới `WEB-INF` để
-mọi request phải qua controller.
+Bốn trang, đều đặt JSP dưới `WEB-INF` để mọi request bắt buộc đi qua controller:
+
+| URL | Servlet | Dữ liệu đưa sang JSP |
+| --- | --- | --- |
+| `/robots` | `RobotCatalogPageServlet` | Danh sách robot đọc từ MySQL qua DAO |
+| `/components` | `ComponentCatalogPageServlet` | Danh sách linh kiện, có phân trang |
+| `/account` | `AccountPageServlet` | `User` lấy từ `HttpSession` |
+| `/architecture` | `ArchitectureServlet` | Vài chuỗi minh họa kiến trúc |
+
+Hai trang đầu là ví dụ đủ nhất: `setAttribute` mang `List<Robot>` /
+`List<Component>` sang view, JSP dùng JSTL `<c:forEach>` sinh bảng HTML.
+
+### “Sao vừa có /components vừa có /api/components?”
+
+Cùng một `ComponentService` và `ComponentDao`, chỉ khác lớp view. `/components`
+trả HTML đã dựng sẵn ở server theo kiểu Servlet/JSP truyền thống;
+`/api/components` trả JSON cho JavaScript của các trang trong `pages/`. Mở cả hai
+cạnh nhau là cách nhanh nhất để cho thấy controller và tầng nghiệp vụ dùng chung,
+chỉ đổi cách trả kết quả.
 
 ### “Đăng nhập lưu ở đâu?”
 

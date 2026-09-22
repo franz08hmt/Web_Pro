@@ -19,4 +19,30 @@ public record Component(
                 + ",\"description\":" + Json.quote(description)
                 + ",\"specs\":" + Json.objectOrEmpty(specsJson) + "}";
     }
+
+    /* Getter JavaBean cho JSP: EL 3.0 không đọc được accessor của record.
+       Xem giải thích đầy đủ trong User.java. */
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getSpecsJson() {
+        return specsJson;
+    }
 }

@@ -22,7 +22,10 @@ MySQL
 - Java 17, Servlet API 4.0.1 (`javax.servlet`), JSP và Tomcat 9.
 - Maven đóng gói WAR; MySQL Connector/J nằm trong `WEB-INF/lib`.
 - `HttpSession`/cookie `JSESSIONID` giữ trạng thái đăng nhập; request ghi dùng CSRF.
-- REST API trả JSON; `/account` và `/architecture` minh họa Servlet chuyển tiếp JSP.
+- `/robots` và `/components` là trang JSP do Servlet dựng sẵn ở server: doGet đọc
+  tham số, gọi Service/DAO lấy dữ liệu MySQL, `setAttribute` rồi `forward` sang
+  JSP dùng JSTL. `/account` và `/architecture` cũng đi theo luồng này.
+- REST API trả JSON cho phần giao diện HTML/JavaScript trong `pages/`.
 - Three.js được lưu tại `assets/vendor/three`, không phụ thuộc `node_modules` khi chạy.
 
 Giải thích chi tiết và vị trí code: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
