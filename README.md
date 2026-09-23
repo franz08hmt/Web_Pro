@@ -4,27 +4,31 @@
 các bước lắp ráp và lưu tiến độ. Runtime duy nhất của dự án là **Java Servlet/JSP
 trên Tomcat 9**; Node.js không chạy backend.
 
-## Kiến trúc đúng theo học phần
+## Kiến trúc theo Model 2 (MVC) của học phần
+
+Chia tầng đúng như Chapter 2 slide 5 và Chapter 12 (sách *Murach's Java Servlets and JSP*):
 
 ```text
-Browser (HTML/CSS/JavaScript hoặc JSP)
-        │ HTTP request / JSON
+Browser — view: HTML/JSP
+        │ HTTP request
         ▼
-Servlet Controller
+Servlet — controller (package controller)
+        │ kiểm tra dữ liệu, gọi lớp XxxDB
         ▼
-Service (nghiệp vụ, validation, trạng thái)
-        ▼
-DAO (JDBC + PreparedStatement)
+XxxDB + ConnectionPool + DBUtil — data access layer (package data)
+        │ PreparedStatement
         ▼
 MySQL
 ```
 
-- Java 17, Servlet API 4.0.1 (`javax.servlet`), JSP và Tomcat 9.
-- Maven đóng gói WAR; MySQL Connector/J nằm trong `WEB-INF/lib`.
+Dữ liệu đi giữa các tầng bằng JavaBean trong package `business` (model).
+
+- Java 17, Servlet API 4.0.1 (`javax.servlet`), JSP, JSTL và Tomcat 9.
+- Connection pool khai báo trong `META-INF/context.xml` như Chapter 12 slide 34.
 - `HttpSession`/cookie `JSESSIONID` giữ trạng thái đăng nhập; request ghi dùng CSRF.
-- `/robots` và `/components` là trang JSP do Servlet dựng sẵn ở server: doGet đọc
-  tham số, gọi Service/DAO lấy dữ liệu MySQL, `setAttribute` rồi `forward` sang
-  JSP dùng JSTL. `/account` và `/architecture` cũng đi theo luồng này.
+- `/robots` và `/components` là trang JSP do servlet dựng sẵn ở server: `doGet` đọc
+  tham số, gọi `RobotDB`/`ComponentDB`, `setAttribute` rồi `forward` sang JSP dùng
+  JSTL. `/account` và `/architecture` cũng đi theo luồng này.
 - REST API trả JSON cho phần giao diện HTML/JavaScript trong `pages/`.
 - Three.js được lưu tại `assets/vendor/three`, không phụ thuộc `node_modules` khi chạy.
 
@@ -36,12 +40,13 @@ Giải thích chi tiết và vị trí code: [docs/ARCHITECTURE.md](docs/ARCHITE
 tomcat-app/
   pom.xml
   src/main/java/vn/edu/webpro/robotlab/
-    controller/   Servlet nhận request, trả response/forward JSP
-    service/      Nghiệp vụ và validation
-    dao/          JDBC, SQL và ánh xạ dữ liệu
-    model/        Model Java
+    business/     JavaBean: User, Robot, Component, AssemblySession...
+    controller/   Servlet nhận request, trả JSON hoặc forward sang JSP
+    data/         ConnectionPool, DBUtil và UserDB, RobotDB... (JDBC + SQL)
+    util/         PasswordUtil, SessionUtil, JsonUtil, ValidationUtil...
     filter/       UTF-8, request context, xử lý lỗi chung
-  src/main/webapp/WEB-INF/views/   JSP không truy cập trực tiếp
+  src/main/webapp/META-INF/context.xml   Connection pool jdbc/robotlab
+  src/main/webapp/WEB-INF/views/         JSP không truy cập trực tiếp
 assets/           CSS, JavaScript, ảnh và Three.js cục bộ
 pages/            Các view HTML phía client
 database/         Schema, seed và migration MySQL
@@ -55,11 +60,16 @@ Yêu cầu: JDK 17, Tomcat 9 và MySQL 8.
 
 1. Tạo database UTF-8, chọn database đó rồi chạy `database/schema.sql` và
    `database/seed.sql`. Với database cũ, chỉ chạy migration chưa có trong
-   `schema_migrations`; trước khi chạy WAR mới phải áp dụng
-   `database/migrations/004_account_session_version.sql` nếu chưa có.
-2. Trong cấu hình Tomcat, tab **Startup/Connection → Run → Environment Variables**,
-   nhập đủ `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` theo
-   `.env.example`. Tomcat không tự đọc `.env`.
+   `schema_migrations`. Migration là lệnh DDL nên phải chạy bằng tài khoản MySQL có
+   quyền `CREATE`/`ALTER` (ví dụ `root`), không phải tài khoản ứng dụng.
+2. Trong cấu hình Tomcat của IntelliJ, tab **Server**, ô **VM options**, nhập:
+
+   ```text
+   -DDB_HOST=127.0.0.1 -DDB_PORT=3306 -DDB_NAME=ten_database -DDB_USER=ten_user -DDB_PASSWORD=mat_khau
+   ```
+
+   `META-INF/context.xml` đọc năm giá trị này qua `${DB_HOST}`…, nên mật khẩu
+   không nằm trong Git. Tomcat không tự đọc file `.env`.
 3. Trong **Deployment**, thêm artifact `robot-assembly-lab-tomcat:war exploded`
    và đặt **Application context** là `/` vì frontend gọi API cùng origin tại `/api`.
 4. Chạy cấu hình Tomcat, không chạy `index.html` và không dùng `npm run dev`.

@@ -15,10 +15,10 @@
 <h1>Luồng Servlet/JSP của Robot Assembly Lab</h1>
 <p>Trang này do <code>${controllerName}</code> đặt dữ liệu vào request rồi
    <code>forward()</code> sang JSP. JSP chỉ hiển thị, không truy vấn MySQL.</p>
-<pre class="flow">Browser
-  → ${controllerName}
-  → Service
-  → ${databaseLayer}
+<pre class="flow">Browser (view: HTML/JSP)
+  → ${controllerName} (controller: servlet)
+  → JavaBean trong package business (model)
+  → ${databaseLayer} (data access layer)
   → MySQL
 
 JSON contract: ${apiContract}</pre>

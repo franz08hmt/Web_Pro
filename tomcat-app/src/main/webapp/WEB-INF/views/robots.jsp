@@ -12,7 +12,7 @@
 <h1>Danh mục mô hình robot</h1>
 <p class="lead">
     Trang do <code>RobotCatalogPageServlet</code> dựng ở server:
-    <code>doGet()</code> gọi <code>RobotService</code> &rarr; <code>RobotDao</code> &rarr; MySQL,
+    <code>doGet()</code> gọi <code>RobotDB.selectRobots()</code> &rarr; <code>ConnectionPool</code> &rarr; MySQL,
     đặt danh sách vào request bằng <code>setAttribute("robots", ...)</code>
     rồi <code>forward()</code> sang JSP này. JSP chỉ hiển thị, không mở kết nối database.
 </p>

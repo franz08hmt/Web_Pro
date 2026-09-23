@@ -1,138 +1,127 @@
-# Kiến trúc Servlet/JSP và vị trí code
+# Kiến trúc Servlet/JSP và đối chiếu với slide môn học
 
-Tài liệu này là bản đối chiếu ngắn giữa nội dung học phần và mã nguồn. Dự án giữ
-cấu trúc Java Web truyền thống: Servlet làm controller, JSP/HTML làm view, model
-Java biểu diễn dữ liệu, DAO dùng JDBC truy cập MySQL.
+Dự án đi theo đúng **Model 2 (MVC)** của Chapter 2 và cách truy cập database của
+Chapter 12 (sách *Murach's Java Servlets and JSP*). Tên package và tên lớp được giữ
+giống slide để khi mở code có thể chỉ ngay slide tương ứng.
 
-## 1. Ánh xạ kiến thức đã học
+Đường dẫn Java bắt đầu từ `tomcat-app/src/main/java/vn/edu/webpro/robotlab/`.
 
-| Nội dung | Cách áp dụng | Vị trí code |
-| --- | --- | --- |
-| MVC / Model 2 | Controller không viết SQL; JSP không truy cập database | `controller/`, `service/`, `dao/`, `model/`, `WEB-INF/views/` |
-| Servlet | `@WebServlet`, `doGet`, `doPost`, `doPut`, `doDelete`, override `service` cho PATCH | `tomcat-app/src/main/java/.../controller/` |
-| Request/Response | Đọc query/path/body từ `HttpServletRequest`; đặt status/content type và JSON vào `HttpServletResponse` | `controller/*Servlet.java`, `web/ApiResponses.java` |
-| JSP/EL/JSTL | Servlet đặt request attribute rồi forward vào JSP nằm dưới `WEB-INF`; JSTL `<c:forEach>` duyệt danh sách lấy từ database | `RobotCatalogPageServlet`, `ComponentCatalogPageServlet`, `AccountPageServlet`, `ArchitectureServlet`, `WEB-INF/views/` |
-| Session/Cookie | Tomcat tạo `JSESSIONID`; `HttpSession` lưu `User` và CSRF token | `AuthServlet`, `AssemblySessionServlet`, `AdminAccess` |
-| Filter | Chuẩn hóa UTF-8, gắn request ID và xử lý lỗi chung | `filter/RequestContextFilter.java` |
-| JDBC | Mở `Connection`, dùng `PreparedStatement`, `ResultSet`, đóng bằng try-with-resources | `dao/` |
-| Maven/Tomcat | Đóng gói WAR, Servlet API do Tomcat cung cấp | `tomcat-app/pom.xml`, `WEB-INF/web.xml` |
+## 1. Bốn tầng theo Chapter 2 slide 5
 
-Đường dẫn Java đầy đủ trong bảng bắt đầu từ
-`tomcat-app/src/main/java/vn/edu/webpro/robotlab/`.
+> *"The model consists of business objects like the User object. The view consists
+> of HTML pages and JSPs. The controller consists of servlets. The data access layer
+> consists of classes like the UserDB class..."*
 
-## 2. Luồng request/response điển hình
+| Tầng trên slide | Package trong dự án | Nội dung | Slide mẫu |
+| --- | --- | --- | --- |
+| Model — business objects | `business/` | JavaBean `User`, `Robot`, `Component`, `AssemblySession`… | Ch2 slide 16, Ch6 slide 6 |
+| View | `pages/*.html`, `WEB-INF/views/*.jsp` | HTML/JSP, JSTL, EL | Ch2 slide 6-8, Ch6 |
+| Controller | `controller/` | `XxxServlet` với `doGet/doPost/doPut/doDelete` | Ch2 slide 11-13, Ch5 |
+| Data access layer | `data/` | `ConnectionPool`, `DBUtil`, `UserDB`, `RobotDB`… | Ch12 slide 35-53 |
+| Lớp tiện ích | `util/` | `PasswordUtil`, `SessionUtil`, `JsonUtil`… | Ch7 (`murach.util.CookieUtil`) |
 
-Ví dụ trình duyệt lấy danh sách robot:
+Dự án **không có tầng service**: giống `EmailListServlet`, servlet tự kiểm tra dữ
+liệu rồi gọi lớp `XxxDB`; luật nghiệp vụ nằm trong chính business object (giống lớp
+`Cart` của sách tự có `addItem/removeItem`).
 
-```text
-assets/js/content-api.js
-  → GET /api/robots?page=1&limit=20
-  → RobotServlet.doGet(request, response)
-  → RobotService.list(page, limit)
-  → RobotDao.list(limit, offset)
-  → JDBC PreparedStatement → MySQL
-  → Robot model → JSON
-  → HttpServletResponse 200 application/json;charset=UTF-8
-  → JavaScript render giao diện
-```
+## 2. Đối chiếu chi tiết từng kỹ thuật
 
-Mỗi lớp chỉ giữ một trách nhiệm:
+| Kỹ thuật trên slide | Trong dự án |
+| --- | --- |
+| JavaBean: constructor rỗng, get/set, `Serializable` (Ch6 slide 6) | Mọi lớp trong `business/`. `JavaBeanRulesTest` kiểm tra tự động cả ba quy tắc |
+| `@WebServlet` hoặc `web.xml` (Ch5) | `@WebServlet("/api/robots/*")`… trên từng servlet |
+| `request.getParameter`, `setAttribute`, `forward` (Ch2, Ch12 slide 42-44) | `RobotCatalogPageServlet`, `ComponentCatalogPageServlet`, `AccountPageServlet` |
+| EL `${user.email}` và JSTL `<c:forEach>` (Ch6, Ch12 slide 23) | `WEB-INF/views/robots.jsp`, `components.jsp`, `account.jsp` |
+| `HttpSession` (Ch7) | `util/SessionUtil`: lưu `user` và `csrfToken` trong session |
+| `context.xml` khai báo connection pool (Ch12 slide 34) | `tomcat-app/src/main/webapp/META-INF/context.xml` |
+| Lớp `ConnectionPool` (Ch12 slide 35-37) | `data/ConnectionPool`: `getInstance()`, `getConnection()`, `freeConnection()` |
+| `PreparedStatement` với `?` chống SQL injection (Ch12 slide 17-20) | Mọi câu SQL trong `data/`. Không có câu nào nối chuỗi từ dữ liệu người dùng |
+| Lớp `UserDB` với method `static` (Ch12 slide 45-51) | `data/UserDB`: `insert`, `update`, `emailExists`, `selectUser`… cùng tên với slide |
+| Lớp `DBUtil` đóng tài nguyên trong `finally` (Ch12 slide 52-53) | `data/DBUtil`, dùng trong khối `finally` của mọi method `XxxDB` |
 
-- **Controller/Servlet:** nhận HTTP, gọi service, chọn status code và response.
-- **Service:** validation và quy tắc nghiệp vụ, ví dụ trạng thái phiên lắp ráp.
-- **DAO:** câu SQL và ánh xạ `ResultSet` sang model.
-- **Model:** dữ liệu Java và biểu diễn JSON.
-- **View:** HTML/JSP/CSS/JavaScript hiển thị dữ liệu, không kết nối MySQL.
+## 3. Một request đi qua các tầng thế nào
 
-## 3. Luồng JSP
-
-`GET /account` đi vào `AccountPageServlet`. Servlet đọc `HttpSession` rồi đối chiếu
-`users.session_version` và role trong MySQL; nếu chưa đăng nhập hoặc phiên đã cũ
-thì redirect tới trang đăng nhập. Nếu đã đăng nhập, Servlet đặt thuộc
-tính request rồi dùng `RequestDispatcher.forward()` tới
-`/WEB-INF/views/account.jsp`. Vì JSP nằm dưới `WEB-INF`, người dùng không thể mở
-trực tiếp file JSP và bỏ qua controller.
-
-Luồng tài khoản: `AuthServlet` nhận request/CSRF → `AuthService` kiểm tra dữ liệu
-và mật khẩu → `UserDao` dùng JDBC/PreparedStatement với bảng `users` → Servlet
-trả JSON cho `assets/js/account.js`. `AdminUserServlet` chỉ cho ADMIN phân quyền
-người khác; cập nhật role hoặc mật khẩu làm tăng `session_version`, nên các
-`HttpSession` cũ hết hiệu lực ở request tiếp theo. Không lưu mật khẩu thô hay
-hash trong model `User`, JSP hoặc JSON response.
-
-`GET /architecture` dùng cùng kiểu luồng qua `ArchitectureServlet` và
-`architecture.jsp`; đây là trang minh họa kiến trúc ngay trong ứng dụng.
-
-### Hai trang JSP đọc thẳng từ database
-
-`GET /robots` và `GET /components` là ví dụ đầy đủ nhất của luồng truyền thống,
-vì dữ liệu đi hết từ MySQL ra tới HTML mà không cần JavaScript:
+### Trang dựng ở server (luồng truyền thống)
 
 ```text
 Trình duyệt gửi GET /components?page=2
-  → ComponentCatalogPageServlet.doGet(request, response)
-  → đọc tham số page từ HttpServletRequest
-  → ComponentService.list() kiểm tra phân trang
-  → ComponentDao chạy PreparedStatement trên MySQL
-  → request.setAttribute("components", ...) đưa dữ liệu sang view
-  → RequestDispatcher.forward() tới /WEB-INF/views/components.jsp
-  → JSP dùng JSTL <c:forEach> sinh bảng HTML
-  → HttpServletResponse trả HTML đã dựng sẵn
+  → ComponentCatalogPageServlet.doGet(request, response)        controller
+  → request.getParameter("page")
+  → ComponentDB.selectComponents(limit, offset)                 data access layer
+      → ConnectionPool.getInstance().getConnection()
+      → PreparedStatement "... LIMIT ? OFFSET ?" → ResultSet
+      → mỗi dòng tạo một JavaBean Component bằng setter         model
+      → finally: DBUtil.closeResultSet, closePreparedStatement, freeConnection
+  → request.setAttribute("components", components)
+  → getServletContext().getRequestDispatcher(url).forward(...)
+  → components.jsp dùng <c:forEach> và ${component.name}        view
 ```
 
-Khác biệt cần nói rõ khi bảo vệ: `/api/components` trả **JSON** cho JavaScript
-render, còn `/components` trả **HTML đã dựng ở server**. Cùng một Service và DAO,
-chỉ khác lớp view. JSP dùng JSTL nên cần thư viện `javax.servlet:jstl` khai báo
-trong `tomcat-app/pom.xml`; Tomcat 9 không có sẵn thư viện này.
+### API cho JavaScript
 
-> **Lưu ý khi viết JSP:** biểu thức EL kiểu `${user.fullName}` được EL 3.0 của
-> Tomcat 9 phân giải qua `BeanELResolver`, tức là chỉ nhận getter JavaBean
-> (`getFullName()`). Java `record` chỉ sinh accessor `fullName()`, nên các model
-> dùng trong JSP (`User`, `Robot`, `Component`) phải khai báo thêm getter, nếu
-> không trang sẽ trả HTTP 500 kèm `PropertyNotFoundException`. Lỗi này chỉ xuất
-> hiện lúc chạy vì JSP được biên dịch khi có request, `mvn package` không bắt được.
+```text
+assets/js/content-api.js gửi GET /api/robots?page=1&limit=20
+  → RobotServlet.doGet → RobotDB.selectRobots → List<Robot>
+  → robot.toJson() → HttpServletResponse 200 application/json
+```
 
-## 4. Xác thực và phiên lắp ráp
+Hai kiểu dùng chung tầng `data/` và `business/`, chỉ khác view: `/components` trả
+**HTML dựng ở server**, `/api/components` trả **JSON** cho các trang trong `pages/`.
 
-1. `AuthServlet` nhận đăng ký/đăng nhập và gọi `AuthService`.
-2. `AuthService` gọi `UserDao`; mật khẩu được băm PBKDF2-HMAC-SHA256 trong
-   `PasswordService`.
-3. Khi thành công, `AuthServlet` tạo `HttpSession`, lưu `User` và CSRF token.
-4. Trình duyệt tự gửi cookie `JSESSIONID` trong các request sau.
-5. `AssemblySessionServlet` lấy user từ session; service luôn truyền `userId` vào
-   DAO nên chỉ đọc/ghi phiên thuộc đúng người dùng.
-6. Các request PATCH/PUT và CRUD admin phải gửi `X-CSRF-Token`.
+### Đăng ký — theo đúng thứ tự của EmailListServlet (Ch12 slide 43-44)
 
-## 5. Database
+```text
+AuthServlet.register
+  → // get parameters from the request       fullName, email, password
+  → // validate the parameters               ValidationUtil, UserDB.emailExists(email)
+  → // store data in User object and save    new User(); UserDB.insert(user, hash)
+  → SessionUtil.startSession                 session.setAttribute("user", user)
+```
 
-- `database/schema.sql`: tạo cấu trúc hoàn chỉnh cho database mới.
+Mật khẩu được băm bằng `PasswordUtil.hashPassword` (PBKDF2, có salt) trước khi lưu.
+Tài khoản đăng ký luôn có role `user`: câu `INSERT` trong `UserDB.insert` ghi cứng
+giá trị này, không nhận role từ request.
+
+## 4. Phiên đăng nhập và phân quyền
+
+1. Đăng nhập thành công, `SessionUtil.startSession` tạo `HttpSession` mới, lưu
+   JavaBean `User` và một CSRF token. Tomcat gửi cookie `JSESSIONID`.
+2. Mỗi request cần đăng nhập gọi `SessionUtil.getCurrentUser`, đọc lại `User` từ
+   `UserDB` và so `session_version`. Đổi mật khẩu hoặc đổi quyền làm tăng
+   `session_version`, nên phiên cũ hết hiệu lực ngay.
+3. Trang quản trị gọi `SessionUtil.requireAdmin`; thao tác ghi còn phải gửi header
+   `X-CSRF-Token` khớp với token trong session.
+4. `User.canChangeRoleOf(target)` giữ luật: chỉ ADMIN được đổi quyền, và không được
+   tự đổi quyền của mình.
+
+## 5. Phiên lắp ráp
+
+`AssemblySession` là JavaBean tự giữ luật của mình:
+
+- `canChangeStatusTo(target)`: chỉ cho `READY → IN_PROGRESS → COMPLETED`, và
+  `ABANDONED` khi chưa hoàn thành.
+- `getExpectedPreparationStatus()`: đủ mọi linh kiện bắt buộc thì `READY`.
+  Trình duyệt chỉ gửi "tick linh kiện nào", không tự khai báo được là đã đủ.
+- `getProgressPercent()`: tính lại từ dữ liệu thật mỗi lần trả về.
+
+`AssemblySessionServlet` hỏi các method trên rồi gọi `AssemblySessionDB`. Mọi câu
+SQL của phiên đều kèm `user_id`, nên không đọc hay sửa được phiên của người khác.
+
+## 6. Những chỗ cố ý khác slide
+
+| Slide | Dự án | Lý do |
+| --- | --- | --- |
+| `UserDB` bắt `SQLException`, in ra rồi trả `null`/`0` | Method khai báo `throws SQLException` | Servlet trả mã 503 "database chưa sẵn sàng" thay vì báo nhầm "không tìm thấy" hay "sai mật khẩu" |
+| `ConnectionPool.getConnection()` trả `null` khi lỗi | Ném `SQLException` | Tránh `NullPointerException` ở `connection.prepareStatement(...)` |
+| `context.xml` ghi thẳng user/password | Dùng `${DB_USER}`… lấy từ VM options | Không commit mật khẩu database lên Git |
+| `maxActive`, `maxWait` | `maxTotal`, `maxWaitMillis` | Tomcat 9 dùng DBCP2; đây là tên mới của cùng thuộc tính |
+| Driver `com.mysql.jdbc.Driver` | `com.mysql.cj.jdbc.Driver` | Tên lớp driver của MySQL Connector/J 8 trở lên |
+| Servlet trả trang HTML | Nhiều servlet trong `/api` trả JSON | Các trang trong `pages/` dùng JavaScript (phòng 3D, tick linh kiện) nên cần dữ liệu JSON |
+
+## 7. Database
+
+- `database/schema.sql`: cấu trúc cho database mới (gồm đủ các migration).
 - `database/seed.sql`: dữ liệu robot, linh kiện, quan hệ, bước và thư viện.
 - `database/migrations/`: thay đổi tăng dần cho database đã tồn tại.
-- `DatabaseConnectionFactory`: đọc đúng năm biến `DB_*` và tạo JDBC URL UTF-8.
-- Mỗi DAO dùng tham số `?` trong `PreparedStatement`, không ghép input người dùng
-  trực tiếp vào SQL.
 
-Quan hệ chính xem tại [erd.md](erd.md).
-
-## 6. Frontend và phòng 3D
-
-Các trang công khai vẫn là HTML/JavaScript để giữ giao diện của nhóm. JavaScript
-gọi Servlet API cùng origin qua `assets/js/api.js` và `content-api.js`. Nếu API
-chưa sẵn sàng, một số trang đọc snapshot `assets/js/data.js` để còn hiển thị dữ
-liệu minh họa; khi chạy Tomcat/MySQL, API là nguồn chính.
-
-Phòng 3D dùng Three.js cục bộ tại `assets/vendor/three`. Hình học robot được dựng
-bằng code trong `assets/js/assembly-3d-parts.js`, còn
-`assets/js/assembly-3d.js` điều khiển scene và đồng bộ trạng thái với Servlet API.
-
-## 7. Phân công có thể trình bày
-
-- **Nhi:** schema/seed/migration, dữ liệu robot-linh kiện-bước-thư viện, DAO và
-  CRUD nội dung.
-- **Tuấn Anh:** giao diện và hình học phòng lắp ráp 3D, thao tác camera/linh kiện.
-- **Tài:** Servlet nền tảng, auth/HttpSession, phiên lắp ráp, tích hợp API-client,
-  Tomcat và luồng tổng thể.
-
-Khi bảo vệ, mở lần lượt `RobotServlet` → `RobotService` → `RobotDao` →
-`database/schema.sql`, sau đó mở `content-api.js`. Chuỗi đó trả lời trực tiếp câu
-hỏi “client và server kết nối thế nào, controller ở đâu, database đi qua đâu”.
+Quan hệ các bảng xem tại [erd.md](erd.md).

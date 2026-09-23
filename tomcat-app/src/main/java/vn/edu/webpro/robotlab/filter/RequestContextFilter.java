@@ -10,11 +10,11 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import vn.edu.webpro.robotlab.web.ApiResponses;
+import vn.edu.webpro.robotlab.util.ResponseUtil;
 
 /** Cross-cutting HTTP work: encoding, request correlation and safe fallback errors. */
 @WebFilter(urlPatterns = {"/api/*", "/account", "/architecture"})
-public final class RequestContextFilter implements Filter {
+public class RequestContextFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
@@ -29,10 +29,9 @@ public final class RequestContextFilter implements Filter {
         try {
             chain.doFilter(request, response);
         } catch (Exception exception) {
-            getClass().getName(); // Keeps this class free of a framework-specific logger.
             if (httpResponse.isCommitted()) throw new ServletException(exception);
             if (httpRequest.getRequestURI().contains("/api/")) {
-                ApiResponses.error(httpResponse, 500, "INTERNAL_SERVER_ERROR",
+                ResponseUtil.sendError(httpResponse, 500, "INTERNAL_SERVER_ERROR",
                         "Đã xảy ra lỗi máy chủ. Vui lòng thử lại sau.");
             } else {
                 httpResponse.sendError(500, "Đã xảy ra lỗi máy chủ.");

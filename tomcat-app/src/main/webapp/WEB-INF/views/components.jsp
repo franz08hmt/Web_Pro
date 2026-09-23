@@ -13,7 +13,7 @@
 <p class="lead">
     Trang do <code>ComponentCatalogPageServlet</code> dựng ở server:
     tham số <code>?page=</code> được đọc từ <code>HttpServletRequest</code>,
-    <code>ComponentService</code> kiểm tra phân trang, <code>ComponentDao</code> chạy
+    <code>ComponentDB.selectComponents()</code> lấy kết nối từ <code>ConnectionPool</code> và chạy
     <code>PreparedStatement</code> trên MySQL, kết quả đi qua <code>setAttribute</code>
     rồi <code>forward()</code> tới JSP.
 </p>

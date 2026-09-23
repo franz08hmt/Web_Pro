@@ -1,7 +1,8 @@
 # Quy ước Servlet API
 
 API chạy trong cùng WAR và cùng origin với frontend, dưới `/api`. Servlet nhận
-HTTP; service xử lý nghiệp vụ; DAO dùng JDBC truy cập MySQL.
+HTTP và kiểm tra dữ liệu; lớp `XxxDB` trong package `data` dùng JDBC truy cập MySQL;
+dữ liệu đi giữa các tầng bằng JavaBean trong package `business`.
 
 ## Response
 
@@ -74,7 +75,7 @@ Quản lý quyền chỉ dành cho ADMIN:
 | PATCH | `/api/admin/users/{id}/role` | `{ "role": "USER" }` hoặc `ADMIN`; không được tự đổi quyền, cần CSRF |
 
 Tomcat quản lý cookie `JSESSIONID`. Không lưu mật khẩu hoặc CSRF token trong
-database response. Password hash dùng PBKDF2 trong `PasswordService`.
+database response. Password hash dùng PBKDF2 trong `PasswordUtil`.
 
 ## Phiên lắp ráp
 
@@ -92,8 +93,9 @@ Tất cả endpoint sau yêu cầu đăng nhập. Request thay đổi dữ liệ
 | PUT | `/api/assembly-sessions/{id}/visual-parts/{componentId}` | `{ "isAssembled": true }` |
 
 Trạng thái chính: `PREPARING → READY → IN_PROGRESS → COMPLETED`; có thể chuyển
-sang `ABANDONED` trước khi hoàn tất. `AssemblySessionService` kiểm tra robot,
-component, step, quyền sở hữu và chuyển trạng thái trước khi DAO ghi dữ liệu.
+sang `ABANDONED` trước khi hoàn tất. `AssemblySessionServlet` kiểm tra robot,
+component, step và quyền sở hữu; luật chuyển trạng thái nằm trong JavaBean
+`AssemblySession`; sau đó `AssemblySessionDB` mới ghi dữ liệu.
 
 ## CRUD quản trị
 
@@ -109,7 +111,7 @@ Các route yêu cầu user role `ADMIN` và CSRF token đối với thao tác gh
 ## Vị trí triển khai
 
 - HTTP/controller: `tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller`
-- Nghiệp vụ: `tomcat-app/src/main/java/vn/edu/webpro/robotlab/service`
-- JDBC/SQL: `tomcat-app/src/main/java/vn/edu/webpro/robotlab/dao`
-- JSON/error: `tomcat-app/src/main/java/vn/edu/webpro/robotlab/web`
+- JavaBean và luật nghiệp vụ: `tomcat-app/src/main/java/vn/edu/webpro/robotlab/business`
+- JDBC/SQL: `tomcat-app/src/main/java/vn/edu/webpro/robotlab/data`
+- JSON, session, mật khẩu, kiểm tra dữ liệu: `tomcat-app/src/main/java/vn/edu/webpro/robotlab/util`
 - Client gọi API: `assets/js/api.js`, `assets/js/content-api.js`

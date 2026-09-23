@@ -17,24 +17,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
-import vn.edu.webpro.robotlab.model.Component;
-import vn.edu.webpro.robotlab.model.Robot;
-import vn.edu.webpro.robotlab.model.User;
+import vn.edu.webpro.robotlab.business.Component;
+import vn.edu.webpro.robotlab.business.Robot;
+import vn.edu.webpro.robotlab.business.User;
 
 /**
- * Bảo vệ hợp đồng giữa JSP và model Java.
+ * Hợp đồng giữa JSP và JavaBean (Chapter 6: "Use EL to display properties of JavaBeans").
  *
- * EL 3.0 của Tomcat 9 phân giải ${bean.property} qua BeanELResolver, tức là chỉ
- * nhận getter JavaBean. Java record chỉ sinh accessor property(), nên nếu model
- * thiếu getter thì trang JSP trả HTTP 500 kèm PropertyNotFoundException.
- *
- * Lỗi đó không bị mvn package bắt được vì JSP chỉ biên dịch khi có request, nên
- * test này quét trực tiếp file JSP và đối chiếu với model.
+ * EL ${user.fullName} gọi getFullName(). Nếu JSP dùng một thuộc tính mà bean
+ * không có getter, trang trả HTTP 500 lúc chạy; mvn package không phát hiện được
+ * vì JSP chỉ biên dịch khi có request. Test này quét thẳng file JSP để bắt sớm.
  */
 final class JspExpressionContractTest {
     private static final Path VIEWS = Path.of("src", "main", "webapp", "WEB-INF", "views");
 
-    /** Tên biến đặt bằng setAttribute trong Servlet, ánh xạ sang lớp model. */
+    /** Tên biến Servlet đặt bằng setAttribute (hoặc var của c:forEach) → lớp JavaBean. */
     private static final Map<String, Class<?>> BEANS = Map.of(
             "user", User.class,
             "robot", Robot.class,
@@ -44,7 +41,7 @@ final class JspExpressionContractTest {
     private static final Pattern EXPRESSION = Pattern.compile("\\$\\{\\s*([a-zA-Z]\\w*)\\.(\\w+)");
 
     @Test
-    void everyBeanPropertyUsedInJspHasAJavaBeanGetter() throws IOException {
+    void everyBeanPropertyUsedInJspHasAGetter() throws IOException {
         List<String> problems = new ArrayList<>();
         Set<String> checked = new LinkedHashSet<>();
 
@@ -70,23 +67,7 @@ final class JspExpressionContractTest {
         if (!problems.isEmpty()) fail(String.join("\n", problems));
     }
 
-    /** Mọi thành phần của record dùng trong JSP đều phải có getter tương ứng. */
-    @Test
-    void jspModelsExposeGettersForEveryRecordComponent() {
-        List<String> problems = new ArrayList<>();
-
-        for (Class<?> bean : BEANS.values()) {
-            for (var component : bean.getRecordComponents()) {
-                if (!hasGetter(bean, component.getName())) {
-                    problems.add(bean.getSimpleName() + " thiếu getter cho " + component.getName());
-                }
-            }
-        }
-
-        if (!problems.isEmpty()) fail(String.join("\n", problems));
-    }
-
-    /** JSP phải nằm dưới WEB-INF để không ai mở thẳng, bỏ qua controller. */
+    /** JSP phải nằm dưới WEB-INF để không ai mở thẳng mà bỏ qua servlet. */
     @Test
     void everyJspStaysUnderWebInf() throws IOException {
         Path webapp = Path.of("src", "main", "webapp");

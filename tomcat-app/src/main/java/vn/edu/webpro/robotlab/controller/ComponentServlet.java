@@ -2,53 +2,41 @@ package vn.edu.webpro.robotlab.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import vn.edu.webpro.robotlab.dao.ComponentDao;
-import vn.edu.webpro.robotlab.dao.DatabaseConnectionFactory;
-import vn.edu.webpro.robotlab.model.ComponentPage;
-import vn.edu.webpro.robotlab.service.ComponentService;
-import vn.edu.webpro.robotlab.web.ApiResponses;
+import vn.edu.webpro.robotlab.business.Component;
+import vn.edu.webpro.robotlab.data.ComponentDB;
+import vn.edu.webpro.robotlab.util.ResponseUtil;
+import vn.edu.webpro.robotlab.util.ValidationUtil;
 
-/** HTTP controller for the public component catalogue. */
+/** API công khai cho danh mục linh kiện: GET /api/components?page=&limit= */
 @WebServlet("/api/components")
-public final class ComponentServlet extends HttpServlet {
+public class ComponentServlet extends HttpServlet {
     private static final int HTTP_UNPROCESSABLE_ENTITY = 422;
-
-    private final ComponentService componentService = new ComponentService(
-            new ComponentDao(new DatabaseConnectionFactory(System.getenv()))
-    );
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            int page = queryInteger(request, "page", 1);
-            int limit = queryInteger(request, "limit", 20);
-            ComponentPage components = componentService.list(page, limit);
-            ApiResponses.json(response, HttpServletResponse.SC_OK, components.toJson());
-        } catch (IllegalArgumentException exception) {
-            ApiResponses.error(response, HTTP_UNPROCESSABLE_ENTITY,
-                    "VALIDATION_ERROR", "Phân trang không hợp lệ.");
-        } catch (IllegalStateException exception) {
-            ApiResponses.error(response, HttpServletResponse.SC_SERVICE_UNAVAILABLE,
-                    "DEPENDENCY_NOT_READY", "Cơ sở dữ liệu chưa được cấu hình.");
-        } catch (SQLException exception) {
-            getServletContext().log("Component query failed", exception);
-            ApiResponses.error(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "INTERNAL_SERVER_ERROR", "Đã xảy ra lỗi máy chủ. Vui lòng thử lại sau.");
-        }
-    }
+            int page = ValidationUtil.parsePositiveInt(request.getParameter("page"), 1, ValidationUtil.MAX_PAGE);
+            int limit = ValidationUtil.parsePositiveInt(request.getParameter("limit"), 20, ValidationUtil.MAX_LIMIT);
 
-    private int queryInteger(HttpServletRequest request, String name, int fallback) {
-        String value = request.getParameter(name);
-        if (value == null) return fallback;
-        if (!value.matches("[1-9][0-9]*")) throw new IllegalArgumentException();
-        try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException exception) {
-            throw new IllegalArgumentException();
+            List<Component> components = ComponentDB.selectComponents(limit, (page - 1) * limit);
+            StringBuilder items = new StringBuilder();
+            for (Component component : components) {
+                if (items.length() > 0) items.append(',');
+                items.append(component.toJson());
+            }
+            ResponseUtil.sendJson(response, HttpServletResponse.SC_OK,
+                    "{\"data\":[" + items + "],\"meta\":{\"page\":" + page
+                            + ",\"limit\":" + limit + ",\"total\":" + ComponentDB.countComponents() + "}}");
+        } catch (IllegalArgumentException e) {
+            ResponseUtil.sendError(response, HTTP_UNPROCESSABLE_ENTITY,
+                    "VALIDATION_ERROR", "Phân trang không hợp lệ.");
+        } catch (SQLException e) {
+            ResponseUtil.sendDatabaseUnavailable(response);
         }
     }
 }

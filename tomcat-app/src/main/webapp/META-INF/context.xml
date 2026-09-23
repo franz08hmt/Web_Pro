@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Connection pool theo Chapter 12, slide 34.
+
+  Tomcat thay ${DB_HOST}, ${DB_USER}... bằng system property truyền qua VM options
+  trong cấu hình Tomcat của IntelliJ, ví dụ -DDB_USER=robot_lab. Nhờ vậy file này
+  được commit mà không chứa mật khẩu thật.
+
+  Tomcat 9 dùng DBCP2 nên các thuộc tính maxActive/maxWait trên slide (tên của
+  DBCP1) được viết thành maxTotal/maxWaitMillis; ý nghĩa giữ nguyên.
+-->
+<Context>
+    <Resource name="jdbc/robotlab" auth="Container" type="javax.sql.DataSource"
+              driverClassName="com.mysql.cj.jdbc.Driver"
+              url="jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useUnicode=true&amp;characterEncoding=utf8&amp;serverTimezone=Asia/Ho_Chi_Minh"
+              username="${DB_USER}" password="${DB_PASSWORD}"
+              maxTotal="100" maxIdle="30" maxWaitMillis="10000"
+              logAbandoned="true" removeAbandonedOnBorrow="true"
+              removeAbandonedTimeout="60" validationQuery="SELECT 1" />
+</Context>

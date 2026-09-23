@@ -5,24 +5,19 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import vn.edu.webpro.robotlab.model.HealthPayload;
-import vn.edu.webpro.robotlab.service.DatabaseHealthService;
-import vn.edu.webpro.robotlab.service.HealthService;
+import vn.edu.webpro.robotlab.data.HealthDB;
+import vn.edu.webpro.robotlab.util.JsonUtil;
+import vn.edu.webpro.robotlab.util.ResponseUtil;
 
-/** Controller for GET /api/health. It owns HTTP concerns, not SQL. */
+/** GET /api/health — cho biết server đang chạy và database có kết nối được không. */
 @WebServlet("/api/health")
-public final class HealthServlet extends HttpServlet {
-    private final HealthService healthService = new HealthService(
-            new DatabaseHealthService(System.getenv())
-    );
+public class HealthServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HealthPayload health = healthService.readHealth();
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.setHeader("Cache-Control", "no-store");
-        response.getWriter().write(health.toJson());
+        String database = HealthDB.selectDatabaseStatus();
+        ResponseUtil.sendJson(response, HttpServletResponse.SC_OK,
+                "{\"data\":{\"service\":\"robot-assembly-lab-api\",\"status\":\"ok\",\"database\":"
+                        + JsonUtil.quote(database) + "}}");
     }
 }
