@@ -70,9 +70,19 @@
     register(input) { return authenticate("/auth/register", input); },
     login(input) { return authenticate("/auth/login", input); },
     me() { return refreshSession(); },
+    async updateProfile(fullName) {
+      return (await request("/auth/profile", { method: "PATCH", csrf: true, body: { fullName } })).data.user;
+    },
+    async changePassword(currentPassword, newPassword) {
+      try {
+        await request("/auth/password", { method: "PUT", csrf: true, body: { currentPassword, newPassword } });
+      } finally {
+        csrfToken = null;
+      }
+    },
     async logout() {
       try {
-        await request("/auth/logout", { method: "POST" });
+        await request("/auth/logout", { method: "POST", csrf: true });
       } finally {
         csrfToken = null;
       }

@@ -451,6 +451,11 @@
   .account-role { width: fit-content; padding: 4px 8px; border: 1px solid var(--line-strong); border-radius: 5px; font-size: 13px; }
   .account-session-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
   .account-session-actions .button { flex: 1; min-width: 140px; text-align: center; }
+  .account-session-actions [hidden] { display: none; }
+  .account-settings { border-top: 1px solid var(--line); padding-top: 12px; }
+  .account-settings summary { cursor: pointer; font-weight: 600; }
+  .account-settings > form { display: grid; gap: 14px; padding-top: 14px; }
+  .account-settings .button { justify-self: start; }
   .account-history { display: grid; gap: 12px; margin-top: 18px; border-top: 1px solid var(--line); padding-top: 18px; }
   .account-history h2 { font-size: 20px; }
   #account-history-status { color: var(--muted); font-size: 14px; }

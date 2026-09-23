@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quản lý tài khoản | Robot Assembly Lab</title>
+  <link rel="stylesheet" href="../assets/css/style.css?v=20260923.1">
+  <style>
+    .users-page { max-width: 1120px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .users-page header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; }
+    .users-table-wrap { overflow-x: auto; margin: 1.5rem 0; border: 1px solid #44505a; border-radius: .75rem; }
+    .users-table { width: 100%; border-collapse: collapse; min-width: 660px; }
+    .users-table th, .users-table td { padding: .85rem; text-align: left; border-bottom: 1px solid #44505a; }
+    .users-table th { color: #ff995a; }
+    .users-table select { min-width: 112px; padding: .45rem; }
+    .users-table button { margin-left: .5rem; padding: .45rem .8rem; cursor: pointer; }
+    .users-pager { display: flex; gap: .75rem; align-items: center; }
+    [hidden] { display: none !important; }
+  </style>
+  <script src="../assets/js/admin-users.js?v=20260923.1" defer></script>
+</head>
+<body>
+  <main class="users-page" id="main-content">
+    <header><div><p class="section-label">Khu vực quản trị</p><h1>Tài khoản và phân quyền</h1></div>
+      <a class="button button-secondary" href="admin-content.html">Về quản trị nội dung</a></header>
+    <p>Đăng ký mới luôn có quyền thành viên. Quản trị viên có thể nâng hoặc hạ quyền tài khoản khác; không thể tự đổi quyền của mình.</p>
+    <p id="users-status" role="status" aria-live="polite">Đang kiểm tra quyền truy cập…</p>
+    <div class="users-table-wrap" id="users-workspace" hidden>
+      <table class="users-table"><caption>Danh sách tài khoản</caption>
+        <thead><tr><th>Họ tên</th><th>Email</th><th>Ngày tạo</th><th>Vai trò</th><th>Thao tác</th></tr></thead>
+        <tbody id="users-list"></tbody></table>
+    </div>
+    <nav class="users-pager" aria-label="Phân trang tài khoản" hidden id="users-pager">
+      <button type="button" id="users-prev">Trang trước</button><span id="users-page-number"></span>
+      <button type="button" id="users-next">Trang sau</button>
+    </nav>
+  </main>
+</body>
+</html>

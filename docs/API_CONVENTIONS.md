@@ -58,6 +58,20 @@ hạn service.
 | POST | `/api/auth/login` | `email`, `password`; tạo `HttpSession` |
 | GET | `/api/auth/me` | trả user hiện tại và `csrfToken` |
 | POST | `/api/auth/logout` | hủy session, trả 204 |
+| PATCH | `/api/auth/profile` | `{ "fullName": "..." }`; sửa tên của chính mình |
+| PUT | `/api/auth/password` | `{ "currentPassword": "...", "newPassword": "..." }`; đổi mật khẩu, hủy phiên hiện tại |
+
+`POST /api/auth/logout`, `PATCH /api/auth/profile` và `PUT /api/auth/password`
+đều cần `X-CSRF-Token`. Đổi mật khẩu hoặc quyền sẽ tăng `users.session_version`;
+mọi phiên cũ bị từ chối khi truy cập lần kế tiếp. `GET /api/auth/me` trả
+`createdAt` nhưng không trả password hash hay session version.
+
+Quản lý quyền chỉ dành cho ADMIN:
+
+| Method | Path | Body/Kết quả |
+| --- | --- | --- |
+| GET | `/api/admin/users?page=1` | danh sách 20 tài khoản/trang, không có hash |
+| PATCH | `/api/admin/users/{id}/role` | `{ "role": "USER" }` hoặc `ADMIN`; không được tự đổi quyền, cần CSRF |
 
 Tomcat quản lý cookie `JSESSIONID`. Không lưu mật khẩu hoặc CSRF token trong
 database response. Password hash dùng PBKDF2 trong `PasswordService`.

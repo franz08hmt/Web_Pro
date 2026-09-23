@@ -9,7 +9,7 @@ phiên lắp ráp → phòng 3D.
 | --- | --- | --- |
 | Nhi | Database, dữ liệu robot/linh kiện/bước/thư viện, CRUD nội dung | `database/schema.sql`, `database/seed.sql`, `dao/`, `Admin*Servlet.java` |
 | Tuấn Anh | Phòng 3D, dựng linh kiện, camera và thao tác lắp ráp | `assets/js/assembly-3d-parts.js`, `assets/js/assembly-3d.js`, `pages/lap-rap-3d.html` |
-| Tài | Servlet/Tomcat, auth, session, API phiên, tích hợp client-server | `AuthServlet.java`, `AssemblySessionServlet.java`, `AssemblySessionService.java`, `assets/js/api.js` |
+| Tài | Servlet/Tomcat, auth, session, phân quyền, API phiên, tích hợp client-server | `AuthServlet.java`, `AdminUserServlet.java`, `AuthService.java`, `UserDao.java`, `AssemblySessionServlet.java`, `assets/js/api.js` |
 
 ## Kịch bản demo ngắn
 
@@ -20,13 +20,15 @@ phiên lắp ráp → phòng 3D.
 3. Mở trang robot; DevTools Network cho thấy `GET /api/robots`.
 4. Trong code, đi theo `RobotServlet → RobotService → RobotDao → MySQL`.
 5. Đăng ký/đăng nhập; mở `/api/auth/me`, giải thích `JSESSIONID`, `HttpSession`
-   và CSRF token.
+   và CSRF token. Chỉ trong `AuthService.register` tài khoản được tạo với role USER.
 6. Mở `/account` — Servlet đọc `User` từ `HttpSession`, đặt vào request rồi
-   forward sang `account.jsp`. Chưa đăng nhập thì bị redirect về trang đăng nhập.
+   forward sang `account.jsp`. `AccountSession.load` đối chiếu database trước khi
+   tin role trong phiên; chưa đăng nhập thì bị redirect về trang đăng nhập.
 7. Chọn robot, tick linh kiện; mỗi thay đổi gọi API phiên và lưu MySQL.
 8. Vào phòng 3D, lắp/gỡ part; reload trang để chứng minh trạng thái được khôi phục.
 9. Đăng nhập admin, CRUD một nội dung rồi mở lại `/components` để thấy dữ liệu
-   mới xuất hiện ngay trong HTML do server dựng.
+   mới xuất hiện ngay trong HTML do server dựng. Mở `/pages/admin-users.html`
+   để chỉ cách admin đổi role người khác; người thường bị API từ chối 403.
 10. Mở `/architecture` để tóm tắt lại toàn bộ luồng.
 
 ## Câu hỏi thường gặp

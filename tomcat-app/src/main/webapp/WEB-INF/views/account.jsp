@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!doctype html>
 <html lang="vi">
 <head>
@@ -17,10 +18,12 @@
     <p>Trang được <code>AccountPageServlet</code> bảo vệ bằng <code>HttpSession</code>,
        sau đó controller đặt JavaBean <code>user</code> vào request và forward đến JSP.</p>
     <dl>
-        <dt>Họ tên</dt><dd>${user.fullName}</dd>
-        <dt>Email</dt><dd>${user.email}</dd>
-        <dt>Vai trò</dt><dd>${user.role}</dd>
+        <dt>Họ tên</dt><dd><c:out value="${user.fullName}"/></dd>
+        <dt>Email</dt><dd><c:out value="${user.email}"/></dd>
+        <dt>Vai trò</dt><dd><c:out value="${user.role}"/></dd>
+        <dt>Ngày tạo</dt><dd><c:out value="${user.createdAt}"/></dd>
     </dl>
+    <c:if test="${isAdmin}"><p><a href="${pageContext.request.contextPath}/pages/admin-users.html">Quản lý tài khoản</a></p></c:if>
     <p><a href="${pageContext.request.contextPath}/index.html">Về trang chủ</a></p>
 </article>
 </body>

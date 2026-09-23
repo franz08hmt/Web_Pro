@@ -2,10 +2,11 @@ package vn.edu.webpro.robotlab.model;
 
 import vn.edu.webpro.robotlab.web.Json;
 
-public record User(long id, String fullName, String email, String role) {
+public record User(long id, String fullName, String email, String role, String createdAt, int sessionVersion) {
     public String toJson() {
         return "{\"id\":" + Json.quote(Long.toString(id)) + ",\"fullName\":" + Json.quote(fullName)
-                + ",\"email\":" + Json.quote(email) + ",\"role\":" + Json.quote(role) + "}";
+                + ",\"email\":" + Json.quote(email) + ",\"role\":" + Json.quote(role)
+                + ",\"createdAt\":" + Json.quote(createdAt) + "}";
     }
 
     /* EL 3.0 của Tomcat 9 đọc thuộc tính qua BeanELResolver, tức là chỉ nhận
@@ -26,5 +27,13 @@ public record User(long id, String fullName, String email, String role) {
 
     public String getRole() {
         return role;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public int getSessionVersion() {
+        return sessionVersion;
     }
 }

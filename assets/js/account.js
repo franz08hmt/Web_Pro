@@ -172,6 +172,11 @@
     document.querySelector("#account-user-name").textContent = user.fullName;
     document.querySelector("#account-user-email").textContent = user.email;
     document.querySelector("#account-user-role").textContent = user.role === "ADMIN" ? "Quản trị nội dung" : "Thành viên";
+    document.querySelector("#admin-users-link").hidden = user.role !== "ADMIN";
+    document.querySelector("#profile-name").value = user.fullName;
+    const created = new Date(user.createdAt);
+    document.querySelector("#account-created-at").textContent = Number.isNaN(created.getTime())
+      ? "" : `Tham gia từ ${created.toLocaleDateString("vi-VN")}`;
     historyList.replaceChildren();
     historyMore.hidden = true;
     void loadHistory(1, ++historyRevision);
@@ -252,6 +257,41 @@
       pageStatus.dataset.state = "error";
     } finally {
       button.disabled = false;
+    }
+  });
+
+  const profileForm = document.querySelector("#profile-form");
+  profileForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!profileForm.reportValidity()) return;
+    setSubmitting(profileForm, true, "Đang lưu…");
+    try {
+      const user = await api.auth.updateProfile(profileForm.elements.fullName.value);
+      document.querySelector("#account-user-name").textContent = user.fullName;
+      profileForm.elements.fullName.value = user.fullName;
+      showNote(profileForm, "Đã cập nhật họ tên.", "success");
+    } catch (error) {
+      showNote(profileForm, error.message || "Không thể cập nhật hồ sơ.", "error");
+    } finally {
+      setSubmitting(profileForm, false, "");
+    }
+  });
+
+  const passwordForm = document.querySelector("#password-form");
+  passwordForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!passwordForm.reportValidity()) return;
+    setSubmitting(passwordForm, true, "Đang đổi…");
+    try {
+      await api.auth.changePassword(passwordForm.elements.currentPassword.value,
+        passwordForm.elements.newPassword.value);
+      passwordForm.reset();
+      showAuth();
+      pageStatus.textContent = "Đã đổi mật khẩu. Vui lòng đăng nhập lại trên tất cả thiết bị.";
+    } catch (error) {
+      showNote(passwordForm, error.message || "Không thể đổi mật khẩu.", "error");
+    } finally {
+      setSubmitting(passwordForm, false, "");
     }
   });
 

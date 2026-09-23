@@ -12,12 +12,15 @@ import vn.edu.webpro.robotlab.dao.DatabaseConnectionFactory;
 import vn.edu.webpro.robotlab.dao.UserDao;
 import vn.edu.webpro.robotlab.model.User;
 import vn.edu.webpro.robotlab.service.AuthService;
+import vn.edu.webpro.robotlab.service.AccountSession;
 import vn.edu.webpro.robotlab.service.PasswordService;
 import vn.edu.webpro.robotlab.web.ApiResponses;
 import vn.edu.webpro.robotlab.web.Json;
+import vn.edu.webpro.robotlab.web.AdminAccess;
 
 /**
- * Controller xác thực: /api/auth/register, /login, /logout và /me.
+ * Controller xác thực và tự quản lý tài khoản: register, login, logout, me,
+ * profile và password.
  *
  * Trạng thái đăng nhập nằm trong HttpSession của Tomcat (cookie JSESSIONID),
  * không nằm ở phía trình duyệt. Mỗi phiên giữ thêm một CSRF token để các
@@ -32,6 +35,16 @@ public final class AuthServlet extends HttpServlet {
             new PasswordService()
     );
 
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response)
+            throws javax.servlet.ServletException, IOException {
+        if ("PATCH".equals(request.getMethod())) {
+            updateProfile(request, response);
+            return;
+        }
+        super.service(request, response);
+    }
+
     /** GET /api/auth/me — trả về người dùng của phiên hiện tại và CSRF token. */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -41,17 +54,25 @@ public final class AuthServlet extends HttpServlet {
             return;
         }
 
+        User user = currentUser(request, response);
+        if (user == null) return;
         HttpSession session = request.getSession(false);
-        Object value = session == null ? null : session.getAttribute("user");
-        if (!(value instanceof User user)) {
-            ApiResponses.error(response, HttpServletResponse.SC_UNAUTHORIZED,
-                    "AUTH_REQUIRED", "Bạn cần đăng nhập để tiếp tục.");
-            return;
-        }
-
         String csrfToken = Json.quote((String) session.getAttribute("csrfToken"));
         ApiResponses.json(response, HttpServletResponse.SC_OK,
                 "{\"data\":{\"user\":" + user.toJson() + "},\"csrfToken\":" + csrfToken + "}");
+    }
+
+    private User currentUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            User user = AccountSession.load(request);
+            if (user != null) return user;
+        } catch (SQLException exception) {
+            ApiResponses.error(response, 503, "DEPENDENCY_NOT_READY", "Cơ sở dữ liệu chưa sẵn sàng.");
+            return null;
+        }
+        ApiResponses.error(response, HttpServletResponse.SC_UNAUTHORIZED,
+                "AUTH_REQUIRED", "Bạn cần đăng nhập để tiếp tục.");
+        return null;
     }
 
     /** POST /api/auth/register, /login hoặc /logout. */
@@ -60,13 +81,14 @@ public final class AuthServlet extends HttpServlet {
         String path = request.getPathInfo();
 
         if ("/logout".equals(path)) {
+            if (currentUser(request, response) == null || !AdminAccess.requireCsrf(request, response)) return;
             logout(request, response);
             return;
         }
 
         try {
             String body = readBody(request);
-            String email = Json.stringField(body, "email").trim().toLowerCase();
+            String email = Json.stringField(body, "email");
             String password = Json.stringField(body, "password");
 
             User user;
@@ -91,8 +113,55 @@ public final class AuthServlet extends HttpServlet {
         } catch (IllegalArgumentException exception) {
             rejectInput(response, exception);
         } catch (SQLException exception) {
-            ApiResponses.error(response, HttpServletResponse.SC_SERVICE_UNAVAILABLE,
-                    "DEPENDENCY_NOT_READY", "Cơ sở dữ liệu chưa được cấu hình.");
+            if (exception.getErrorCode() == 1062) {
+                ApiResponses.error(response, 409, "EMAIL_ALREADY_EXISTS", "Email đã được sử dụng.");
+            } else {
+                ApiResponses.error(response, 503, "DEPENDENCY_NOT_READY", "Cơ sở dữ liệu chưa sẵn sàng.");
+            }
+        }
+    }
+
+    private void updateProfile(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if (!"/profile".equals(request.getPathInfo())) {
+            ApiResponses.error(response, 404, "NOT_FOUND", "Không tìm thấy tài nguyên yêu cầu.");
+            return;
+        }
+        User actor = currentUser(request, response);
+        if (actor == null || !AdminAccess.requireCsrf(request, response)) return;
+        try {
+            User updated = service.updateProfile(actor.id(), Json.stringField(readBody(request), "fullName"));
+            request.getSession(false).setAttribute("user", updated);
+            ApiResponses.json(response, 200, "{\"data\":{\"user\":" + updated.toJson() + "}}");
+        } catch (IllegalArgumentException exception) {
+            ApiResponses.error(response, HTTP_UNPROCESSABLE_ENTITY, "VALIDATION_ERROR", "Họ tên phải có 2–100 ký tự.");
+        } catch (SQLException exception) {
+            ApiResponses.error(response, 503, "DEPENDENCY_NOT_READY", "Cơ sở dữ liệu chưa sẵn sàng.");
+        }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if (!"/password".equals(request.getPathInfo())) {
+            ApiResponses.error(response, 404, "NOT_FOUND", "Không tìm thấy tài nguyên yêu cầu.");
+            return;
+        }
+        User actor = currentUser(request, response);
+        if (actor == null || !AdminAccess.requireCsrf(request, response)) return;
+        try {
+            String body = readBody(request);
+            service.changePassword(actor.id(), Json.stringField(body, "currentPassword"),
+                    Json.stringField(body, "newPassword"));
+            request.getSession(false).invalidate();
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        } catch (IllegalArgumentException exception) {
+            if ("credentials".equals(exception.getMessage())) {
+                ApiResponses.error(response, 401, "INVALID_CREDENTIALS", "Mật khẩu hiện tại không đúng.");
+            } else {
+                ApiResponses.error(response, HTTP_UNPROCESSABLE_ENTITY, "VALIDATION_ERROR",
+                        "Mật khẩu mới phải có 8–72 ký tự và khác mật khẩu cũ.");
+            }
+        } catch (SQLException exception) {
+            ApiResponses.error(response, 503, "DEPENDENCY_NOT_READY", "Cơ sở dữ liệu chưa sẵn sàng.");
         }
     }
 
@@ -105,6 +174,8 @@ public final class AuthServlet extends HttpServlet {
     /* Tạo phiên mới sau khi xác thực thành công. Token CSRF sinh một lần cho cả
        phiên; client đọc lại qua /api/auth/me rồi gửi kèm header X-CSRF-Token. */
     private void startSession(HttpServletRequest request, User user) {
+        HttpSession old = request.getSession(false);
+        if (old != null) old.invalidate();
         HttpSession session = request.getSession(true);
         session.setAttribute("user", user);
         session.setAttribute("csrfToken", UUID.randomUUID().toString());
@@ -125,6 +196,6 @@ public final class AuthServlet extends HttpServlet {
     }
 
     private String readBody(HttpServletRequest request) throws IOException {
-        return request.getReader().lines().reduce("", (left, right) -> left + right);
+        return Json.readBody(request.getReader(), 8192);
     }
 }

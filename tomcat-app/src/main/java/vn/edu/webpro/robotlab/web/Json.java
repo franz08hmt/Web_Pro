@@ -1,8 +1,23 @@
 package vn.edu.webpro.robotlab.web;
 
+import java.io.IOException;
+import java.io.Reader;
+
 /** Minimal JSON writer for server-owned primitives and JSON columns. */
 public final class Json {
     private Json() {
+    }
+
+    /** Account requests are tiny; reject oversized bodies before parsing. */
+    public static String readBody(Reader reader, int maxChars) throws IOException {
+        StringBuilder body = new StringBuilder();
+        char[] buffer = new char[1024];
+        int count;
+        while ((count = reader.read(buffer)) != -1) {
+            if (body.length() + count > maxChars) throw new IllegalArgumentException("body-too-large");
+            body.append(buffer, 0, count);
+        }
+        return body.toString();
     }
 
     public static String quote(String value) {

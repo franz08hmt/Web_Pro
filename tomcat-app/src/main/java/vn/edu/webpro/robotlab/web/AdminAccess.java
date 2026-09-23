@@ -1,18 +1,25 @@
 package vn.edu.webpro.robotlab.web;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import vn.edu.webpro.robotlab.model.User;
+import vn.edu.webpro.robotlab.service.AccountSession;
 
 /** Shared admin and CSRF guard for every /api/admin Servlet. */
 public final class AdminAccess {
     private AdminAccess() { }
     public static User requireAdmin(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession session = request.getSession(false);
-        Object value = session == null ? null : session.getAttribute("user");
-        if (!(value instanceof User user)) {
+        User user;
+        try {
+            user = AccountSession.load(request);
+        } catch (SQLException exception) {
+            ApiResponses.error(response, 503, "DEPENDENCY_NOT_READY", "Cơ sở dữ liệu chưa sẵn sàng.");
+            return null;
+        }
+        if (user == null) {
             ApiResponses.error(response, 401, "AUTH_REQUIRED", "Cần đăng nhập bằng tài khoản quản trị.");
             return null;
         }

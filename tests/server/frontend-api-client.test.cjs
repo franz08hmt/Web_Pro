@@ -65,6 +65,37 @@ test("auth client logs in, discovers CSRF and sends it on assembly mutations", a
   assert.deepEqual(JSON.parse(calls[2].options.body), { robotId: "line-follower" });
 });
 
+test("account edits, logout, and password change include CSRF", async () => {
+  const calls = [];
+  const client = loadClient(async (rawUrl, options = {}) => {
+    const path = new URL(rawUrl).pathname;
+    calls.push({ path, options });
+    if (path === "/api/auth/me") {
+      return response({ data: { user: { id: "7", role: "USER" } }, csrfToken: "csrf-demo" });
+    }
+    if (path === "/api/auth/profile") {
+      return response({ data: { user: { id: "7", fullName: "Tên mới" } } });
+    }
+    if (path === "/api/auth/password" || path === "/api/auth/logout") return response(null, 204);
+    throw new Error(`Unexpected URL ${path}`);
+  });
+
+  await client.auth.me();
+  const updated = await client.auth.updateProfile("Tên mới");
+  await client.auth.logout();
+  await client.auth.me();
+  await client.auth.changePassword("old-secret", "new-secret");
+
+  assert.equal(updated.fullName, "Tên mới");
+  assert.deepEqual(calls.map((call) => `${call.options.method || "GET"} ${call.path}`), [
+    "GET /api/auth/me", "PATCH /api/auth/profile", "POST /api/auth/logout",
+    "GET /api/auth/me", "PUT /api/auth/password"
+  ]);
+  for (const call of calls.filter((entry) => entry.options.method && entry.options.method !== "GET")) {
+    assert.equal(call.options.headers["X-CSRF-Token"], "csrf-demo");
+  }
+});
+
 test("assembly client exposes the complete session contract", async () => {
   const calls = [];
   const client = loadClient(async (rawUrl, options = {}) => {

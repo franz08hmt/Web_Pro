@@ -1,6 +1,7 @@
 package vn.edu.webpro.robotlab.service;
 
 import java.sql.SQLException;
+import java.util.Locale;
 import vn.edu.webpro.robotlab.dao.UserDao;
 import vn.edu.webpro.robotlab.model.User;
 
@@ -22,7 +23,9 @@ public final class AuthService {
     }
 
     public User register(String fullName, String email, String password) throws SQLException {
-        validate(fullName, email, password);
+        email = normalizeEmail(email);
+        validateName(fullName);
+        validateCredentials(email, password);
         if (users.findByEmail(email) != null) throw new IllegalStateException("exists");
         return users.create(fullName.trim(), email, passwords.hash(password));
     }
@@ -30,27 +33,54 @@ public final class AuthService {
     /* Email không tồn tại và mật khẩu sai đều ném cùng một lỗi "credentials",
        để phía ngoài không suy ra được email nào đã đăng ký trong hệ thống. */
     public User login(String email, String password) throws SQLException {
-        validate(null, email, password);
+        email = normalizeEmail(email);
+        validateCredentials(email, password);
         String hash = users.passwordHash(email);
         if (hash == null || !passwords.verify(password, hash)) {
             throw new IllegalArgumentException("credentials");
         }
-        return users.findByEmail(email);
+        User user = users.findByEmail(email);
+        if (user == null) throw new IllegalArgumentException("credentials");
+        return user;
     }
 
-    /** fullName để null khi đăng nhập, vì lúc đó không cần kiểm tra họ tên. */
-    private void validate(String fullName, String email, String password) {
-        if (fullName != null) {
-            int length = fullName.trim().length();
-            if (length < NAME_MIN || length > NAME_MAX) {
-                throw new IllegalArgumentException("validation");
-            }
+    public User updateProfile(long userId, String fullName) throws SQLException {
+        validateName(fullName);
+        User updated = users.updateName(userId, fullName.trim());
+        if (updated == null) throw new IllegalArgumentException("not-found");
+        return updated;
+    }
+
+    public void changePassword(long userId, String currentPassword, String newPassword) throws SQLException {
+        validatePassword(newPassword);
+        String existingHash = users.passwordHashById(userId);
+        if (existingHash == null || currentPassword == null || !passwords.verify(currentPassword, existingHash)) {
+            throw new IllegalArgumentException("credentials");
         }
-        if (email == null || email.length() > EMAIL_MAX || !email.matches(EMAIL_PATTERN)) {
+        if (passwords.verify(newPassword, existingHash)) throw new IllegalArgumentException("same-password");
+        users.updatePasswordHash(userId, passwords.hash(newPassword));
+    }
+
+    private String normalizeEmail(String email) {
+        return email == null ? null : email.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.trim().length() < NAME_MIN || name.trim().length() > NAME_MAX) {
             throw new IllegalArgumentException("validation");
         }
+    }
+
+    private void validatePassword(String password) {
         if (password == null || password.length() < PASSWORD_MIN || password.length() > PASSWORD_MAX) {
             throw new IllegalArgumentException("validation");
         }
+    }
+
+    private void validateCredentials(String email, String password) {
+        if (email == null || email.length() > EMAIL_MAX || !email.matches(EMAIL_PATTERN)) {
+            throw new IllegalArgumentException("validation");
+        }
+        validatePassword(password);
     }
 }

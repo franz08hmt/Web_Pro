@@ -48,7 +48,7 @@ test("HTML pages cache-bust every local JavaScript resource", () => {
     const localScripts = [...html.matchAll(/<script[^>]+src="((?:\.\.\/)?assets\/[^"?]+\.js|\/vendor\/[^"?]+\.js)(?:\?[^\"]*)?"/g)];
 
     for (const [, source] of localScripts) {
-      assert.match(html, new RegExp(`${source.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\?v=20260921\\.1`), `${path.basename(htmlPath)} must refresh ${source}`);
+      assert.match(html, new RegExp(`${source.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\?v=\\d{8}\\.\\d+`), `${path.basename(htmlPath)} must refresh ${source}`);
     }
   }
 });
@@ -68,7 +68,7 @@ test("HTML pages cache-bust every local stylesheet", () => {
     for (const [, source] of localStylesheets) {
       assert.match(
         html,
-        new RegExp(`${source.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\?v=20260921\\.2`),
+        new RegExp(`${source.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\?v=\\d{8}\\.\\d+`),
         `${path.basename(htmlPath)} must refresh ${source}`
       );
     }

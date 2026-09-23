@@ -55,7 +55,8 @@ Yêu cầu: JDK 17, Tomcat 9 và MySQL 8.
 
 1. Tạo database UTF-8, chọn database đó rồi chạy `database/schema.sql` và
    `database/seed.sql`. Với database cũ, chỉ chạy migration chưa có trong
-   `schema_migrations`.
+   `schema_migrations`; trước khi chạy WAR mới phải áp dụng
+   `database/migrations/004_account_session_version.sql` nếu chưa có.
 2. Trong cấu hình Tomcat, tab **Startup/Connection → Run → Environment Variables**,
    nhập đủ `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` theo
    `.env.example`. Tomcat không tự đọc `.env`.
@@ -79,11 +80,13 @@ WAR được tạo tại `tomcat-app/target/robot-assembly-lab.war`.
 
 ```sql
 UPDATE users
-SET role = 'admin'
+SET role = 'admin', session_version = session_version + 1
 WHERE email = 'admin@example.com';
 ```
 
-Đăng xuất rồi đăng nhập lại để `HttpSession` nhận role mới. Trang quản trị là
+Đây chỉ là bước bootstrap quản trị viên đầu tiên. Các lần phân quyền sau dùng
+`/pages/admin-users.html` (yêu cầu role ADMIN và CSRF); các phiên cũ của tài khoản
+được đổi quyền sẽ hết hiệu lực. Trang quản trị nội dung là
 `/pages/admin-content.html`.
 
 ## Kiểm tra

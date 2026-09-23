@@ -16,6 +16,7 @@ import vn.edu.webpro.robotlab.dao.RobotDao;
 import vn.edu.webpro.robotlab.model.AssemblySession;
 import vn.edu.webpro.robotlab.model.User;
 import vn.edu.webpro.robotlab.service.AssemblySessionService;
+import vn.edu.webpro.robotlab.service.AccountSession;
 import vn.edu.webpro.robotlab.web.ApiResponses;
 import vn.edu.webpro.robotlab.web.Json;
 
@@ -168,9 +169,13 @@ public final class AssemblySessionServlet extends HttpServlet {
     }
 
     private User currentUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession session = request.getSession(false);
-        Object value = session == null ? null : session.getAttribute("user");
-        if (value instanceof User user) return user;
+        try {
+            User user = AccountSession.load(request);
+            if (user != null) return user;
+        } catch (SQLException exception) {
+            databaseUnavailable(response);
+            return null;
+        }
 
         ApiResponses.error(response, HttpServletResponse.SC_UNAUTHORIZED,
                 "AUTH_REQUIRED", "Bạn cần đăng nhập để tiếp tục.");

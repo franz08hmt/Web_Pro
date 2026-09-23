@@ -9,6 +9,7 @@ CREATE TABLE users (
     display_name VARCHAR(150) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     role ENUM('user', 'admin') NOT NULL DEFAULT 'user',
+    session_version INT UNSIGNED NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB
   DEFAULT CHARSET=utf8mb4
@@ -238,3 +239,6 @@ CREATE TABLE session_visual_parts (
 
 INSERT INTO schema_migrations (version)
 VALUES ('003_session_visual_parts');
+
+INSERT INTO schema_migrations (version)
+VALUES ('004_account_session_version');

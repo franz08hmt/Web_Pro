@@ -56,3 +56,10 @@ test("account page lists saved sessions with preparation and step progress", () 
   assert.match(source, /totalStepCount/);
   assert.match(source, /session\.id/);
 });
+
+test("server-rendered account view escapes user-controlled fields", () => {
+  const jsp = fs.readFileSync(path.join(root, "tomcat-app", "src", "main", "webapp",
+    "WEB-INF", "views", "account.jsp"), "utf8");
+  assert.match(jsp, /<c:out value="\$\{user\.fullName\}"\s*\/>/);
+  assert.match(jsp, /<c:out value="\$\{user\.email\}"\s*\/>/);
+});

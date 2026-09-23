@@ -46,11 +46,19 @@ Mỗi lớp chỉ giữ một trách nhiệm:
 
 ## 3. Luồng JSP
 
-`GET /account` đi vào `AccountPageServlet`. Servlet đọc `HttpSession`; nếu chưa
-đăng nhập thì redirect tới trang đăng nhập. Nếu đã đăng nhập, Servlet đặt thuộc
+`GET /account` đi vào `AccountPageServlet`. Servlet đọc `HttpSession` rồi đối chiếu
+`users.session_version` và role trong MySQL; nếu chưa đăng nhập hoặc phiên đã cũ
+thì redirect tới trang đăng nhập. Nếu đã đăng nhập, Servlet đặt thuộc
 tính request rồi dùng `RequestDispatcher.forward()` tới
 `/WEB-INF/views/account.jsp`. Vì JSP nằm dưới `WEB-INF`, người dùng không thể mở
 trực tiếp file JSP và bỏ qua controller.
+
+Luồng tài khoản: `AuthServlet` nhận request/CSRF → `AuthService` kiểm tra dữ liệu
+và mật khẩu → `UserDao` dùng JDBC/PreparedStatement với bảng `users` → Servlet
+trả JSON cho `assets/js/account.js`. `AdminUserServlet` chỉ cho ADMIN phân quyền
+người khác; cập nhật role hoặc mật khẩu làm tăng `session_version`, nên các
+`HttpSession` cũ hết hiệu lực ở request tiếp theo. Không lưu mật khẩu thô hay
+hash trong model `User`, JSP hoặc JSON response.
 
 `GET /architecture` dùng cùng kiểu luồng qua `ArchitectureServlet` và
 `architecture.jsp`; đây là trang minh họa kiến trúc ngay trong ứng dụng.
