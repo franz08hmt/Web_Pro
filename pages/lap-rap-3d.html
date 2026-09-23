@@ -13,7 +13,7 @@
 
     <link
             rel="stylesheet"
-            href="../assets/css/style.css?v=20260921.2"
+            href="../assets/css/style.css?v=20260923.2"
     >
 
     <script src="../assets/js/tooltip.js?v=20260921.1" defer></script>
@@ -40,30 +40,40 @@
 </header>
 
 <main id="main-content" class="assembly-3d-workspace" tabindex="-1">
-    <section class="assembly-3d-view" aria-label="Mô hình robot 3D tương tác">
-        <div class="assembly-3d-stage-meta" aria-hidden="true">
-            <span class="assembly-3d-live-dot"></span>
-            Không gian lắp ráp trực tiếp
-        </div>
+    <div class="assembly-3d-left">
+        <section class="assembly-3d-view" aria-label="Mô hình robot 3D tương tác">
+            <div class="assembly-3d-stage-meta" aria-hidden="true">
+                <span class="assembly-3d-live-dot"></span>
+                Không gian lắp ráp trực tiếp
+            </div>
 
-        <div id="assembly-3d-canvas"></div>
+            <div id="assembly-3d-canvas"></div>
 
-        <div class="assembly-3d-toolbar" role="group" aria-label="Điều khiển góc nhìn mô hình">
-            <button id="assembly-3d-rotate-left" type="button" aria-label="Xoay mô hình sang trái"
-                    data-tooltip="Xoay sang trái">↶</button>
-            <button id="assembly-3d-focus" type="button" aria-label="Căn giữa mô hình"
-                    data-tooltip="Căn mô hình vào giữa khung nhìn">◎</button>
-            <button id="assembly-3d-rotate-right" type="button" aria-label="Xoay mô hình sang phải"
-                    data-tooltip="Xoay sang phải">↷</button>
-            <span aria-hidden="true"></span>
-            <button id="assembly-3d-zoom-out" type="button" aria-label="Thu nhỏ mô hình"
-                    data-tooltip="Thu nhỏ">−</button>
-            <button id="assembly-3d-zoom-in" type="button" aria-label="Phóng to mô hình"
-                    data-tooltip="Phóng to">+</button>
-        </div>
+            <div class="assembly-3d-toolbar" role="group" aria-label="Điều khiển góc nhìn mô hình">
+                <button id="assembly-3d-rotate-left" type="button" aria-label="Xoay mô hình sang trái"
+                        data-tooltip="Xoay sang trái">↶</button>
+                <button id="assembly-3d-focus" type="button" aria-label="Căn giữa mô hình"
+                        data-tooltip="Căn mô hình vào giữa khung nhìn">◎</button>
+                <button id="assembly-3d-rotate-right" type="button" aria-label="Xoay mô hình sang phải"
+                        data-tooltip="Xoay sang phải">↷</button>
+                <span aria-hidden="true"></span>
+                <button id="assembly-3d-zoom-out" type="button" aria-label="Thu nhỏ mô hình"
+                        data-tooltip="Thu nhỏ">−</button>
+                <button id="assembly-3d-zoom-in" type="button" aria-label="Phóng to mô hình"
+                        data-tooltip="Phóng to">+</button>
+            </div>
 
-        <p class="assembly-3d-view-hint">Kéo để xoay · Cuộn để thu phóng</p>
-    </section>
+            <p class="assembly-3d-view-hint">Kéo để xoay · Cuộn để thu phóng</p>
+        </section>
+
+        <section class="assembly-3d-steps-region" aria-labelledby="assembly-3d-steps-title">
+            <div class="assembly-3d-list-heading">
+                <span id="assembly-3d-steps-title">Các bước thực hiện</span>
+            </div>
+
+            <div id="assembly-3d-steps" class="assembly-3d-steps"></div>
+        </section>
+    </div>
 
     <aside class="assembly-3d-panel">
         <header class="assembly-3d-panel-header">
@@ -76,25 +86,16 @@
             Hãy chọn linh kiện để bắt đầu lắp ráp.
         </p>
 
+        <p id="assembly-3d-sync-status" role="status" aria-live="polite">
+            Đang khôi phục tiến độ lắp ráp…
+        </p>
+
         <div class="assembly-3d-list-heading">
             <span>Danh sách</span>
             <strong id="assembly-3d-counter">0/0 nhóm</strong>
         </div>
 
         <div id="assembly-3d-parts" class="assembly-3d-parts"></div>
-
-        <section class="assembly-3d-steps-region" aria-labelledby="assembly-3d-steps-title">
-            <div class="assembly-3d-list-heading">
-                <span id="assembly-3d-steps-title">Các bước thực hiện</span>
-                <strong id="assembly-3d-step-counter">0/0 bước</strong>
-            </div>
-
-            <p id="assembly-3d-sync-status" role="status" aria-live="polite">
-                Đang khôi phục tiến độ lắp ráp…
-            </p>
-
-            <div id="assembly-3d-steps" class="assembly-3d-steps"></div>
-        </section>
 
         <div class="assembly-3d-progress">
             <div>
@@ -142,7 +143,7 @@
 
 
 <!-- Logic lắp ráp 3D -->
-<script src="../assets/js/assembly-3d.js?v=20260921.1"></script>
+<script src="../assets/js/assembly-3d.js?v=20260923.1"></script>
 
 </body>
 

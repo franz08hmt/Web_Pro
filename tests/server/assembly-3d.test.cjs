@@ -103,10 +103,9 @@ test("the assembly controller loads the parts library and creates every physical
   assert.match(assemblySource, /itemIndex\s*<\s*part\.quantity/);
 });
 
-test("3D assembly exposes an accessible procedural checklist", () => {
+test("3D assembly shows the steps as a read-only reference list under the 3D view", () => {
   assert.match(pageSource, /id="assembly-3d-steps-title"/);
   assert.match(pageSource, /id="assembly-3d-steps"/);
-  assert.match(pageSource, /id="assembly-3d-step-counter"/);
   assert.match(
     pageSource,
     /class="assembly-3d-steps-region"[^>]*aria-labelledby="assembly-3d-steps-title"/
@@ -115,9 +114,19 @@ test("3D assembly exposes an accessible procedural checklist", () => {
     pageSource,
     /id="assembly-3d-sync-status"[^>]*role="status"[^>]*aria-live="polite"/
   );
+
+  // Bước lắp ráp nằm cùng cột với khung xem 3D (bên trái), không còn ô tick.
+  const leftMatch = pageSource.match(/<div class="assembly-3d-left">([\s\S]*?)<\/div>\s*<aside/);
+  assert.ok(leftMatch, "Không tìm thấy khối .assembly-3d-left bọc khung 3D và danh sách bước");
+  assert.match(leftMatch[1], /class="assembly-3d-view"/);
+  assert.match(leftMatch[1], /class="assembly-3d-steps-region"/);
+
+  assert.doesNotMatch(pageSource, /id="assembly-3d-step-counter"/);
+  assert.doesNotMatch(assemblySource, /data-step-id/);
+  assert.doesNotMatch(assemblySource, /sessionApi\.setStepStatus\(/);
 });
 
-test("3D assembly loads live content and persists assembly steps through the session API", () => {
+test("3D assembly loads live content and persists visual assembly through the session API", () => {
   assert.match(
     pageSource,
     /data\.js[\s\S]*content-api\.js[\s\S]*api\.js[\s\S]*assembly-3d\.js/,
@@ -127,8 +136,6 @@ test("3D assembly loads live content and persists assembly steps through the ses
   assert.match(assemblySource, /model\.stepRecords/);
   assert.match(assemblySource, /sessionApi\.createOrResume\(model\.id\)/);
   assert.match(assemblySource, /sessionApi\.updateStatus\([^,]+,\s*"IN_PROGRESS"\)/);
-  assert.match(assemblySource, /sessionApi\.setStepStatus\(/);
-  assert.match(assemblySource, /session\.steps/);
 });
 
 test("3D assembly restores visual parts from the owned session and persists each toggle", () => {

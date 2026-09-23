@@ -26,7 +26,6 @@
   const progressValue = document.querySelector("#assembly-3d-progress-value");
   const progressCounter = document.querySelector("#assembly-3d-counter");
   const stepsContainer = document.querySelector("#assembly-3d-steps");
-  const stepCounter = document.querySelector("#assembly-3d-step-counter");
   const syncStatus = document.querySelector("#assembly-3d-sync-status");
   const resetButton = document.querySelector("#assembly-3d-reset");
   const focusButton = document.querySelector("#assembly-3d-focus");
@@ -52,7 +51,6 @@
     throw new Error("Không thể khởi tạo phòng lắp ráp 3D.");
   }
 
-  const stepStorageKey = `ral.assemblySteps.${model.id}`;
   const visualStorageKey = `ral.assembledParts.${model.id}`;
 
   function readStoredIds(key) {
@@ -79,19 +77,6 @@
     syncStatus.dataset.state = state;
   }
 
-  function updateStepCounter() {
-    if (!stepsContainer) return;
-    const inputs = [...stepsContainer.querySelectorAll("input[data-step-id]")];
-    const completed = inputs.filter((input) => input.checked).length;
-    if (stepCounter) stepCounter.textContent = `${completed}/${inputs.length} bước`;
-  }
-
-  function setStepInputsDisabled(disabled) {
-    stepsContainer?.querySelectorAll("input[data-step-id]").forEach((input) => {
-      input.disabled = disabled;
-    });
-  }
-
   function setPartInputsDisabled(disabled) {
     partsContainer?.querySelectorAll("input[data-part-id]").forEach((input) => {
       input.disabled = disabled;
@@ -99,35 +84,15 @@
     if (resetButton) resetButton.disabled = disabled;
   }
 
-  function applyStepIds(completedIds) {
-    stepsContainer?.querySelectorAll("input[data-step-id]").forEach((input) => {
-      input.checked = completedIds.has(input.dataset.stepId);
-      input.closest("label")?.classList.toggle("is-complete", input.checked);
-    });
-    writeStoredIds(stepStorageKey, completedIds);
-    updateStepCounter();
-  }
-
-  function completedStepIdsFromSession(session) {
-    return new Set(
-      (session.steps || [])
-        .filter((step) => step.status === "COMPLETED")
-        .map((step) => step.stepId)
-    );
-  }
-
+  /* Chỉ hiển thị hướng dẫn để người lắp đọc theo, không tick/lưu tiến độ từng
+     bước — panel bên phải (linh kiện) mới là nơi thao tác và đồng bộ tài khoản. */
   function renderStepsPanel() {
     if (!stepsContainer) return;
     stepsContainer.replaceChildren();
 
     stepRecords.forEach((step, index) => {
-      const label = document.createElement("label");
-      label.className = "assembly-3d-step-item";
-
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.dataset.stepId = step.id;
-      checkbox.setAttribute("aria-label", `${step.title || `Bước ${index + 1}`}: ${step.instruction}`);
+      const item = document.createElement("div");
+      item.className = "assembly-3d-step-item";
 
       const order = document.createElement("span");
       order.className = "assembly-3d-step-order";
@@ -141,71 +106,25 @@
       instruction.textContent = step.instruction;
       copy.append(title, instruction);
 
-      label.append(checkbox, order, copy);
-      stepsContainer.append(label);
-
-      checkbox.addEventListener("change", async () => {
-        const previous = !checkbox.checked;
-        const localIds = readStoredIds(stepStorageKey);
-        if (checkbox.checked) localIds.add(step.id);
-        else localIds.delete(step.id);
-        writeStoredIds(stepStorageKey, localIds);
-        label.classList.toggle("is-complete", checkbox.checked);
-        updateStepCounter();
-
-        if (!activeSession || !sessionApi) {
-          setSyncStatus("Tiến độ bước đang được lưu trên trình duyệt này.", "local");
-          return;
-        }
-
-        checkbox.disabled = true;
-        setSyncStatus("Đang lưu bước lắp ráp…", "loading");
-        try {
-          activeSession = await sessionApi.setStepStatus(
-            activeSession.id,
-            step.id,
-            checkbox.checked ? "COMPLETED" : "PENDING"
-          );
-          applyStepIds(completedStepIdsFromSession(activeSession));
-          if (activeSession.status === "COMPLETED") {
-            setStepInputsDisabled(true);
-            setPartInputsDisabled(true);
-            setSyncStatus("Đã hoàn thành và lưu toàn bộ quy trình lắp ráp.", "complete");
-          } else {
-            setSyncStatus("Đã lưu bước lắp ráp vào tài khoản.", "saved");
-          }
-        } catch (error) {
-          checkbox.checked = previous;
-          label.classList.toggle("is-complete", previous);
-          const rollbackIds = readStoredIds(stepStorageKey);
-          if (previous) rollbackIds.add(step.id);
-          else rollbackIds.delete(step.id);
-          writeStoredIds(stepStorageKey, rollbackIds);
-          updateStepCounter();
-          setSyncStatus(`Không thể lưu bước. ${error.message}`, "error");
-        } finally {
-          if (activeSession?.status !== "COMPLETED") checkbox.disabled = false;
-        }
-      });
+      item.append(order, copy);
+      stepsContainer.append(item);
     });
-
-    applyStepIds(readStoredIds(stepStorageKey));
   }
 
-  async function restoreStepSession() {
+  /* Mở/tiếp tục phiên lắp ráp của tài khoản. Bước lắp ráp chỉ để đọc (renderStepsPanel
+     ở trên), nên hàm này chỉ còn quản lý trạng thái phiên và danh sách linh kiện. */
+  async function restoreSession() {
     if (!sessionApi) {
       if (requestedSessionId) {
-        setStepInputsDisabled(true);
         setPartInputsDisabled(true);
         setSyncStatus("Không thể mở phiên đã chọn vì API phiên chưa sẵn sàng.", "error");
         return;
       }
       if (window.THREE && window.createAssemblyPart) restoreVisualAssembly(readStoredIds(visualStorageKey));
-      setSyncStatus(contentWarning || "Tiến độ bước đang được lưu trên trình duyệt này.", "local");
+      setSyncStatus(contentWarning || "Tiến độ linh kiện đang được lưu trên trình duyệt này.", "local");
       return;
     }
 
-    setStepInputsDisabled(true);
     setPartInputsDisabled(true);
     setSyncStatus("Đang khôi phục tiến độ lắp ráp…", "loading");
     try {
@@ -221,26 +140,23 @@
       }
 
       activeSession = session;
-      applyStepIds(completedStepIdsFromSession(session));
       if (window.THREE && window.createAssemblyPart) {
         restoreVisualAssembly(new Set(session.assembledPartIds || []));
       }
 
       if (session.status === "PREPARING") {
-        setSyncStatus("Hãy chuẩn bị đủ linh kiện ở trang trước để bắt đầu các bước lắp ráp.", "waiting");
+        setSyncStatus("Hãy chuẩn bị đủ linh kiện ở trang trước để bắt đầu lắp ráp.", "waiting");
       } else if (session.status === "COMPLETED") {
         setSyncStatus("Phiên lắp ráp này đã hoàn thành.", "complete");
       } else if (session.status === "IN_PROGRESS") {
-        setStepInputsDisabled(false);
         setPartInputsDisabled(false);
-        setSyncStatus("Tiến độ bước đã được đồng bộ với tài khoản.", "saved");
+        setSyncStatus("Tiến độ đã được đồng bộ với tài khoản.", "saved");
       } else {
         setSyncStatus("Phiên lắp ráp hiện không thể tiếp tục.", "waiting");
       }
     } catch (error) {
       activeSession = null;
       const canUseLocal = !requestedSessionId;
-      setStepInputsDisabled(canUseLocal ? false : true);
       setPartInputsDisabled(canUseLocal ? false : true);
       if (canUseLocal && window.THREE && window.createAssemblyPart) {
         restoreVisualAssembly(readStoredIds(visualStorageKey));
@@ -257,7 +173,7 @@
   renderStepsPanel();
 
   if (!window.THREE || !window.createAssemblyPart) {
-    void restoreStepSession();
+    void restoreSession();
     if (statusElement) {
       statusElement.textContent = "Không thể tải trình dựng 3D. Hãy làm mới trang hoặc kiểm tra cấu hình máy chủ.";
     }
@@ -740,7 +656,7 @@
   explodeButton?.addEventListener("click", () => setExplodedView(!explodedView));
   window.addEventListener("resize", resizeRenderer);
   resizeRenderer();
-  void restoreStepSession();
+  void restoreSession();
 
   function animate(now) {
     requestAnimationFrame(animate);

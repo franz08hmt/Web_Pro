@@ -917,9 +917,17 @@
    KHU VỰC 3D
    ========================================= */
 
+.assembly-3d-left {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 20px;
+}
+
 .assembly-3d-view {
   position: relative;
 
+  flex: 1 1 auto;
   min-width: 0;
   min-height: 600px;
 
@@ -1447,10 +1455,13 @@
 
 .assembly-3d-steps-region {
   display: grid;
+  flex: 0 0 auto;
   min-height: 0;
-  gap: 9px;
-  padding-top: 12px;
-  border-top: 1px solid var(--assembly-line);
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid var(--assembly-line);
+  border-radius: 20px;
+  background: var(--assembly-surface);
 }
 
 .assembly-3d-page #assembly-3d-sync-status {
@@ -1486,25 +1497,13 @@
 
 .assembly-3d-step-item {
   display: grid;
-  grid-template-columns: 20px 30px minmax(0, 1fr);
+  grid-template-columns: 30px minmax(0, 1fr);
   align-items: start;
   gap: 9px;
   padding: 9px 10px;
   border: 1px solid var(--assembly-line);
   border-radius: 11px;
   background: rgb(255 255 255 / 2%);
-}
-
-.assembly-3d-step-item.is-complete {
-  border-color: rgb(56 211 195 / 42%);
-  background: rgb(56 211 195 / 6%);
-}
-
-.assembly-3d-step-item input {
-  width: 16px;
-  height: 16px;
-  margin-top: 2px;
-  accent-color: var(--assembly-teal);
 }
 
 .assembly-3d-step-order {
