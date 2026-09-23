@@ -25,7 +25,6 @@
   const progressElement = document.querySelector("#assembly-3d-progress");
   const progressValue = document.querySelector("#assembly-3d-progress-value");
   const progressCounter = document.querySelector("#assembly-3d-counter");
-  const stepsContainer = document.querySelector("#assembly-3d-steps");
   const syncStatus = document.querySelector("#assembly-3d-sync-status");
   const resetButton = document.querySelector("#assembly-3d-reset");
   const focusButton = document.querySelector("#assembly-3d-focus");
@@ -37,15 +36,6 @@
   const sessionApi = window.RobotAssemblyApi?.assemblySessions;
   const requestedSessionId = params.get("session");
   let activeSession = null;
-
-  const stepRecords = Array.isArray(model?.stepRecords) && model.stepRecords.length > 0
-    ? model.stepRecords
-    : (model?.steps || []).map((instruction, index) => ({
-        id: `${model.id}-step-${index + 1}`,
-        title: `Bước ${index + 1}`,
-        instruction,
-        stepOrder: index + 1
-      }));
 
   if (!container || !model) {
     throw new Error("Không thể khởi tạo phòng lắp ráp 3D.");
@@ -84,35 +74,8 @@
     if (resetButton) resetButton.disabled = disabled;
   }
 
-  /* Chỉ hiển thị hướng dẫn để người lắp đọc theo, không tick/lưu tiến độ từng
-     bước — panel bên phải (linh kiện) mới là nơi thao tác và đồng bộ tài khoản. */
-  function renderStepsPanel() {
-    if (!stepsContainer) return;
-    stepsContainer.replaceChildren();
-
-    stepRecords.forEach((step, index) => {
-      const item = document.createElement("div");
-      item.className = "assembly-3d-step-item";
-
-      const order = document.createElement("span");
-      order.className = "assembly-3d-step-order";
-      order.textContent = String(step.stepOrder || index + 1).padStart(2, "0");
-
-      const copy = document.createElement("span");
-      copy.className = "assembly-3d-step-copy";
-      const title = document.createElement("strong");
-      title.textContent = step.title || `Bước ${index + 1}`;
-      const instruction = document.createElement("small");
-      instruction.textContent = step.instruction;
-      copy.append(title, instruction);
-
-      item.append(order, copy);
-      stepsContainer.append(item);
-    });
-  }
-
-  /* Mở/tiếp tục phiên lắp ráp của tài khoản. Bước lắp ráp chỉ để đọc (renderStepsPanel
-     ở trên), nên hàm này chỉ còn quản lý trạng thái phiên và danh sách linh kiện. */
+  /* Mở/tiếp tục phiên lắp ráp của tài khoản: quản lý trạng thái phiên và
+     danh sách linh kiện. Không còn danh sách bước lắp ráp trong phòng 3D. */
   async function restoreSession() {
     if (!sessionApi) {
       if (requestedSessionId) {
@@ -169,8 +132,6 @@
       setSyncStatus(canUseLocal ? contentWarning || message : message, canUseLocal ? "local" : "error");
     }
   }
-
-  renderStepsPanel();
 
   if (!window.THREE || !window.createAssemblyPart) {
     void restoreSession();

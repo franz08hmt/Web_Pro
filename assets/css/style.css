@@ -917,17 +917,9 @@
    KHU VỰC 3D
    ========================================= */
 
-.assembly-3d-left {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  gap: 20px;
-}
-
 .assembly-3d-view {
   position: relative;
 
-  flex: 1 1 auto;
   min-width: 0;
   min-height: 600px;
 
@@ -1453,17 +1445,6 @@
   font-size: 11px;
 }
 
-.assembly-3d-steps-region {
-  display: grid;
-  flex: 0 0 auto;
-  min-height: 0;
-  gap: 12px;
-  padding: 20px;
-  border: 1px solid var(--assembly-line);
-  border-radius: 20px;
-  background: var(--assembly-surface);
-}
-
 .assembly-3d-page #assembly-3d-sync-status {
   margin: 0;
   padding: 9px 11px;
@@ -1484,55 +1465,6 @@
 .assembly-3d-page #assembly-3d-sync-status[data-state="error"] {
   border-color: rgb(255 135 72 / 45%);
   color: #ffd3ba;
-}
-
-.assembly-3d-steps {
-  display: grid;
-  gap: 7px;
-  max-height: min(24vh, 230px);
-  overflow: auto;
-  padding-right: 5px;
-  scrollbar-color: var(--assembly-line) transparent;
-}
-
-.assembly-3d-step-item {
-  display: grid;
-  grid-template-columns: 30px minmax(0, 1fr);
-  align-items: start;
-  gap: 9px;
-  padding: 9px 10px;
-  border: 1px solid var(--assembly-line);
-  border-radius: 11px;
-  background: rgb(255 255 255 / 2%);
-}
-
-.assembly-3d-step-order {
-  display: grid;
-  width: 27px;
-  height: 27px;
-  place-items: center;
-  border-radius: 8px;
-  color: var(--assembly-accent);
-  background: #0d1418;
-  font-size: 9px;
-  font-weight: 800;
-}
-
-.assembly-3d-step-copy {
-  display: grid;
-  min-width: 0;
-  gap: 3px;
-}
-
-.assembly-3d-step-copy strong {
-  color: var(--assembly-text);
-  font-size: 12px;
-}
-
-.assembly-3d-step-copy small {
-  color: var(--assembly-muted);
-  font-size: 10px;
-  line-height: 1.45;
 }
 
 .assembly-3d-page .assembly-3d-progress {
@@ -1648,10 +1580,6 @@
 
   .assembly-3d-page .assembly-3d-parts {
     max-height: 380px;
-  }
-
-  .assembly-3d-steps {
-    max-height: 320px;
   }
 }
 

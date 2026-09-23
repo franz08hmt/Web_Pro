@@ -103,27 +103,22 @@ test("the assembly controller loads the parts library and creates every physical
   assert.match(assemblySource, /itemIndex\s*<\s*part\.quantity/);
 });
 
-test("3D assembly shows the steps as a read-only reference list under the 3D view", () => {
-  assert.match(pageSource, /id="assembly-3d-steps-title"/);
-  assert.match(pageSource, /id="assembly-3d-steps"/);
-  assert.match(
-    pageSource,
-    /class="assembly-3d-steps-region"[^>]*aria-labelledby="assembly-3d-steps-title"/
-  );
+test("3D assembly room has no steps list at all — parts panel is the only interactive UI", () => {
+  assert.doesNotMatch(pageSource, /assembly-3d-steps/);
+  assert.doesNotMatch(pageSource, /assembly-3d-step-counter/);
+  assert.doesNotMatch(pageSource, /class="assembly-3d-left"/);
   assert.match(
     pageSource,
     /id="assembly-3d-sync-status"[^>]*role="status"[^>]*aria-live="polite"/
   );
 
-  // Bước lắp ráp nằm cùng cột với khung xem 3D (bên trái), không còn ô tick.
-  const leftMatch = pageSource.match(/<div class="assembly-3d-left">([\s\S]*?)<\/div>\s*<aside/);
-  assert.ok(leftMatch, "Không tìm thấy khối .assembly-3d-left bọc khung 3D và danh sách bước");
-  assert.match(leftMatch[1], /class="assembly-3d-view"/);
-  assert.match(leftMatch[1], /class="assembly-3d-steps-region"/);
-
-  assert.doesNotMatch(pageSource, /id="assembly-3d-step-counter"/);
+  assert.doesNotMatch(assemblySource, /assembly-3d-steps/);
+  assert.doesNotMatch(assemblySource, /stepRecords/);
   assert.doesNotMatch(assemblySource, /data-step-id/);
   assert.doesNotMatch(assemblySource, /sessionApi\.setStepStatus\(/);
+
+  assert.doesNotMatch(styleSource, /\.assembly-3d-step/);
+  assert.doesNotMatch(styleSource, /\.assembly-3d-left\b/);
 });
 
 test("3D assembly loads live content and persists visual assembly through the session API", () => {
@@ -133,7 +128,6 @@ test("3D assembly loads live content and persists visual assembly through the se
     "Dữ liệu và API client phải được tải trước controller 3D"
   );
   assert.match(assemblySource, /RobotContentApi\.loadRobots\(\)/);
-  assert.match(assemblySource, /model\.stepRecords/);
   assert.match(assemblySource, /sessionApi\.createOrResume\(model\.id\)/);
   assert.match(assemblySource, /sessionApi\.updateStatus\([^,]+,\s*"IN_PROGRESS"\)/);
 });
