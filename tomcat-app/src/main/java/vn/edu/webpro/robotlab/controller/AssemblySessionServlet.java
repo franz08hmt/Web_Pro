@@ -153,6 +153,43 @@ public class AssemblySessionServlet extends HttpServlet {
         }
     }
 
+    /** DELETE /{id}/progress — xóa tiến độ của phiên hiện tại để lắp lại từ đầu. */
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        User user = SessionUtil.requireUser(request, response);
+        if (user == null || !SessionUtil.hasValidCsrfToken(request, response)) return;
+
+        String path = request.getPathInfo();
+        String[] segments = path == null ? new String[0] : path.substring(1).split("/");
+        if (segments.length != 2 || !"progress".equals(segments[1])) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_NOT_FOUND,
+                    "NOT_FOUND", "Không tìm thấy tài nguyên yêu cầu.");
+            return;
+        }
+
+        try {
+            AssemblySession session = findSession(segments[0], user);
+            if (session == null) {
+                sendSessionNotFound(response);
+                return;
+            }
+            if (!session.canResetProgress()) {
+                ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT,
+                        "INVALID_STATE_TRANSITION", "Phiên này không thể đặt lại tiến độ.");
+                return;
+            }
+            if (!AssemblySessionDB.resetProgress(session.getId(), user.getId())) {
+                ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT,
+                        "INVALID_STATE_TRANSITION", "Phiên này không thể đặt lại tiến độ.");
+                return;
+            }
+            AssemblySession reset = AssemblySessionDB.selectSession(session.getId(), user.getId());
+            sendSession(response, HttpServletResponse.SC_OK, refresh(reset));
+        } catch (SQLException e) {
+            ResponseUtil.sendDatabaseUnavailable(response);
+        }
+    }
+
     private void changeStatus(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user = SessionUtil.requireUser(request, response);
         if (user == null || !SessionUtil.hasValidCsrfToken(request, response)) return;

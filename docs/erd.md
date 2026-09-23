@@ -5,14 +5,33 @@ erDiagram
 
     USERS {
         BIGINT_UNSIGNED id PK
+        VARCHAR email UK
+        VARCHAR display_name
+        VARCHAR password_hash
+        ENUM role
+        INT_UNSIGNED session_version
+        TIMESTAMP created_at
     }
 
     ROBOTS {
         VARCHAR id PK
+        VARCHAR name
+        ENUM level
+        TEXT summary
+        VARCHAR image
+        VARCHAR build_time
+        VARCHAR main_sensor
+        TEXT skills
+        JSON wiring
     }
 
     COMPONENTS {
         VARCHAR id PK
+        VARCHAR name
+        VARCHAR category
+        VARCHAR image
+        TEXT description
+        JSON specs
     }
 
     ROBOT_COMPONENTS {
@@ -24,24 +43,36 @@ erDiagram
     ASSEMBLY_STEPS {
         VARCHAR id PK
         VARCHAR robot_id FK
+        INT step_order
+        VARCHAR title
+        TEXT instruction
+        JSON illustration
     }
 
     ASSEMBLY_SESSIONS {
         BIGINT_UNSIGNED id PK
         BIGINT_UNSIGNED user_id FK
         VARCHAR robot_id FK
+        ENUM status
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
     }
 
     SESSION_COMPONENTS {
         BIGINT_UNSIGNED session_id PK, FK
         VARCHAR robot_id FK
         VARCHAR component_id PK, FK
+        BOOLEAN prepared
+        TIMESTAMP updated_at
     }
 
     SESSION_STEPS {
         BIGINT_UNSIGNED session_id PK, FK
         VARCHAR robot_id FK
         VARCHAR step_id PK, FK
+        BOOLEAN completed
+        JSON simulation_state
+        TIMESTAMP updated_at
     }
 
     SESSION_VISUAL_PARTS {
@@ -53,6 +84,15 @@ erDiagram
     LIBRARY_RESOURCES {
         VARCHAR id PK
         VARCHAR robot_id FK
+        VARCHAR title
+        ENUM type
+        VARCHAR url
+        TEXT description
+    }
+
+    SCHEMA_MIGRATIONS {
+        VARCHAR version PK
+        TIMESTAMP applied_at
     }
 
     USERS ||--o{ ASSEMBLY_SESSIONS : creates
@@ -84,6 +124,14 @@ Khóa ngoại kép: `(session_id, robot_id)` tham chiếu `assembly_sessions(id,
 `session_components(robot_id, component_id)` tham chiếu `robot_components`;
 `session_steps(robot_id, step_id)` tham chiếu `assembly_steps(robot_id, id)`;
 `session_visual_parts(robot_id, component_id)` tham chiếu `robot_components`.
-Các khóa BIGINT là UNSIGNED. Xác thực runtime dùng `HttpSession` do Tomcat quản
-lý; bảng `users` chỉ lưu tài khoản, mật khẩu đã băm và role. Xem
-`database/schema.sql` và `docs/ARCHITECTURE.md` để đối chiếu SQL với các lớp `XxxDB`.
+`robot_components` dùng khóa chính ghép `(robot_id, component_id)` để biểu diễn
+quan hệ nhiều-nhiều và lưu số lượng cần thiết. `assembly_steps` duy nhất thứ tự
+bước trong từng robot. `library_resources.robot_id` được phép NULL để lưu tài
+liệu dùng chung. Các khóa BIGINT là UNSIGNED.
+
+`HttpSession`/cookie `JSESSIONID` là trạng thái runtime do Tomcat quản lý, không
+phải bảng database. Bảng `users` lưu tài khoản, password hash và role; tiến độ
+được lưu theo từng phiên lắp ráp trong `assembly_sessions` cùng các bảng con.
+`schema_migrations` ghi phiên bản cấu trúc đã áp dụng. Đối chiếu chi tiết từng
+cột và constraint tại `database/schema.sql` và các file trong
+`database/migrations/`; các lớp `XxxDB` là nơi chạy SQL tương ứng.

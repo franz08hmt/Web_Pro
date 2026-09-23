@@ -2,7 +2,27 @@
 
 Tài liệu chỉ tập trung vào luồng đã tích hợp: dữ liệu → Servlet → giao diện →
 phiên lắp ráp → phòng 3D. Bảng đối chiếu từng lớp với số slide nằm ở
-[ARCHITECTURE.md](ARCHITECTURE.md).
+[ARCHITECTURE.md](ARCHITECTURE.md). Đây là ứng dụng Java Servlet/JSP chạy trong
+Tomcat và một WAR; JavaScript gọi API cùng origin, không phải serverless/BaaS.
+
+## Kết luận đối chiếu yêu cầu ban đầu
+
+| Nội dung cô hỏi | Mức đáp ứng trong code | Bằng chứng nên mở |
+| --- | --- | --- |
+| Controller và client/server kết nối | Đạt: `fetch` → URL mapping `@WebServlet` → JSON response | `assets/js/api.js`, `AuthServlet.java`, `ResponseUtil.java` |
+| Request/response | Đạt: servlet đọc body/query/session và trả status + JSON; trang JSP dùng forward | `AuthServlet.java`, `RobotServlet.java`, `ComponentCatalogPageServlet.java` |
+| Cấu trúc theo kiến thức Servlet/JSP | Đạt về mô hình: JavaBean, Servlet, JSP/EL/JSTL, lớp `XxxDB`, JDBC | [ARCHITECTURE.md](ARCHITECTURE.md) và các source được dẫn dưới đây |
+| Database | Đạt: schema/seed, migration, ERD, PreparedStatement, pool và đóng tài nguyên | `database/`, `docs/erd.md`, `ConnectionPool.java`, `DBUtil.java` |
+| Đăng nhập/phân quyền | Code có HttpSession, role USER/ADMIN, CSRF, hash mật khẩu; DB hiện tại cần chạy migration `004_account_session_version` trước khi xác nhận demo end-to-end | `AuthServlet.java`, `SessionUtil.java`, `UserDB.java`, `AdminUserServlet.java`, `database/migrations/004_account_session_version.sql` |
+| Lắp ráp từng bước | Chưa khép kín UI: trang có danh sách hướng dẫn, nhưng chưa lưu tick từng bước | Backend có API `/steps`; UI chưa gọi `setStepStatus()` |
+
+Lưu ý: repository hiện không chứa bộ slide gốc, nên các số chương/slide trong
+`ARCHITECTURE.md` đang đối chiếu theo ghi chú môn học đã có trong dự án/cuộc trao
+đổi; trước buổi bảo vệ hãy mở slide của cô để xác nhận lại số slide chính xác.
+Đây là giới hạn kiểm chứng tài liệu, không phải thiếu cấu trúc Servlet/JSP trong code.
+Database đang dùng trước đó chưa có `users.session_version`; user ứng dụng không có
+quyền `ALTER`, nên cần DBA/chủ database chạy migration `004` rồi mới demo xác thực
+trên chính database đó. Không chạy lại migration trên DB đã có version này.
 
 ## Phân công
 
@@ -26,8 +46,14 @@ phiên lắp ráp → phòng 3D. Bảng đối chiếu từng lớp với số s
 6. Mở `/account` — servlet đọc `User` từ `HttpSession`, đặt vào request rồi
    forward sang `account.jsp`. `SessionUtil.getCurrentUser` đối chiếu database
    trước khi tin role trong phiên; chưa đăng nhập thì bị chuyển về trang đăng nhập.
-7. Chọn robot, tick linh kiện; mỗi thay đổi gọi API phiên và lưu MySQL.
-8. Vào phòng 3D, lắp/gỡ part; reload trang để chứng minh trạng thái được khôi phục.
+7. Ở `/pages/lap-rap.html`, chọn robot và tick linh kiện; tiến độ chuẩn bị được lưu
+   trong phiên tài khoản qua API (hoặc local storage khi chưa đăng nhập/API lỗi).
+   Quy trình lắp ráp bên dưới là danh sách hướng dẫn đọc theo thứ tự, không phải
+   checkbox tiến độ từng bước.
+8. Vào phòng 3D, lắp/gỡ part; panel chỉ chứa linh kiện. Part được đồng bộ qua
+   `visual-parts`; reload trang để chứng minh trạng thái 3D được khôi phục.
+   Quay lại trang chuẩn bị và bấm **Đặt lại tiến độ** để xóa checklist, trạng thái
+   part 3D và đưa phiên đang làm về `PREPARING` trong một thao tác.
 9. Đăng nhập admin, CRUD một nội dung rồi mở lại `/components` để thấy dữ liệu
    mới xuất hiện ngay trong HTML do server dựng. Mở `/pages/admin-users.html`
    để chỉ cách admin đổi role người khác; tài khoản thường bị API từ chối 403.
@@ -64,13 +90,22 @@ Ví dụ `RobotServlet` cho `/api/robots`; `AccountPageServlet` forward tới JS
 
 `assets/js/content-api.js` và `assets/js/api.js` dùng `fetch()` gửi HTTP tới
 `/api`. Tomcat ánh xạ URL tới servlet qua `@WebServlet`. Servlet trả JSON UTF-8;
-JavaScript đọc `response.json()` và cập nhật trang. Trình duyệt không kết nối MySQL.
+JavaScript đọc `response.json()` và cập nhật trang. Cùng một WAR trên Tomcat phục
+vụ các JSP/HTML và endpoint API; trình duyệt không kết nối MySQL.
+
+Ví dụ dễ chỉ trên màn hình: `api.js → POST /api/auth/login` gửi JSON
+`{email,password}`; `AuthServlet.doPost()` xác thực qua `UserDB` rồi trả HTTP 200
+với `{data:{user}}` và cookie `JSESSIONID`. Request `/api/auth/me` tiếp theo gửi
+cookie đó; response có `{data:{user},csrfToken}`. Với thao tác ghi, client gửi
+thêm `X-CSRF-Token`; status và JSON response được tạo ở Servlet qua `ResponseUtil`.
 
 ### "Request và response nằm ở đâu?"
 
 Trong `doGet`, `doPost`, `doPut`, `doDelete` của servlet. `HttpServletRequest`
 cung cấp tham số, đường dẫn, thân request, header và session;
 `HttpServletResponse` nhận mã trạng thái, content type và nội dung qua `ResponseUtil`.
+Ví dụ mở `AuthServlet.doPost()` cho login/register và `ResponseUtil.sendJson()` /
+`sendError()` để chỉ đúng chỗ tạo response thành công/lỗi.
 
 ### "Database đi qua lớp nào?"
 
@@ -115,6 +150,14 @@ PBKDF2 có salt do `PasswordUtil` tạo, không lưu mật khẩu gốc.
 MySQL qua servlet. `assets/js/data.js` chỉ là bản dự phòng để giao diện vẫn có nội
 dung minh họa khi API chưa sẵn sàng.
 
+### "Quy trình bước lắp ráp đang được lưu thế nào?"
+
+Trên trang chuẩn bị, `main.js` dựng danh sách `model.steps` thành hướng dẫn tĩnh;
+checkbox được đồng bộ hiện tại là checkbox linh kiện. Backend đã có
+`PUT /api/assembly-sessions/{id}/steps/{stepId}`, nhưng giao diện chưa gọi endpoint
+này. Trong phòng 3D, panel hiển thị part và tiến độ lắp/gỡ part, không hiển thị
+danh sách bước. Nói đúng ranh giới này để không khẳng định tính năng UI chưa có.
+
 ### "Phòng 3D lấy mô hình ở đâu?"
 
 Three.js nằm cục bộ tại `assets/vendor/three`. Hình học được dựng bằng code trong
@@ -146,4 +189,13 @@ assets/js/api.js
 → data/UserDB.java / data/AssemblySessionDB.java
 → business/User.java / business/AssemblySession.java
 → MySQL
+```
+
+Khi cô hỏi request/response, mở theo chuỗi ngắn này:
+
+```text
+assets/js/api.js (fetch + JSON + cookie/CSRF)
+→ controller/AuthServlet.java (doPost/doGet)
+→ util/ResponseUtil.java (HTTP status + JSON)
+→ util/SessionUtil.java (HttpSession/JSESSIONID)
 ```

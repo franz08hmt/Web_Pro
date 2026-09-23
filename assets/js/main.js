@@ -368,7 +368,11 @@ async function setupAssembly() {
       if (revision === selectionRevision) {
         const readOnly = restoreError || (activeSession && !["PREPARING", "READY"].includes(activeSession.status));
         inputs.forEach((input) => { input.disabled = Boolean(readOnly); });
-        if (resetButton) resetButton.disabled = Boolean(readOnly);
+        if (resetButton) {
+          resetButton.disabled = restoreError || Boolean(
+            activeSession && !["PREPARING", "READY", "IN_PROGRESS"].includes(activeSession.status)
+          );
+        }
       }
     }
   }
@@ -407,29 +411,39 @@ async function setupAssembly() {
     await restoreSession();
   });
 
-  if (resetButton) {
-    resetButton.addEventListener("click", async () => {
-      storage.remove(partsKey());
-      const inputs = [...checklist.querySelectorAll("input[data-component-id]")];
-      const preparedIds = inputs.filter((item) => item.checked).map((item) => item.dataset.componentId);
-      inputs.forEach((item) => { item.checked = false; });
-      updateProgress(false, activeSession ? "Đang đặt lại tiến độ…" : "Đã đặt lại tiến độ trên trình duyệt này.");
-      if (!activeSession || !sessionApi || preparedIds.length === 0) return;
+    if (resetButton) {
+      resetButton.addEventListener("click", async () => {
+        storage.remove(partsKey());
+        const inputs = [...checklist.querySelectorAll("input[data-component-id]")];
+        const previouslyPrepared = new Set(
+          inputs.filter((item) => item.checked).map((item) => item.dataset.componentId)
+        );
+        inputs.forEach((item) => { item.checked = false; });
+      if (!activeSession || !sessionApi) {
+        updateProgress(false, "Đã đặt lại tiến độ trên trình duyệt này.");
+        return;
+      }
 
       resetButton.disabled = true;
+      updateProgress(false, "Đang đặt lại toàn bộ tiến độ…");
       try {
-        for (const componentId of preparedIds) {
-          activeSession = await sessionApi.setComponentPrepared(activeSession.id, componentId, false);
-        }
+        activeSession = await sessionApi.resetProgress(activeSession.id);
+        inputs.forEach((item) => { item.disabled = false; });
         updateProgress(false, "Đã đặt lại tiến độ trong tài khoản.");
-      } catch (error) {
-        try {
-          applySession(await sessionApi.get(activeSession.id), `Không thể đặt lại toàn bộ. ${error.message}`);
-        } catch {
-          updateProgress(false, `Không thể khôi phục tiến độ. ${error.message}`);
-        }
+        } catch (error) {
+          try {
+            applySession(await sessionApi.get(activeSession.id), `Không thể đặt lại toàn bộ. ${error.message}`);
+          } catch {
+            inputs.forEach((item) => {
+              item.checked = previouslyPrepared.has(item.dataset.componentId);
+            });
+            savePartsState(inputs);
+            updateProgress(false, `Không thể xác nhận việc đặt lại. ${error.message}`);
+          }
       } finally {
-        resetButton.disabled = false;
+        resetButton.disabled = Boolean(
+          activeSession && !["PREPARING", "READY", "IN_PROGRESS"].includes(activeSession.status)
+        );
       }
     });
   }

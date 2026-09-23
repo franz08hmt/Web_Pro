@@ -62,6 +62,100 @@ public class AssemblySessionDB {
         }
     }
 
+    /** Xóa toàn bộ tiến độ của phiên thuộc user và đưa phiên về PREPARING. */
+    public static boolean resetProgress(long id, long userId) throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        boolean originalAutoCommit = true;
+        boolean transactionStarted = false;
+        boolean transactionFinished = false;
+
+        try {
+            originalAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            transactionStarted = true;
+
+            ps = connection.prepareStatement(
+                    "SELECT status FROM assembly_sessions WHERE id = ? AND user_id = ? FOR UPDATE");
+            ps.setLong(1, id);
+            ps.setLong(2, userId);
+            rs = ps.executeQuery();
+            if (!rs.next()) {
+                connection.rollback();
+                transactionFinished = true;
+                return false;
+            }
+            String status = rs.getString("status");
+            DBUtil.closeResultSet(rs);
+            rs = null;
+            DBUtil.closePreparedStatement(ps);
+            ps = null;
+
+            if (!AssemblySession.PREPARING.equals(status)
+                    && !AssemblySession.READY.equals(status)
+                    && !AssemblySession.IN_PROGRESS.equals(status)) {
+                connection.rollback();
+                transactionFinished = true;
+                return false;
+            }
+
+            deleteProgressRows(connection, "session_components", id);
+            deleteProgressRows(connection, "session_steps", id);
+            deleteProgressRows(connection, "session_visual_parts", id);
+
+            ps = connection.prepareStatement(
+                    "UPDATE assembly_sessions SET status = 'PREPARING' WHERE id = ? AND user_id = ?");
+            ps.setLong(1, id);
+            ps.setLong(2, userId);
+            ps.executeUpdate();
+            connection.commit();
+            transactionFinished = true;
+            return true;
+        } catch (SQLException e) {
+            if (transactionStarted && !transactionFinished) {
+                try {
+                    connection.rollback();
+                    transactionFinished = true;
+                } catch (SQLException rollbackError) {
+                    e.addSuppressed(rollbackError);
+                }
+            }
+            throw e;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            if (transactionStarted && !transactionFinished) {
+                try {
+                    connection.rollback();
+                } catch (SQLException e) {
+                    System.out.println(e);
+                }
+            }
+            if (transactionStarted) {
+                try {
+                    connection.setAutoCommit(originalAutoCommit);
+                } catch (SQLException e) {
+                    System.out.println(e);
+                }
+            }
+            pool.freeConnection(connection);
+        }
+    }
+
+    private static void deleteProgressRows(Connection connection, String table, long sessionId)
+            throws SQLException {
+        PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement("DELETE FROM " + table + " WHERE session_id = ?");
+            ps.setLong(1, sessionId);
+            ps.executeUpdate();
+        } finally {
+            DBUtil.closePreparedStatement(ps);
+        }
+    }
+
     /** Lưu trạng thái tick của một linh kiện; dòng đã có thì cập nhật. */
     public static int updateComponent(AssemblySession session, String componentId, boolean prepared)
             throws SQLException {

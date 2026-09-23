@@ -26,7 +26,8 @@ Lỗi:
 }
 ```
 
-`ApiResponses` đặt JSON UTF-8, status code và `Cache-Control: no-store`.
+`util/ResponseUtil.sendJson()` đặt JSON UTF-8, status code và
+`Cache-Control: no-store`; `sendError()` tạo response lỗi có `requestId`.
 
 | Status | Code chính | Ý nghĩa |
 | --- | --- | --- |
@@ -91,11 +92,23 @@ Tất cả endpoint sau yêu cầu đăng nhập. Request thay đổi dữ liệ
 | PUT | `/api/assembly-sessions/{id}/components/{componentId}` | `{ "isPrepared": true }` |
 | PUT | `/api/assembly-sessions/{id}/steps/{stepId}` | `{ "status": "COMPLETED" }` |
 | PUT | `/api/assembly-sessions/{id}/visual-parts/{componentId}` | `{ "isAssembled": true }` |
+| DELETE | `/api/assembly-sessions/{id}/progress` | Xóa tiến độ chuẩn bị/bước/part, trả phiên về `PREPARING` |
 
 Trạng thái chính: `PREPARING → READY → IN_PROGRESS → COMPLETED`; có thể chuyển
 sang `ABANDONED` trước khi hoàn tất. `AssemblySessionServlet` kiểm tra robot,
 component, step và quyền sở hữu; luật chuyển trạng thái nằm trong JavaBean
 `AssemblySession`; sau đó `AssemblySessionDB` mới ghi dữ liệu.
+Reset tiến độ chỉ áp dụng cho phiên `PREPARING`, `READY` hoặc `IN_PROGRESS`; thao
+tác cần đăng nhập và CSRF, khóa đúng phiên theo `user_id`, xóa ba bảng tiến độ
+trong transaction rồi đặt lại trạng thái. Phiên `COMPLETED`/`ABANDONED` không thể
+đặt lại.
+
+Phân biệt UI và API khi trình bày: trang `pages/lap-rap.html` hiện hiển thị quy
+trình dưới dạng danh sách hướng dẫn đọc theo thứ tự; phần checkbox và tiến độ
+đồng bộ là cho **chuẩn bị linh kiện**. Phòng `pages/lap-rap-3d.html` chỉ hiển thị
+danh sách linh kiện/part 3D, không có panel quy trình. Endpoint `/steps` vẫn được
+Servlet hỗ trợ, nhưng giao diện hiện tại chưa gọi `setStepStatus()` để lưu trạng
+thái từng bước; không nên nói rằng tick từng bước đang được đồng bộ.
 
 ## CRUD quản trị
 

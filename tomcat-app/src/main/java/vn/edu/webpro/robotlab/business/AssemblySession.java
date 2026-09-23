@@ -140,6 +140,11 @@ public class AssemblySession implements Serializable {
         return IN_PROGRESS.equals(status);
     }
 
+    /** Cho phép xóa tiến độ để bắt đầu lại trước hoặc trong giai đoạn lắp ráp. */
+    public boolean canResetProgress() {
+        return isInPreparation() || isInProgress();
+    }
+
     /** Chỉ cho phép các bước chuyển hợp lệ, không cho nhảy thẳng tới COMPLETED. */
     public boolean canChangeStatusTo(String target) {
         return (READY.equals(status) && IN_PROGRESS.equals(target))

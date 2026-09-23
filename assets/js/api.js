@@ -136,6 +136,12 @@
         csrf: true,
         body: { isAssembled }
       })).data;
+    },
+    async resetProgress(sessionId) {
+      return (await request(`/assembly-sessions/${segment(sessionId)}/progress`, {
+        method: "DELETE",
+        csrf: true
+      })).data;
     }
   });
 

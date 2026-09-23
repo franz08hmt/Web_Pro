@@ -116,6 +116,7 @@ test("assembly client exposes the complete session contract", async () => {
   await client.assemblySessions.setComponentPrepared("42", "arduino-uno", true);
   await client.assemblySessions.setStepStatus("42", "line-follower-step-1", "COMPLETED");
   await client.assemblySessions.setVisualPart("42", "arduino-uno", true);
+  const reset = await client.assemblySessions.resetProgress("42");
 
   assert.deepEqual(JSON.parse(JSON.stringify(list)), {
     items: [{ id: "42" }],
@@ -128,10 +129,12 @@ test("assembly client exposes the complete session contract", async () => {
     "PATCH /api/assembly-sessions/42",
     "PUT /api/assembly-sessions/42/components/arduino-uno",
     "PUT /api/assembly-sessions/42/steps/line-follower-step-1",
-    "PUT /api/assembly-sessions/42/visual-parts/arduino-uno"
+    "PUT /api/assembly-sessions/42/visual-parts/arduino-uno",
+    "DELETE /api/assembly-sessions/42/progress"
   ]);
+  assert.equal(reset.id, "42");
   assert.equal(calls.at(-1).headers["X-CSRF-Token"], "csrf-token");
-  assert.deepEqual(JSON.parse(calls.at(-1).body), { isAssembled: true });
+  assert.deepEqual(JSON.parse(calls.at(-2).body), { isAssembled: true });
 });
 
 test("client normalizes API and network failures for the UI", async () => {

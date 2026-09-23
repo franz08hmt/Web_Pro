@@ -31,3 +31,8 @@ test("assembly preparation restores the exact requested session instead of creat
   assert.match(source, /sessionApi\.get\(requestedSessionId\)/);
   assert.match(source, /session\.robotId !== modelSelect\.value/);
 });
+
+test("assembly reset remains available after entering 3D and resets the owned session atomically", () => {
+  assert.match(source, /sessionApi\.resetProgress\(activeSession\.id\)/);
+  assert.match(source, /\["PREPARING", "READY", "IN_PROGRESS"\]\.includes\(activeSession\.status\)/);
+});
