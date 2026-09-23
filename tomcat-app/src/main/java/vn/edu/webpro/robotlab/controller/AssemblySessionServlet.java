@@ -188,7 +188,7 @@ public class AssemblySessionServlet extends HttpServlet {
     /** Tick linh kiện: chỉ trong giai đoạn chuẩn bị và linh kiện phải thuộc robot này. */
     private boolean updateComponent(AssemblySession session, String componentId, String body)
             throws SQLException {
-        boolean prepared = Boolean.parseBoolean(JsonUtil.stringField(body, "isPrepared"));
+        boolean prepared = JsonUtil.booleanField(body, "isPrepared");
         if (!session.isInPreparation()
                 || !RobotDB.robotHasComponent(session.getRobotId(), componentId)) {
             return false;
@@ -212,7 +212,7 @@ public class AssemblySessionServlet extends HttpServlet {
     /** Lắp/gỡ part 3D: cũng chỉ khi phiên đang IN_PROGRESS. */
     private boolean updateVisualPart(AssemblySession session, String componentId, String body)
             throws SQLException {
-        boolean assembled = Boolean.parseBoolean(JsonUtil.stringField(body, "isAssembled"));
+        boolean assembled = JsonUtil.booleanField(body, "isAssembled");
         if (!session.isInProgress()
                 || !RobotDB.robotHasComponent(session.getRobotId(), componentId)) {
             return false;

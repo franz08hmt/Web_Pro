@@ -98,6 +98,24 @@ public final class JsonUtil {
         throw new IllegalArgumentException("invalid-json");
     }
 
+    /**
+     * Lấy giá trị boolean thật của JSON (true/false không có ngoặc kép), ví dụ
+     * {"isPrepared":true}. Khác stringField: stringField chỉ đọc được chuỗi
+     * "true"/"false" có ngoặc kép, còn JSON chuẩn ghi boolean không có ngoặc.
+     */
+    public static boolean booleanField(String body, String key) {
+        String marker = "\"" + key + "\"";
+        int keyStart = body == null ? -1 : body.indexOf(marker);
+        int colon = keyStart < 0 ? -1 : body.indexOf(':', keyStart + marker.length());
+        int start = colon < 0 ? -1 : colon + 1;
+        while (start >= 0 && start < body.length() && Character.isWhitespace(body.charAt(start))) {
+            start++;
+        }
+        if (start >= 0 && body.startsWith("true", start)) return true;
+        if (start >= 0 && body.startsWith("false", start)) return false;
+        throw new IllegalArgumentException("missing-" + key);
+    }
+
     /** Lấy nguyên văn một object JSON lồng bên trong, ví dụ "specs":{...}. */
     public static String objectField(String body, String key) {
         return nestedField(body, key, '{', '}');

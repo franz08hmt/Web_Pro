@@ -81,4 +81,17 @@ final class UtilTest {
         assertThrows(IllegalArgumentException.class,
                 () -> JsonUtil.readBody(new StringReader("x".repeat(8193)), 8192));
     }
+
+    /* Bug thật: trình duyệt gửi boolean JSON chuẩn (true/false không ngoặc kép)
+       cho isPrepared/isAssembled, nhưng stringField chỉ đọc được chuỗi có ngoặc
+       kép. Tick linh kiện và lắp part 3D đều gọi qua booleanField nên phải đọc
+       đúng cả hai dạng viết thường gặp. */
+    @Test
+    void booleanFieldReadsRealJsonBooleansNotQuotedStrings() {
+        assertTrue(JsonUtil.booleanField("{\"isPrepared\":true}", "isPrepared"));
+        assertFalse(JsonUtil.booleanField("{\"isPrepared\":false}", "isPrepared"));
+        assertTrue(JsonUtil.booleanField("{\"a\":1,\"isAssembled\": true}", "isAssembled"));
+        assertThrows(IllegalArgumentException.class,
+                () -> JsonUtil.booleanField("{\"isPrepared\":\"true\"}", "other"));
+    }
 }
