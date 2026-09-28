@@ -86,6 +86,7 @@ CREATE TABLE assembly_sessions (
     user_id BIGINT UNSIGNED NOT NULL,
     robot_id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
     status ENUM('in_progress', 'completed') NOT NULL DEFAULT 'in_progress',
+    completed_at TIMESTAMP NULL DEFAULT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL
         DEFAULT CURRENT_TIMESTAMP
@@ -242,3 +243,117 @@ VALUES ('003_session_visual_parts');
 
 INSERT INTO schema_migrations (version)
 VALUES ('004_account_session_version');
+
+INSERT INTO schema_migrations (version)
+VALUES ('005_assembly_completion');
+
+-- Bài kiểm tra kiến thức theo robot (006_quiz).
+CREATE TABLE quiz_questions (
+    id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
+    robot_id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+    prompt TEXT NOT NULL,
+    explanation TEXT NOT NULL,
+    question_order INT NOT NULL CHECK (question_order BETWEEN 1 AND 10000),
+
+    UNIQUE (robot_id, question_order),
+
+    FOREIGN KEY (robot_id)
+        REFERENCES robots(id)
+        ON DELETE RESTRICT
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE quiz_options (
+    id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
+    question_id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+    label TEXT NOT NULL,
+    is_correct BOOLEAN NOT NULL DEFAULT FALSE CHECK (is_correct IN (0, 1)),
+    option_order INT NOT NULL CHECK (option_order BETWEEN 1 AND 100),
+
+    UNIQUE (question_id, option_order),
+
+    FOREIGN KEY (question_id)
+        REFERENCES quiz_questions(id)
+        ON DELETE CASCADE
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE quiz_attempts (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    robot_id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+    score INT UNSIGNED NOT NULL,
+    total_questions INT UNSIGNED NOT NULL,
+    submitted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE RESTRICT,
+
+    FOREIGN KEY (robot_id)
+        REFERENCES robots(id)
+        ON DELETE RESTRICT,
+
+    INDEX idx_quiz_attempts_user_robot (user_id, robot_id, submitted_at)
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE quiz_attempt_answers (
+    attempt_id BIGINT UNSIGNED NOT NULL,
+    question_id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+    question_prompt_snapshot TEXT NOT NULL,
+    selected_option_id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+    selected_option_label_snapshot TEXT NOT NULL,
+    correct_option_label_snapshot TEXT NOT NULL,
+    is_correct BOOLEAN NOT NULL CHECK (is_correct IN (0, 1)),
+    explanation_snapshot TEXT NOT NULL,
+
+    PRIMARY KEY (attempt_id, question_id),
+
+    FOREIGN KEY (attempt_id)
+        REFERENCES quiz_attempts(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (question_id)
+        REFERENCES quiz_questions(id)
+        ON DELETE RESTRICT
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_0900_ai_ci;
+
+INSERT INTO schema_migrations (version)
+VALUES ('006_quiz');
+
+-- Tra cứu lỗi lắp ráp (007_troubleshooting).
+CREATE TABLE troubleshooting_guides (
+    id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
+    robot_id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NULL,
+    component_group VARCHAR(100) NOT NULL,
+    symptom VARCHAR(255) NOT NULL,
+    possible_causes TEXT NOT NULL,
+    resolution_steps TEXT NOT NULL,
+    related_component_id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NULL,
+    display_order INT NOT NULL CHECK (display_order BETWEEN 1 AND 10000),
+
+    FOREIGN KEY (robot_id)
+        REFERENCES robots(id)
+        ON DELETE RESTRICT,
+
+    FOREIGN KEY (related_component_id)
+        REFERENCES components(id)
+        ON DELETE SET NULL,
+
+    INDEX idx_troubleshooting_robot (robot_id),
+    INDEX idx_troubleshooting_group (component_group)
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_0900_ai_ci;
+
+INSERT INTO schema_migrations (version)
+VALUES ('007_troubleshooting');

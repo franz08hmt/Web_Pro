@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import vn.edu.webpro.robotlab.business.AssemblySession;
@@ -18,7 +19,18 @@ import vn.edu.webpro.robotlab.business.SessionStep;
  * được phiên của tài khoản khác kể cả khi đoán đúng ID.
  */
 public class AssemblySessionDB {
-    private static final String FIELDS = "id, user_id, robot_id, status, updated_at";
+    private static final String FIELDS = "id, user_id, robot_id, status, completed_at, created_at, updated_at";
+
+    /** completeSession() thành công, phiên vừa chuyển sang COMPLETED. */
+    public static final int COMPLETE_OK = 0;
+    /** Phiên đã COMPLETED từ trước (double-click/retry) — không ghi lại, giữ nguyên completed_at cũ. */
+    public static final int COMPLETE_ALREADY_DONE = 1;
+    /** Đang IN_PROGRESS nhưng chưa lắp đủ linh kiện bắt buộc trong mô hình 3D. */
+    public static final int COMPLETE_INCOMPLETE_PARTS = 2;
+    /** Trạng thái hiện tại không cho hoàn tất (ví dụ còn PREPARING/READY hoặc đã ABANDONED). */
+    public static final int COMPLETE_INVALID_STATE = 3;
+    /** Không có phiên nào khớp id và user_id. */
+    public static final int COMPLETE_NOT_FOUND = 4;
 
     /** Tạo phiên mới ở trạng thái PREPARING và trả về ID MySQL vừa sinh. */
     public static long insert(long userId, String robotId) throws SQLException {
@@ -59,6 +71,70 @@ public class AssemblySessionDB {
         } finally {
             DBUtil.closePreparedStatement(ps);
             pool.freeConnection(connection);
+        }
+    }
+
+    /**
+     * Xác nhận hoàn tất thực hành: chỉ ghi status='COMPLETED' và completed_at khi
+     * phiên đang IN_PROGRESS VÀ mọi component_id bắt buộc của robot (bảng
+     * robot_components) đều đã có mặt trong session_visual_parts của phiên này —
+     * điều kiện đó nằm ngay trong WHERE của UPDATE nên việc kiểm tra dữ liệu thật
+     * và ghi trạng thái xảy ra atomic trong một câu lệnh. Nhờ vậy khi có hai
+     * request gần đồng thời (double-click nút Hoàn tất, hoặc trình duyệt tự
+     * gửi lại do lỗi mạng), chỉ request đầu tiên đổi được dữ liệu; request sau
+     * thấy status đã là COMPLETED nên không ghi đè completed_at.
+     */
+    public static int completeSession(long id, long userId) throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        try {
+            String query =
+                    "UPDATE assembly_sessions s "
+                    + "SET s.status = 'COMPLETED', s.completed_at = CURRENT_TIMESTAMP "
+                    + "WHERE s.id = ? AND s.user_id = ? AND s.status = 'IN_PROGRESS' "
+                    + "AND EXISTS (SELECT 1 FROM robot_components rc WHERE rc.robot_id = s.robot_id) "
+                    + "AND NOT EXISTS ("
+                    + "    SELECT 1 FROM robot_components rc"
+                    + "    WHERE rc.robot_id = s.robot_id"
+                    + "    AND NOT EXISTS ("
+                    + "        SELECT 1 FROM session_visual_parts svp"
+                    + "        WHERE svp.session_id = s.id AND svp.component_id = rc.component_id"
+                    + "    )"
+                    + ")";
+            ps = connection.prepareStatement(query);
+            ps.setLong(1, id);
+            ps.setLong(2, userId);
+            if (ps.executeUpdate() > 0) return COMPLETE_OK;
+            return diagnoseIncompleteCompletion(connection, id, userId);
+        } finally {
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
+
+    /* UPDATE ở trên không đổi được dòng nào; đọc lại trạng thái thật để phân
+       biệt "đã hoàn tất từ trước" (không phải lỗi) với "chưa đủ linh kiện" hay
+       "sai trạng thái" (servlet cần báo hai lỗi khác nhau). */
+    private static int diagnoseIncompleteCompletion(Connection connection, long id, long userId)
+            throws SQLException {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement(
+                    "SELECT status FROM assembly_sessions WHERE id = ? AND user_id = ?");
+            ps.setLong(1, id);
+            ps.setLong(2, userId);
+            rs = ps.executeQuery();
+            if (!rs.next()) return COMPLETE_NOT_FOUND;
+
+            String status = rs.getString("status");
+            if (AssemblySession.COMPLETED.equals(status)) return COMPLETE_ALREADY_DONE;
+            if (!AssemblySession.IN_PROGRESS.equals(status)) return COMPLETE_INVALID_STATE;
+            return COMPLETE_INCOMPLETE_PARTS;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
         }
     }
 
@@ -338,7 +414,10 @@ public class AssemblySessionDB {
         session.setUserId(row.getLong("user_id"));
         session.setRobotId(row.getString("robot_id"));
         session.setStatus(row.getString("status"));
+        session.setCreatedAt(row.getTimestamp("created_at").toInstant().toString());
         session.setUpdatedAt(row.getTimestamp("updated_at").toInstant().toString());
+        Timestamp completedAt = row.getTimestamp("completed_at");
+        session.setCompletedAt(completedAt == null ? null : completedAt.toInstant().toString());
         session.setComponents(selectComponents(connection, session.getId()));
         session.setSteps(selectSteps(connection, session.getId()));
         session.setAssembledPartIds(selectVisualParts(connection, session.getId()));

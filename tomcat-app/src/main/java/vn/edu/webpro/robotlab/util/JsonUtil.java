@@ -2,6 +2,8 @@ package vn.edu.webpro.robotlab.util;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Đọc và ghi JSON đơn giản cho các API mà JavaScript của giao diện gọi tới.
@@ -124,6 +126,49 @@ public final class JsonUtil {
     /** Lấy nguyên văn một mảng JSON lồng bên trong, ví dụ "wiring":[...]. */
     public static String arrayField(String body, String key) {
         return nestedField(body, key, '[', ']');
+    }
+
+    /**
+     * Tách một mảng JSON gồm nhiều object phẳng thành từng chuỗi object riêng,
+     * ví dụ "answers":[{"questionId":"q1","optionId":"a"},{...}] thành danh sách
+     * hai chuỗi "{"questionId":"q1","optionId":"a"}"... Dùng cho các trường mà
+     * arrayField chỉ trả về nguyên văn cả mảng (bài kiểm tra gửi nhiều câu trả
+     * lời, admin gửi nhiều lựa chọn của một câu hỏi trong một request).
+     */
+    public static List<String> objectArrayField(String body, String key) {
+        String array = arrayField(body, key);
+        List<String> items = new ArrayList<>();
+        int depth = 0;
+        boolean quoted = false;
+        boolean escaped = false;
+        int start = -1;
+
+        for (int index = 0; index < array.length(); index++) {
+            char character = array.charAt(index);
+            if (quoted) {
+                if (escaped) {
+                    escaped = false;
+                } else if (character == '\\') {
+                    escaped = true;
+                } else if (character == '"') {
+                    quoted = false;
+                }
+                continue;
+            }
+            if (character == '"') {
+                quoted = true;
+            } else if (character == '{') {
+                if (depth == 0) start = index;
+                depth++;
+            } else if (character == '}') {
+                depth--;
+                if (depth == 0 && start >= 0) {
+                    items.add(array.substring(start, index + 1));
+                    start = -1;
+                }
+            }
+        }
+        return items;
     }
 
     /* Giá trị ngay sau dấu hai chấm phải mở bằng đúng ký tự open; nếu không,

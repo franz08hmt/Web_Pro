@@ -63,3 +63,30 @@ test("server-rendered account view escapes user-controlled fields", () => {
   assert.match(jsp, /<c:out value="\$\{user\.fullName\}"\s*\/>/);
   assert.match(jsp, /<c:out value="\$\{user\.email\}"\s*\/>/);
 });
+
+/* /assembly-receipt là servlet gốc ("/"), không nằm dưới /pages/ — link tương
+   đối từ tai-khoan.html (đang ở /pages/) phải có tiền tố "../" nếu không sẽ
+   trỏ nhầm sang /pages/assembly-receipt (404). */
+test("completed sessions link to the results receipt with a path that resolves from /pages/", () => {
+  const source = fs.readFileSync(path.join(root, "assets", "js", "account.js"), "utf8");
+  assert.match(source, /session\.status === "COMPLETED"/);
+  assert.match(source, /\.\.\/assembly-receipt\?session=\$\{encodeURIComponent\(session\.id\)\}/);
+  assert.doesNotMatch(source, /href = `assembly-receipt\?session=/, "Thiếu \"../\" sẽ trỏ vào /pages/assembly-receipt");
+});
+
+test("assembly receipt page is only reachable by its owner and escapes robot text", () => {
+  const servlet = fs.readFileSync(path.join(root, "tomcat-app", "src", "main", "java",
+    "vn", "edu", "webpro", "robotlab", "controller", "AssemblyReceiptPageServlet.java"), "utf8");
+  assert.match(servlet, /AssemblySessionDB\.selectSession\(sessionId, user\.getId\(\)\)/,
+    "Phải lọc phiên theo user_id của người đang đăng nhập, không chỉ theo id trên URL");
+
+  const jsp = fs.readFileSync(path.join(root, "tomcat-app", "src", "main", "webapp",
+    "WEB-INF", "views", "assembly-receipt.jsp"), "utf8");
+  for (const expression of ["${robot.name}", "${robot.level}", "${robot.summary}"]) {
+    const raw = [...jsp.matchAll(new RegExp(expression.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"))];
+    const escaped = [...jsp.matchAll(new RegExp(`value="${expression.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"`, "g"))];
+    assert.equal(raw.length, escaped.length,
+      `${expression} phải luôn xuất hiện trong <c:out value="...">, không nội suy EL trực tiếp ra HTML`);
+    assert.ok(raw.length > 0, `${expression} không xuất hiện trong phiếu kết quả`);
+  }
+});

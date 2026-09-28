@@ -48,6 +48,7 @@ Lỗi:
 | GET | `/api/robots/{robotId}/steps` | `RobotServlet` |
 | GET | `/api/components` | `ComponentServlet` |
 | GET | `/api/library-resources` | `LibraryResourceServlet` |
+| GET | `/api/troubleshooting-guides?robotId=&componentGroup=&search=` | `TroubleshootingServlet` |
 
 Danh sách hỗ trợ `page` và `limit`; giá trị phải là số nguyên dương trong giới
 hạn service.
@@ -110,6 +111,40 @@ danh sách linh kiện/part 3D, không có panel quy trình. Endpoint `/steps` v
 Servlet hỗ trợ, nhưng giao diện hiện tại chưa gọi `setStepStatus()` để lưu trạng
 thái từng bước; không nên nói rằng tick từng bước đang được đồng bộ.
 
+Phiên đã `COMPLETED` không thể quay lại `IN_PROGRESS` hay đặt lại tiến độ.
+`completed_at` chỉ được ghi bởi `AssemblySessionDB.completeSession()`, sau khi
+đối chiếu (trong cùng một câu UPDATE) rằng mọi `component_id` bắt buộc của robot
+đều có mặt trong `session_visual_parts` — so theo tập hợp mã linh kiện, không
+so số lượng vật thể; client không tự gửi phần trăm hay cờ hoàn thành.
+
+## Bài kiểm tra kiến thức
+
+Tất cả endpoint sau yêu cầu đăng nhập; `POST` cần `X-CSRF-Token`.
+
+| Method | Path | Body/Ghi chú |
+| --- | --- | --- |
+| GET | `/api/quiz/questions?robotId=X` | Đề bài — **không có** đáp án đúng |
+| POST | `/api/quiz/attempts` | `{ "robotId": "...", "answers": [{"questionId":"...","optionId":"..."}] }` |
+| GET | `/api/quiz/attempts?robotId=X&page=1` | Lịch sử làm bài của chính mình |
+| GET | `/api/quiz/attempts/{id}` | Xem lại một lượt đã làm (kèm giải thích) |
+
+`QuizServlet` chỉ nhận mã câu hỏi + mã lựa chọn từ client; điểm số và đúng/sai
+luôn do `QuizAttemptDB.submitAttempt()` tính từ `quiz_options.is_correct` đọc
+tươi từ database ngay trong lúc chấm. Request nộp bài bị từ chối (422) nếu
+thiếu câu trả lời cho một câu hỏi, `questionId` xuất hiện quá một lần, hoặc
+`optionId` không thuộc đúng câu hỏi của nó. Mỗi lần nộp tạo một dòng
+`quiz_attempts` mới (không có khái niệm "sửa lại điểm cũ"); lịch sử được đọc
+từ **bản chụp** trong `quiz_attempt_answers`
+(`question_prompt_snapshot`/`selected_option_label_snapshot`/…), không JOIN
+lại `quiz_questions`/`quiz_options`, nên admin sửa câu hỏi sau đó không làm
+đổi kết quả cũ. Người dùng chỉ xem được lượt làm bài của chính mình
+(`user_id` trong mọi WHERE).
+
+Tra cứu lỗi lắp ráp là nội dung công khai (không cần đăng nhập), lọc theo
+`robotId` (khớp cả tình huống dùng chung có `robot_id NULL`), `componentGroup`
+và `search` (tìm trong `symptom`). Đây là "hướng dẫn kiểm tra" do đội ngũ biên
+soạn — trang không đọc tín hiệu từ robot thật.
+
 ## CRUD quản trị
 
 Các route yêu cầu user role `ADMIN` và CSRF token đối với thao tác ghi.
@@ -120,6 +155,24 @@ Các route yêu cầu user role `ADMIN` và CSRF token đối với thao tác gh
 | Linh kiện | `/api/admin/components` | GET, POST, PATCH `/{id}`, DELETE `/{id}` |
 | Bước lắp ráp | `/api/admin/steps` | GET, POST, PATCH `/{id}`, DELETE `/{id}` |
 | Thư viện | `/api/admin/library-resources` | GET, POST, PATCH `/{id}`, DELETE `/{id}` |
+| Câu hỏi kiểm tra | `/api/admin/quiz/questions?robotId=X` hoặc `/{id}` | GET (danh sách theo robot hoặc 1 câu), POST, PATCH `/{id}`, DELETE `/{id}` |
+| Tra cứu lỗi | `/api/admin/troubleshooting-guides` | GET, POST, PATCH `/{id}`, DELETE `/{id}` |
+
+Một request thêm/sửa câu hỏi kiểm tra gửi kèm toàn bộ mảng `options` (2–6 lựa
+chọn, đúng một `isCorrect: true`) trong cùng body; server xóa hết lựa chọn cũ
+rồi chèn lại theo danh sách mới trong một transaction. Xóa một câu hỏi đã có
+người làm bài bị chặn bởi khóa ngoại `ON DELETE RESTRICT` (409 `RELATION_CONFLICT`).
+
+## Trang Servlet → JSP (không phải JSON API)
+
+Một số màn hình forward thẳng sang JSP thay vì trả JSON, theo đúng khuôn
+`ComponentCatalogPageServlet`/`AccountPageServlet` đã có từ trước:
+
+| URL | Servlet | Yêu cầu đăng nhập |
+| --- | --- | --- |
+| `/assembly-receipt?session={id}` | `AssemblyReceiptPageServlet` | Có — chỉ chủ phiên xem được |
+| `/learning-summary` | `LearningSummaryServlet` | Có — chỉ số liệu của chính mình |
+| `/admin-stats` | `AdminStatsServlet` | Có, và phải role `ADMIN` (403 nếu không) |
 
 ## Vị trí triển khai
 

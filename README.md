@@ -60,8 +60,13 @@ Yêu cầu: JDK 17, Tomcat 9 và MySQL 8.
 
 1. Tạo database UTF-8, chọn database đó rồi chạy `database/schema.sql` và
    `database/seed.sql`. Với database cũ, chỉ chạy migration chưa có trong
-   `schema_migrations`. Migration là lệnh DDL nên phải chạy bằng tài khoản MySQL có
-   quyền `CREATE`/`ALTER` (ví dụ `root`), không phải tài khoản ứng dụng.
+   `schema_migrations` (`database/migrations/00N_*.sql`, theo đúng thứ tự số).
+   Migration là lệnh DDL nên phải chạy bằng tài khoản MySQL có quyền
+   `CREATE`/`ALTER` (ví dụ `root`), không phải tài khoản ứng dụng. Sau khi đã có
+   migration `006_quiz`, chạy thêm `database/seed-quiz.sql`; sau migration
+   `007_troubleshooting`, chạy thêm `database/seed-troubleshooting.sql`. Cả hai
+   đều an toàn chạy trên database đang dùng — chỉ INSERT bảng `quiz_*` hoặc
+   `troubleshooting_guides`, không đụng dữ liệu người dùng.
 2. Trong cấu hình Tomcat của IntelliJ, tab **Server**, ô **VM options**, nhập:
 
    ```text

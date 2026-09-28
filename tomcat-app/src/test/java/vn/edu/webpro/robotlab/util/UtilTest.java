@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.StringReader;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import vn.edu.webpro.robotlab.business.User;
 
@@ -86,6 +87,26 @@ final class UtilTest {
        cho isPrepared/isAssembled, nhưng stringField chỉ đọc được chuỗi có ngoặc
        kép. Tick linh kiện và lắp part 3D đều gọi qua booleanField nên phải đọc
        đúng cả hai dạng viết thường gặp. */
+    /* Bài kiểm tra gửi nhiều {questionId, optionId} trong một request nộp bài;
+       admin gửi nhiều lựa chọn của một câu hỏi trong một request lưu câu hỏi.
+       arrayField chỉ trả về nguyên văn cả mảng nên cần tách từng object riêng. */
+    @Test
+    void objectArrayFieldSplitsAnArrayOfFlatObjectsIntoIndividualJsonStrings() {
+        String body = "{\"robotId\":\"line-follower\",\"answers\":["
+                + "{\"questionId\":\"q1\",\"optionId\":\"q1-a\"},"
+                + "{\"questionId\":\"q2\",\"optionId\":\"q2-b\"}"
+                + "]}";
+
+        List<String> answers = JsonUtil.objectArrayField(body, "answers");
+        assertEquals(2, answers.size());
+        assertEquals("q1", JsonUtil.stringField(answers.get(0), "questionId"));
+        assertEquals("q1-a", JsonUtil.stringField(answers.get(0), "optionId"));
+        assertEquals("q2-b", JsonUtil.stringField(answers.get(1), "optionId"));
+
+        assertTrue(JsonUtil.objectArrayField("{\"answers\":[]}", "answers").isEmpty());
+        assertThrows(IllegalArgumentException.class, () -> JsonUtil.objectArrayField(body, "missing"));
+    }
+
     @Test
     void booleanFieldReadsRealJsonBooleansNotQuotedStrings() {
         assertTrue(JsonUtil.booleanField("{\"isPrepared\":true}", "isPrepared"));

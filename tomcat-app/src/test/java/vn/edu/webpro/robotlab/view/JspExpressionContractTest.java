@@ -17,8 +17,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import vn.edu.webpro.robotlab.business.AssemblySession;
 import vn.edu.webpro.robotlab.business.Component;
+import vn.edu.webpro.robotlab.business.QuestionMissRate;
+import vn.edu.webpro.robotlab.business.QuizRobotAggregate;
+import vn.edu.webpro.robotlab.business.QuizRobotScore;
 import vn.edu.webpro.robotlab.business.Robot;
+import vn.edu.webpro.robotlab.business.RobotComponent;
+import vn.edu.webpro.robotlab.business.RobotPopularity;
 import vn.edu.webpro.robotlab.business.User;
 
 /**
@@ -35,7 +41,13 @@ final class JspExpressionContractTest {
     private static final Map<String, Class<?>> BEANS = Map.of(
             "user", User.class,
             "robot", Robot.class,
-            "component", Component.class
+            "component", Component.class,
+            "session", AssemblySession.class,
+            "rc", RobotComponent.class,
+            "score", QuizRobotScore.class,
+            "popular", RobotPopularity.class,
+            "aggregate", QuizRobotAggregate.class,
+            "question", QuestionMissRate.class
     );
 
     private static final Pattern EXPRESSION = Pattern.compile("\\$\\{\\s*([a-zA-Z]\\w*)\\.(\\w+)");

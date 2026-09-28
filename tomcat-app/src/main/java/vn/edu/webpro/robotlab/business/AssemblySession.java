@@ -2,7 +2,9 @@ package vn.edu.webpro.robotlab.business;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import vn.edu.webpro.robotlab.util.JsonUtil;
 
 /**
@@ -31,11 +33,14 @@ public class AssemblySession implements Serializable {
     private List<String> assembledPartIds;
     private int requiredComponentCount;
     private int totalStepCount;
+    private String createdAt;
     private String updatedAt;
+    private String completedAt;
 
     public AssemblySession() {
         robotId = "";
         status = PREPARING;
+        createdAt = "";
         updatedAt = "";
         components = new ArrayList<>();
         steps = new ArrayList<>();
@@ -116,12 +121,30 @@ public class AssemblySession implements Serializable {
         this.totalStepCount = totalStepCount;
     }
 
+    /** Thời điểm phiên được tạo (cột created_at) — "thời gian bắt đầu" trên phiếu kết quả. */
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public String getUpdatedAt() {
         return updatedAt;
     }
 
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    /** NULL cho tới khi phiên chuyển sang COMPLETED; xem AssemblySessionDB.completeSession(). */
+    public String getCompletedAt() {
+        return completedAt;
+    }
+
+    public void setCompletedAt(String completedAt) {
+        this.completedAt = completedAt;
     }
 
     public long countCompletedSteps() {
@@ -150,6 +173,24 @@ public class AssemblySession implements Serializable {
         return (READY.equals(status) && IN_PROGRESS.equals(target))
                 || (IN_PROGRESS.equals(status) && COMPLETED.equals(target))
                 || (!COMPLETED.equals(status) && ABANDONED.equals(target));
+    }
+
+    /**
+     * Đủ điều kiện hoàn tất khi đang IN_PROGRESS và mọi linh kiện bắt buộc của
+     * robot (theo component_id trong robot_components) đều có mặt trong
+     * assembledPartIds. So theo TẬP HỢP mã linh kiện phân biệt — không so số
+     * lượng — vì session_visual_parts chỉ lưu một dòng cho mỗi nhóm linh kiện
+     * bất kể quantity yêu cầu bao nhiêu; đây chỉ là bước kiểm tra nhanh phía
+     * servlet, quyết định thật và chống ghi trùng khi có request gần đồng
+     * thời nằm ở AssemblySessionDB.completeSession().
+     */
+    public boolean canCompleteAssembly(List<RobotComponent> requiredComponents) {
+        if (!isInProgress() || requiredComponents.isEmpty()) return false;
+        Set<String> assembled = new HashSet<>(assembledPartIds);
+        for (RobotComponent required : requiredComponents) {
+            if (!assembled.contains(required.getComponentId())) return false;
+        }
+        return true;
     }
 
     /* Đếm theo mã linh kiện riêng biệt để một linh kiện lỡ có hai dòng cũng chỉ
@@ -204,7 +245,9 @@ public class AssemblySession implements Serializable {
                 + ",\"progressPercent\":" + getProgressPercent()
                 + ",\"completedStepCount\":" + countCompletedSteps()
                 + ",\"totalStepCount\":" + totalStepCount
+                + ",\"createdAt\":" + JsonUtil.quote(createdAt)
                 + ",\"updatedAt\":" + JsonUtil.quote(updatedAt)
+                + ",\"completedAt\":" + JsonUtil.quote(completedAt)
                 + ",\"components\":[" + componentJson + "]"
                 + ",\"steps\":[" + stepJson + "]"
                 + ",\"assembledPartIds\":[" + assembledJson + "]}";

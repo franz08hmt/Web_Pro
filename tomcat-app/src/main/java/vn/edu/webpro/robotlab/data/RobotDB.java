@@ -84,6 +84,26 @@ public class RobotDB {
         }
     }
 
+    /** Một robot theo ID, dùng cho các trang chỉ cần một mẫu (ví dụ phiếu kết quả). */
+    public static Robot selectRobot(String id) throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String query = "SELECT " + FIELDS + " FROM robots WHERE id = ?";
+        try {
+            ps = connection.prepareStatement(query);
+            ps.setString(1, id);
+            rs = ps.executeQuery();
+            return rs.next() ? readRobot(rs) : null;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
+
     public static boolean robotExists(String id) throws SQLException {
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection connection = pool.getConnection();

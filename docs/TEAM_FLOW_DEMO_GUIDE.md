@@ -13,16 +13,56 @@ Tomcat và một WAR; JavaScript gọi API cùng origin, không phải serverles
 | Request/response | Đạt: servlet đọc body/query/session và trả status + JSON; trang JSP dùng forward | `AuthServlet.java`, `RobotServlet.java`, `ComponentCatalogPageServlet.java` |
 | Cấu trúc theo kiến thức Servlet/JSP | Đạt về mô hình: JavaBean, Servlet, JSP/EL/JSTL, lớp `XxxDB`, JDBC | [ARCHITECTURE.md](ARCHITECTURE.md) và các source được dẫn dưới đây |
 | Database | Đạt: schema/seed, migration, ERD, PreparedStatement, pool và đóng tài nguyên | `database/`, `docs/erd.md`, `ConnectionPool.java`, `DBUtil.java` |
-| Đăng nhập/phân quyền | Code có HttpSession, role USER/ADMIN, CSRF, hash mật khẩu; DB hiện tại cần chạy migration `004_account_session_version` trước khi xác nhận demo end-to-end | `AuthServlet.java`, `SessionUtil.java`, `UserDB.java`, `AdminUserServlet.java`, `database/migrations/004_account_session_version.sql` |
-| Lắp ráp từng bước | Chưa khép kín UI: trang có danh sách hướng dẫn, nhưng chưa lưu tick từng bước | Backend có API `/steps`; UI chưa gọi `setStepStatus()` |
+| Đăng nhập/phân quyền | Đã kiểm tra end-to-end trên DB demo cục bộ: đăng ký/đăng nhập, HttpSession, USER/ADMIN, CSRF và chặn `/admin-stats` bằng 403 với USER | `AuthServlet.java`, `SessionUtil.java`, `UserDB.java`, `AdminUserServlet.java`, `database/migrations/004_account_session_version.sql` |
+| Lắp ráp từng bước | Danh sách hướng dẫn đọc theo thứ tự nằm ở `pages/lap-rap.html` (ngoài phòng 3D), có chủ đích không đưa checkbox từng bước vào phòng 3D | Backend vẫn có API `/steps` cho mục đích dạy Servlet/JSP; UI hiện tại không gọi `setStepStatus()` |
+| Hoàn tất thực hành + phiếu kết quả | Đạt: server tự đối chiếu `session_visual_parts` với `robot_components` trước khi ghi `COMPLETED`, không tin dữ liệu client | `AssemblySessionDB.completeSession()`, `AssemblyReceiptPageServlet.java` |
+| Hiệu ứng ăn mừng | Đạt: chỉ bắn khi vừa chuyển sang `COMPLETED` trong lượt bấm hiện tại, tôn trọng `prefers-reduced-motion` | `assets/js/confetti.js`, `assets/js/assembly-3d.js` |
+| Bài kiểm tra kiến thức | Đạt: server chấm từ `quiz_options.is_correct`, lưu bản chụp để không đổi kết quả cũ | `QuizAttemptDB.submitAttempt()`, `QuizServlet.java` |
+| Tra cứu lỗi lắp ráp | Đạt: 14 tình huống thật trong MySQL, tìm/lọc theo robot và nhóm linh kiện | `TroubleshootingServlet.java`, `TroubleshootingGuideDB.java` |
+| Tổng kết và thống kê | Đạt: số liệu tính bằng `GROUP BY`/`COUNT DISTINCT` trực tiếp trong SQL, có trạng thái "chưa có dữ liệu" | `StatsDB.java`, `LearningSummaryServlet.java`, `AdminStatsServlet.java` |
 
 Lưu ý: repository hiện không chứa bộ slide gốc, nên các số chương/slide trong
 `ARCHITECTURE.md` đang đối chiếu theo ghi chú môn học đã có trong dự án/cuộc trao
 đổi; trước buổi bảo vệ hãy mở slide của cô để xác nhận lại số slide chính xác.
 Đây là giới hạn kiểm chứng tài liệu, không phải thiếu cấu trúc Servlet/JSP trong code.
-Database đang dùng trước đó chưa có `users.session_version`; user ứng dụng không có
-quyền `ALTER`, nên cần DBA/chủ database chạy migration `004` rồi mới demo xác thực
-trên chính database đó. Không chạy lại migration trên DB đã có version này.
+
+### Database demo đã kiểm tra (28/09/2026)
+
+DB cục bộ được kiểm tra qua `/api/health`: `status=ok`, `database=connected`; có đủ
+các migration `001`–`007`, bao gồm cột `users.session_version`. Không chạy lại các
+migration đã ghi nhận. Nếu dùng một DB khác, kiểm tra `schema_migrations` trước;
+chỉ nhờ chủ DB chạy migration còn thiếu bằng tài khoản được cấp quyền, không dùng
+tài khoản ứng dụng để `ALTER`.
+
+Các tài khoản dưới đây dành riêng cho buổi demo trên DB cục bộ. Cả bốn được tạo
+qua `POST /api/auth/register`; role ADMIN được cấp sau đó bằng một câu `UPDATE`
+có điều kiện và tăng `session_version` để vô hiệu hóa phiên cũ. Đăng ký công khai
+luôn tạo role USER, không gửi role từ trình duyệt.
+
+| Email | Quyền | Dữ liệu lịch sử để trình bày |
+| --- | --- | --- |
+| `ral-demo-admin@robotlab.test` | ADMIN | Đăng nhập được; xem `/admin-stats`; không có dữ liệu thực hành riêng |
+| `ral-demo-builder@robotlab.test` | USER | Đã hoàn tất Robot dò đường; có 3 lượt kiểm tra, mỗi mẫu robot một lượt (7/7) |
+| `ral-demo-practice@robotlab.test` | USER | Phiên Robot tránh vật cản ở `PREPARING`, đã chuẩn bị 4/8 nhóm linh kiện |
+| `ral-demo-student@robotlab.test` | USER | Có một lượt kiểm tra Cánh tay robot mini (7/7) |
+
+Mật khẩu demo chung: `RobotLabDemo#2026`. Đây là thông tin đăng nhập thử nghiệm,
+không dùng ngoài demo/không dùng cho người thật; đổi hoặc xóa các tài khoản này
+trước khi đưa một bản sao database lên môi trường công khai. Mật khẩu DB thật
+không nằm trong tài liệu này hay trong Git.
+
+## Bảng đối chiếu: chức năng → kiến thức môn học → code
+
+Trả lời trực tiếp câu "chức năng này xây từ đâu trong code?" cho năm chức năng
+mới thêm vào đồ án.
+
+| Chức năng | Kiến thức môn học minh họa | Servlet | JavaBean / XxxDB | JSP | Bảng database |
+| --- | --- | --- | --- | --- | --- |
+| 1. Hoàn tất thực hành + phiếu kết quả | Server-side validation (không tin client); atomic UPDATE tránh race condition; Servlet→JSP forward | `AssemblySessionServlet` (đổi trạng thái), `AssemblyReceiptPageServlet` (phiếu kết quả) | `AssemblySession.canCompleteAssembly()`; `AssemblySessionDB.completeSession()` | `assembly-receipt.jsp` | `assembly_sessions` (cột `completed_at`), `session_visual_parts`, `robot_components` |
+| 2. Bài kiểm tra kiến thức | Chấm điểm ở server, không tin client; snapshot dữ liệu lịch sử; JDBC transaction nhiều bảng | `QuizServlet` (làm bài), `AdminQuizServlet` (quản trị) | `QuizQuestion.isCorrectOption()`; `QuizAttemptDB.submitAttempt()` | *(API JSON, JS dựng giao diện — không dùng JSP)* | `quiz_questions`, `quiz_options`, `quiz_attempts`, `quiz_attempt_answers` |
+| 3. Tra cứu lỗi lắp ráp | Nội dung công khai đọc từ MySQL; lọc/tìm bằng `PreparedStatement` tham số hóa | `TroubleshootingServlet` (công khai), `AdminTroubleshootingServlet` (quản trị) | `TroubleshootingGuide`; `TroubleshootingGuideDB` | *(API JSON)* | `troubleshooting_guides` |
+| 4. Hiệu ứng ăn mừng | Sự kiện phía client gắn với xác nhận server, không phải hiệu ứng trang trí độc lập | *(không có endpoint riêng — dùng lại `PATCH /api/assembly-sessions/{id}`)* | — | — | — |
+| 5. Tổng kết và thống kê | `GROUP BY`/`COUNT DISTINCT` để tránh đếm trùng; phân quyền xem dữ liệu tổng hợp | `LearningSummaryServlet` (cá nhân), `AdminStatsServlet` (quản trị, chỉ ADMIN) | `QuizRobotScore`, `RobotPopularity`, `QuizRobotAggregate`, `QuestionMissRate`; `StatsDB` | `learning-summary.jsp`, `admin-stats.jsp` | Đọc tổng hợp từ `assembly_sessions`, `quiz_attempts`, `quiz_attempt_answers`, `users` |
 
 ## Phân công
 
@@ -43,6 +83,7 @@ trên chính database đó. Không chạy lại migration trên DB đã có vers
 4. Trong code, đi theo `RobotServlet → RobotDB → ConnectionPool → MySQL`.
 5. Đăng ký/đăng nhập; mở `/api/auth/me`, giải thích `JSESSIONID`, `HttpSession`
    và CSRF token. `UserDB.insert` ghi cứng role `user` cho mọi tài khoản đăng ký.
+   Để demo nhanh, dùng các tài khoản trong bảng **Database demo đã kiểm tra**.
 6. Mở `/account` — servlet đọc `User` từ `HttpSession`, đặt vào request rồi
    forward sang `account.jsp`. `SessionUtil.getCurrentUser` đối chiếu database
    trước khi tin role trong phiên; chưa đăng nhập thì bị chuyển về trang đăng nhập.
@@ -51,13 +92,39 @@ trên chính database đó. Không chạy lại migration trên DB đã có vers
    Quy trình lắp ráp bên dưới là danh sách hướng dẫn đọc theo thứ tự, không phải
    checkbox tiến độ từng bước.
 8. Vào phòng 3D, lắp/gỡ part; panel chỉ chứa linh kiện. Part được đồng bộ qua
-   `visual-parts`; reload trang để chứng minh trạng thái 3D được khôi phục.
+   `visual-parts`; reload trang để chứng minh trạng thái 3D được khôi phục. Nút
+   toàn màn hình nằm trên thanh công cụ của phòng 3D; bấm lại hoặc dùng `Esc` để
+   thoát. Checklist quy trình chỉ còn ở trang lắp ráp bên ngoài, không đưa vào 3D.
    Quay lại trang chuẩn bị và bấm **Đặt lại tiến độ** để xóa checklist, trạng thái
    part 3D và đưa phiên đang làm về `PREPARING` trong một thao tác.
 9. Đăng nhập admin, CRUD một nội dung rồi mở lại `/components` để thấy dữ liệu
    mới xuất hiện ngay trong HTML do server dựng. Mở `/pages/admin-users.html`
    để chỉ cách admin đổi role người khác; tài khoản thường bị API từ chối 403.
 10. Mở `/architecture` để tóm tắt lại toàn bộ luồng.
+
+### Demo năm chức năng mới (Chức năng 1–5)
+
+11. Vào phòng 3D, lắp đủ mọi nhóm linh kiện tới 100% — nút **Hoàn tất lắp ráp**
+    tự mở khóa. Mở DevTools Network trước khi bấm để thấy `PATCH
+    /api/assembly-sessions/{id}` với body `{"status":"COMPLETED"}`. Bấm nút, xem
+    hiệu ứng confetti (Chức năng 4) và bấm **Xem kết quả** để mở `/assembly-receipt`
+    — trang JSP hiển thị đúng robot, thời điểm bắt đầu/hoàn tất và danh sách linh
+    kiện đã lắp, không có JavaScript nào tính lại các số liệu này.
+12. Để chứng minh server không tin client: mở Console, gọi thẳng
+    `RobotAssemblyApi.assemblySessions.updateStatus(idPhienChuaLapDu, "COMPLETED")`
+    trên một phiên mới lắp một phần — nhận lỗi `409 ASSEMBLY_INCOMPLETE`.
+13. Mở `/pages/kiem-tra.html?model=line-follower`, làm bài và nộp — điểm hiện ra
+    ngay kèm giải thích từng câu. Vào `/pages/admin-quiz.html`, sửa nội dung một
+    câu hỏi vừa làm, quay lại lịch sử bài kiểm tra cũ để chỉ ra điểm/giải thích cũ
+    không đổi (đọc từ bản chụp `quiz_attempt_answers`, không JOIN ngược
+    `quiz_questions`).
+14. Mở `/pages/tra-cuu-loi.html`, lọc theo mẫu robot và từ khóa triệu chứng —
+    không cần đăng nhập. Mở `/pages/admin-troubleshooting.html` để chỉ cách
+    admin thêm/sửa một tình huống.
+15. Đăng nhập tài khoản có lịch sử, mở `/learning-summary` — chỉ số phiên/điểm
+    kiểm tra của đúng tài khoản này. Đăng nhập admin, mở `/admin-stats` — số
+    liệu toàn hệ thống tính bằng `GROUP BY`; thử truy cập bằng tài khoản thường
+    để nhận `403`.
 
 ## Câu hỏi thường gặp
 
@@ -169,6 +236,31 @@ Three.js nằm cục bộ tại `assets/vendor/three`. Hình học được dự
 File HTML chỉ là view. Đăng nhập, `HttpSession`, servlet và JDBC chỉ hoạt động khi
 WAR được deploy trên Tomcat. Cấu hình Tomcat dùng application context `/` vì giao
 diện gọi `/api` cùng origin.
+
+### "Sao không tin luôn phần trăm hoàn thành mà trình duyệt tính sẵn?"
+
+Vì trình duyệt là thứ người dùng kiểm soát được — họ có thể sửa JavaScript hoặc
+gọi thẳng API bằng tay. `AssemblySessionDB.completeSession()` chỉ ghi
+`COMPLETED` khi chính câu `UPDATE` đó tự đối chiếu `session_visual_parts` với
+`robot_components` và thấy đủ; điều kiện nằm ngay trong `WHERE` nên việc kiểm
+tra và ghi xảy ra atomic, hai request gần đồng thời (double-click) không thể
+tạo hai kết quả khác nhau.
+
+### "Sao bài kiểm tra không lưu thẳng câu hỏi mà phải lưu 'bản chụp'?"
+
+Vì `quiz_questions`/`quiz_options` là nội dung admin có thể sửa sau này. Nếu
+lịch sử đọc trực tiếp từ hai bảng đó, sửa một câu hỏi sẽ vô tình đổi cả điểm số
+và giải thích của những người đã làm bài trước đó. `quiz_attempt_answers` lưu
+nguyên văn câu hỏi/lựa chọn tại đúng thời điểm nộp bài, nên lịch sử luôn đúng
+với những gì người dùng thực sự đã thấy lúc làm bài.
+
+### "Số liệu ở trang thống kê có đáng tin không?"
+
+Có — mọi con số đọc trực tiếp bằng `GROUP BY`/`COUNT DISTINCT` ngay trong câu
+SQL của `StatsDB`, không cộng dồn thủ công ở Java (tránh đếm trùng khi có
+JOIN). Không có số liệu giả nào được chèn vào để biểu đồ đẹp hơn; khi chưa đủ
+dữ liệu, trang hiện rõ thông báo "chưa có dữ liệu" thay vì bảng trống hoặc số 0
+gây hiểu nhầm.
 
 ## Chuỗi file nên mở khi bảo vệ
 

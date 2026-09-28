@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Bài kiểm tra kiến thức theo từng mẫu robot">
+
+    <title>Kiểm tra kiến thức</title>
+
+    <link rel="stylesheet" href="../assets/css/style.css?v=20260924.1">
+    <link rel="icon" href="../assets/icons/cpu-chip.svg" type="image/svg+xml">
+    <script src="../assets/js/tooltip.js?v=20260921.1" defer></script>
+</head>
+
+<body class="quiz-page">
+
+<header class="quiz-header">
+    <a class="quiz-back" href="tai-khoan.html"
+       data-tooltip="Về trang tài khoản. Bài đang làm dở sẽ không được lưu nếu chưa nộp.">
+        <span aria-hidden="true">←</span>
+        Về tài khoản
+    </a>
+
+    <div class="quiz-title">
+        <span>Bài kiểm tra kiến thức</span>
+        <h1 id="quiz-robot-name">Đang tải…</h1>
+    </div>
+</header>
+
+<main id="main-content" class="quiz-workspace" tabindex="-1">
+    <p id="quiz-status" role="status" aria-live="polite">Đang tải câu hỏi…</p>
+
+    <form id="quiz-form" class="quiz-form" hidden>
+        <div id="quiz-questions" class="quiz-questions"></div>
+        <div class="quiz-actions">
+            <button id="quiz-submit" type="submit">Nộp bài</button>
+        </div>
+    </form>
+
+    <section id="quiz-result" class="quiz-result" hidden aria-live="polite">
+        <h2 id="quiz-result-title">Kết quả</h2>
+        <p id="quiz-result-score" class="quiz-result-score"></p>
+        <div id="quiz-result-answers" class="quiz-result-answers"></div>
+        <div class="quiz-actions">
+            <button id="quiz-retry" type="button">Làm lại</button>
+        </div>
+    </section>
+
+    <section class="quiz-history">
+        <h2>Lịch sử làm bài của bạn cho mẫu này</h2>
+        <p id="quiz-history-status" role="status" aria-live="polite">Đang tải…</p>
+        <ul id="quiz-history-list"></ul>
+    </section>
+</main>
+
+<script src="../assets/js/data.js?v=20260921.1"></script>
+<script src="../assets/js/content-api.js?v=20260921.1"></script>
+<script src="../assets/js/api.js?v=20260924.1"></script>
+<script src="../assets/js/quiz.js?v=20260924.1"></script>
+
+</body>
+</html>

@@ -18,6 +18,9 @@
   const assemblyConfig = window.ASSEMBLY_3D_CONFIG || {};
 
   const container = document.querySelector("#assembly-3d-canvas");
+  const fullscreenView = document.querySelector(".assembly-3d-view");
+  const fullscreenButton = document.querySelector("#assembly-3d-fullscreen");
+  const fullscreenStatus = document.querySelector("#assembly-3d-fullscreen-status");
   const modelName = document.querySelector("#model-name");
   const modelSummary = document.querySelector("#assembly-3d-summary");
   const partsContainer = document.querySelector("#assembly-3d-parts");
@@ -33,6 +36,11 @@
   const zoomInButton = document.querySelector("#assembly-3d-zoom-in");
   const zoomOutButton = document.querySelector("#assembly-3d-zoom-out");
   const explodeButton = document.querySelector("#assembly-3d-explode");
+  const completeButton = document.querySelector("#assembly-3d-complete");
+  const completeStatus = document.querySelector("#assembly-3d-complete-status");
+  const completeResult = document.querySelector("#assembly-3d-complete-result");
+  const viewReceiptLink = document.querySelector("#assembly-3d-view-receipt");
+  const retryLink = document.querySelector("#assembly-3d-retry");
   const sessionApi = window.RobotAssemblyApi?.assemblySessions;
   const requestedSessionId = params.get("session");
   let activeSession = null;
@@ -74,6 +82,72 @@
     if (resetButton) resetButton.disabled = disabled;
   }
 
+  function setCompleteStatus(message, state = "") {
+    if (!completeStatus) return;
+    completeStatus.textContent = message;
+    completeStatus.dataset.state = state;
+  }
+
+  /* Nút Hoàn tất chỉ bật khi có phiên tài khoản đang IN_PROGRESS và đã lắp đủ
+     mọi nhóm linh kiện trong mô hình 3D. Đây chỉ là gợi ý cho người dùng — máy
+     chủ vẫn tự kiểm tra lại dữ liệu thật trước khi ghi COMPLETED, nên bật nhầm
+     nút này (lệch dữ liệu tạm thời) không thể tạo ra kết quả sai. */
+  function updateCompleteAvailability() {
+    if (!completeButton) return;
+    const ready = Boolean(activeSession)
+      && activeSession.status === "IN_PROGRESS"
+      && assembledParts.size === model.parts.length
+      && model.parts.length > 0;
+    completeButton.disabled = !ready;
+    if (!ready && !activeSession) {
+      setCompleteStatus("Đăng nhập để lưu tiến độ và xác nhận hoàn tất lắp ráp.");
+    } else if (!ready) {
+      setCompleteStatus("Lắp đủ mọi nhóm linh kiện để mở khóa nút Hoàn tất.");
+    } else {
+      setCompleteStatus("");
+    }
+  }
+
+  /* Hiện khối kết quả (liên kết phiếu kết quả + thực hành lại). justCompleted
+     chỉ true ngay sau khi máy chủ vừa xác nhận chuyển trạng thái thành công
+     trong lượt bấm này — nhờ vậy tải lại trang hoặc mở lại một phiên đã
+     COMPLETED từ trước không bao giờ bắn confetti, dù vẫn thấy đủ hai nút. */
+  function showCompletionResult(justCompleted) {
+    if (completeButton) {
+      completeButton.hidden = true;
+      completeButton.disabled = true;
+    }
+    setCompleteStatus("");
+    if (viewReceiptLink && activeSession) {
+      viewReceiptLink.href = `../assembly-receipt?session=${encodeURIComponent(activeSession.id)}`;
+    }
+    if (retryLink) {
+      retryLink.href = `lap-rap.html?model=${encodeURIComponent(model.id)}`;
+    }
+    if (completeResult) completeResult.hidden = false;
+    if (justCompleted) window.RobotConfetti?.celebrate();
+  }
+
+  async function completeAssembly() {
+    if (!activeSession || !sessionApi || !completeButton) return;
+
+    completeButton.disabled = true;
+    setCompleteStatus("Đang xác nhận hoàn tất…", "loading");
+    try {
+      activeSession = await sessionApi.updateStatus(activeSession.id, "COMPLETED");
+      if (activeSession.status === "COMPLETED") {
+        showCompletionResult(true);
+      } else {
+        // Máy chủ đối chiếu lại và thấy chưa đủ điều kiện: đồng bộ về tiến độ thật.
+        setCompleteStatus("Máy chủ chưa xác nhận được hoàn tất. Hãy kiểm tra lại mô hình.", "error");
+        updateCompleteAvailability();
+      }
+    } catch (error) {
+      setCompleteStatus(`Không thể xác nhận hoàn tất. ${error.message}`, "error");
+      updateCompleteAvailability();
+    }
+  }
+
   /* Mở/tiếp tục phiên lắp ráp của tài khoản: quản lý trạng thái phiên và
      danh sách linh kiện. Không còn danh sách bước lắp ráp trong phòng 3D. */
   async function restoreSession() {
@@ -81,10 +155,12 @@
       if (requestedSessionId) {
         setPartInputsDisabled(true);
         setSyncStatus("Không thể mở phiên đã chọn vì API phiên chưa sẵn sàng.", "error");
+        updateCompleteAvailability();
         return;
       }
       if (window.THREE && window.createAssemblyPart) restoreVisualAssembly(readStoredIds(visualStorageKey));
       setSyncStatus(contentWarning || "Tiến độ linh kiện đang được lưu trên trình duyệt này.", "local");
+      updateCompleteAvailability();
       return;
     }
 
@@ -109,13 +185,17 @@
 
       if (session.status === "PREPARING") {
         setSyncStatus("Hãy chuẩn bị đủ linh kiện ở trang trước để bắt đầu lắp ráp.", "waiting");
+        updateCompleteAvailability();
       } else if (session.status === "COMPLETED") {
         setSyncStatus("Phiên lắp ráp này đã hoàn thành.", "complete");
+        showCompletionResult(false);
       } else if (session.status === "IN_PROGRESS") {
         setPartInputsDisabled(false);
         setSyncStatus("Tiến độ đã được đồng bộ với tài khoản.", "saved");
+        updateCompleteAvailability();
       } else {
         setSyncStatus("Phiên lắp ráp hiện không thể tiếp tục.", "waiting");
+        updateCompleteAvailability();
       }
     } catch (error) {
       activeSession = null;
@@ -130,6 +210,7 @@
           ? `Không thể đồng bộ tài khoản; đang lưu trên trình duyệt. ${error.message}`
           : `Không thể mở phiên đã chọn. ${error.message}`;
       setSyncStatus(canUseLocal ? contentWarning || message : message, canUseLocal ? "local" : "error");
+      updateCompleteAvailability();
     }
   }
 
@@ -382,6 +463,7 @@
     if (progressElement) progressElement.value = percent;
     if (progressValue) progressValue.textContent = `${percent}%`;
     if (progressCounter) progressCounter.textContent = `${completed}/${total} nhóm`;
+    updateCompleteAvailability();
     if (!statusElement) return;
     if (percent === 100) statusElement.textContent = "Đã lắp ráp đầy đủ robot.";
     else if (percent === 0) statusElement.textContent = "Chọn linh kiện theo thứ tự để bắt đầu lắp ráp.";
@@ -604,11 +686,42 @@
     camera.updateProjectionMatrix();
   }
 
+  function syncFullscreenState() {
+    if (!fullscreenButton || !fullscreenView) return;
+    const isFullscreen = document.fullscreenElement === fullscreenView;
+    const label = isFullscreen ? "Thoát toàn màn hình" : "Mở toàn màn hình";
+    fullscreenButton.setAttribute("aria-pressed", String(isFullscreen));
+    fullscreenButton.setAttribute("aria-label", label);
+    fullscreenButton.title = label;
+    if (fullscreenStatus) {
+      fullscreenStatus.hidden = true;
+      fullscreenStatus.textContent = "";
+    }
+    resizeRenderer();
+  }
+
+  async function toggleFullscreen() {
+    if (!fullscreenView || !fullscreenButton) return;
+    try {
+      if (document.fullscreenElement === fullscreenView) {
+        await document.exitFullscreen();
+      } else {
+        await fullscreenView.requestFullscreen();
+      }
+    } catch {
+      if (fullscreenStatus) {
+        fullscreenStatus.textContent = "Không thể mở toàn màn hình trong trình duyệt này.";
+        fullscreenStatus.hidden = false;
+      }
+    }
+  }
+
   renderPartsPanel();
   updateProgress();
   focusRobot();
   enablePointerControls();
   resetButton?.addEventListener("click", resetAssembly);
+  completeButton?.addEventListener("click", () => void completeAssembly());
   focusButton?.addEventListener("click", focusRobot);
   rotateLeftButton?.addEventListener("click", () => rotateCamera(-0.35));
   rotateRightButton?.addEventListener("click", () => rotateCamera(0.35));
@@ -616,7 +729,14 @@
   zoomOutButton?.addEventListener("click", () => zoomCamera(0.6));
   explodeButton?.addEventListener("click", () => setExplodedView(!explodedView));
   window.addEventListener("resize", resizeRenderer);
+  if (!fullscreenView?.requestFullscreen || typeof document.exitFullscreen !== "function") {
+    if (fullscreenButton) fullscreenButton.hidden = true;
+  } else {
+    fullscreenButton?.addEventListener("click", () => void toggleFullscreen());
+  }
+  document.addEventListener("fullscreenchange", syncFullscreenState);
   resizeRenderer();
+  syncFullscreenState();
   void restoreSession();
 
   function animate(now) {

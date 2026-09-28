@@ -144,3 +144,65 @@ test("3D assembly renders API-provided component text without HTML injection", (
   assert.match(assemblySource, /partName\.textContent\s*=\s*part\.name/);
   assert.match(assemblySource, /partQuantity\.textContent/);
 });
+
+test("completion button only unlocks once every part group is assembled in an IN_PROGRESS account session", () => {
+  assert.match(pageSource, /id="assembly-3d-complete"[^>]*disabled/);
+  assert.match(
+    assemblySource,
+    /function updateCompleteAvailability\(\)[\s\S]*?activeSession\.status === "IN_PROGRESS"[\s\S]*?assembledParts\.size === model\.parts\.length/
+  );
+  // updateProgress() phải gọi lại hàm này mỗi khi tick/gỡ linh kiện thay đổi assembledParts.
+  assert.match(assemblySource, /progressCounter\.textContent[\s\S]*?updateCompleteAvailability\(\);/);
+});
+
+test("completing an assembly disables the button first, then asks the server — never trusts a client-side percentage", () => {
+  assert.match(
+    assemblySource,
+    /async function completeAssembly\(\)\s*\{\s*if \(!activeSession \|\| !sessionApi \|\| !completeButton\) return;\s*\n\s*completeButton\.disabled = true;/,
+    "Nút phải bị khóa ngay dòng đầu tiên để double-click không gửi hai request"
+  );
+  assert.match(assemblySource, /sessionApi\.updateStatus\(activeSession\.id, "COMPLETED"\)/);
+  // Không có logic nào tự tính phần trăm/đếm part rồi gửi lên server — server tự đối chiếu lại.
+  assert.doesNotMatch(assemblySource, /isCompleted["']?\s*:\s*(true|percent)/);
+});
+
+test("confetti fires only on a genuine transition to COMPLETED — never on page reload or revisit", () => {
+  assert.match(assemblySource, /function showCompletionResult\(justCompleted\)/);
+  assert.match(assemblySource, /if \(justCompleted\) window\.RobotConfetti\?\.celebrate\(\);/);
+
+  // Điểm gọi thứ nhất: vừa hoàn tất thành công trong lượt bấm này -> true.
+  assert.match(assemblySource, /activeSession\.status === "COMPLETED"\) \{\s*showCompletionResult\(true\);/);
+  // Điểm gọi thứ hai: mở lại một phiên đã COMPLETED từ trước lúc tải trang -> false, không ăn mừng lại.
+  // (biến cục bộ trong restoreSession() tên là "session", không phải "activeSession", nên anchor
+  // vào đúng tiền tố này để không lẫn với nhánh completeAssembly() ở trên.)
+  assert.match(
+    assemblySource,
+    /session\.status === "COMPLETED"\) \{[\s\S]{0,120}showCompletionResult\(false\);/
+  );
+});
+
+test("confetti effect respects prefers-reduced-motion and cleans up its own DOM after finishing", () => {
+  const confettiSource = fs.readFileSync(path.join(projectRoot, "assets", "js", "confetti.js"), "utf8");
+  assert.match(confettiSource, /prefers-reduced-motion:\s*reduce/);
+  assert.match(confettiSource, /if \(window\.matchMedia\("\(prefers-reduced-motion: reduce\)"\)\.matches\) return;/);
+  assert.match(confettiSource, /ral-confetti-layer/);
+  assert.match(confettiSource, /window\.setTimeout\(\(\) => layer\.remove\(\), DURATION_MS\)/);
+  assert.doesNotMatch(confettiSource, /new Audio\(|\.play\(\)/, "Không được tự phát âm thanh");
+
+  assert.match(styleSource, /\.ral-confetti-layer\s*\{[^}]*pointer-events:\s*none;/s);
+});
+
+test("3D view has an accessible fullscreen toggle that resizes after every browser fullscreen transition", () => {
+  assert.match(pageSource, /<div class="assembly-3d-toolbar"[\s\S]*?id="assembly-3d-fullscreen"[^>]*aria-label="Mở toàn màn hình"[^>]*aria-pressed="false"/);
+  assert.match(pageSource, /id="assembly-3d-fullscreen-status"[^>]*role="status"[^>]*aria-live="polite"/);
+  assert.match(assemblySource, /async function toggleFullscreen\(\)/);
+  assert.match(assemblySource, /fullscreenView\.requestFullscreen\(\)/);
+  assert.match(assemblySource, /document\.exitFullscreen\(\)/);
+  assert.match(assemblySource, /document\.addEventListener\("fullscreenchange",[\s\S]*?resizeRenderer\(\)/);
+  assert.match(assemblySource, /setAttribute\("aria-pressed", String\(isFullscreen\)\)/);
+  assert.match(assemblySource, /const label = isFullscreen \? "Thoát toàn màn hình" : "Mở toàn màn hình"/);
+  assert.match(assemblySource, /setAttribute\("aria-label", label\)/);
+  assert.match(assemblySource, /fullscreenButton\.hidden\s*=\s*true/);
+  assert.match(styleSource, /\.assembly-3d-view:fullscreen\s*\{[^}]*width:\s*100vw;[^}]*height:\s*100vh;/s);
+  assert.match(styleSource, /aria-pressed="true"\].*fullscreen-exit-icon/s);
+});

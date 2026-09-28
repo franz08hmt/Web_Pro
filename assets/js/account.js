@@ -107,11 +107,19 @@
     const steps = document.createElement("span");
     steps.textContent = `Bước lắp ráp: ${session.completedStepCount}/${session.totalStepCount}`;
     item.append(name, state, date, preparation, progress, steps);
-    if (session.status !== "ABANDONED") {
+    if (session.status === "COMPLETED") {
+      const link = document.createElement("a");
+      link.href = `../assembly-receipt?session=${encodeURIComponent(session.id)}`;
+      link.textContent = "Xem phiếu kết quả →";
+      const quizLink = document.createElement("a");
+      quizLink.href = `kiem-tra.html?model=${encodeURIComponent(session.robotId)}`;
+      quizLink.textContent = "Kiểm tra kiến thức →";
+      item.append(link, quizLink);
+    } else if (session.status !== "ABANDONED") {
       const link = document.createElement("a");
       const page = session.status === "PREPARING" ? "lap-rap.html" : "lap-rap-3d.html";
       link.href = `${page}?model=${encodeURIComponent(session.robotId)}&session=${encodeURIComponent(session.id)}`;
-      link.textContent = session.status === "COMPLETED" ? "Xem phiên đã hoàn thành →" : "Tiếp tục phiên này →";
+      link.textContent = "Tiếp tục phiên này →";
       item.append(link);
     }
     return item;
@@ -173,6 +181,7 @@
     document.querySelector("#account-user-email").textContent = user.email;
     document.querySelector("#account-user-role").textContent = user.role === "ADMIN" ? "Quản trị nội dung" : "Thành viên";
     document.querySelector("#admin-users-link").hidden = user.role !== "ADMIN";
+    document.querySelector("#admin-stats-link").hidden = user.role !== "ADMIN";
     document.querySelector("#profile-name").value = user.fullName;
     const created = new Date(user.createdAt);
     document.querySelector("#account-created-at").textContent = Number.isNaN(created.getTime())

@@ -13,7 +13,7 @@
 
     <link
             rel="stylesheet"
-            href="../assets/css/style.css?v=20260923.3"
+            href="../assets/css/style.css?v=20260928.1"
     >
 
     <script src="../assets/js/tooltip.js?v=20260921.1" defer></script>
@@ -60,9 +60,24 @@
                     data-tooltip="Thu nhỏ">−</button>
             <button id="assembly-3d-zoom-in" type="button" aria-label="Phóng to mô hình"
                     data-tooltip="Phóng to">+</button>
+            <button id="assembly-3d-fullscreen" type="button" aria-label="Mở toàn màn hình"
+                    aria-pressed="false" title="Mở toàn màn hình" data-tooltip="Mở mô hình 3D toàn màn hình">
+                <svg class="fullscreen-icon fullscreen-enter-icon" width="18" height="18" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                     stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3"/>
+                </svg>
+                <svg class="fullscreen-icon fullscreen-exit-icon" width="18" height="18" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                     stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <path d="M8 3v5H3m13-5v5h5M3 16h5v5m13-5h-5v5"/>
+                </svg>
+            </button>
         </div>
 
         <p class="assembly-3d-view-hint">Kéo để xoay · Cuộn để thu phóng</p>
+        <p id="assembly-3d-fullscreen-status" class="assembly-3d-fullscreen-status" role="status"
+           aria-live="polite" hidden></p>
     </section>
 
     <aside class="assembly-3d-panel">
@@ -95,6 +110,22 @@
             <progress id="assembly-3d-progress" max="100" value="0">0%</progress>
         </div>
 
+        <div class="assembly-3d-complete">
+            <button id="assembly-3d-complete" type="button" disabled
+                    data-tooltip="Xác nhận đã lắp đủ mọi linh kiện bắt buộc. Máy chủ kiểm tra lại dữ liệu thật trước khi ghi kết quả, không tin tiến độ do trình duyệt tự tính.">
+                Hoàn tất lắp ráp
+            </button>
+            <p id="assembly-3d-complete-status" role="status" aria-live="polite"></p>
+        </div>
+
+        <div id="assembly-3d-complete-result" class="assembly-3d-complete-result" hidden role="status" aria-live="polite">
+            <strong id="assembly-3d-complete-title">Lắp ráp thành công! <small>Successfully!</small></strong>
+            <div class="assembly-3d-complete-actions">
+                <a id="assembly-3d-view-receipt" href="#">Xem kết quả</a>
+                <a id="assembly-3d-retry" href="#">Thực hành lại</a>
+            </div>
+        </div>
+
         <div class="assembly-3d-panel-actions">
             <button id="assembly-3d-explode" type="button" aria-pressed="false"
                     data-tooltip="Giãn các nhóm linh kiện ra xa nhau để nhìn rõ từng bộ phận. Không làm thay đổi tiến độ.">
@@ -105,6 +136,10 @@
                 Lắp lại từ đầu
             </button>
         </div>
+
+        <p class="assembly-3d-help-link">
+            <a href="tra-cuu-loi.html" data-tooltip="Xem hướng dẫn kiểm tra các lỗi lắp ráp thường gặp.">Gặp sự cố? Tra cứu lỗi lắp ráp →</a>
+        </p>
     </aside>
 </main>
 
@@ -131,9 +166,11 @@
 <!-- Thư viện hình học cho từng linh kiện -->
 <script src="../assets/js/assembly-3d-parts.js?v=20260921.1"></script>
 
+<!-- Hiệu ứng ăn mừng khi hoàn tất (Chức năng 4) -->
+<script src="../assets/js/confetti.js?v=20260924.1"></script>
 
 <!-- Logic lắp ráp 3D -->
-<script src="../assets/js/assembly-3d.js?v=20260923.2"></script>
+<script src="../assets/js/assembly-3d.js?v=20260928.1"></script>
 
 </body>
 

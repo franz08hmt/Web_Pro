@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tra cứu lỗi lắp ráp thường gặp theo từng mẫu robot">
+
+    <title>Tra cứu lỗi lắp ráp</title>
+
+    <link rel="stylesheet" href="../assets/css/style.css?v=20260924.1">
+    <link rel="icon" href="../assets/icons/cpu-chip.svg" type="image/svg+xml">
+    <script src="../assets/js/tooltip.js?v=20260921.1" defer></script>
+</head>
+
+<body class="quiz-page">
+
+<header class="quiz-header">
+    <a class="quiz-back" href="lap-rap.html"
+       data-tooltip="Về bảng chuẩn bị linh kiện.">
+        <span aria-hidden="true">←</span>
+        Về trang lắp ráp
+    </a>
+
+    <div class="quiz-title">
+        <span>Hướng dẫn kiểm tra</span>
+        <h1>Tra cứu lỗi lắp ráp</h1>
+    </div>
+</header>
+
+<main id="main-content" class="quiz-workspace troubleshoot-workspace" tabindex="-1">
+    <p class="troubleshoot-note">
+        Đây là hướng dẫn kiểm tra tham khảo do đội ngũ biên soạn — trang không đọc tín hiệu từ
+        robot thật của bạn. Với thao tác phần cứng, hãy ngắt nguồn trước khi thay đổi dây nối.
+    </p>
+
+    <form id="troubleshoot-filters" class="troubleshoot-filters">
+        <div class="form-field">
+            <label for="filter-search">Tìm theo triệu chứng</label>
+            <input id="filter-search" type="search" placeholder="ví dụ: bánh xe không quay">
+        </div>
+        <div class="form-field">
+            <label for="filter-robot">Mẫu robot</label>
+            <select id="filter-robot">
+                <option value="">Tất cả</option>
+            </select>
+        </div>
+        <div class="form-field">
+            <label for="filter-group">Nhóm linh kiện</label>
+            <select id="filter-group">
+                <option value="">Tất cả</option>
+            </select>
+        </div>
+    </form>
+
+    <p id="troubleshoot-status" role="status" aria-live="polite">Đang tải…</p>
+
+    <div id="troubleshoot-list" class="troubleshoot-list"></div>
+</main>
+
+<script src="../assets/js/data.js?v=20260921.1"></script>
+<script src="../assets/js/api.js?v=20260924.1"></script>
+<script src="../assets/js/troubleshooting.js?v=20260924.1"></script>
+
+</body>
+</html>

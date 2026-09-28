@@ -54,6 +54,7 @@ erDiagram
         BIGINT_UNSIGNED user_id FK
         VARCHAR robot_id FK
         ENUM status
+        TIMESTAMP completed_at
         TIMESTAMP created_at
         TIMESTAMP updated_at
     }
@@ -90,6 +91,53 @@ erDiagram
         TEXT description
     }
 
+    QUIZ_QUESTIONS {
+        VARCHAR id PK
+        VARCHAR robot_id FK
+        TEXT prompt
+        TEXT explanation
+        INT question_order
+    }
+
+    QUIZ_OPTIONS {
+        VARCHAR id PK
+        VARCHAR question_id FK
+        TEXT label
+        BOOLEAN is_correct
+        INT option_order
+    }
+
+    QUIZ_ATTEMPTS {
+        BIGINT_UNSIGNED id PK
+        BIGINT_UNSIGNED user_id FK
+        VARCHAR robot_id FK
+        INT score
+        INT total_questions
+        TIMESTAMP submitted_at
+    }
+
+    QUIZ_ATTEMPT_ANSWERS {
+        BIGINT_UNSIGNED attempt_id PK, FK
+        VARCHAR question_id PK, FK
+        TEXT question_prompt_snapshot
+        VARCHAR selected_option_id
+        TEXT selected_option_label_snapshot
+        TEXT correct_option_label_snapshot
+        BOOLEAN is_correct
+        TEXT explanation_snapshot
+    }
+
+    TROUBLESHOOTING_GUIDES {
+        VARCHAR id PK
+        VARCHAR robot_id FK
+        VARCHAR component_group
+        VARCHAR symptom
+        TEXT possible_causes
+        TEXT resolution_steps
+        VARCHAR related_component_id FK
+        INT display_order
+    }
+
     SCHEMA_MIGRATIONS {
         VARCHAR version PK
         TIMESTAMP applied_at
@@ -118,6 +166,22 @@ erDiagram
     ROBOT_COMPONENTS ||--o{ SESSION_VISUAL_PARTS : validates
 
     ROBOTS o|--o{ LIBRARY_RESOURCES : has
+
+    ROBOTS ||--o{ QUIZ_QUESTIONS : has
+
+    QUIZ_QUESTIONS ||--o{ QUIZ_OPTIONS : has
+
+    USERS ||--o{ QUIZ_ATTEMPTS : takes
+
+    ROBOTS ||--o{ QUIZ_ATTEMPTS : about
+
+    QUIZ_ATTEMPTS ||--o{ QUIZ_ATTEMPT_ANSWERS : contains
+
+    QUIZ_QUESTIONS ||--o{ QUIZ_ATTEMPT_ANSWERS : answered_in
+
+    ROBOTS o|--o{ TROUBLESHOOTING_GUIDES : about
+
+    COMPONENTS o|--o{ TROUBLESHOOTING_GUIDES : references
 ```
 
 Khóa ngoại kép: `(session_id, robot_id)` tham chiếu `assembly_sessions(id, robot_id)`;
@@ -135,3 +199,34 @@ phải bảng database. Bảng `users` lưu tài khoản, password hash và role
 `schema_migrations` ghi phiên bản cấu trúc đã áp dụng. Đối chiếu chi tiết từng
 cột và constraint tại `database/schema.sql` và các file trong
 `database/migrations/`; các lớp `XxxDB` là nơi chạy SQL tương ứng.
+
+`assembly_sessions.completed_at` (thêm ở migration `005_assembly_completion`)
+là NULL cho tới khi phiên chuyển sang `COMPLETED`. Giá trị này chỉ được
+`AssemblySessionDB.completeSession()` ghi, sau khi xác nhận (trong cùng một
+câu UPDATE, dựa trên dữ liệu thật lúc ghi) rằng mọi `component_id` bắt buộc
+của robot trong `robot_components` đều có mặt trong `session_visual_parts`
+của phiên — so theo tập hợp mã linh kiện, không so số lượng. Nhờ điều kiện
+nằm ngay trong `WHERE` của UPDATE, hai request gần đồng thời (double-click,
+retry) không thể ghi đè `completed_at` hoặc tạo hai lần hoàn tất.
+
+Bốn bảng `quiz_*` (thêm ở migration `006_quiz`) phục vụ bài kiểm tra kiến thức
+theo robot. `quiz_questions`/`quiz_options` là nội dung do admin quản lý;
+`quiz_options.is_correct` không bao giờ được API công khai gửi ra trước khi
+nộp bài. Mỗi lượt nộp tạo đúng một dòng `quiz_attempts` (không có trạng thái
+"đang làm dở" lưu ở server — bài được chấm ngay khi nộp). `quiz_attempt_answers`
+lưu **bản chụp** (`question_prompt_snapshot`, `selected_option_label_snapshot`,
+`correct_option_label_snapshot`, `explanation_snapshot`) tại đúng thời điểm nộp
+bài; các trang xem lại lịch sử đọc từ bản chụp này, không JOIN ngược lại
+`quiz_questions`/`quiz_options`, nên admin sửa câu hỏi/đáp án sau đó không làm
+đổi kết quả cũ. `question_id` trên `quiz_attempt_answers` vẫn giữ khóa ngoại
+`ON DELETE RESTRICT` để admin không xóa được câu hỏi đã có người làm — chỉ có
+thể sửa nội dung.
+
+`troubleshooting_guides` (thêm ở migration `007_troubleshooting`) là nội dung
+"hướng dẫn kiểm tra" do admin quản lý — không phải dữ liệu đọc từ robot thật.
+`robot_id` cho phép NULL để một tình huống dùng chung cho nhiều mẫu robot có
+cùng nhóm linh kiện (cùng cách dùng NULL như `library_resources.robot_id`).
+`related_component_id` trỏ tới một linh kiện cụ thể để trang tra cứu liên kết
+sang danh mục linh kiện; dùng `ON DELETE SET NULL` (không phải RESTRICT) vì
+liên kết này chỉ mang tính tham khảo, xóa linh kiện không nên bị chặn bởi một
+bài hướng dẫn tra cứu.

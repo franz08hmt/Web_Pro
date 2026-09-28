@@ -145,5 +145,85 @@
     }
   });
 
-  window.RobotAssemblyApi = Object.freeze({ auth, assemblySessions });
+  const quiz = Object.freeze({
+    async questions(robotId) {
+      return (await request(`/quiz/questions?robotId=${segment(robotId)}`)).data;
+    },
+    async submit(robotId, answers) {
+      return (await request("/quiz/attempts", {
+        method: "POST",
+        csrf: true,
+        body: { robotId, answers }
+      })).data;
+    },
+    async history(robotId, page = 1) {
+      const query = new URLSearchParams({ page });
+      if (robotId) query.set("robotId", robotId);
+      const payload = await request(`/quiz/attempts?${query}`);
+      return { items: payload.data, meta: payload.meta };
+    },
+    async attempt(id) {
+      return (await request(`/quiz/attempts/${segment(id)}`)).data;
+    }
+  });
+
+  const adminQuiz = Object.freeze({
+    async list(robotId) {
+      return (await request(`/admin/quiz/questions?robotId=${segment(robotId)}`)).data;
+    },
+    async get(id) {
+      return (await request(`/admin/quiz/questions/${segment(id)}`)).data;
+    },
+    async create(question) {
+      return (await request("/admin/quiz/questions", { method: "POST", csrf: true, body: question })).data;
+    },
+    async update(id, question) {
+      return (await request(`/admin/quiz/questions/${segment(id)}`, {
+        method: "PATCH",
+        csrf: true,
+        body: question
+      })).data;
+    },
+    async remove(id) {
+      await request(`/admin/quiz/questions/${segment(id)}`, { method: "DELETE", csrf: true });
+    }
+  });
+
+  const troubleshooting = Object.freeze({
+    async search(params = {}) {
+      const query = new URLSearchParams();
+      if (params.robotId) query.set("robotId", params.robotId);
+      if (params.componentGroup) query.set("componentGroup", params.componentGroup);
+      if (params.search) query.set("search", params.search);
+      if (params.page !== undefined) query.set("page", params.page);
+      const payload = await request(`/troubleshooting-guides?${query}`);
+      return { items: payload.data, meta: payload.meta };
+    }
+  });
+
+  const adminTroubleshooting = Object.freeze({
+    async list() {
+      return (await request("/admin/troubleshooting-guides")).data;
+    },
+    async get(id) {
+      return (await request(`/admin/troubleshooting-guides/${segment(id)}`)).data;
+    },
+    async create(guide) {
+      return (await request("/admin/troubleshooting-guides", { method: "POST", csrf: true, body: guide })).data;
+    },
+    async update(id, guide) {
+      return (await request(`/admin/troubleshooting-guides/${segment(id)}`, {
+        method: "PATCH",
+        csrf: true,
+        body: guide
+      })).data;
+    },
+    async remove(id) {
+      await request(`/admin/troubleshooting-guides/${segment(id)}`, { method: "DELETE", csrf: true });
+    }
+  });
+
+  window.RobotAssemblyApi = Object.freeze({
+    auth, assemblySessions, quiz, adminQuiz, troubleshooting, adminTroubleshooting
+  });
 })();

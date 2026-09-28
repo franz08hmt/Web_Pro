@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import vn.edu.webpro.robotlab.business.AssemblySession;
+import vn.edu.webpro.robotlab.business.RobotComponent;
 import vn.edu.webpro.robotlab.business.SessionStep;
 import vn.edu.webpro.robotlab.business.User;
 import vn.edu.webpro.robotlab.data.AssemblySessionDB;
@@ -205,13 +206,17 @@ public class AssemblySessionServlet extends HttpServlet {
 
             String target = JsonUtil.stringField(JsonUtil.readBody(request.getReader(), MAX_BODY), "status");
             if (!target.equals(session.getStatus())) {
-                if (!session.canChangeStatusTo(target)) {
+                if (AssemblySession.COMPLETED.equals(target)) {
+                    if (!completeAssembly(session, response)) return;
+                    session = AssemblySessionDB.selectSession(session.getId(), user.getId());
+                } else if (!session.canChangeStatusTo(target)) {
                     ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT,
                             "INVALID_STATE_TRANSITION", "Không thể chuyển sang trạng thái yêu cầu.");
                     return;
+                } else {
+                    AssemblySessionDB.updateStatus(session.getId(), user.getId(), target);
+                    session = AssemblySessionDB.selectSession(session.getId(), user.getId());
                 }
-                AssemblySessionDB.updateStatus(session.getId(), user.getId(), target);
-                session = AssemblySessionDB.selectSession(session.getId(), user.getId());
             }
             sendSession(response, HttpServletResponse.SC_OK, refresh(session));
         } catch (IllegalArgumentException e) {
@@ -219,6 +224,47 @@ public class AssemblySessionServlet extends HttpServlet {
                     "VALIDATION_ERROR", "Không thể chuyển sang trạng thái yêu cầu.");
         } catch (SQLException e) {
             ResponseUtil.sendDatabaseUnavailable(response);
+        }
+    }
+
+    /**
+     * Xác nhận hoàn tất thực hành. Hỏi JavaBean trước để trả lỗi rõ ràng ("chưa
+     * lắp đủ linh kiện") mà không cần đụng tới database khi rõ ràng chưa đủ
+     * điều kiện; nhưng quyết định ghi dữ liệu thật — kể cả khi có request gần
+     * đồng thời — luôn thuộc về AssemblySessionDB.completeSession(), vì chỉ nó
+     * mới đọc session_visual_parts ngay trong câu UPDATE atomic. Không tin số
+     * phần trăm hay cờ "đã hoàn tất" mà client tự gửi lên.
+     */
+    private boolean completeAssembly(AssemblySession session, HttpServletResponse response)
+            throws IOException, SQLException {
+        if (session.isInProgress()) {
+            List<RobotComponent> required = RobotDB.selectRobotComponents(session.getRobotId());
+            if (!session.canCompleteAssembly(required)) {
+                ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT,
+                        "ASSEMBLY_INCOMPLETE", "Chưa lắp đủ linh kiện bắt buộc trong mô hình 3D.");
+                return false;
+            }
+        }
+
+        int result = AssemblySessionDB.completeSession(session.getId(), session.getUserId());
+        switch (result) {
+            case AssemblySessionDB.COMPLETE_OK, AssemblySessionDB.COMPLETE_ALREADY_DONE -> {
+                return true;
+            }
+            case AssemblySessionDB.COMPLETE_INCOMPLETE_PARTS -> {
+                ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT,
+                        "ASSEMBLY_INCOMPLETE", "Chưa lắp đủ linh kiện bắt buộc trong mô hình 3D.");
+                return false;
+            }
+            case AssemblySessionDB.COMPLETE_NOT_FOUND -> {
+                sendSessionNotFound(response);
+                return false;
+            }
+            default -> {
+                ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT,
+                        "INVALID_STATE_TRANSITION", "Không thể chuyển sang trạng thái yêu cầu.");
+                return false;
+            }
         }
     }
 

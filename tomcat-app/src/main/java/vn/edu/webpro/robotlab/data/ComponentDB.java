@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import vn.edu.webpro.robotlab.business.Component;
 
 /** Đọc/ghi bảng components — cùng khuôn với UserDB. */
@@ -98,6 +100,46 @@ public class ComponentDB {
                 components.add(component);
             }
             return components;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
+
+    /** Toàn bộ linh kiện dạng id → tên, dùng để hiển thị tên bên cạnh mã ở các trang tổng hợp. */
+    public static Map<String, String> selectComponentNames() throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            ps = connection.prepareStatement("SELECT id, name FROM components");
+            rs = ps.executeQuery();
+            Map<String, String> names = new LinkedHashMap<>();
+            while (rs.next()) {
+                names.put(rs.getString("id"), rs.getString("name"));
+            }
+            return names;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
+
+    public static boolean exists(String id) throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            ps = connection.prepareStatement("SELECT id FROM components WHERE id = ?");
+            ps.setString(1, id);
+            rs = ps.executeQuery();
+            return rs.next();
         } finally {
             DBUtil.closeResultSet(rs);
             DBUtil.closePreparedStatement(ps);

@@ -61,6 +61,7 @@
       const shortName = user.fullName.trim().split(/\s+/).at(-1);
       accountLink.querySelector("span").textContent = `Chào, ${shortName}`;
       accountLink.setAttribute("aria-label", `Tài khoản của ${user.fullName}`);
+      accountLink.removeAttribute("data-guest");
       accountLink.dataset.authenticated = "true";
     }
     if (!panel) return;
