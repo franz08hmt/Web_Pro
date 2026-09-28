@@ -61,12 +61,16 @@
 
     const usage = make("p", "component-use");
     usage.append(make("strong", "", "Dùng cho: "), usedBy || "chưa gán vào mẫu robot.");
+    const safetyNote = component.id === "power-5v"
+      ? make("p", "note-box", "Riêng servo-scout: cấp XL4015 bằng nguồn bàn DC 9V đủ dòng, đo đúng 5V rồi mới nối SG90. Không nối đầu ra XL4015 vào chân 5V Arduino; hộp 4AA chỉ cấp L298N Vs và các nguồn phải nối chung GND.")
+      : null;
     card.append(
       figure,
       make("p", "card-kicker", component.category),
       make("h2", "", component.name),
       make("p", "", component.description),
       usage,
+      ...(safetyNote ? [safetyNote] : []),
       renderSpecs(component.specs)
     );
     return card;
@@ -107,6 +111,9 @@
         names.push(robot.name);
         usages.set(part.id, names);
       }));
+
+      // Jumper wires are shared wiring supplies, not a counted BOM/progress item.
+      usages.set("jumper-wire", robots.map(robot => robot.name));
 
       catalog.replaceChildren(...components.map(component =>
         renderCard(component, usages.get(component.id)?.join(", "))

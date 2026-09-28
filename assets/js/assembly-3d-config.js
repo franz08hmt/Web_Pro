@@ -65,5 +65,55 @@ window.ASSEMBLY_3D_CONFIG = {
     },
     "mini-gripper": { target: { x: 2.04, y: 2.62, z: 0, rz: -0.25 } },
     "power-5v": { target: { x: 1.45, y: 0.28, z: 0.72 } }
+  },
+
+  "line-obstacle": {
+    "chassis-2wd": { target: { x: 0, y: 0.42, z: 0 } },
+    "arduino-uno": { target: { x: -0.62, y: 0.78, z: 0.15 } },
+    "dc-motor": {
+      target: [
+        { x: -1.35, y: 0.34, z: 0.1, rz: Math.PI / 2 },
+        { x: 1.35, y: 0.34, z: 0.1, rz: Math.PI / 2 }
+      ]
+    },
+    wheel: {
+      target: [
+        { x: -1.72, y: 0.43, z: 0.1, rz: Math.PI / 2 },
+        { x: 1.72, y: 0.43, z: 0.1, rz: Math.PI / 2 }
+      ]
+    },
+    "caster-wheel": { target: { x: 0, y: 0.18, z: 0.88 } },
+    "line-sensor": {
+      target: [
+        { x: -0.48, y: 0.25, z: -1.18 },
+        { x: 0.48, y: 0.25, z: -1.18 }
+      ]
+    },
+    "hc-sr04": { target: { x: 0, y: 1.02, z: -0.98 } },
+    l298n: { target: { x: 0.62, y: 0.8, z: 0.2 } },
+    "battery-holder": { target: { x: 0, y: 0.72, z: 0.82, ry: Math.PI / 2 } }
+  },
+
+  "servo-scout": {
+    "chassis-2wd": { target: { x: 0, y: 0.42, z: 0 } },
+    "arduino-uno": { target: { x: -0.72, y: 0.78, z: 0.05 } },
+    "dc-motor": {
+      target: [
+        { x: -1.35, y: 0.34, z: 0.1, rz: Math.PI / 2 },
+        { x: 1.35, y: 0.34, z: 0.1, rz: Math.PI / 2 }
+      ]
+    },
+    wheel: {
+      target: [
+        { x: -1.72, y: 0.43, z: 0.1, rz: Math.PI / 2 },
+        { x: 1.72, y: 0.43, z: 0.1, rz: Math.PI / 2 }
+      ]
+    },
+    "caster-wheel": { target: { x: 0, y: 0.18, z: 0.88 } },
+    "hc-sr04": { target: { x: 0, y: 1.42, z: -1.14 } },
+    sg90: { target: { x: 0, y: 0.82, z: -0.92 } },
+    l298n: { target: { x: 0.68, y: 0.8, z: 0.16 } },
+    "battery-holder": { target: { x: -0.62, y: 0.72, z: 0.78, ry: Math.PI / 2 } },
+    "power-5v": { target: { x: 0.9, y: 0.74, z: 0.76 } }
   }
 };

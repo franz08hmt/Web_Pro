@@ -230,3 +230,9 @@ cùng nhóm linh kiện (cùng cách dùng NULL như `library_resources.robot_id
 sang danh mục linh kiện; dùng `ON DELETE SET NULL` (không phải RESTRICT) vì
 liên kết này chỉ mang tính tham khảo, xóa linh kiện không nên bị chặn bởi một
 bài hướng dẫn tra cứu.
+
+Đợt mở rộng danh mục thêm hai dữ liệu mẫu (`line-obstacle`, `servo-scout`) bằng
+các seed `database/seed-robots-phase3.sql`, `seed-quiz-phase3.sql` và
+`seed-troubleshooting-phase3.sql`. Đây là dữ liệu bổ sung vào các bảng hiện có
+(`robots`, `robot_components`, `assembly_steps`, `quiz_questions`,
+`quiz_options`, `troubleshooting_guides`), không thay đổi ERD hay cần migration.

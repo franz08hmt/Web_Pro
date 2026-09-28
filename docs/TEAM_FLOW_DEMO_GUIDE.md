@@ -18,7 +18,7 @@ Tomcat và một WAR; JavaScript gọi API cùng origin, không phải serverles
 | Hoàn tất thực hành + phiếu kết quả | Đạt: server tự đối chiếu `session_visual_parts` với `robot_components` trước khi ghi `COMPLETED`, không tin dữ liệu client | `AssemblySessionDB.completeSession()`, `AssemblyReceiptPageServlet.java` |
 | Hiệu ứng ăn mừng | Đạt: chỉ bắn khi vừa chuyển sang `COMPLETED` trong lượt bấm hiện tại, tôn trọng `prefers-reduced-motion` | `assets/js/confetti.js`, `assets/js/assembly-3d.js` |
 | Bài kiểm tra kiến thức | Đạt: server chấm từ `quiz_options.is_correct`, lưu bản chụp để không đổi kết quả cũ | `QuizAttemptDB.submitAttempt()`, `QuizServlet.java` |
-| Tra cứu lỗi lắp ráp | Đạt: 14 tình huống thật trong MySQL, tìm/lọc theo robot và nhóm linh kiện | `TroubleshootingServlet.java`, `TroubleshootingGuideDB.java` |
+| Tra cứu lỗi lắp ráp | Seed cơ sở có 14 tình huống; seed đợt 3 thêm 6 tình huống cho hai robot mới (tổng 20 sau khi nạp đủ seed) | `TroubleshootingServlet.java`, `TroubleshootingGuideDB.java`, `database/seed-troubleshooting-phase3.sql` |
 | Tổng kết và thống kê | Đạt: số liệu tính bằng `GROUP BY`/`COUNT DISTINCT` trực tiếp trong SQL, có trạng thái "chưa có dữ liệu" | `StatsDB.java`, `LearningSummaryServlet.java`, `AdminStatsServlet.java` |
 
 Lưu ý: repository hiện không chứa bộ slide gốc, nên các số chương/slide trong
@@ -79,7 +79,10 @@ mới thêm vào đồ án.
 2. Mở `/components` — trang do servlet dựng sẵn ở server. Xem source trang
    (Ctrl+U) để thấy bảng HTML đã có đủ dữ liệu, không có JavaScript nào gọi API.
    Đây là câu trả lời trực tiếp cho "setAttribute và forward nằm ở đâu".
-3. Mở trang robot; DevTools Network cho thấy `GET /api/robots`.
+3. Mở trang robot; DevTools Network cho thấy `GET /api/robots`. Chọn
+   `line-obstacle` hoặc `servo-scout`, mở sơ đồ dây và danh sách linh kiện để
+   đối chiếu dữ liệu DB. Hai mẫu mới được thêm bằng seed, không cần controller
+   hoặc endpoint mới.
 4. Trong code, đi theo `RobotServlet → RobotDB → ConnectionPool → MySQL`.
 5. Đăng ký/đăng nhập; mở `/api/auth/me`, giải thích `JSESSIONID`, `HttpSession`
    và CSRF token. `UserDB.insert` ghi cứng role `user` cho mọi tài khoản đăng ký.
@@ -125,6 +128,19 @@ mới thêm vào đồ án.
     kiểm tra của đúng tài khoản này. Đăng nhập admin, mở `/admin-stats` — số
     liệu toàn hệ thống tính bằng `GROUP BY`; thử truy cập bằng tài khoản thường
     để nhận `403`.
+16. Chọn `line-obstacle`: giải thích hai cảm biến line đọc trạng thái trái/phải,
+    HC-SR04 đo khoảng cách, rồi chương trình ưu tiên dừng/né trước khi tìm lại
+    vạch. Mở tab linh kiện/bước và lần lượt xem hai endpoint
+    `GET /api/robots/{id}/components` và `/steps` trong Network.
+17. Chọn `servo-scout`: chỉ ra SG90 quay đầu HC-SR04 để so sánh khoảng trống;
+    đối chiếu D3 (tín hiệu servo), D11/D12 (TRIG/ECHO), D5–D10 (L298N) và
+    GND chung. Bản build thực tế cần nguồn bàn DC 9V đủ dòng (ngoài BOM): giao
+    dải theo datasheet XL4015 (8–36V) và Uno (7–12V); hộp pin 4AA 6V chỉ cấp
+    `Vs` động cơ, không cấp XL4015 hay `VIN` Arduino. Đo đầu ra 5.0V và kiểm tra
+    jumper 5V-EN theo đúng module trước khi nối. Hai mẫu này có quiz và ba tình
+    huống tra cứu lỗi riêng. Tham khảo [datasheet XL4015 của XLSEMI](https://www.xlsemi.com/datasheet/XL4015-EN.pdf),
+    [đặc tính nguồn Arduino Uno R3](https://store.arduino.cc/products/arduino-uno-rev3)
+    và [datasheet L298 của ST](https://www.st.com/resource/en/datasheet/cd00000240.pdf).
 
 ## Câu hỏi thường gặp
 

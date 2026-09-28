@@ -80,6 +80,45 @@ window.COMPONENTS_DATA = [
     }
   },
   {
+    id: "arm-frame",
+    name: "Bộ khung cánh tay",
+    category: "Cơ khí",
+    image: "../assets/images/components/arm-frame.jpg",
+    description: "Cụm khung tay robot nhiều khớp dùng để gá cơ cấu truyền động và bộ kẹp.",
+    specs: {
+      "Cấu trúc": "đế xoay và các liên kết nhiều khớp",
+      "Vai trò": "đỡ động cơ, truyền lực và định vị đầu kẹp",
+      "Lắp đặt": "siết vít tại từng khớp theo thứ tự lắp ráp",
+      "Lưu ý": "kiểm tra hành trình khớp trước khi cấp nguồn"
+    }
+  },
+  {
+    id: "caster-wheel",
+    name: "Bánh tự do",
+    category: "Cơ khí",
+    image: "../assets/images/components/caster-wheel.jpg",
+    description: "Bánh bi tự do đỡ đầu còn lại của khung xe và giúp robot đổi hướng linh hoạt.",
+    specs: {
+      "Cơ cấu": "bi cầu xoay tự do",
+      "Vai trò": "đỡ tải và giữ cân bằng cho khung xe 2 bánh",
+      "Lắp đặt": "bắt vít vào mặt đáy khung",
+      "Lưu ý": "chọn chiều cao tương thích với bánh chủ động"
+    }
+  },
+  {
+    id: "mini-gripper",
+    name: "Bộ kẹp mini",
+    category: "Cơ khí",
+    image: "../assets/images/components/mini-gripper.jpg",
+    description: "Bộ kẹp hai ngón dùng ở đầu cánh tay để giữ các vật thể nhỏ.",
+    specs: {
+      "Cơ cấu": "hai ngón kẹp truyền động bằng bánh răng",
+      "Điều khiển": "kết hợp động cơ servo phù hợp",
+      "Vật liệu tham khảo": "nhựa in 3D",
+      "Lưu ý": "giới hạn lực kẹp để tránh kẹt cơ cấu"
+    }
+  },
+  {
     id: "dc-motor",
     name: "Động cơ DC TT & Bánh xe",
     category: "Động cơ",
@@ -118,6 +157,19 @@ window.COMPONENTS_DATA = [
       "Điện áp danh định": "6V (4 × 1.5V)",
       "Ngõ ra": "dây đỏ (+) và dây đen (−)",
       "Ghi chú": "cấp riêng cho mạch công suất, nối chung GND với Arduino"
+    }
+  },
+  {
+    id: "power-5v",
+    name: "Nguồn 5V phù hợp",
+    category: "Nguồn điện",
+    image: "../assets/images/components/power-5v.jpg",
+    description: "Module hạ áp DC-DC XL4015 dùng tạo nguồn 5V ổn định cho mạch logic hoặc servo.",
+    specs: {
+      "Loại": "bộ chuyển đổi hạ áp DC-DC XL4015",
+      "Đầu ra": "điều chỉnh về 5V trước khi nối tải",
+      "Ứng dụng": "cấp nguồn logic hoặc servo từ nguồn DC phù hợp",
+      "Lưu ý": "kiểm tra dải điện áp đầu vào của đúng module; đo đầu ra và nối chung GND"
     }
   },
   {
@@ -296,6 +348,96 @@ window.ROBOT_MODELS = [
       { pin: "D9", target: "Servo bộ kẹp — Signal", note: "Chân PWM, đóng/mở kẹp" },
       { pin: "5V ngoài", target: "VCC của cả bốn servo", note: "Không lấy 5V từ Arduino vì dòng không đủ" },
       { pin: "GND", target: "GND servo và GND Arduino", note: "Bắt buộc nối chung mass" }
+    ]
+  },
+
+  {
+    id: "line-obstacle",
+    name: "Robot dò line kết hợp tránh vật cản",
+    level: "Trung bình",
+    summary: "Robot bám vạch bằng hai cảm biến hồng ngoại; khi HC-SR04 phát hiện chướng ngại trong ngưỡng, robot dừng, né vật cản rồi tìm lại vạch.",
+    image: "../assets/images/robots/robot-line-obstacle.png",
+    buildTime: "90 – 120 phút",
+    mainSensor: "Cảm biến dò line hồng ngoại và HC-SR04",
+    skills: "Kết hợp tín hiệu số và đo khoảng cách; ưu tiên sự kiện, điều khiển PWM và tìm lại quỹ đạo",
+    parts: [
+      { id: "chassis-2wd", name: "Khung xe 2 bánh", quantity: 1 },
+      { id: "arduino-uno", name: "Arduino Uno", quantity: 1 },
+      { id: "dc-motor", name: "Động cơ DC", quantity: 2 },
+      { id: "wheel", name: "Bánh xe", quantity: 2 },
+      { id: "caster-wheel", name: "Bánh tự do", quantity: 1 },
+      { id: "line-sensor", name: "Cảm biến dò line", quantity: 2 },
+      { id: "hc-sr04", name: "Cảm biến siêu âm HC-SR04", quantity: 1 },
+      { id: "l298n", name: "Module L298N", quantity: 1 },
+      { id: "battery-holder", name: "Hộp pin", quantity: 1 }
+    ],
+    steps: [
+      "Gắn hai động cơ, bánh xe và bánh tự do vào khung xe.",
+      "Cố định Arduino Uno và L298N, chừa khoảng trống phía trước cho cảm biến.",
+      "Gắn hai cảm biến dò line ở mặt dưới phía trước và HC-SR04 hướng về phía trước.",
+      "Đấu L298N vào D5–D10, cảm biến line vào D2/D3, HC-SR04 vào D11/D12; nối chung GND.",
+      "Nạp chương trình ưu tiên dừng/né khi vật cản gần, sau đó dò lại vạch; thử ở tốc độ thấp."
+    ],
+    wiring: [
+      { pin: "D5", target: "L298N — ENA", note: "PWM chỉnh tốc độ bánh trái" },
+      { pin: "D6", target: "L298N — IN1", note: "Chọn chiều bánh trái" },
+      { pin: "D7", target: "L298N — IN2", note: "Chọn chiều bánh trái" },
+      { pin: "D8", target: "L298N — IN3", note: "Chọn chiều bánh phải" },
+      { pin: "D9", target: "L298N — IN4", note: "Chọn chiều bánh phải" },
+      { pin: "D10", target: "L298N — ENB", note: "PWM chỉnh tốc độ bánh phải" },
+      { pin: "D2", target: "Cảm biến dò line trái — OUT", note: "Ngõ vào số" },
+      { pin: "D3", target: "Cảm biến dò line phải — OUT", note: "Ngõ vào số" },
+      { pin: "D11", target: "HC-SR04 — TRIG", note: "Ngõ ra phát xung đo khoảng cách" },
+      { pin: "D12", target: "HC-SR04 — ECHO", note: "Ngõ vào đo độ rộng xung phản hồi" },
+      { pin: "5V", target: "VCC hai cảm biến line và HC-SR04", note: "Nguồn logic theo thông số module" },
+      { pin: "Hộp pin +", target: "L298N — Vs", note: "Nguồn động cơ; không đưa vào chân 5V Arduino" },
+      { pin: "GND", target: "Arduino, cảm biến, L298N và cực âm hộp pin", note: "Bắt buộc nối chung mass" }
+    ]
+  },
+
+  {
+    id: "servo-scout",
+    name: "Robot quét hướng tránh vật cản",
+    level: "Trung bình",
+    summary: "Servo SG90 quét HC-SR04 qua nhiều góc để so sánh khoảng trống, sau đó Arduino điều khiển xe né vật cản. Bản lắp thực tế cần thêm nguồn bàn DC 9V đủ dòng (không nằm trong bộ linh kiện tối thiểu); hộp pin 4AA 6V chỉ cấp phần động cơ.",
+    image: "../assets/images/robots/robot-servo-scout.png",
+    buildTime: "100 – 130 phút",
+    mainSensor: "HC-SR04 gắn trên servo SG90",
+    skills: "Đo thời gian truyền–nhận xung siêu âm, tạo PWM cho servo và chọn hướng theo số đo",
+    parts: [
+      { id: "chassis-2wd", name: "Khung xe 2 bánh", quantity: 1 },
+      { id: "arduino-uno", name: "Arduino Uno", quantity: 1 },
+      { id: "dc-motor", name: "Động cơ DC", quantity: 2 },
+      { id: "wheel", name: "Bánh xe", quantity: 2 },
+      { id: "caster-wheel", name: "Bánh tự do", quantity: 1 },
+      { id: "hc-sr04", name: "Cảm biến siêu âm HC-SR04", quantity: 1 },
+      { id: "sg90", name: "Động cơ servo SG90", quantity: 1 },
+      { id: "l298n", name: "Module L298N", quantity: 1 },
+      { id: "battery-holder", name: "Hộp pin", quantity: 1 },
+      { id: "power-5v", name: "Module nguồn DC-DC 5V", quantity: 1 }
+    ],
+    steps: [
+      "Lắp hai động cơ, bánh xe và bánh tự do vào khung xe.",
+      "Cố định Arduino, L298N, hộp pin và module DC-DC ở vị trí chắc chắn.",
+      "Gắn servo SG90 ở đầu xe, lắp giá đỡ HC-SR04 lên càng servo và hướng hai mắt cảm biến ra trước.",
+      "Đấu L298N vào D5–D10, servo vào D3, TRIG/ECHO vào D11/D12. Bản lắp thực tế cần nguồn bàn DC 9V đủ dòng cấp cho VIN/DC jack Arduino và XL4015; hộp pin 4AA 6V chỉ cấp L298N Vs. Đo XL4015 đúng 5.0V rồi mới nối riêng SG90; cấp HC-SR04 và logic L298N từ Arduino 5V, kiểm tra jumper theo đúng module và nối chung GND.",
+      "Nạp chương trình quét các góc trái/giữa/phải, chờ servo ổn định rồi đo; thử né vật cản ở tốc độ thấp."
+    ],
+    wiring: [
+      { pin: "D5", target: "L298N — ENA", note: "PWM chỉnh tốc độ bánh trái" },
+      { pin: "D6", target: "L298N — IN1", note: "Chọn chiều bánh trái" },
+      { pin: "D7", target: "L298N — IN2", note: "Chọn chiều bánh trái" },
+      { pin: "D8", target: "L298N — IN3", note: "Chọn chiều bánh phải" },
+      { pin: "D9", target: "L298N — IN4", note: "Chọn chiều bánh phải" },
+      { pin: "D10", target: "L298N — ENB", note: "PWM chỉnh tốc độ bánh phải" },
+      { pin: "D3", target: "SG90 — Signal", note: "PWM điều khiển góc quét; giới hạn cơ khí 0–180°" },
+      { pin: "D11", target: "HC-SR04 — TRIG", note: "Ngõ ra phát xung đo khoảng cách" },
+      { pin: "D12", target: "HC-SR04 — ECHO", note: "Ngõ vào đo độ rộng xung phản hồi" },
+      { pin: "Nguồn bàn DC 9V", target: "Arduino — VIN/DC jack và XL4015 — IN+", note: "Dải giao nhau theo datasheet: XL4015 8–36V, Uno 7–12V; cần nguồn đủ dòng, không có trong bộ linh kiện tối thiểu" },
+      { pin: "5V XL4015", target: "SG90 — VCC", note: "Đo đúng 5.0V; chỉ cấp servo, không nối vào chân 5V Arduino" },
+      { pin: "Arduino 5V", target: "HC-SR04 — VCC và L298N — logic 5V", note: "Không nối song song với nguồn logic 5V khác; cấu hình jumper 5V-EN theo đúng module L298N" },
+      { pin: "Hộp pin +", target: "L298N — Vs", note: "Nguồn 6V riêng cho động cơ; không đưa vào Arduino hoặc đầu vào XL4015" },
+      { pin: "GND", target: "Arduino, SG90, HC-SR04, L298N, DC-DC và cực âm hộp pin", note: "Bắt buộc nối chung mass" }
     ]
   }
 ];

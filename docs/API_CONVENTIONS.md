@@ -53,6 +53,14 @@ Lỗi:
 Danh sách hỗ trợ `page` và `limit`; giá trị phải là số nguyên dương trong giới
 hạn service.
 
+Hai mẫu `line-obstacle` và `servo-scout` dùng nguyên các endpoint danh mục này,
+không thêm API: `GET /api/robots` trả danh sách; `GET
+/api/robots/{robotId}/components` đọc quan hệ linh kiện; `GET
+/api/robots/{robotId}/steps` trả năm bước theo thứ tự. Dữ liệu được seed vào
+`robots`, `robot_components` và `assembly_steps`; `wiring` là JSON trong bản ghi
+robot. Trang `pages/lap-rap.html` hiển thị hướng dẫn bước ở ngoài phòng 3D.
+Quiz và tra cứu lỗi cũng đi qua endpoint hiện hữu, với seed bổ sung riêng.
+
 ## Auth và HttpSession
 
 | Method | Path | Body/Kết quả |

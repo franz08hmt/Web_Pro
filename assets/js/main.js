@@ -61,7 +61,7 @@ function setupComponentSpecs() {
   });
 }
 
-// Bảng so sánh ba mẫu robot (pages/mau-robot.html)
+// Bảng so sánh năm mẫu robot (pages/mau-robot.html)
 function setupCompareTable() {
   const body = document.querySelector("#compare-body");
   if (!body || robotModels.length === 0) return;

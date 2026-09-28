@@ -20,7 +20,7 @@
   function showDiscovery(message = "Chọn một mẫu robot để bắt đầu; đăng nhập để lưu tiến độ của bạn.") {
     if (!panel) return;
     kicker.textContent = "Góc thực hành";
-    title.textContent = "Khám phá 3 mô hình robot";
+    title.textContent = "Khám phá 5 mô hình robot";
     summary.textContent = message;
     steps.hidden = true;
     meter.hidden = true;

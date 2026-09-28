@@ -66,7 +66,13 @@ Yêu cầu: JDK 17, Tomcat 9 và MySQL 8.
    migration `006_quiz`, chạy thêm `database/seed-quiz.sql`; sau migration
    `007_troubleshooting`, chạy thêm `database/seed-troubleshooting.sql`. Cả hai
    đều an toàn chạy trên database đang dùng — chỉ INSERT bảng `quiz_*` hoặc
-   `troubleshooting_guides`, không đụng dữ liệu người dùng.
+   `troubleshooting_guides`, không đụng dữ liệu người dùng. Để thêm hai mẫu
+   `line-obstacle` và `servo-scout`, sau `seed.sql` chạy lần lượt
+   `database/seed-robots-phase3.sql`, `database/seed-quiz-phase3.sql` (sau khi
+   có bảng quiz từ migration `006_quiz`) và
+   `database/seed-troubleshooting-phase3.sql` (sau migration
+   `007_troubleshooting`). Các seed đợt 3 chỉ dùng `INSERT IGNORE`, không thêm
+   bảng/cột và có thể chạy lại an toàn.
 2. Trong cấu hình Tomcat của IntelliJ, tab **Server**, ô **VM options**, nhập:
 
    ```text
