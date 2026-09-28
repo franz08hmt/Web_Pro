@@ -152,3 +152,50 @@ test("client normalizes API and network failures for the UI", async () => {
     error => error.code === "NETWORK_ERROR" && error.status === 0 && /kết nối/.test(error.message)
   );
 });
+
+test("shop, cart, checkout, and admin APIs preserve session/CSRF and never send client checkout totals", async () => {
+  const calls = [];
+  const client = loadClient(async (rawUrl, options = {}) => {
+    const url = new URL(rawUrl);
+    calls.push({ path: url.pathname + url.search, options });
+    if (url.pathname === "/api/auth/me") {
+      return response({ data: { user: { id: "7", role: "USER" } }, csrfToken: "csrf-shop" });
+    }
+    if (url.pathname === "/api/components") {
+      return response({ data: [{ id: "arduino-uno" }], meta: { page: 1, limit: 100, total: 1 } });
+    }
+    if (options.method === "DELETE") return response(null, 204);
+    if (url.pathname === "/api/orders" && options.method === "POST") {
+      return response({ data: { id: "100", totalVnd: 266227 } }, 201);
+    }
+    if (url.pathname.endsWith("/products") && !url.pathname.includes("admin")) {
+      return response({ data: [{ id: "arduino-uno" }], meta: { page: 1, limit: 20, total: 1 } });
+    }
+    if (url.pathname === "/api/cart") return response({ data: [] });
+    if (url.pathname === "/api/orders") return response({ data: [], meta: { page: 1, limit: 20, total: 0 } });
+    return response({ data: { id: "arduino-uno" } }, options.method === "POST" ? 201 : 200);
+  });
+
+  await client.auth.me();
+  const components = await client.components.list({ page: 1, limit: 100 });
+  const catalog = await client.shop.list({ page: 1, limit: 20 });
+  await client.cart.get();
+  await client.cart.setQuantity("arduino-uno", 2);
+  await client.cart.remove("arduino-uno");
+  const order = await client.orders.checkout();
+  await client.orders.history({ page: 1, limit: 20 });
+  await client.adminShop.create({ id: "arduino-uno-demo", componentId: "arduino-uno", priceVnd: 1, stockQuantity: 2, active: true });
+  await client.adminShop.update("arduino-uno-demo", { componentId: "arduino-uno", priceVnd: 1, stockQuantity: 2, active: true });
+  await client.adminShop.deactivate("arduino-uno-demo");
+
+  assert.equal(catalog.items[0].id, "arduino-uno");
+  assert.equal(components.items[0].id, "arduino-uno");
+  assert.equal(order.id, "100");
+  const checkout = calls.find((call) => call.path === "/api/orders" && call.options.method === "POST");
+  assert.equal(checkout.options.headers["X-CSRF-Token"], "csrf-shop");
+  assert.equal(checkout.options.body, undefined, "checkout không gửi giá/tổng tiền của trình duyệt");
+  assert.ok(calls.some((call) => call.path === "/api/components?page=1&limit=100"));
+  for (const call of calls.filter((entry) => ["PUT", "POST", "PATCH", "DELETE"].includes(entry.options.method))) {
+    assert.equal(call.options.headers["X-CSRF-Token"], "csrf-shop");
+  }
+});

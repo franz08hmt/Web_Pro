@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Quản trị giá tham khảo và tồn kho mô phỏng">
+  <title>Quản trị cửa hàng | Robot Assembly Lab</title>
+  <link rel="stylesheet" href="../assets/css/style.css?v=20260923.3">
+  <link rel="stylesheet" href="../assets/css/shop.css?v=20260928.1">
+  <link rel="icon" href="../assets/icons/cpu-chip.svg" type="image/svg+xml">
+  <script src="../assets/js/api.js?v=20260928.1" defer></script>
+  <script src="../assets/js/admin-shop.js?v=20260928.1" defer></script>
+</head>
+<body class="shop-page">
+  <a class="skip-link" href="#main-content">Chuyển đến nội dung</a>
+  <header class="shop-topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">⌘</span>
+      <span class="brand-name">ROBOT<span>ASSEMBLY LAB</span></span></a>
+    <nav aria-label="Điều hướng chính">
+      <a href="cua-hang.html">Cửa hàng</a>
+      <a href="gio-hang.html">Giỏ hàng</a>
+      <a href="admin-content.html">Quản trị nội dung</a>
+    </nav>
+  </header>
+
+  <main class="shop-main" id="main-content" tabindex="-1">
+    <section class="shop-intro shop-intro-compact">
+      <p class="section-label">Khu vực quản trị · ADMIN</p>
+      <h1>Sản phẩm mô phỏng</h1>
+      <p>Quản lý giá VND tham khảo, tồn kho và trạng thái. Ngừng bán sẽ ẩn sản phẩm khỏi catalog nhưng không xóa đơn cũ.</p>
+    </section>
+    <p id="admin-shop-status" class="shop-status" role="status" aria-live="polite">Đang xác minh quyền…</p>
+
+    <section id="admin-shop-workspace" class="admin-shop-workspace" hidden>
+      <form id="shop-product-form" class="shop-form">
+        <div class="shop-section-heading"><div><p class="section-label">Biểu mẫu</p><h2 id="shop-form-title">Thêm sản phẩm</h2></div></div>
+        <label for="product-id">Mã sản phẩm</label>
+        <input id="product-id" name="id" required pattern="[a-z0-9]+(?:-[a-z0-9]+)*" maxlength="64" autocomplete="off">
+        <label for="component-id">Linh kiện kỹ thuật</label>
+        <select id="component-id" name="componentId" required></select>
+        <label for="price-vnd">Giá tham khảo (VND, số nguyên)</label>
+        <input id="price-vnd" name="priceVnd" type="number" min="1" max="999999999999" step="1" required>
+        <label for="stock-quantity">Tồn kho mô phỏng</label>
+        <input id="stock-quantity" name="stockQuantity" type="number" min="0" max="1000000" step="1" required>
+        <label class="shop-checkbox"><input id="product-active" name="active" type="checkbox" checked> Đang hiển thị trong catalog</label>
+        <div class="shop-form-actions">
+          <button id="shop-save-button" class="button" type="submit">Thêm sản phẩm</button>
+          <button id="shop-cancel-edit" class="button button-secondary" type="button" hidden>Hủy sửa</button>
+        </div>
+      </form>
+
+      <section aria-labelledby="admin-product-list-title">
+        <div class="shop-section-heading"><div><p class="section-label">Danh sách</p><h2 id="admin-product-list-title">Sản phẩm và tồn kho</h2></div></div>
+        <div class="shop-table-wrap">
+          <table class="shop-admin-table">
+            <thead><tr><th scope="col">Sản phẩm</th><th scope="col">Giá tham khảo</th><th scope="col">Tồn kho</th><th scope="col">Trạng thái</th><th scope="col">Thao tác</th></tr></thead>
+            <tbody id="admin-products"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </main>
+</body>
+</html>

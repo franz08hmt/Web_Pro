@@ -20,6 +20,7 @@ Tomcat và một WAR; JavaScript gọi API cùng origin, không phải serverles
 | Bài kiểm tra kiến thức | Đạt: server chấm từ `quiz_options.is_correct`, lưu bản chụp để không đổi kết quả cũ | `QuizAttemptDB.submitAttempt()`, `QuizServlet.java` |
 | Tra cứu lỗi lắp ráp | Seed cơ sở có 14 tình huống; seed đợt 3 thêm 6 tình huống cho hai robot mới (tổng 20 sau khi nạp đủ seed) | `TroubleshootingServlet.java`, `TroubleshootingGuideDB.java`, `database/seed-troubleshooting-phase3.sql` |
 | Tổng kết và thống kê | Đạt: số liệu tính bằng `GROUP BY`/`COUNT DISTINCT` trực tiếp trong SQL, có trạng thái "chưa có dữ liệu" | `StatsDB.java`, `LearningSummaryServlet.java`, `AdminStatsServlet.java` |
+| Cửa hàng mô phỏng | Catalog công khai; giỏ/đơn theo session; admin CRUD; checkout server tính giá và khóa tồn trong transaction; không thanh toán thật | `ShopServlet`, `CartServlet`, `OrderServlet`, `AdminShopServlet`; `ShopProductDB`, `CartDB`, `OrderDB`; migration `008_shop_cart_orders.sql` |
 
 Lưu ý: repository hiện không chứa bộ slide gốc, nên các số chương/slide trong
 `ARCHITECTURE.md` đang đối chiếu theo ghi chú môn học đã có trong dự án/cuộc trao
@@ -141,6 +142,13 @@ mới thêm vào đồ án.
     huống tra cứu lỗi riêng. Tham khảo [datasheet XL4015 của XLSEMI](https://www.xlsemi.com/datasheet/XL4015-EN.pdf),
     [đặc tính nguồn Arduino Uno R3](https://store.arduino.cc/products/arduino-uno-rev3)
     và [datasheet L298 của ST](https://www.st.com/resource/en/datasheet/cd00000240.pdf).
+18. Cửa hàng mô phỏng: đăng nhập USER, mở `/pages/cua-hang.html`, thêm linh kiện
+    vào giỏ, đổi số lượng rồi xem tổng tạm tính. Trong Network chỉ
+    `PUT /api/cart/items/{id}` gửi quantity + CSRF; `POST /api/orders` không gửi
+    giá/tổng/user ID. Response trả mã đơn và tổng do server tính; mở
+    `/order-history` xem snapshot. Nói rõ đây không phải thanh toán thật. Với
+    ADMIN, mở `/pages/admin-shop.html`, sửa giá demo rồi ngừng bán; catalog ẩn
+    sản phẩm nhưng đơn cũ vẫn giữ tên/giá tại thời điểm đặt.
 
 ## Câu hỏi thường gặp
 
@@ -214,6 +222,7 @@ Bốn trang, đều đặt JSP dưới `WEB-INF` để mọi request bắt buộ
 | `/components` | `ComponentCatalogPageServlet` | `List<Component>`, có phân trang |
 | `/account` | `AccountPageServlet` | `User` lấy từ `HttpSession` |
 | `/architecture` | `ArchitectureServlet` | Vài chuỗi minh họa kiến trúc |
+| `/order-history` | `OrderHistoryServlet` | Danh sách `ShopOrder` của user, gồm snapshot `OrderItem` |
 
 ### "Sao vừa có /components vừa có /api/components?"
 
@@ -277,6 +286,13 @@ SQL của `StatsDB`, không cộng dồn thủ công ở Java (tránh đếm tr�
 JOIN). Không có số liệu giả nào được chèn vào để biểu đồ đẹp hơn; khi chưa đủ
 dữ liệu, trang hiện rõ thông báo "chưa có dữ liệu" thay vì bảng trống hoặc số 0
 gây hiểu nhầm.
+
+### "Giá và tổng đơn có thể bị sửa ở trình duyệt không?"
+
+Không. Browser chỉ gửi mã sản phẩm và số lượng cho cart; checkout gửi body rỗng.
+`OrderDB.checkout()` đọc giá/tồn từ MySQL trong transaction, khóa hàng cần
+thiết, tự tính tổng rồi giảm kho và tạo snapshot. Sửa con số trên DevTools không
+đổi được giá lưu vào đơn. Đây là đơn mô phỏng, không kết nối cổng thanh toán.
 
 ## Chuỗi file nên mở khi bảo vệ
 

@@ -21,5 +21,24 @@
 - [x] Chạy seed trên MySQL local theo kiểu an toàn/idempotent; xác nhận API trả dữ liệu.
 - [x] Kiểm chứng trọn luồng browser cho cả hai mẫu: chuẩn bị → lắp 3D đủ part → hoàn tất/receipt → quiz. Hai quiz đều được chấm và lưu lịch sử 6/6 trên tài khoản QA local.
 - [x] Chạy `npm test`, `mvn test`, `mvn clean package`; review diff/no secrets.
-- [x] Commit đợt 3 local: `ed9f30d feat: add two robotics learning models`.
-- [ ] Push đợt 3 lên `origin/integration/fullstack-v2`; kết nối HTTPS tới GitHub đang thất bại/treo.
+- [x] Commit đợt 3 local: `f582799 feat: add two robotics learning models`.
+- [ ] Push đợt 3 lên `origin/integration/fullstack-v2`; đang chờ kết nối GitHub ổn định.
+
+## Đợt 4 — Cửa hàng linh kiện và giỏ hàng mô phỏng
+
+- [x] ERD và contract tests trước migration.
+- [x] Migration/schema/seed additive cho shop, cart và order snapshot.
+- [x] JavaBean, JDBC `XxxDB`, Servlet API, phân quyền ADMIN/CSRF và transaction checkout.
+- [x] Catalog, giỏ, checkout mô phỏng, trang JSP lịch sử đơn và giao diện quản trị.
+- [x] Cập nhật hướng dẫn API, kiến trúc, demo guide và README.
+- [x] `npm test` 97/97, Java production/test biên dịch bằng JDK 17, JUnit 25/25;
+  Maven không có trong PATH. Node syntax và `git diff --check` pass.
+- [x] Áp dụng migration 008 và seed idempotent trên MySQL local; có 12 sản phẩm.
+- [x] Tomcat QA cổng 8081 + browser guest: health/catalog 200, catalog 12 dòng,
+  guest cart/admin 401, HTML/CSS/JS 200; đã dừng QA sạch.
+- [ ] Chưa chạy checkout, CSRF ghi và CRUD admin với user đăng nhập thật; không
+  tạo tài khoản/đơn thử để tránh thêm dữ liệu không cần thiết vào DB hiện tại.
+- [x] Rà soát diff/no secrets và commit Đợt 4 ở local.
+- [ ] Push các commit Đợt 3–4 lên `origin/integration/fullstack-v2`; push thường
+  lỗi không kết nối được GitHub, lần thử có quyền mạng bị treo và đã dừng, chưa
+  xác nhận remote nhận commit. Local hiện ahead 2 commits.

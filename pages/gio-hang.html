@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Giỏ hàng và đơn hàng mô phỏng linh kiện robot">
+  <title>Giỏ hàng mô phỏng | Robot Assembly Lab</title>
+  <link rel="stylesheet" href="../assets/css/style.css?v=20260923.3">
+  <link rel="stylesheet" href="../assets/css/shop.css?v=20260928.1">
+  <link rel="icon" href="../assets/icons/cpu-chip.svg" type="image/svg+xml">
+  <script src="../assets/js/api.js?v=20260928.1" defer></script>
+  <script src="../assets/js/cart.js?v=20260928.1" defer></script>
+</head>
+<body class="shop-page">
+  <a class="skip-link" href="#main-content">Chuyển đến nội dung</a>
+  <header class="shop-topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">⌘</span>
+      <span class="brand-name">ROBOT<span>ASSEMBLY LAB</span></span></a>
+    <nav aria-label="Điều hướng chính">
+      <a href="../index.html">Tổng quan</a>
+      <a href="mau-robot.html">Mẫu robot</a>
+      <a href="linh-kien.html">Linh kiện</a>
+      <a href="cua-hang.html">Cửa hàng</a>
+      <a href="gio-hang.html" aria-current="page">Giỏ hàng</a>
+      <a href="tai-khoan.html">Tài khoản</a>
+    </nav>
+  </header>
+
+  <main class="shop-main" id="main-content" tabindex="-1">
+    <section class="shop-intro shop-intro-compact">
+      <p class="section-label">Đơn mô phỏng · không thanh toán</p>
+      <h1>Giỏ hàng của bạn</h1>
+      <p>Máy chủ kiểm tra lại giá và tồn kho khi xác nhận; con số ở trình duyệt không phải dữ liệu thanh toán.</p>
+    </section>
+
+    <p id="cart-status" class="shop-status" role="status" aria-live="polite">Đang kiểm tra đăng nhập…</p>
+    <section id="cart-content" class="cart-layout" hidden>
+      <div id="cart-items" class="cart-items" aria-live="polite"></div>
+      <aside class="cart-summary" aria-labelledby="cart-summary-title">
+        <p class="section-label">Tóm tắt</p>
+        <h2 id="cart-summary-title">Tạm tính mô phỏng</h2>
+        <p class="cart-total" id="cart-total">0 đ</p>
+        <p class="shop-muted">Tổng cuối cùng được tính lại từ MySQL trong transaction.</p>
+        <button id="checkout-button" class="button" type="button" disabled>Xác nhận đơn mô phỏng</button>
+        <a class="cart-history-link" href="../order-history">Xem lịch sử đơn</a>
+      </aside>
+    </section>
+
+    <section id="checkout-result" class="checkout-result" aria-live="polite" hidden></section>
+    <p class="shop-footnote"><a href="cua-hang.html">← Tiếp tục xem linh kiện</a></p>
+  </main>
+</body>
+</html>

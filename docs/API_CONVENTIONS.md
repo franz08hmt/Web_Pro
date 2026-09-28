@@ -165,6 +165,7 @@ Các route yêu cầu user role `ADMIN` và CSRF token đối với thao tác gh
 | Thư viện | `/api/admin/library-resources` | GET, POST, PATCH `/{id}`, DELETE `/{id}` |
 | Câu hỏi kiểm tra | `/api/admin/quiz/questions?robotId=X` hoặc `/{id}` | GET (danh sách theo robot hoặc 1 câu), POST, PATCH `/{id}`, DELETE `/{id}` |
 | Tra cứu lỗi | `/api/admin/troubleshooting-guides` | GET, POST, PATCH `/{id}`, DELETE `/{id}` |
+| Cửa hàng mô phỏng | `/api/admin/shop/products` | GET, POST, PATCH `/{id}`, DELETE `/{id}` (ngừng bán) |
 
 Một request thêm/sửa câu hỏi kiểm tra gửi kèm toàn bộ mảng `options` (2–6 lựa
 chọn, đúng một `isCorrect: true`) trong cùng body; server xóa hết lựa chọn cũ
@@ -181,6 +182,33 @@ Một số màn hình forward thẳng sang JSP thay vì trả JSON, theo đúng 
 | `/assembly-receipt?session={id}` | `AssemblyReceiptPageServlet` | Có — chỉ chủ phiên xem được |
 | `/learning-summary` | `LearningSummaryServlet` | Có — chỉ số liệu của chính mình |
 | `/admin-stats` | `AdminStatsServlet` | Có, và phải role `ADMIN` (403 nếu không) |
+| `/order-history` | `OrderHistoryServlet` | Có — chỉ lịch sử của user hiện tại |
+
+## Cửa hàng và đơn hàng mô phỏng (đợt 4)
+
+`GET /api/shop/products?page=1&limit=20` là catalog công khai, chỉ trả sản phẩm
+đang hoạt động. Giá/tồn kho thuộc `shop_products`; tên, ảnh và thông số kỹ thuật
+được JOIN từ `components`, tránh nhân bản dữ liệu học tập.
+
+| Method | Path | Body / quyền |
+| --- | --- | --- |
+| GET | `/api/components?page=1&limit=100` | Công khai; linh kiện kỹ thuật cho select admin |
+| GET | `/api/cart` | Đăng nhập; chỉ giỏ của `HttpSession` hiện tại |
+| PUT | `/api/cart/items/{productId}` | Đăng nhập + CSRF; `{ "quantity": 2 }`; server kiểm tra trạng thái/tồn |
+| DELETE | `/api/cart/items/{productId}` | Đăng nhập + CSRF; chỉ xóa dòng thuộc user hiện tại |
+| POST | `/api/orders` | Đăng nhập + CSRF; body rỗng, server tự lấy giỏ và tính tổng |
+| GET | `/api/orders?page=1&limit=20` | Đăng nhập; lịch sử của user hiện tại |
+| GET | `/api/admin/shop/products?page=1&limit=100` | Chỉ ADMIN; gồm cả sản phẩm đã ngừng bán |
+| POST | `/api/admin/shop/products` | ADMIN + CSRF; `{ "id", "componentId", "priceVnd", "stockQuantity", "active" }` |
+| PATCH | `/api/admin/shop/products/{id}` | ADMIN + CSRF; cập nhật linh kiện, giá, tồn, trạng thái |
+| DELETE | `/api/admin/shop/products/{id}` | ADMIN + CSRF; đặt `is_active=false`, không xóa vật lý |
+
+Các API cart/order lấy `user_id` từ `SessionUtil`, không nhận chủ tài khoản từ
+request. `OrderDB.checkout()` dùng transaction và `SELECT ... FOR UPDATE`, kiểm
+tra active/tồn kho, lấy giá mới nhất từ DB, giảm kho, chụp tên/đơn giá/số lượng
+vào `order_items`, ghi tổng rồi xóa giỏ. Bất kỳ lỗi nào rollback toàn bộ. Client
+không gửi `price`, `total`, user ID hay số tồn. API chỉ tạo đơn mô phỏng; không
+có tích hợp thanh toán hoặc giao hàng.
 
 ## Vị trí triển khai
 

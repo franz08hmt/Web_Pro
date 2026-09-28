@@ -201,6 +201,74 @@
     }
   });
 
+  const components = Object.freeze({
+    async list(params = {}) {
+      const query = new URLSearchParams();
+      if (params.page !== undefined) query.set("page", params.page);
+      if (params.limit !== undefined) query.set("limit", params.limit);
+      const payload = await request(`/components${query.size ? `?${query}` : ""}`);
+      return { items: payload.data, meta: payload.meta };
+    }
+  });
+
+  const shop = Object.freeze({
+    async list(params = {}) {
+      const query = new URLSearchParams();
+      if (params.page !== undefined) query.set("page", params.page);
+      if (params.limit !== undefined) query.set("limit", params.limit);
+      const payload = await request(`/shop/products${query.size ? `?${query}` : ""}`);
+      return { items: payload.data, meta: payload.meta };
+    }
+  });
+
+  const cart = Object.freeze({
+    async get() {
+      return (await request("/cart")).data;
+    },
+    async setQuantity(productId, quantity) {
+      return (await request(`/cart/items/${segment(productId)}`, {
+        method: "PUT", csrf: true, body: { quantity }
+      })).data;
+    },
+    async remove(productId) {
+      await request(`/cart/items/${segment(productId)}`, { method: "DELETE", csrf: true });
+    }
+  });
+
+  const orders = Object.freeze({
+    async checkout() {
+      return (await request("/orders", { method: "POST", csrf: true })).data;
+    },
+    async history(params = {}) {
+      const query = new URLSearchParams();
+      if (params.page !== undefined) query.set("page", params.page);
+      if (params.limit !== undefined) query.set("limit", params.limit);
+      const payload = await request(`/orders${query.size ? `?${query}` : ""}`);
+      return { items: payload.data, meta: payload.meta };
+    }
+  });
+
+  const adminShop = Object.freeze({
+    async list(params = {}) {
+      const query = new URLSearchParams();
+      if (params.page !== undefined) query.set("page", params.page);
+      if (params.limit !== undefined) query.set("limit", params.limit);
+      const payload = await request(`/admin/shop/products${query.size ? `?${query}` : ""}`);
+      return { items: payload.data, meta: payload.meta };
+    },
+    async create(product) {
+      return (await request("/admin/shop/products", { method: "POST", csrf: true, body: product })).data;
+    },
+    async update(id, product) {
+      return (await request(`/admin/shop/products/${segment(id)}`, {
+        method: "PATCH", csrf: true, body: product
+      })).data;
+    },
+    async deactivate(id) {
+      await request(`/admin/shop/products/${segment(id)}`, { method: "DELETE", csrf: true });
+    }
+  });
+
   const adminTroubleshooting = Object.freeze({
     async list() {
       return (await request("/admin/troubleshooting-guides")).data;
@@ -224,6 +292,7 @@
   });
 
   window.RobotAssemblyApi = Object.freeze({
-    auth, assemblySessions, quiz, adminQuiz, troubleshooting, adminTroubleshooting
+    auth, assemblySessions, quiz, adminQuiz, troubleshooting, adminTroubleshooting, components,
+    shop, cart, orders, adminShop
   });
 })();

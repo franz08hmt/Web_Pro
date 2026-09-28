@@ -125,3 +125,28 @@ SQL của phiên đều kèm `user_id`, nên không đọc hay sửa được ph
 - `database/migrations/`: thay đổi tăng dần cho database đã tồn tại.
 
 Quan hệ các bảng xem tại [erd.md](erd.md).
+
+## 8. Cửa hàng mô phỏng: request/response và database
+
+```text
+pages/cua-hang.html / gio-hang.html
+  → assets/js/api.js dùng fetch, cookie same-origin và X-CSRF-Token khi ghi
+  → ShopServlet / CartServlet / OrderServlet / AdminShopServlet
+  → ShopProduct, CartItem, ShopOrder (JavaBean)
+  → ShopProductDB / CartDB / OrderDB (PreparedStatement + ConnectionPool)
+  → shop_products, cart_items, orders, order_items trong MySQL
+```
+
+Catalog chỉ đọc sản phẩm active; `shop_products.component_id` liên kết tới
+`components`, giữ riêng dữ liệu giá/tồn và dữ liệu học tập. Cart và lịch sử được
+scope bởi user từ `HttpSession`, không bởi ID client. Admin ghi qua servlet có
+`requireAdmin` và CSRF.
+
+Checkout là ví dụ transaction nhiều bảng để trình bày: khóa user và cart/product,
+kiểm tra trạng thái và tồn, tính tổng bằng giá DB, giảm kho, insert order cùng
+snapshot từng item, xóa cart rồi commit. Nếu bước nào lỗi thì rollback; hai
+request dùng chung giỏ được tuần tự hóa. Snapshot tên/giá giữ lịch sử đúng thời
+điểm đặt kể cả khi admin đổi giá về sau. Trang `/order-history` do
+`OrderHistoryServlet` đọc `OrderDB`, `setAttribute` rồi forward tới JSP/JSTL;
+chỉ đọc đơn của phiên hiện tại. Tất cả tiền đều là dữ liệu mô phỏng, không thu
+tiền thật.

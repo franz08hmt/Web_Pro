@@ -118,6 +118,49 @@ public final class JsonUtil {
         throw new IllegalArgumentException("missing-" + key);
     }
 
+    /** Lấy số nguyên JSON (không phải chuỗi hay số thập phân) từ object phẳng. */
+    public static long longField(String body, String key) {
+        String value = integerLiteral(body, key);
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("invalid-" + key, e);
+        }
+    }
+
+    /** Lấy số nguyên trong giới hạn int; dùng cho quantity/tồn kho. */
+    public static int intField(String body, String key) {
+        long value = longField(body, key);
+        if (value < Integer.MIN_VALUE || value > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("invalid-" + key);
+        }
+        return (int) value;
+    }
+
+    private static String integerLiteral(String body, String key) {
+        String marker = "\"" + key + "\"";
+        int keyStart = body == null ? -1 : body.indexOf(marker);
+        int colon = keyStart < 0 ? -1 : body.indexOf(':', keyStart + marker.length());
+        int start = colon < 0 ? -1 : colon + 1;
+        while (start >= 0 && start < body.length() && Character.isWhitespace(body.charAt(start))) start++;
+        int end = start;
+        if (end >= 0 && end < body.length() && body.charAt(end) == '-') end++;
+        while (end >= 0 && end < body.length() && Character.isDigit(body.charAt(end))) end++;
+        if (start < 0 || end == start || (end == start + 1 && body.charAt(start) == '-')) {
+            throw new IllegalArgumentException("missing-" + key);
+        }
+        int boundary = end;
+        while (boundary < body.length() && Character.isWhitespace(body.charAt(boundary))) boundary++;
+        if (boundary >= body.length() || (body.charAt(boundary) != ',' && body.charAt(boundary) != '}')) {
+            throw new IllegalArgumentException("invalid-" + key);
+        }
+        String value = body.substring(start, end);
+        if (!value.matches("-?(?:0|[1-9][0-9]*)")) {
+            throw new IllegalArgumentException("invalid-" + key);
+        }
+        return value;
+    }
+
     /** Lấy nguyên văn một object JSON lồng bên trong, ví dụ "specs":{...}. */
     public static String objectField(String body, String key) {
         return nestedField(body, key, '{', '}');

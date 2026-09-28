@@ -72,7 +72,11 @@ Yêu cầu: JDK 17, Tomcat 9 và MySQL 8.
    có bảng quiz từ migration `006_quiz`) và
    `database/seed-troubleshooting-phase3.sql` (sau migration
    `007_troubleshooting`). Các seed đợt 3 chỉ dùng `INSERT IGNORE`, không thêm
-   bảng/cột và có thể chạy lại an toàn.
+   bảng/cột và có thể chạy lại an toàn. Với database cũ, sau `007_troubleshooting`
+   chạy migration `008_shop_cart_orders.sql`; sau đó chạy `database/seed-shop.sql`.
+   Database mới nhận bốn bảng cửa hàng từ `schema.sql`, rồi chạy cùng seed cửa hàng.
+   Seed chỉ thêm 12 sản phẩm mô phỏng gắn với `components`, không đụng giỏ, tài
+   khoản hay lịch sử đơn đã có.
 2. Trong cấu hình Tomcat của IntelliJ, tab **Server**, ô **VM options**, nhập:
 
    ```text
@@ -108,7 +112,16 @@ WHERE email = 'admin@example.com';
 Đây chỉ là bước bootstrap quản trị viên đầu tiên. Các lần phân quyền sau dùng
 `/pages/admin-users.html` (yêu cầu role ADMIN và CSRF); các phiên cũ của tài khoản
 được đổi quyền sẽ hết hiệu lực. Trang quản trị nội dung là
-`/pages/admin-content.html`.
+`/pages/admin-content.html`; quản trị sản phẩm demo tại `/pages/admin-shop.html`.
+
+## Cửa hàng mô phỏng
+
+- `GET /pages/cua-hang.html`: catalog công khai với giá tham khảo/tồn kho.
+- `/pages/gio-hang.html`: xem và chỉnh giỏ cần đăng nhập; checkout tạo đơn
+  `CONFIRMED` trong database sau khi server kiểm tra tồn kho và tính lại tổng.
+- `/order-history`: Servlet forward sang JSP, chỉ hiển thị đơn của tài khoản hiện
+  tại và tên/giá được chụp tại lúc đặt.
+- Không có cổng thanh toán, dữ liệu thẻ, thu tiền hoặc giao hàng thật.
 
 ## Kiểm tra
 

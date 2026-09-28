@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Catalog linh kiện robot với giá tham khảo và tồn kho demo">
+  <title>Cửa hàng mô phỏng | Robot Assembly Lab</title>
+  <link rel="stylesheet" href="../assets/css/style.css?v=20260923.3">
+  <link rel="stylesheet" href="../assets/css/shop.css?v=20260928.1">
+  <link rel="icon" href="../assets/icons/cpu-chip.svg" type="image/svg+xml">
+  <script src="../assets/js/api.js?v=20260928.1" defer></script>
+  <script src="../assets/js/shop.js?v=20260928.1" defer></script>
+</head>
+<body class="shop-page">
+  <a class="skip-link" href="#main-content">Chuyển đến nội dung</a>
+  <header class="shop-topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">⌘</span>
+      <span class="brand-name">ROBOT<span>ASSEMBLY LAB</span></span></a>
+    <nav aria-label="Điều hướng chính">
+      <a href="../index.html">Tổng quan</a>
+      <a href="mau-robot.html">Mẫu robot</a>
+      <a href="linh-kien.html">Linh kiện</a>
+      <a href="cua-hang.html" aria-current="page">Cửa hàng</a>
+      <a href="gio-hang.html">Giỏ hàng</a>
+      <a href="tai-khoan.html">Tài khoản</a>
+      <a href="admin-shop.html" id="admin-shop-link" hidden>Quản trị shop</a>
+    </nav>
+    <span class="shop-user" id="shop-user" aria-live="polite">Đang tải phiên…</span>
+  </header>
+
+  <main class="shop-main" id="main-content" tabindex="-1">
+    <section class="shop-intro">
+      <p class="section-label">Góc linh kiện · dữ liệu mô phỏng</p>
+      <h1>Chọn linh kiện cho robot</h1>
+      <p>Giá tham khảo và tồn kho demo được lưu riêng khỏi thông số kỹ thuật. Catalog có thể xem công khai; muốn giữ giỏ hàng cần đăng nhập.</p>
+      <p class="shop-disclaimer"><strong>Chỉ phục vụ bài học:</strong> checkout tạo đơn mô phỏng, không thu tiền, không nhận thông tin thẻ và không giao hàng thật.</p>
+    </section>
+
+    <section aria-labelledby="catalog-title">
+      <div class="shop-section-heading">
+        <div><p class="section-label">Catalog</p><h2 id="catalog-title">Linh kiện đang mở bán</h2></div>
+        <a class="button button-secondary" href="gio-hang.html">Xem giỏ hàng</a>
+      </div>
+      <p id="shop-status" class="shop-status" role="status" aria-live="polite">Đang tải catalog…</p>
+      <div id="shop-products" class="shop-product-grid" aria-busy="true"></div>
+      <nav id="shop-pagination" class="shop-pagination" aria-label="Phân trang sản phẩm" hidden></nav>
+    </section>
+
+    <footer class="shop-footnote">
+      <p>Giá VND chỉ để minh họa. Giá thực tế thay đổi theo phiên bản linh kiện và nhà cung cấp.</p>
+      <a href="../index.html">Về trang Robot Assembly Lab</a>
+    </footer>
+  </main>
+</body>
+</html>

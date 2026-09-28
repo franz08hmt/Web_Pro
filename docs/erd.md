@@ -138,6 +138,39 @@ erDiagram
         INT display_order
     }
 
+    SHOP_PRODUCTS {
+        VARCHAR id PK
+        VARCHAR component_id UK, FK
+        DECIMAL price_vnd
+        INT_UNSIGNED stock_quantity
+        BOOLEAN is_active
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    CART_ITEMS {
+        BIGINT_UNSIGNED user_id PK, FK
+        VARCHAR product_id PK, FK
+        INT_UNSIGNED quantity
+        TIMESTAMP updated_at
+    }
+
+    ORDERS {
+        BIGINT_UNSIGNED id PK
+        BIGINT_UNSIGNED user_id FK
+        ENUM status
+        DECIMAL total_vnd
+        TIMESTAMP created_at
+    }
+
+    ORDER_ITEMS {
+        BIGINT_UNSIGNED order_id PK, FK
+        VARCHAR product_id PK, FK
+        VARCHAR product_name_snapshot
+        DECIMAL unit_price_vnd
+        INT_UNSIGNED quantity
+    }
+
     SCHEMA_MIGRATIONS {
         VARCHAR version PK
         TIMESTAMP applied_at
@@ -182,6 +215,18 @@ erDiagram
     ROBOTS o|--o{ TROUBLESHOOTING_GUIDES : about
 
     COMPONENTS o|--o{ TROUBLESHOOTING_GUIDES : references
+
+    COMPONENTS ||--o| SHOP_PRODUCTS : offered_as
+
+    USERS ||--o{ CART_ITEMS : owns
+
+    SHOP_PRODUCTS ||--o{ CART_ITEMS : selected_in
+
+    USERS ||--o{ ORDERS : places
+
+    ORDERS ||--|{ ORDER_ITEMS : contains
+
+    SHOP_PRODUCTS ||--o{ ORDER_ITEMS : purchased_as
 ```
 
 Khóa ngoại kép: `(session_id, robot_id)` tham chiếu `assembly_sessions(id, robot_id)`;
@@ -230,6 +275,46 @@ cùng nhóm linh kiện (cùng cách dùng NULL như `library_resources.robot_id
 sang danh mục linh kiện; dùng `ON DELETE SET NULL` (không phải RESTRICT) vì
 liên kết này chỉ mang tính tham khảo, xóa linh kiện không nên bị chặn bởi một
 bài hướng dẫn tra cứu.
+
+## Cửa hàng linh kiện (đợt 4)
+
+`shop_products` tách thông tin bán hàng khỏi `components`: một linh kiện kỹ
+thuật có tối đa một mặt hàng (`component_id` UNIQUE), còn giá VND, tồn kho và
+trạng thái kinh doanh nằm riêng. Không xóa cứng sản phẩm qua giao diện admin;
+DELETE chỉ đặt `is_active = false`. FK tới `components` và từ lịch sử đặt hàng
+dùng `ON DELETE RESTRICT` để không mất dữ liệu tham chiếu.
+
+`cart_items` dùng PK ghép `(user_id, product_id)`, nên mỗi user có tối đa một
+dòng cho một sản phẩm; `user_id` được lấy từ `HttpSession`, tuyệt đối không lấy
+từ request body. `orders.user_id` cũng xác định chủ sở hữu. Mọi lần đọc/sửa giỏ
+và lịch sử đều lọc theo user đang đăng nhập.
+
+`order_items` giữ `product_name_snapshot` và `unit_price_vnd` tại thời điểm
+checkout. Lịch sử hiển thị từ các giá trị snapshot cùng số lượng, không tính
+ngược bằng giá hiện tại. `orders.total_vnd` do server tính từ snapshot trong
+transaction. Giá là số nguyên VND (DECIMAL scale 0); đây là đơn mô phỏng, không
+có cổng thanh toán hay dữ liệu thẻ.
+
+Quy tắc xóa: `cart_items.user_id` dùng `ON DELETE CASCADE` để dọn giỏ khi user
+bị xóa; `orders.user_id`, `order_items.order_id`, `order_items.product_id`,
+`cart_items.product_id` và `shop_products.component_id` đều `ON DELETE RESTRICT`
+để giữ lịch sử và tham chiếu kỹ thuật. Admin DELETE sản phẩm là cập nhật cờ
+`is_active = false`; giao diện không thực hiện xóa vật lý.
+
+Checkout khóa các dòng `cart_items` thuộc user rồi khóa các sản phẩm theo ID
+ổn định bằng `SELECT ... FOR UPDATE`. Trong cùng transaction, server kiểm tra
+sản phẩm còn active và đủ kho, đọc giá hiện tại từ DB, giảm kho, tạo `orders`
+cùng `order_items`, xóa các dòng giỏ đã mua và commit. Thiếu hàng/lỗi SQL sẽ
+rollback tất cả; request đồng thời không thể bán vượt kho hoặc tạo hai đơn từ
+cùng giỏ đã bị tiêu thụ. Trạng thái `CONFIRMED` chỉ biểu thị đơn được ghi nhận
+trong bản demo; `CANCELLED` là trạng thái lưu trữ nếu sau này có luồng hủy hợp lệ.
+
+Các giá trong `database/seed-shop.sql` là số tròn phục vụ giao diện/demo, không
+phải báo giá. Tham khảo một số listing linh kiện tại ThegioiIC ngày 28-09-2026:
+[Arduino Uno R3](https://www.thegioiic.com/arduino-uno-r3-atmega328),
+[HC-SR04](https://www.thegioiic.com/hc-sr04-cam-bien-sieu-am?dl=1),
+[L298N](https://www.thegioiic.com/l298n-mach-cau-h-2a-do). Listing thay đổi theo
+thời điểm, phiên bản và tồn kho; giá demo không đồng nghĩa giá bán thực.
 
 Đợt mở rộng danh mục thêm hai dữ liệu mẫu (`line-obstacle`, `servo-scout`) bằng
 các seed `database/seed-robots-phase3.sql`, `seed-quiz-phase3.sql` và

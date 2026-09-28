@@ -1,5 +1,94 @@
 # Implementation Plan: Đợt 2 — Lái thử 3D và Đợt 3 — Hai mẫu robot mới
 
+## Đợt 4 — Cửa hàng linh kiện và giỏ hàng mô phỏng
+
+### Mục tiêu và giới hạn
+
+- Cho người học xem linh kiện có giá tham khảo/tồn kho, thêm vào giỏ đăng nhập,
+  xác nhận đơn hàng mô phỏng và xem lịch sử của chính mình.
+- Admin được tạo, sửa, bật/tắt sản phẩm. Xóa sản phẩm là ngừng kinh doanh
+  (`is_active = false`), không xóa cứng dữ liệu lịch sử.
+- Không tích hợp thanh toán, ví, thông tin thẻ hay dịch vụ giao hàng thật. Giá
+  hiển thị bằng VND và do server đọc/tính từ MySQL.
+- Giữ Java Servlet/JSP Model 2: HTML/JS → Servlet kiểm tra request/session/CSRF
+  → JavaBean → `XxxDB` dùng `PreparedStatement`/ConnectionPool → MySQL.
+
+### ERD và quy tắc dữ liệu (phải duyệt trước migration)
+
+- `shop_products`: mã sản phẩm, liên kết duy nhất tới `components`, giá VND,
+  số lượng tồn, cờ hoạt động và timestamps. Dữ liệu kỹ thuật vẫn ở `components`.
+- `cart_items`: khóa ghép `(user_id, product_id)`, số lượng dương; không có
+  `user_id` trong body — Servlet lấy từ `HttpSession`.
+- `orders`: chủ sở hữu, trạng thái `CONFIRMED`/`CANCELLED`, tổng tiền server
+  tính và thời điểm tạo.
+- `order_items`: khóa ghép `(order_id, product_id)`, tên sản phẩm và giá đơn vị
+  được chụp tại thời điểm đặt, số lượng; FK giữ lịch sử và ngăn xóa sản phẩm đã
+  được đặt. Sản phẩm bị ngừng bán vẫn xem được trên đơn cũ.
+- Checkout khóa các dòng giỏ của user trước; sau đó khóa sản phẩm theo thứ tự
+  ID ổn định (`SELECT ... FOR UPDATE`), kiểm tra trạng thái/tồn kho, tính lại giá,
+  trừ kho, ghi đơn và snapshot, xóa giỏ, rồi commit một transaction. Bất kỳ lỗi
+  nào đều rollback toàn bộ. Hai lần bấm đồng thời không được tạo hai đơn từ cùng
+  một giỏ.
+- Không tin `price`, `total`, `userId`, `stock` hoặc trạng thái do client gửi.
+  Mọi truy vấn giỏ/đơn đều scope theo user đăng nhập. Request ghi cần CSRF;
+  `/api/admin/*` yêu cầu role ADMIN và CSRF.
+
+### Lát triển khai
+
+1. **ERD/hợp đồng:** kiểm tra quan hệ, PK/FK, snapshot, xóa mềm và khóa giao dịch;
+   cập nhật `docs/erd.md`, plan, rồi thêm contract tests đỏ cho ERD, thứ tự
+   migration, API/auth/CSRF và seed additive trước khi triển khai.
+2. **Persistence và nghiệp vụ:** migration `008_shop_cart_orders.sql`, cập nhật
+   `database/schema.sql`, JavaBean trong `business/`, `ShopProductDB`, `CartDB`,
+   `OrderDB` trong `data/`, transaction checkout; seed 8–12 sản phẩm chỉ INSERT.
+3. **Servlet/API:** catalog công khai; cart/order yêu cầu đăng nhập và CSRF cho
+   ghi; admin shop CRUD theo khuôn Servlet hiện có; cập nhật `API_CONVENTIONS`.
+4. **Giao diện/tài liệu:** catalog cửa hàng, giỏ, JSP lịch sử đơn qua Servlet →
+   JSP/JSTL, trang admin, liên kết điều hướng; cập nhật README/demo guide để giải
+   thích request → response, phân quyền và snapshot/transaction.
+5. **Kiểm thử/runtime:** unit/contract test, Maven + npm test, áp dụng migration
+   và seed trên DB local nếu quyền cho phép, kiểm thử browser guest/user/admin,
+   lỗi tồn kho, chỉnh giá client, CSRF, ownership và checkout; review diff, commit
+   sau khi đợt này qua kiểm chứng. Push thử lên `integration/fullstack-v2`.
+
+### Tiêu chí chấp nhận
+
+- [x] ERD được cập nhật trước migration và nêu rõ PK/FK/cardinality/delete rules.
+- [x] GET catalog chỉ công khai sản phẩm active; giá/tồn kho lấy từ DB.
+- [x] Giỏ và lịch sử được cô lập theo user; guest/thiếu CSRF/sai role bị chặn.
+- [x] Server validate quantity/active/stock; checkout tính lại giá và transaction
+  không để kho/đơn/giỏ ở trạng thái dở dang khi lỗi.
+- [x] Đơn giữ snapshot bất biến; admin ngừng bán không phá lịch sử.
+- [x] Không có thanh toán thật hoặc bí mật trong seed/tài liệu; seed chạy lại an toàn.
+- [x] Node/JUnit tests, biên dịch JDK, MySQL migration/seed, Tomcat QA và browser
+  smoke test guest đã pass; Maven không cài trong môi trường. Checkout/admin bằng
+  user đăng nhập chưa chạy end-to-end để tránh tạo đơn/tài khoản thử trong DB.
+
+### Kết quả kiểm chứng
+
+- `npm test`: 97/97; `node --check` cho các client shop và `git diff --check` pass.
+- Maven không có trong PATH; thay bằng biên dịch production/test với JDK 17 và
+  chạy 25/25 JUnit tests qua JUnit Platform Launcher.
+- Migration `008_shop_cart_orders` đã áp dụng vào MySQL local; seed idempotent
+  tạo đúng 12 sản phẩm. Không sửa/xóa dữ liệu user, phiên lắp ráp hoặc đơn cũ.
+- Tomcat QA riêng trên cổng 8081 trả `/api/health` và catalog 200, 12 sản phẩm;
+  guest gọi cart/admin nhận 401; trang, CSS và JS đều 200. Trình duyệt thật đã
+  xác nhận nội dung catalog guest. Instance QA được dừng sau smoke test.
+- Chưa kiểm thử checkout, CSRF ghi, ownership theo hai user và CRUD admin qua
+  phiên đăng nhập thật; các hợp đồng tương ứng mới được kiểm tra bằng test/mã.
+- Tomcat người dùng trên 8080 không bị restart/redeploy; khi kết thúc QA hiện
+  không có listener ở 8080/8081/8006.
+
+### Rủi ro cần kiểm soát
+
+| Rủi ro | Giảm thiểu |
+|---|---|
+| Client sửa giá/tổng tiền hoặc đặt quá tồn | Chỉ nhận product ID + quantity; server đọc lại DB và khóa hàng khi checkout. |
+| Checkout cạnh tranh tạo oversell/đơn trùng | Transaction, khóa cart và product, xác nhận stock rồi commit; rollback khi thiếu. |
+| User xem/sửa giỏ hay đơn người khác | User ID chỉ lấy từ `SessionUtil`; mọi câu SQL sở hữu đều có `user_id = ?`. |
+| Admin xóa sản phẩm làm hỏng đơn cũ | DELETE là soft-deactivate; FK lịch sử RESTRICT; snapshot tên/giá. |
+| Nhầm cửa hàng demo với thanh toán thực | Copy UI/tài liệu ghi rõ “giá tham khảo/đơn mô phỏng, không thanh toán”. |
+
 ## Overview
 
 Cho phép người dùng tự bật chế độ lái thử mô hình 3D sau khi Servlet xác nhận phiên lắp ráp `COMPLETED`. Đây chỉ là mô phỏng trên mô hình Three.js, không gửi lệnh tới robot thật và không thay đổi dữ liệu phiên hoặc tiến độ lắp ráp.
