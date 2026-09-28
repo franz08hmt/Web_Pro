@@ -13,7 +13,7 @@
 
     <link
             rel="stylesheet"
-            href="../assets/css/style.css?v=20260928.1"
+            href="../assets/css/style.css?v=20260928.2"
     >
 
     <script src="../assets/js/tooltip.js?v=20260921.1" defer></script>
@@ -126,6 +126,16 @@
             </div>
         </div>
 
+        <section id="assembly-3d-drive" class="assembly-3d-drive" aria-labelledby="assembly-3d-drive-title" hidden>
+            <h3 id="assembly-3d-drive-title">Lái thử mô hình</h3>
+            <p>Chỉ mô phỏng chuyển động của mô hình 3D trên website, không điều khiển robot thật.</p>
+            <button id="assembly-3d-drive-toggle" type="button" aria-pressed="false"
+                    data-tooltip="Tự bật chế độ lái thử sau khi phiên lắp ráp đã hoàn tất.">
+                Bật lái thử
+            </button>
+            <p id="assembly-3d-drive-status" role="status" aria-live="polite" hidden></p>
+        </section>
+
         <div class="assembly-3d-panel-actions">
             <button id="assembly-3d-explode" type="button" aria-pressed="false"
                     data-tooltip="Giãn các nhóm linh kiện ra xa nhau để nhìn rõ từng bộ phận. Không làm thay đổi tiến độ.">
@@ -169,8 +179,11 @@
 <!-- Hiệu ứng ăn mừng khi hoàn tất (Chức năng 4) -->
 <script src="../assets/js/confetti.js?v=20260924.1"></script>
 
+<!-- Bộ điều khiển bàn phím cho mô hình 3D sau khi phiên được hoàn tất. -->
+<script src="../assets/js/assembly-3d-drive.js?v=20260928.1"></script>
+
 <!-- Logic lắp ráp 3D -->
-<script src="../assets/js/assembly-3d.js?v=20260928.1"></script>
+<script src="../assets/js/assembly-3d.js?v=20260928.2"></script>
 
 </body>
 

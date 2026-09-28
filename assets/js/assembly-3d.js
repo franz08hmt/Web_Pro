@@ -41,9 +41,13 @@
   const completeResult = document.querySelector("#assembly-3d-complete-result");
   const viewReceiptLink = document.querySelector("#assembly-3d-view-receipt");
   const retryLink = document.querySelector("#assembly-3d-retry");
+  const drivePanel = document.querySelector("#assembly-3d-drive");
+  const driveToggleButton = document.querySelector("#assembly-3d-drive-toggle");
+  const driveStatus = document.querySelector("#assembly-3d-drive-status");
   const sessionApi = window.RobotAssemblyApi?.assemblySessions;
   const requestedSessionId = params.get("session");
   let activeSession = null;
+  let driveController = null;
 
   if (!container || !model) {
     throw new Error("Không thể khởi tạo phòng lắp ráp 3D.");
@@ -88,11 +92,32 @@
     completeStatus.dataset.state = state;
   }
 
+  function setDriveMode(enabled) {
+    const isEnabled = Boolean(enabled && driveController?.start());
+    if (!isEnabled) driveController?.stop();
+    driveToggleButton?.setAttribute("aria-pressed", String(isEnabled));
+    if (driveToggleButton) driveToggleButton.textContent = isEnabled ? "Dừng lái thử" : "Bật lái thử";
+    if (driveStatus) {
+      driveStatus.hidden = !isEnabled;
+      driveStatus.textContent = isEnabled
+        ? "W/S hoặc ↑/↓: tiến/lùi · A/D hoặc ←/→: xoay. Dừng lái thử trước khi tiếp tục thao tác khác."
+        : "";
+    }
+    return isEnabled;
+  }
+
+  function syncDriveAvailability() {
+    const available = Boolean(activeSession?.status === "COMPLETED" && driveController);
+    if (drivePanel) drivePanel.hidden = !available;
+    if (!available) setDriveMode(false);
+  }
+
   /* Nút Hoàn tất chỉ bật khi có phiên tài khoản đang IN_PROGRESS và đã lắp đủ
      mọi nhóm linh kiện trong mô hình 3D. Đây chỉ là gợi ý cho người dùng — máy
      chủ vẫn tự kiểm tra lại dữ liệu thật trước khi ghi COMPLETED, nên bật nhầm
      nút này (lệch dữ liệu tạm thời) không thể tạo ra kết quả sai. */
   function updateCompleteAvailability() {
+    syncDriveAvailability();
     if (!completeButton) return;
     const ready = Boolean(activeSession)
       && activeSession.status === "IN_PROGRESS"
@@ -125,6 +150,7 @@
       retryLink.href = `lap-rap.html?model=${encodeURIComponent(model.id)}`;
     }
     if (completeResult) completeResult.hidden = false;
+    syncDriveAvailability();
     if (justCompleted) window.RobotConfetti?.celebrate();
   }
 
@@ -323,6 +349,25 @@
      Khi người dùng chọn giảm chuyển động, tween nhảy thẳng tới trạng thái cuối. */
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const tweens = new Set();
+
+  function getRobotFootprintRadius() {
+    robotGroup.updateMatrixWorld(true);
+    const bounds = new THREE.Box3().setFromObject(robotGroup);
+    if (bounds.isEmpty()) return 0;
+
+    const origin = robotGroup.position;
+    const halfWidth = Math.max(Math.abs(bounds.min.x - origin.x), Math.abs(bounds.max.x - origin.x));
+    const halfDepth = Math.max(Math.abs(bounds.min.z - origin.z), Math.abs(bounds.max.z - origin.z));
+    return Math.hypot(halfWidth, halfDepth);
+  }
+
+  driveController = window.AssemblyDrive?.create({
+    robotGroup,
+    platformRadius: 3.25,
+    getFootprintRadius: getRobotFootprintRadius,
+    reducedMotion,
+    canDrive: () => activeSession?.status === "COMPLETED"
+  }) || null;
 
   function easeOut(ratio) {
     return 1 - Math.pow(1 - ratio, 3);
@@ -722,6 +767,11 @@
   enablePointerControls();
   resetButton?.addEventListener("click", resetAssembly);
   completeButton?.addEventListener("click", () => void completeAssembly());
+  window.addEventListener("pagehide", () => setDriveMode(false));
+  driveToggleButton?.addEventListener("click", () => {
+    if (activeSession?.status !== "COMPLETED") return;
+    setDriveMode(driveToggleButton.getAttribute("aria-pressed") !== "true");
+  });
   focusButton?.addEventListener("click", focusRobot);
   rotateLeftButton?.addEventListener("click", () => rotateCamera(-0.35));
   rotateRightButton?.addEventListener("click", () => rotateCamera(0.35));
@@ -742,6 +792,7 @@
   function animate(now) {
     requestAnimationFrame(animate);
     advanceTweens(now ?? performance.now());
+    driveController?.update(now ?? performance.now());
     renderer.render(scene, camera);
   }
   animate();

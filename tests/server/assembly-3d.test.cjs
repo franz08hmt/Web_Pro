@@ -206,3 +206,26 @@ test("3D view has an accessible fullscreen toggle that resizes after every brows
   assert.match(styleSource, /\.assembly-3d-view:fullscreen\s*\{[^}]*width:\s*100vw;[^}]*height:\s*100vh;/s);
   assert.match(styleSource, /aria-pressed="true"\].*fullscreen-exit-icon/s);
 });
+
+test("3D driving is disclosed only for a completed session and uses the existing render loop", () => {
+  assert.match(pageSource, /id="assembly-3d-drive"[^>]*hidden/);
+  assert.match(pageSource, /id="assembly-3d-drive-toggle"[^>]*aria-pressed="false"/);
+  assert.match(pageSource, /không điều khiển robot thật/i);
+  assert.match(pageSource, /assembly-3d-drive\.js[\s\S]*assembly-3d\.js/);
+  assert.match(
+    assemblySource,
+    /function syncDriveAvailability\(\)[\s\S]*?activeSession\?\.status === "COMPLETED"[\s\S]*?drivePanel\.hidden = !available/
+  );
+  assert.match(
+    assemblySource,
+    /driveToggleButton\?\.addEventListener\("click"[\s\S]*?activeSession\?\.status !== "COMPLETED"/
+  );
+  assert.match(assemblySource, /getRobotFootprintRadius\(\)[\s\S]*?new THREE\.Box3\(\)\.setFromObject\(robotGroup\)/);
+  assert.match(assemblySource, /driveController = window\.AssemblyDrive\?\.create\(/);
+  assert.match(
+    assemblySource,
+    /function animate\(now\)\s*\{[\s\S]*?driveController\?\.update\(now \?\? performance\.now\(\)\);[\s\S]*?renderer\.render\(scene, camera\);/
+  );
+  assert.doesNotMatch(assemblySource, /requestAnimationFrame\(driveController/);
+  assert.match(styleSource, /\.assembly-3d-drive\[hidden\]\s*\{\s*display:\s*none;/);
+});

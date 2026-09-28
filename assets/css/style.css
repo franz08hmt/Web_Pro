@@ -1707,6 +1707,55 @@
   outline: none;
 }
 
+.assembly-3d-drive {
+  display: grid;
+  gap: 9px;
+  padding: 14px;
+  border: 1px solid rgb(255 135 72 / 34%);
+  border-radius: 12px;
+  background: rgb(255 135 72 / 6%);
+}
+
+.assembly-3d-drive[hidden] {
+  display: none;
+}
+
+.assembly-3d-drive h3 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.assembly-3d-drive > p {
+  margin: 0;
+  color: var(--assembly-muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.assembly-3d-page #assembly-3d-drive-toggle {
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid var(--assembly-accent);
+  border-radius: 10px;
+  color: #11181c;
+  background: var(--assembly-accent);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.assembly-3d-page #assembly-3d-drive-toggle:hover,
+.assembly-3d-page #assembly-3d-drive-toggle:focus-visible {
+  outline: 2px solid var(--assembly-text);
+  outline-offset: 2px;
+}
+
+.assembly-3d-page #assembly-3d-drive-toggle[aria-pressed="true"] {
+  border-color: var(--assembly-line);
+  color: var(--assembly-text);
+  background: #1a252c;
+}
+
 /* =========================================
    QUIZ PAGE (Chức năng 2)
    ========================================= */
