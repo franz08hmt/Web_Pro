@@ -42,3 +42,28 @@
 - [ ] Push các commit Đợt 3–4 lên `origin/integration/fullstack-v2`; push thường
   lỗi không kết nối được GitHub, lần thử có quyền mạng bị treo và đã dừng, chưa
   xác nhận remote nhận commit. Local hiện ahead 2 commits.
+
+## Đợt 5 — Hồ sơ học tập cá nhân có thể in
+
+- [x] Khảo sát hand-off, trạng thái nhánh, tài liệu, source servlet/JSP/StatsDB,
+  hợp đồng JavaBean/JSP và dữ liệu skills của cả năm robot.
+- [x] Xác nhận baseline: `npm test` 97/97; Maven cache/JDK 17 hoạt động và
+  `mvn test` 25/25.
+- [x] Viết unit/contract tests trước phần triển khai; kiểm tra trạng thái,
+  chọn quiz theo tỷ lệ/thời gian/id, HALF_UP, giờ Việt Nam, skill evidence,
+  scope user, no-store, escape và print CSS.
+- [x] Thêm JavaBean hồ sơ, truy vấn JDBC user-scoped, Servlet GET và JSP/JSTL.
+- [x] Thêm CSS A4 riêng, nút in bằng `window.print()`, link tài khoản/tổng kết.
+- [x] Cập nhật API conventions, demo guide, ERD, README và plan.
+- [x] Chạy lại toàn bộ `npm test` (104/104), `mvn clean test` (32/32),
+  `mvn clean package` (32/32, JDK 17).
+- [ ] Live Tomcat/MySQL: health, guest redirect/no-store, hai hồ sơ QA rỗng,
+  escape tên HTML và số liệu demo đọc trực tiếp bằng JDBC đã kiểm tra. Đăng nhập
+  bốn tài khoản demo bằng mật khẩu trong `TEAM_FLOW_DEMO_GUIDE.md` và giá trị
+  xác thực người dùng cung cấp đều bị từ chối;
+  cần xác nhận lại thông tin để kiểm tra tài khoản có dữ liệu, đối chiếu
+  `/learning-summary` và owner-query tampering trong phiên đăng nhập.
+- [x] Xuất PDF A4 bằng Chrome headless, xác nhận no-print, tiêu đề, chân hồ sơ,
+  ngày giờ Việt Nam và 2 trang; đã render và xem trực quan cả hai trang. Tài khoản
+  QA rỗng nên bảng kỹ năng có thead chưa xuất hiện trong PDF live.
+- [x] Rà diff/no secrets, commit đúng file Đợt 5 và push nhánh hiện tại.

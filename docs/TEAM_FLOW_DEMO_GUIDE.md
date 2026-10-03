@@ -20,6 +20,7 @@ Tomcat và một WAR; JavaScript gọi API cùng origin, không phải serverles
 | Bài kiểm tra kiến thức | Đạt: server chấm từ `quiz_options.is_correct`, lưu bản chụp để không đổi kết quả cũ | `QuizAttemptDB.submitAttempt()`, `QuizServlet.java` |
 | Tra cứu lỗi lắp ráp | Seed cơ sở có 14 tình huống; seed đợt 3 thêm 6 tình huống cho hai robot mới (tổng 20 sau khi nạp đủ seed) | `TroubleshootingServlet.java`, `TroubleshootingGuideDB.java`, `database/seed-troubleshooting-phase3.sql` |
 | Tổng kết và thống kê | Đạt: số liệu tính bằng `GROUP BY`/`COUNT DISTINCT` trực tiếp trong SQL, có trạng thái "chưa có dữ liệu" | `StatsDB.java`, `LearningSummaryServlet.java`, `AdminStatsServlet.java` |
+| Hồ sơ học tập cá nhân có thể in | Chỉ đọc, giới hạn theo `HttpSession`, no-store; JavaBean tính trạng thái, tỷ lệ quiz, giờ Việt Nam và căn cứ kỹ năng; trình duyệt in A4/PDF | `LearningProfileServlet.java` | `LearningProfile`; `RobotDB`; `StatsDB` | `learning-profile.jsp` | Đọc `robots`, `assembly_sessions`, `quiz_attempts`, `robot_components`, `components`; không thêm bảng |
 | Cửa hàng mô phỏng | Catalog công khai; giỏ/đơn theo session; admin CRUD; checkout server tính giá và khóa tồn trong transaction; không thanh toán thật | `ShopServlet`, `CartServlet`, `OrderServlet`, `AdminShopServlet`; `ShopProductDB`, `CartDB`, `OrderDB`; migration `008_shop_cart_orders.sql` |
 
 Lưu ý: repository hiện không chứa bộ slide gốc, nên các số chương/slide trong
@@ -64,6 +65,7 @@ mới thêm vào đồ án.
 | 3. Tra cứu lỗi lắp ráp | Nội dung công khai đọc từ MySQL; lọc/tìm bằng `PreparedStatement` tham số hóa | `TroubleshootingServlet` (công khai), `AdminTroubleshootingServlet` (quản trị) | `TroubleshootingGuide`; `TroubleshootingGuideDB` | *(API JSON)* | `troubleshooting_guides` |
 | 4. Hiệu ứng ăn mừng | Sự kiện phía client gắn với xác nhận server, không phải hiệu ứng trang trí độc lập | *(không có endpoint riêng — dùng lại `PATCH /api/assembly-sessions/{id}`)* | — | — | — |
 | 5. Tổng kết và thống kê | `GROUP BY`/`COUNT DISTINCT` để tránh đếm trùng; phân quyền xem dữ liệu tổng hợp | `LearningSummaryServlet` (cá nhân), `AdminStatsServlet` (quản trị, chỉ ADMIN) | `QuizRobotScore`, `RobotPopularity`, `QuizRobotAggregate`, `QuestionMissRate`; `StatsDB` | `learning-summary.jsp`, `admin-stats.jsp` | Đọc tổng hợp từ `assembly_sessions`, `quiz_attempts`, `quiz_attempt_answers`, `users` |
+| 6. Hồ sơ học tập cá nhân có thể in | Servlet → JavaBean → JDBC/PreparedStatement → JSP; session scope, escape dữ liệu, quy tắc điểm/trạng thái/thời gian nằm trong business object | `LearningProfileServlet` | `LearningProfile`, `ProfileRobotEntry`, `ProfileSkill`; `RobotDB`, `StatsDB` | `learning-profile.jsp` | `robots`, `assembly_sessions`, `quiz_attempts`, `robot_components`, `components` (chỉ đọc) |
 
 ## Phân công
 
@@ -149,6 +151,11 @@ mới thêm vào đồ án.
     `/order-history` xem snapshot. Nói rõ đây không phải thanh toán thật. Với
     ADMIN, mở `/pages/admin-shop.html`, sửa giá demo rồi ngừng bán; catalog ẩn
     sản phẩm nhưng đơn cũ vẫn giữ tên/giá tại thời điểm đặt.
+19. Mở `/learning-profile` bằng một tài khoản demo: chỉ ra danh mục đủ năm mẫu,
+    số liệu của session hiện tại, trạng thái/quiz/kỹ năng có căn cứ; dùng In / Lưu
+    PDF và chọn A4. So sánh cùng tài khoản ở `/learning-summary`; nếu lịch sử
+    quiz có mẫu số thay đổi, giải thích rằng hồ sơ chọn đúng lượt theo tỷ lệ
+    `score/total_questions`, còn trang tổng kết cũ giữ nguyên cách tổng hợp trước.
 
 ## Câu hỏi thường gặp
 
@@ -293,6 +300,21 @@ Không. Browser chỉ gửi mã sản phẩm và số lượng cho cart; checkou
 `OrderDB.checkout()` đọc giá/tồn từ MySQL trong transaction, khóa hàng cần
 thiết, tự tính tổng rồi giảm kho và tạo snapshot. Sửa con số trên DevTools không
 đổi được giá lưu vào đơn. Đây là đơn mô phỏng, không kết nối cổng thanh toán.
+
+### "Sao hồ sơ không lưu thành bảng riêng?"
+
+Hồ sơ là bản xem trước chỉ đọc, dựng từ `robots`, `assembly_sessions`,
+`quiz_attempts` và quan hệ linh kiện đã có. Không lưu thêm bản sao có thể lệch
+với tiến độ thật; nút in dùng chức năng in/lưu PDF sẵn có của trình duyệt.
+
+### "Sao hồ sơ có thể khác trang tổng kết?"
+
+Hai trang đọc cùng các bảng của đúng tài khoản. Hồ sơ áp dụng định nghĩa đã công
+bố: lượt tốt nhất là tỷ lệ `score/total_questions` cao nhất, hòa thì lấy lượt
+mới hơn và giữ đúng tổng câu của lượt đó. Trang tổng kết cũ vẫn giữ nguyên cách
+tổng hợp trước; dữ liệu lịch sử có mẫu số thay đổi có thể làm hai cách hiển thị
+khác nhau. Hồ sơ cũng là tài liệu in tĩnh, không hiện email hay giải thích kiến
+trúc dài như trang tổng kết.
 
 ## Chuỗi file nên mở khi bảo vệ
 

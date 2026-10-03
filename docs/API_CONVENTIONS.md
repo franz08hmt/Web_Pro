@@ -181,8 +181,17 @@ Một số màn hình forward thẳng sang JSP thay vì trả JSON, theo đúng 
 | --- | --- | --- |
 | `/assembly-receipt?session={id}` | `AssemblyReceiptPageServlet` | Có — chỉ chủ phiên xem được |
 | `/learning-summary` | `LearningSummaryServlet` | Có — chỉ số liệu của chính mình |
+| `/learning-profile` | `LearningProfileServlet` | Có — chỉ dữ liệu của chính mình; `Cache-Control: no-store` |
 | `/admin-stats` | `AdminStatsServlet` | Có, và phải role `ADMIN` (403 nếu không) |
 | `/order-history` | `OrderHistoryServlet` | Có — chỉ lịch sử của user hiện tại |
+
+`GET /learning-profile` lấy user qua `HttpSession`/`SessionUtil`; không nhận
+`userId`, email hay chủ sở hữu từ request. Khách được chuyển về
+`/pages/tai-khoan.html`, lỗi database trả `503`; response đặt
+`Cache-Control: no-store`. Servlet đọc catalog bằng `RobotDB` và dữ kiện cá nhân
+bằng các truy vấn `StatsDB` riêng theo `user_id`, dựng `LearningProfile`, rồi
+forward sang `WEB-INF/views/learning-profile.jsp`. Đây là trang chỉ đọc, không
+ghi dữ liệu và không thêm bảng.
 
 ## Cửa hàng và đơn hàng mô phỏng (đợt 4)
 

@@ -4,11 +4,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import vn.edu.webpro.robotlab.business.QuestionMissRate;
+import vn.edu.webpro.robotlab.business.ProfileQuizAttempt;
+import vn.edu.webpro.robotlab.business.ProfileSessionStat;
 import vn.edu.webpro.robotlab.business.QuizRobotAggregate;
 import vn.edu.webpro.robotlab.business.QuizRobotScore;
 import vn.edu.webpro.robotlab.business.Robot;
@@ -93,6 +96,103 @@ public class StatsDB {
                 scores.add(score);
             }
             return scores;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
+
+    /** Số phiên theo robot/trạng thái và bản ghi mới nhất trong từng nhóm, chỉ của user đã đăng nhập. */
+    public static List<ProfileSessionStat> selectLearningProfileSessionStats(long userId) throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement(
+                    "SELECT s.robot_id, s.status, COUNT(*) AS session_count, "
+                    + "MAX(CASE WHEN s.status = 'COMPLETED' THEN s.completed_at ELSE s.updated_at END) "
+                    + "AS latest_event_at, "
+                    + "(SELECT recent.id FROM assembly_sessions recent "
+                    + "WHERE recent.user_id = s.user_id AND recent.robot_id = s.robot_id "
+                    + "AND recent.status = s.status "
+                    + "ORDER BY CASE WHEN recent.status = 'COMPLETED' "
+                    + "THEN recent.completed_at ELSE recent.updated_at END DESC, recent.id DESC LIMIT 1) "
+                    + "AS latest_session_id "
+                    + "FROM assembly_sessions s WHERE s.user_id = ? "
+                    + "GROUP BY s.robot_id, s.status, s.user_id ORDER BY s.robot_id, s.status");
+            ps.setLong(1, userId);
+            rs = ps.executeQuery();
+            List<ProfileSessionStat> stats = new ArrayList<>();
+            while (rs.next()) {
+                ProfileSessionStat stat = new ProfileSessionStat();
+                stat.setRobotId(rs.getString("robot_id"));
+                stat.setStatus(rs.getString("status"));
+                stat.setSessionCount(rs.getLong("session_count"));
+                stat.setLatestSessionId(rs.getLong("latest_session_id"));
+                Timestamp latestEventAt = rs.getTimestamp("latest_event_at");
+                stat.setLatestEventAtUtc(latestEventAt == null ? null : latestEventAt.toInstant().toString());
+                stats.add(stat);
+            }
+            return stats;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
+
+    /** Các lượt quiz thô của một user; JavaBean áp dụng luật tốt nhất/gần nhất theo tỷ lệ và thời gian. */
+    public static List<ProfileQuizAttempt> selectLearningProfileQuizAttempts(long userId) throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement(
+                    "SELECT a.id, a.robot_id, a.score, a.total_questions, a.submitted_at "
+                    + "FROM quiz_attempts a WHERE a.user_id = ? ORDER BY a.robot_id, a.submitted_at, a.id");
+            ps.setLong(1, userId);
+            rs = ps.executeQuery();
+            List<ProfileQuizAttempt> attempts = new ArrayList<>();
+            while (rs.next()) {
+                ProfileQuizAttempt attempt = new ProfileQuizAttempt();
+                attempt.setRobotId(rs.getString("robot_id"));
+                attempt.setAttemptId(rs.getLong("id"));
+                attempt.setScore(rs.getInt("score"));
+                attempt.setTotalQuestions(rs.getInt("total_questions"));
+                Timestamp submittedAt = rs.getTimestamp("submitted_at");
+                attempt.setSubmittedAtUtc(submittedAt == null ? null : submittedAt.toInstant().toString());
+                attempts.add(attempt);
+            }
+            return attempts;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
+
+    /** Tên linh kiện không lặp thuộc các mẫu user đã hoàn thành ít nhất một lần. */
+    public static List<String> selectCompletedRobotComponentNames(long userId) throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement(
+                    "SELECT DISTINCT c.name AS component_name FROM components c "
+                    + "JOIN robot_components rc ON rc.component_id = c.id "
+                    + "JOIN assembly_sessions s ON s.robot_id = rc.robot_id "
+                    + "WHERE s.user_id = ? AND s.status = 'COMPLETED' ORDER BY c.name");
+            ps.setLong(1, userId);
+            rs = ps.executeQuery();
+            List<String> names = new ArrayList<>();
+            while (rs.next()) {
+                names.add(rs.getString("component_name"));
+            }
+            return names;
         } finally {
             DBUtil.closeResultSet(rs);
             DBUtil.closePreparedStatement(ps);

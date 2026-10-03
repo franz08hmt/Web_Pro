@@ -81,6 +81,7 @@
 </c:choose>
 
 <p class="links">
+    <a href="${pageContext.request.contextPath}/learning-profile">Hồ sơ học tập (in/PDF)</a> ·
     <a href="${pageContext.request.contextPath}/pages/tai-khoan.html">Xem lịch sử phiên và phiếu kết quả</a> ·
     <a href="${pageContext.request.contextPath}/pages/tra-cuu-loi.html">Tra cứu lỗi lắp ráp</a> ·
     <a href="${pageContext.request.contextPath}/index.html">Về trang chủ</a>

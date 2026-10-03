@@ -180,3 +180,49 @@ Cho phép người dùng tự bật chế độ lái thử mô hình 3D sau khi 
 | Nhiều component dùng chung chân Arduino hoặc nguồn không phù hợp | Bố trí pin duy nhất cho từng tín hiệu; với servo-scout dùng nguồn bàn DC 9V đủ dòng (ngoài BOM tối thiểu) cấp VIN/DC jack Uno và đầu vào XL4015, hộp 4AA 6V chỉ cấp L298N Vs; đo XL4015 đúng 5V cho servo, không nối song song nguồn 5V, nối chung GND. |
 | Thêm cấu hình 3D nhưng instance chồng lấp/thiếu target | Tái sử dụng factory; test target count và kiểm tra trực quan trên room 3D. |
 | Seed gây ảnh hưởng dữ liệu hiện có | File seed mới, `INSERT IGNORE`, không migration/UPDATE/DELETE; kiểm tra ID trước và sau. |
+
+# Đợt 5 — Hồ sơ học tập cá nhân có thể in
+
+## Mục tiêu và giới hạn
+
+- Tạo `GET /learning-profile`, chỉ đọc dữ liệu của tài khoản trong `HttpSession`;
+  guest được chuyển về trang tài khoản, database lỗi trả 503 và response no-store.
+- Dựng bản xem trước A4 có tiến độ đủ catalog, kết quả quiz, kỹ năng kèm căn cứ,
+  vùng xác nhận viết tay và nút in/lưu PDF của trình duyệt.
+- Không sửa logic tổng kết hiện có, không đọc dữ liệu shop, không thêm bảng,
+  migration, thư viện PDF, API ghi hoặc chức năng ký/chấm điện tử.
+
+## Thiết kế
+
+- Dùng `RobotDB.selectAllRobots()` cho catalog; `StatsDB` đọc dữ kiện phiên đã
+  gom theo robot/trạng thái, lượt quiz và DISTINCT linh kiện theo `user_id`.
+- `LearningProfile` và các JavaBean con tính bốn trạng thái, lượt quiz tốt nhất
+  theo tỷ lệ, lượt gần nhất theo thời gian/id, trung bình HALF_UP, giờ
+  `Asia/Ho_Chi_Minh` và dòng kỹ năng nguyên văn có căn cứ hoàn thành.
+- `LearningProfileServlet` đặt bean vào request rồi forward sang JSP dưới
+  `WEB-INF/views`; CSS riêng scope dưới `.learning-profile`, JS gọi `window.print()`.
+
+## Lát triển khai
+
+1. Viết unit/contract tests cho trạng thái, quiz, ngày giờ, kỹ năng, quyền sở hữu,
+   escape, no-store và CSS in trước phần chạy tương ứng.
+2. Thêm JDBC, JavaBean và Servlet theo Model 2; giữ riêng truy vấn phiên/quiz để
+   tránh nhân dòng; không dùng dữ liệu request để chọn owner.
+3. Tạo JSP/CSS/JS và thêm lối vào từ trang tài khoản, trang tổng kết.
+4. Cập nhật API conventions, demo guide, ERD, README, checklist; chạy Node/Maven,
+   kiểm tra Tomcat/MySQL và bản in A4; review diff, commit và push nhánh hiện tại.
+
+## Tiêu chí hoàn tất
+
+- [x] Năm robot đều xuất hiện; hồ sơ chỉ hiện dữ liệu của user hiện tại và không
+  cache; thiếu dữ liệu không sinh điểm 0 giả.
+- [x] Công thức quiz, trạng thái, thời gian Việt Nam và kỹ năng có căn cứ được
+  kiểm thử trong JavaBean.
+- [x] JSP escape mọi chuỗi động; CSS in A4 ẩn công cụ, giữ khối/hàng và lặp thead.
+- [ ] `npm test`, `mvn test`, `mvn clean package`, live Tomcat/MySQL và khả năng
+  in PDF được kiểm chứng; giới hạn trình duyệt được ghi trung thực. Bộ test và
+  bản in A4 đã đạt; kiểm tra tài khoản demo có dữ liệu còn chờ thông tin đăng nhập
+  hợp lệ do mật khẩu trong `TEAM_FLOW_DEMO_GUIDE.md` và giá trị vừa cung cấp đều
+  bị từ chối.
+- [ ] Không thêm migration; tổng kết và chức năng cũ không đổi; chỉ stage file
+  Đợt 5, commit và push nhánh hiện tại.

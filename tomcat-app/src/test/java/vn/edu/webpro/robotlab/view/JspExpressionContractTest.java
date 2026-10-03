@@ -19,6 +19,9 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import vn.edu.webpro.robotlab.business.AssemblySession;
 import vn.edu.webpro.robotlab.business.Component;
+import vn.edu.webpro.robotlab.business.LearningProfile;
+import vn.edu.webpro.robotlab.business.ProfileRobotEntry;
+import vn.edu.webpro.robotlab.business.ProfileSkill;
 import vn.edu.webpro.robotlab.business.QuestionMissRate;
 import vn.edu.webpro.robotlab.business.QuizRobotAggregate;
 import vn.edu.webpro.robotlab.business.QuizRobotScore;
@@ -38,16 +41,19 @@ final class JspExpressionContractTest {
     private static final Path VIEWS = Path.of("src", "main", "webapp", "WEB-INF", "views");
 
     /** Tên biến Servlet đặt bằng setAttribute (hoặc var của c:forEach) → lớp JavaBean. */
-    private static final Map<String, Class<?>> BEANS = Map.of(
-            "user", User.class,
-            "robot", Robot.class,
-            "component", Component.class,
-            "session", AssemblySession.class,
-            "rc", RobotComponent.class,
-            "score", QuizRobotScore.class,
-            "popular", RobotPopularity.class,
-            "aggregate", QuizRobotAggregate.class,
-            "question", QuestionMissRate.class
+    private static final Map<String, Class<?>> BEANS = Map.ofEntries(
+            Map.entry("user", User.class),
+            Map.entry("profile", LearningProfile.class),
+            Map.entry("profileRobot", ProfileRobotEntry.class),
+            Map.entry("skillLine", ProfileSkill.class),
+            Map.entry("robot", Robot.class),
+            Map.entry("component", Component.class),
+            Map.entry("session", AssemblySession.class),
+            Map.entry("rc", RobotComponent.class),
+            Map.entry("score", QuizRobotScore.class),
+            Map.entry("popular", RobotPopularity.class),
+            Map.entry("aggregate", QuizRobotAggregate.class),
+            Map.entry("question", QuestionMissRate.class)
     );
 
     private static final Pattern EXPRESSION = Pattern.compile("\\$\\{\\s*([a-zA-Z]\\w*)\\.(\\w+)");

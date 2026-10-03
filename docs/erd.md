@@ -321,3 +321,9 @@ các seed `database/seed-robots-phase3.sql`, `seed-quiz-phase3.sql` và
 `seed-troubleshooting-phase3.sql`. Đây là dữ liệu bổ sung vào các bảng hiện có
 (`robots`, `robot_components`, `assembly_steps`, `quiz_questions`,
 `quiz_options`, `troubleshooting_guides`), không thay đổi ERD hay cần migration.
+
+## Hồ sơ học tập cá nhân (đợt 5)
+
+`/learning-profile` dựng bản xem trước chỉ đọc từ các bảng đang có:
+`robots`, `assembly_sessions`, `quiz_attempts`, `robot_components` và
+`components`. Đợt 5 không thêm bảng, cột, migration hay seed.

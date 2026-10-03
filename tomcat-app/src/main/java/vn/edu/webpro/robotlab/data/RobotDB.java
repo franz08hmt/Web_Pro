@@ -147,6 +147,28 @@ public class RobotDB {
         }
     }
 
+    /** Toàn bộ catalog robot, dùng khi một hồ sơ cần có cả mẫu chưa bắt đầu. */
+    public static List<Robot> selectAllRobots() throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            ps = connection.prepareStatement("SELECT " + FIELDS + " FROM robots ORDER BY id");
+            rs = ps.executeQuery();
+            List<Robot> robots = new ArrayList<>();
+            while (rs.next()) {
+                robots.add(readRobot(rs));
+            }
+            return robots;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
+
     public static long countRobots() throws SQLException {
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection connection = pool.getConnection();

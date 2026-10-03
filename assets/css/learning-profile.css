@@ -1,0 +1,331 @@
+.learning-profile {
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 1.5rem 1rem 3rem;
+  background: #edf2f7;
+  color: #17202a;
+}
+
+.learning-profile *,
+.learning-profile *::before,
+.learning-profile *::after {
+  box-sizing: inherit;
+}
+
+.learning-profile .profile-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 210mm;
+  margin: 0 auto 1rem;
+  padding: .75rem 1rem;
+  border: 1px solid #c8d3df;
+  border-radius: .75rem;
+  background: #fff;
+}
+
+.learning-profile .profile-back {
+  color: #14579b;
+  font-weight: 700;
+}
+
+.learning-profile .profile-print-button {
+  border: 0;
+  border-radius: .5rem;
+  padding: .7rem 1rem;
+  background: #14579b;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.learning-profile .profile-print-button:focus-visible,
+.learning-profile .profile-back:focus-visible {
+  outline: 3px solid #e28a17;
+  outline-offset: 3px;
+}
+
+.learning-profile .print-hint {
+  color: #3e4d5d;
+  font-size: .9rem;
+}
+
+.learning-profile .profile-noscript,
+.learning-profile .profile-technical-note {
+  max-width: 210mm;
+  margin: 0 auto 1rem;
+  padding: .75rem 1rem;
+  border-left: 4px solid #55718e;
+  background: #fff;
+}
+
+.learning-profile .profile-paper {
+  width: 100%;
+  max-width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 16mm;
+  border: 1px solid #d8e0e8;
+  background: #fff;
+  box-shadow: 0 10px 30px rgb(27 43 58 / 12%);
+  color: #15191e;
+  font-size: 10.5pt;
+  line-height: 1.48;
+}
+
+.learning-profile .profile-paper h1 {
+  margin: .2rem 0 1rem;
+  color: #101820;
+  font-size: 22pt;
+  line-height: 1.2;
+}
+
+.learning-profile .profile-paper h2 {
+  margin: 1.3rem 0 .65rem;
+  padding-bottom: .3rem;
+  border-bottom: 1px solid #566575;
+  color: #162a3e;
+  font-size: 14pt;
+}
+
+.learning-profile .profile-paper h3 {
+  margin: 0 0 .25rem;
+  color: #152c43;
+  font-size: 12pt;
+}
+
+.learning-profile .profile-kicker {
+  margin: 0;
+  color: #344b61;
+  font-size: 9pt;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.learning-profile .profile-header {
+  padding-bottom: .7rem;
+  border-bottom: 2px solid #1b334a;
+}
+
+.learning-profile .profile-header p {
+  margin: .2rem 0;
+}
+
+.learning-profile .student-id-line {
+  margin-top: .65rem !important;
+  letter-spacing: .02em;
+}
+
+.learning-profile .profile-summary,
+.learning-profile .robot-facts {
+  margin: 0;
+}
+
+.learning-profile .profile-summary > div,
+.learning-profile .robot-facts > div {
+  display: grid;
+  grid-template-columns: minmax(8rem, 34%) 1fr;
+  gap: .6rem;
+  padding: .25rem 0;
+  border-bottom: 1px solid #d5dbe2;
+}
+
+.learning-profile .profile-summary dt,
+.learning-profile .robot-facts dt {
+  font-weight: 700;
+}
+
+.learning-profile .profile-summary dd,
+.learning-profile .robot-facts dd {
+  margin: 0;
+}
+
+.learning-profile .formula-note {
+  margin: .55rem 0 0;
+  font-size: 9pt;
+}
+
+.learning-profile .profile-robot-list {
+  display: grid;
+  gap: .65rem;
+}
+
+.learning-profile .profile-robot {
+  padding: .65rem .75rem;
+  border: 1px solid #aebbc8;
+  border-radius: .35rem;
+  background: #fff;
+}
+
+.learning-profile .robot-description {
+  margin: .2rem 0 .45rem;
+}
+
+.learning-profile .profile-skill-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.learning-profile .profile-skill-table caption {
+  padding: .35rem 0;
+  text-align: left;
+  font-weight: 700;
+}
+
+.learning-profile .profile-skill-table th,
+.learning-profile .profile-skill-table td {
+  border: 1px solid #4d5b68;
+  padding: .5rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.learning-profile .profile-skill-table th[scope="row"] {
+  width: 50%;
+}
+
+.learning-profile .skill-content {
+  display: inline-block;
+  margin-top: .25rem;
+  font-weight: 400;
+}
+
+.learning-profile .no-data {
+  padding: .55rem .7rem;
+  border: 1px solid #687887;
+}
+
+.learning-profile .writing-lines span {
+  display: block;
+  height: 1.5rem;
+  border-bottom: 1px solid #606c77;
+}
+
+.learning-profile .teacher-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .6rem 1rem;
+  margin-top: .8rem;
+}
+
+.learning-profile .teacher-fields p {
+  display: flex;
+  gap: .4rem;
+  margin: 0;
+}
+
+.learning-profile .teacher-fields p:first-child {
+  grid-column: 1 / -1;
+}
+
+.learning-profile .teacher-fields span {
+  flex: 1;
+  border-bottom: 1px solid #606c77;
+}
+
+.learning-profile .profile-footer {
+  margin-top: 1.3rem;
+  padding-top: .7rem;
+  border-top: 1px solid #566575;
+  font-size: 9pt;
+}
+
+.learning-profile .profile-footer p {
+  margin: .25rem 0;
+}
+
+@media (max-width: 640px) {
+  .learning-profile {
+    padding: .75rem .45rem 1.5rem;
+  }
+
+  .learning-profile .profile-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .learning-profile .profile-paper {
+    min-height: 0;
+    padding: 1.25rem;
+  }
+
+  .learning-profile .profile-summary > div,
+  .learning-profile .robot-facts > div {
+    grid-template-columns: 1fr;
+    gap: .1rem;
+  }
+}
+
+@page {
+  size: A4 portrait;
+  margin: 16mm;
+  @bottom-center {
+    content: counter(page) " / " counter(pages);
+    color: #333;
+    font: 9pt Arial, Helvetica, sans-serif;
+  }
+}
+
+@media print {
+  .learning-profile {
+    min-height: 0;
+    padding: 0;
+    background: #fff;
+    color: #000;
+  }
+
+  .learning-profile .no-print {
+    display: none !important;
+  }
+
+  .learning-profile .profile-paper {
+    width: auto;
+    max-width: none;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+    color: #000;
+    font-size: 11pt;
+    line-height: 1.4;
+  }
+
+  .learning-profile .profile-paper h1,
+  .learning-profile .profile-paper h2,
+  .learning-profile .profile-paper h3 {
+    color: #000;
+  }
+
+  .learning-profile .profile-paper h2 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .learning-profile .profile-robot,
+  .learning-profile tr,
+  .learning-profile .profile-header,
+  .learning-profile .confirmation-section,
+  .learning-profile .profile-footer {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .learning-profile thead {
+    display: table-header-group;
+  }
+
+  .learning-profile th,
+  .learning-profile td,
+  .learning-profile p,
+  .learning-profile dd {
+    overflow-wrap: anywhere;
+  }
+
+  .learning-profile .profile-skill-table th,
+  .learning-profile .profile-skill-table td {
+    border-color: #000;
+  }
+}

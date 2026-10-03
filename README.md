@@ -123,6 +123,16 @@ WHERE email = 'admin@example.com';
   tại và tên/giá được chụp tại lúc đặt.
 - Không có cổng thanh toán, dữ liệu thẻ, thu tiền hoặc giao hàng thật.
 
+## Hồ sơ học tập cá nhân có thể in
+
+- `/learning-profile`: hồ sơ chỉ đọc của tài khoản đăng nhập, gồm tiến độ năm
+  mẫu robot, lượt quiz và kỹ năng có căn cứ từ các bảng hiện có.
+- `LearningProfileServlet` lấy user từ `HttpSession`, gọi `RobotDB`/`StatsDB`,
+  dựng JavaBean rồi forward sang JSP. Response dùng `Cache-Control: no-store`;
+  không nhận chủ sở hữu từ query string.
+- Nút **In / Lưu PDF** gọi hộp thoại in của trình duyệt. Chọn khổ A4 và
+  **Lưu dưới dạng PDF**; không có dịch vụ hoặc thư viện xuất PDF riêng.
+
 ## Kiểm tra
 
 Kiểm tra chính là build Maven:
