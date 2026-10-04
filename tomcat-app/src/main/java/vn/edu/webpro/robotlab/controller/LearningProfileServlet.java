@@ -2,7 +2,7 @@ package vn.edu.webpro.robotlab.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.Instant;
+import java.util.Date;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -37,7 +37,7 @@ public class LearningProfileServlet extends HttpServlet {
 
         LearningProfile profile = new LearningProfile();
         profile.setFullName(user.getFullName());
-        profile.setGeneratedAtUtc(Instant.now().toString());
+        profile.setGeneratedAt(new Date());
         try {
             profile.setCatalogRobots(RobotDB.selectAllRobots());
             profile.setSessionStats(StatsDB.selectLearningProfileSessionStats(user.getId()));
@@ -50,8 +50,7 @@ public class LearningProfileServlet extends HttpServlet {
 
         profile.buildProfile();
         request.setAttribute("profile", profile);
-        getServletContext()
-                .getRequestDispatcher("/WEB-INF/views/learning-profile.jsp")
-                .forward(request, response);
+        String url = "/WEB-INF/views/learning-profile.jsp";
+        getServletContext().getRequestDispatcher(url).forward(request, response);
     }
 }

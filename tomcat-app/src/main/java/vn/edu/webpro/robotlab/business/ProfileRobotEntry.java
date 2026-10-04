@@ -52,6 +52,18 @@ public class ProfileRobotEntry implements Serializable {
         return statusLabel;
     }
 
+    public boolean isCompleted() {
+        return "COMPLETED".equals(statusKey);
+    }
+
+    public boolean isInProgress() {
+        return "IN_PROGRESS".equals(statusKey);
+    }
+
+    public boolean isStopped() {
+        return "ABANDONED".equals(statusKey);
+    }
+
     public void setStatusLabel(String statusLabel) {
         this.statusLabel = statusLabel;
     }
@@ -161,10 +173,16 @@ public class ProfileRobotEntry implements Serializable {
     }
 
     public String getBestQuizDisplay() {
-        return quizDataAvailable ? bestQuizScore + "/" + bestQuizTotalQuestions : "Chưa có dữ liệu";
+        if (quizDataAvailable) {
+            return bestQuizScore + "/" + bestQuizTotalQuestions;
+        }
+        return "Chưa có dữ liệu";
     }
 
     public String getLatestQuizDisplay() {
-        return quizDataAvailable ? latestQuizScore + "/" + latestQuizTotalQuestions : "Chưa có dữ liệu";
+        if (quizDataAvailable) {
+            return latestQuizScore + "/" + latestQuizTotalQuestions;
+        }
+        return "Chưa có dữ liệu";
     }
 }

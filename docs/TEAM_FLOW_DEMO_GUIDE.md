@@ -20,7 +20,7 @@ Tomcat và một WAR; JavaScript gọi API cùng origin, không phải serverles
 | Bài kiểm tra kiến thức | Đạt: server chấm từ `quiz_options.is_correct`, lưu bản chụp để không đổi kết quả cũ | `QuizAttemptDB.submitAttempt()`, `QuizServlet.java` |
 | Tra cứu lỗi lắp ráp | Seed cơ sở có 14 tình huống; seed đợt 3 thêm 6 tình huống cho hai robot mới (tổng 20 sau khi nạp đủ seed) | `TroubleshootingServlet.java`, `TroubleshootingGuideDB.java`, `database/seed-troubleshooting-phase3.sql` |
 | Tổng kết và thống kê | Đạt: số liệu tính bằng `GROUP BY`/`COUNT DISTINCT` trực tiếp trong SQL, có trạng thái "chưa có dữ liệu" | `StatsDB.java`, `LearningSummaryServlet.java`, `AdminStatsServlet.java` |
-| Hồ sơ học tập cá nhân có thể in | Chỉ đọc, giới hạn theo `HttpSession`, no-store; JavaBean tính trạng thái, tỷ lệ quiz, giờ Việt Nam và căn cứ kỹ năng; trình duyệt in A4/PDF | `LearningProfileServlet.java` | `LearningProfile`; `RobotDB`; `StatsDB` | `learning-profile.jsp` | Đọc `robots`, `assembly_sessions`, `quiz_attempts`, `robot_components`, `components`; không thêm bảng |
+| Hồ sơ học tập cá nhân có thể in | Model 2 (Ch2/4–5, 20); Servlet forward (Ch5/22–24); `HttpSession` (Ch7/10–12); JavaBean và vòng for (Ch6/4–6, Ch9/28–33); Date/DateFormat (Ch10/6); EL/JSTL chống XSS (Ch8/5–8, 32–35; Ch9/7–8, 11, 17–19); JDBC (Ch12/18–20, 32–38, 45–53); trang chỉ đọc/no-store, trình duyệt in A4/PDF | `LearningProfileServlet.java` | `LearningProfile`; `RobotDB`; `StatsDB` | `learning-profile.jsp` | Đọc `robots`, `assembly_sessions`, `quiz_attempts`, `robot_components`, `components`; không thêm bảng |
 | Cửa hàng mô phỏng | Catalog công khai; giỏ/đơn theo session; admin CRUD; checkout server tính giá và khóa tồn trong transaction; không thanh toán thật | `ShopServlet`, `CartServlet`, `OrderServlet`, `AdminShopServlet`; `ShopProductDB`, `CartDB`, `OrderDB`; migration `008_shop_cart_orders.sql` |
 
 Lưu ý: repository hiện không chứa bộ slide gốc, nên các số chương/slide trong
@@ -69,7 +69,45 @@ mới thêm vào đồ án.
 | 3. Tra cứu lỗi lắp ráp | Nội dung công khai đọc từ MySQL; lọc/tìm bằng `PreparedStatement` tham số hóa | `TroubleshootingServlet` (công khai), `AdminTroubleshootingServlet` (quản trị) | `TroubleshootingGuide`; `TroubleshootingGuideDB` | *(API JSON)* | `troubleshooting_guides` |
 | 4. Hiệu ứng ăn mừng | Sự kiện phía client gắn với xác nhận server, không phải hiệu ứng trang trí độc lập | *(không có endpoint riêng — dùng lại `PATCH /api/assembly-sessions/{id}`)* | — | — | — |
 | 5. Tổng kết và thống kê | `GROUP BY`/`COUNT DISTINCT` để tránh đếm trùng; phân quyền xem dữ liệu tổng hợp | `LearningSummaryServlet` (cá nhân), `AdminStatsServlet` (quản trị, chỉ ADMIN) | `QuizRobotScore`, `RobotPopularity`, `QuizRobotAggregate`, `QuestionMissRate`; `StatsDB` | `learning-summary.jsp`, `admin-stats.jsp` | Đọc tổng hợp từ `assembly_sessions`, `quiz_attempts`, `quiz_attempt_answers`, `users` |
-| 6. Hồ sơ học tập cá nhân có thể in | Servlet → JavaBean → JDBC/PreparedStatement → JSP; session scope, escape dữ liệu, quy tắc điểm/trạng thái/thời gian nằm trong business object | `LearningProfileServlet` | `LearningProfile`, `ProfileRobotEntry`, `ProfileSkill`; `RobotDB`, `StatsDB` | `learning-profile.jsp` | `robots`, `assembly_sessions`, `quiz_attempts`, `robot_components`, `components` (chỉ đọc) |
+| 6. Hồ sơ học tập cá nhân có thể in | Model 2 (Ch2/4–5, 20); request attribute/forward (Ch5/22–24, Ch12/42–44); session (Ch7/10–12); bean có luật nghiệp vụ và getter định dạng (Ch6/4–6, Ch9/28–33); ngày giờ (Ch10/6); EL/JSTL (Ch8/5–8, 32–35; Ch9/7–8, 11, 17–19); PreparedStatement/pool/DBUtil (Ch12/18–20, 32–38, 45–53) | `LearningProfileServlet` | `LearningProfile`, `ProfileRobotEntry`, `ProfileSkill`; `RobotDB`, `StatsDB` | `learning-profile.jsp` | `robots`, `assembly_sessions`, `quiz_attempts`, `robot_components`, `components` (chỉ đọc) |
+
+## Hồ sơ học tập bám slide nào?
+
+Bảng dưới dùng đúng số chương/slide đã được người dùng đối chiếu từ slide của
+giảng viên trong prompt Đợt 5b. Mở code theo cột cuối để giải thích mẫu đã học.
+Thứ tự thực thi cụ thể: Servlet lấy user từ session, đọc dữ kiện qua XxxDB,
+đặt dữ kiện vào JavaBean, gọi `buildProfile()`, setAttribute và forward tới JSP.
+
+| Phần trong Đợt 5 | Chapter / slide | File |
+| --- | --- | --- |
+| Model 2: servlet → bean → XxxDB → JSP | Ch2 slide 4–5, 20 | LearningProfileServlet, LearningProfile, StatsDB/RobotDB, learning-profile.jsp |
+| `@WebServlet("/learning-profile")` | Ch5 slide 10–11 | LearningProfileServlet |
+| `setAttribute` + `String url` + `getRequestDispatcher(url).forward` | Ch5 slide 22–24; Ch12 slide 42–44 | LearningProfileServlet |
+| Khách chưa đăng nhập → `sendRedirect` | Ch5 slide 25–26 | LearningProfileServlet |
+| Lấy user từ `HttpSession` | Ch7 slide 10–12 | SessionUtil |
+| JavaBean (ctor rỗng, get/set, Serializable) | Ch6 slide 4–6 | LearningProfile, ProfileRobotEntry, ProfileSessionStat, ProfileQuizAttempt, ProfileSkill (5 bean) |
+| Getter định dạng sẵn trong bean (`getXxxDisplay`) | Ch9 slide 28–31 | LearningProfile, ProfileRobotEntry |
+| Luật nghiệp vụ trong lớp business, duyệt bằng vòng `for` | Ch9 slide 32–33 (Cart) | LearningProfile |
+| Ngày giờ: `Date` + `DateFormat`/`SimpleDateFormat` | Ch10 slide 6 | LearningProfile |
+| `StringBuilder` | Ch12 slide 29 | LearningProfile |
+| EL `${profile.fullName}`, thuộc tính bean | Ch6 slide 7–9; Ch8 slide 5–8 | learning-profile.jsp |
+| EL `empty`, `or`, `==/eq` | Ch8 slide 32–35 | learning-profile.jsp |
+| `c:out` chống XSS | Ch9 slide 7–8 | learning-profile.jsp |
+| `c:forEach` / `c:if` / `c:choose` | Ch9 slide 11, 17–19 | learning-profile.jsp |
+| `PreparedStatement`, ConnectionPool, XxxDB static, `DBUtil` | Ch12 slide 18–20, 32–38, 45–53 | StatsDB, RobotDB |
+
+`ArrayList` theo Ch9 slide 32; `Map`/`HashMap` theo Ch8 slide 8 và Ch18 slide 21.
+Không gọi collection factory hay xử lý collection bằng stream/lambda trong
+code ứng dụng Đợt 5. SQL vẫn giữ nguyên; `getTimestamp()` chuyển sang `Date`
+bằng `getTime()`, bean so sánh `Date` rồi định dạng theo `Asia/Ho_Chi_Minh`.
+Giá trị Date thiếu là null, hiển thị "Chưa có dữ liệu" và xếp cũ nhất khi so
+sánh; cùng ngày giờ vẫn dùng mã lượt/mã phiên để phân định như trước.
+
+CSS A4 và `window.print()` giữ nguyên từ Đợt 5, là phần giao diện/in của trình
+duyệt; không gán cho chúng một số slide Java không có trong bảng đối chiếu.
+Node/JUnit là công cụ kiểm tra lúc phát triển, không phải runtime backend.
+Các chỗ code cũ ngoài Đợt 5 còn dùng kỹ thuật chưa có trong bảng được liệt kê
+ở [báo cáo quét Đợt 5b](PHASE5B_SLIDE_AUDIT.md); chưa refactor chúng.
 
 ## Phân công
 
@@ -342,6 +380,33 @@ tế, không suy ra đã lắp ráp từ việc làm quiz.
 Mã phiên lắp ráp dùng để đối chiếu căn cứ hoàn thành với phiếu kết quả, đúng
 đặc tả hồ sơ. Đây không phải ID người dùng; hồ sơ không in email, quyền hay
 thông tin xác thực của tài khoản.
+
+### "Vì sao dùng SimpleDateFormat mà không phải DateFormat.getDateInstance?"
+
+`SimpleDateFormat` là lớp con của `DateFormat`, cùng họ định dạng ngày giờ ở
+Ch10 slide 6. Hồ sơ cần đúng mẫu `dd/MM/yyyy` hoặc `dd/MM/yyyy HH:mm`, cùng múi
+giờ Việt Nam; `getDateInstance()` dùng kiểu định dạng theo locale nên không
+chốt được mẫu này. Bean tạo formatter mới mỗi lần gọi hàm định dạng, giống
+cách tạo `NumberFormat` trong getter ở Ch9 slides 28–31, rồi đặt TimeZone
+`Asia/Ho_Chi_Minh`. Không lưu formatter trong static field vì formatter này
+không an toàn khi nhiều request dùng chung.
+
+### "Vì sao có BigDecimal?"
+
+`BigDecimal` là lớp Java cổ điển để giữ phép tính thập phân và làm tròn
+`RoundingMode.HALF_UP` chính xác. Bean duyệt từng robot bằng vòng for, cộng
+bằng `.add(...)`, chia số mẫu có quiz, không dùng reduce/stream. Test kiểm cả
+trường hợp 12.5% phải thành 13%, trung bình nhiều mẫu và không có quiz. Đây là
+lựa chọn độ chính xác được prompt Đợt 5b cho phép; không khẳng định slide có
+ví dụ riêng về BigDecimal.
+
+### "Vì sao JSP không tự so sánh trạng thái?"
+
+Luật nằm trong business object theo tinh thần Cart/LineItem ở Ch9 slides
+28–33: `ProfileRobotEntry.isCompleted()`, `isInProgress()`, `isStopped()` trả
+kết quả boolean. JSP chỉ dùng `${profileRobot.completed}` hoặc `or` để chọn
+khối trình bày bằng `c:choose`, không biết chuỗi trạng thái trong database.
+`getStatusKey()` và `getStatusLabel()` vẫn được giữ cho code hiện có.
 
 ## Chuỗi file nên mở khi bảo vệ
 

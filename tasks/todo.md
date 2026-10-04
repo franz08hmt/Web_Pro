@@ -83,3 +83,23 @@
 - [x] Không thêm schema/migration/tài khoản hay ghi dữ liệu QA vào MySQL.
 - [x] Dọn Tomcat QA/log/cookie tạm; giữ bằng chứng trong target/phase5-qa (không stage).
 - [x] Review diff, commit đúng file sửa; không push theo yêu cầu hiện tại.
+
+## Đợt 5b — bám slide
+
+- [x] Xác nhận HEAD/nhánh, đọc code/test/tài liệu Đợt 5; baseline Node 104 và JUnit 35.
+- [x] Tomcat QA WAR trước sửa; lưu golden-before cho bốn demo và PDF builder.
+- [x] Viết guard cú pháp trước, chạy đỏ, sau refactor chạy xanh.
+- [x] Refactor collection/luật bằng for/if, Date/SimpleDateFormat, getter boolean,
+  String url + forward; không đổi SQL, giao diện hay CSS/JS.
+- [x] Giữ 10 test Java cũ, đổi Date; thêm 2 test. Node 105/105, JUnit 37/37,
+  `mvn clean package` Java 17 thành công.
+- [x] Golden-after/diff của cả bốn demo rỗng; guest 302/no-store, POST/PUT 405,
+  owner query không đổi, HTML không lộ template/null, giờ Việt Nam đúng/log sạch.
+- [x] PDF A4 builder vẫn 3 trang; text/pixel giống trước khi loại giờ lập;
+  Kỹ năng đi cùng bảng, có số trang CSS. Chưa kiểm chứng Firefox/Safari.
+- [x] Tài liệu chapter/slide + 3 Hỏi–Đáp, README/API/ERD/handoff được đồng bộ;
+  code cũ ngoài phạm vi chỉ liệt kê, không sửa.
+- [x] Dừng/dọn QA/log/cookie/cấu hình tạm, kiểm cổng 8081/9224 đóng; review diff.
+
+Bàn giao bằng 1 commit local `refactor: align learning profile with course
+slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.

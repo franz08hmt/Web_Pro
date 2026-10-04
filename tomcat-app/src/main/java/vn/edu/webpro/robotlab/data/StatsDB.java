@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,7 +133,11 @@ public class StatsDB {
                 stat.setSessionCount(rs.getLong("session_count"));
                 stat.setLatestSessionId(rs.getLong("latest_session_id"));
                 Timestamp latestEventAt = rs.getTimestamp("latest_event_at");
-                stat.setLatestEventAtUtc(latestEventAt == null ? null : latestEventAt.toInstant().toString());
+                if (latestEventAt == null) {
+                    stat.setLatestEventAt(null);
+                } else {
+                    stat.setLatestEventAt(new Date(latestEventAt.getTime()));
+                }
                 stats.add(stat);
             }
             return stats;
@@ -163,7 +168,11 @@ public class StatsDB {
                 attempt.setScore(rs.getInt("score"));
                 attempt.setTotalQuestions(rs.getInt("total_questions"));
                 Timestamp submittedAt = rs.getTimestamp("submitted_at");
-                attempt.setSubmittedAtUtc(submittedAt == null ? null : submittedAt.toInstant().toString());
+                if (submittedAt == null) {
+                    attempt.setSubmittedAt(null);
+                } else {
+                    attempt.setSubmittedAt(new Date(submittedAt.getTime()));
+                }
                 attempts.add(attempt);
             }
             return attempts;

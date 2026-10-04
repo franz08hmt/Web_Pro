@@ -134,6 +134,11 @@ WHERE email = 'admin@example.com';
   **Lưu dưới dạng PDF**, nên tắt **Đầu trang và chân trang** để tránh thêm ngày
   giờ/tiêu đề của trình duyệt. Số trang do CSS tạo phụ thuộc trình duyệt;
   không có dịch vụ hoặc thư viện xuất PDF riêng.
+- Đợt 5b giữ kết quả/giao diện/SQL và viết luật bean bằng vòng `for`, `if/else`,
+  `ArrayList`/`HashMap`; ngày giờ dùng `Date` và `SimpleDateFormat` tạo riêng mỗi
+  lần theo giờ Việt Nam. JSP nhận các getter boolean trạng thái, Servlet dùng
+  `String url` + forward theo slide. Xem bảng chương/slide và Hỏi–Đáp trong
+  [hướng dẫn demo](docs/TEAM_FLOW_DEMO_GUIDE.md#hồ-sơ-học-tập-bám-slide-nào).
 
 ## Kiểm tra
 

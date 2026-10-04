@@ -54,10 +54,10 @@
                                 <dl class="robot-facts">
                                     <div><dt>Trạng thái</dt><dd><c:out value="${profileRobot.statusLabel}"/></dd></div>
                                     <c:choose>
-                                        <c:when test="${profileRobot.statusKey eq 'COMPLETED'}">
+                                        <c:when test="${profileRobot.completed}">
                                             <div><dt>Hoàn thành</dt><dd><c:out value="${profileRobot.completionDate}"/> · phiên #<c:out value="${profileRobot.completionSessionId}"/> · <c:out value="${profileRobot.completedCount}"/> lần</dd></div>
                                         </c:when>
-                                        <c:when test="${profileRobot.statusKey eq 'IN_PROGRESS' or profileRobot.statusKey eq 'ABANDONED'}">
+                                        <c:when test="${profileRobot.inProgress or profileRobot.stopped}">
                                             <div><dt>Phiên gần nhất</dt><dd><c:out value="${profileRobot.latestSessionStatusLabel}"/> · cập nhật <c:out value="${profileRobot.latestSessionDate}"/></dd></div>
                                         </c:when>
                                         <c:otherwise>

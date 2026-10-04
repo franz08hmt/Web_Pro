@@ -199,6 +199,8 @@ Cho phép người dùng tự bật chế độ lái thử mô hình 3D sau khi 
 - `LearningProfile` và các JavaBean con tính bốn trạng thái, lượt quiz tốt nhất
   theo tỷ lệ, lượt gần nhất theo thời gian/id, trung bình HALF_UP, giờ
   `Asia/Ho_Chi_Minh` và dòng kỹ năng nguyên văn có căn cứ hoàn thành.
+  Từ Đợt 5b, thời điểm là `Date`, formatter `SimpleDateFormat` được tạo riêng
+  mỗi lần; collection xử lý bằng vòng for/if theo slide, kết quả không đổi.
 - `LearningProfileServlet` đặt bean vào request rồi forward sang JSP dưới
   `WEB-INF/views`; CSS riêng scope dưới `.learning-profile`, JS gọi `window.print()`.
 
@@ -260,3 +262,51 @@ Cho phép người dùng tự bật chế độ lái thử mô hình 3D sau khi 
 - Không tạo tài khoản mới, không sửa dữ liệu/tài khoản demo. Artifact PDF/ảnh
   QA giữ ở `tomcat-app/target/phase5-qa/` (gitignored); runtime/log/cookie tạm
   được dọn sau khi kiểm chứng. Chỉ stage các file sửa của Đợt 5 và commit local.
+
+# Đợt 5b — bám slide
+
+## Phạm vi và nguồn đối chiếu
+
+- Chỉ refactor code Đợt 5, giữ nguyên hành vi/giao diện/SQL và cập nhật tài liệu.
+  Bảng được phép/cấm và số slide lấy từ prompt đã đối chiếu của người dùng;
+  không suy ra số slide từ thư viện hoặc test.
+- Giữ Java 17/Tomcat 9/JDBC/Servlet/JSP, không thêm tầng DAO/Service/ORM. Chỉ
+  đăng nhập bốn demo và GET; POST/PUT vào route chỉ đọc để kiểm 405. Không ghi
+  DB hay tạo user. Một commit local cuối cùng, không push; handoff ngoài commit.
+
+## Các bước và bằng chứng
+
+- [x] HEAD ban đầu `3f0992b`, origin tracking `adec65f`, chỉ handoff untracked;
+  đọc source/bean/JSP/tests/ba hàm StatsDB và tài liệu liên quan.
+- [x] Baseline Node 104/104, JUnit 35/35. Tomcat 9 QA 8081 từ WAR trước sửa:
+  bốn tài khoản đăng nhập được, lưu `golden-before` và PDF builder A4 3 trang.
+- [x] Thêm guard trước refactor; chạy đỏ vì cú pháp bị cấm, gồm các nhóm stream,
+  lambda/method reference, switch, collection factory, java.time. Sau refactor
+  xanh, guard còn chặn toInstant ở ba hàm StatsDB và JSP fmt/fn/scriptlet.
+- [x] Dùng for/if, ArrayList/HashMap, StringBuilder; Date null-safe và formatter
+  riêng mỗi lần. Giữ chính xác phép BigDecimal/HALF_UP và luật hòa ngày/id.
+- [x] Bean có getter boolean trạng thái; JSP chỉ trình bày; Servlet forward
+  bằng String url. Không đổi CSS/JS hay cache-busting.
+- [x] Giữ 10 JUnit kịch bản cũ, đổi input sang Date, thêm 2 test cho getter
+  trạng thái và Date thiếu/thứ tự thời gian/hòa theo id. Tổng JUnit 37/37;
+  `mvn clean package` Java 17 BUILD SUCCESS. Target từng bị ghi class Java 25
+  trong lúc sửa; clean dựng lại đúng Java 17, không đổi pom/config người dùng.
+- [x] Node 105/105, gồm guard kiến thức slide. Contract JSP đọc được các getter
+  mới bằng BEANS map hiện có, không cần sửa JspExpressionContractTest.
+- [x] Tomcat QA từ WAR mới: golden-after của cả 4 demo diff rỗng; đã loại đúng
+  hai dòng giờ lập khỏi cả hai bản, không sửa baseline để làm khớp. Guest
+  302/no-store, POST/PUT 405; query userId/user/email không đổi hồ sơ; HTML không
+  lộ EL/scriptlet/null; giờ lập khớp giờ Việt Nam; không thấy exception ứng dụng.
+- [x] PDF builder sau sửa vẫn A4 3 trang, Kỹ năng cùng bảng ở trang 3, số trang
+  1/3–3/3. Text và pixel trước/sau giống nhau sau khi bỏ hai dòng giờ lập.
+  Bằng chứng ở target/phase5b-qa (gitignored; Maven clean sẽ xóa).
+- [x] Bổ sung hai hàng đối chiếu, bảng 15 mục chapter/slide, 3 Hỏi–Đáp và đồng
+  bộ README/API/ERD/handoff; quét code cũ, liệt kê riêng để người dùng quyết định.
+- [x] Dừng/dọn QA và log/cookie/cấu hình tạm; cổng 8081/9224 đóng. Review diff:
+  chỉ code Đợt 5, test và tài liệu; StatsDB không đổi chuỗi SQL, CSS/JS nguyên vẹn.
+
+Chính sách bàn giao: đúng một commit local `refactor: align learning profile
+with course slides`, không push; handoff không stage. Hash xem `git log -1`.
+
+Firefox/Safari chưa kiểm chứng; không làm lại các luồng ghi 3D/quiz/shop vì
+phạm vi lần này chỉ refactor trang đọc và tuyệt đối không ghi database.

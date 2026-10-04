@@ -327,3 +327,6 @@ các seed `database/seed-robots-phase3.sql`, `seed-quiz-phase3.sql` và
 `/learning-profile` dựng bản xem trước chỉ đọc từ các bảng đang có:
 `robots`, `assembly_sessions`, `quiz_attempts`, `robot_components` và
 `components`. Đợt 5 không thêm bảng, cột, migration hay seed.
+Đợt 5b chỉ đổi biểu diễn ngày giờ ở JavaBean sang `java.util.Date` và cú pháp
+code theo slide; kiểu cột/thời điểm MySQL, câu SQL và ERD giữ nguyên. Bean định
+dạng ngày/giờ Việt Nam bằng `SimpleDateFormat` riêng mỗi lần gọi.

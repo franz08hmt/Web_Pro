@@ -3,17 +3,14 @@ package vn.edu.webpro.robotlab.business;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
+import java.util.TimeZone;
 
 /** Dữ liệu và quy tắc nghiệp vụ của tài liệu hồ sơ học tập có thể in. */
 public class LearningProfile implements Serializable {
@@ -22,13 +19,10 @@ public class LearningProfile implements Serializable {
     private static final String READY = "READY";
     private static final String IN_PROGRESS = "IN_PROGRESS";
     private static final String ABANDONED = "ABANDONED";
-    private static final ZoneId VIETNAM_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
-    private static final DateTimeFormatter VIET_DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    private static final DateTimeFormatter VIET_DATE_TIME = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private static final String NO_DATA = "Chưa có dữ liệu";
 
     private String fullName;
-    private String generatedAtUtc;
+    private Date generatedAt;
     private String generatedAtDisplay;
     private List<Robot> catalogRobots;
     private List<ProfileSessionStat> sessionStats;
@@ -49,7 +43,7 @@ public class LearningProfile implements Serializable {
 
     public LearningProfile() {
         fullName = "";
-        generatedAtUtc = "";
+        generatedAt = null;
         generatedAtDisplay = NO_DATA;
         catalogRobots = new ArrayList<>();
         sessionStats = new ArrayList<>();
@@ -71,12 +65,12 @@ public class LearningProfile implements Serializable {
         this.fullName = fullName;
     }
 
-    public String getGeneratedAtUtc() {
-        return generatedAtUtc;
+    public Date getGeneratedAt() {
+        return generatedAt;
     }
 
-    public void setGeneratedAtUtc(String generatedAtUtc) {
-        this.generatedAtUtc = generatedAtUtc;
+    public void setGeneratedAt(Date generatedAt) {
+        this.generatedAt = generatedAt;
     }
 
     public String getGeneratedAtDisplay() {
@@ -92,7 +86,11 @@ public class LearningProfile implements Serializable {
     }
 
     public void setCatalogRobots(List<Robot> catalogRobots) {
-        this.catalogRobots = catalogRobots == null ? new ArrayList<>() : catalogRobots;
+        if (catalogRobots == null) {
+            this.catalogRobots = new ArrayList<>();
+        } else {
+            this.catalogRobots = catalogRobots;
+        }
     }
 
     public List<ProfileSessionStat> getSessionStats() {
@@ -100,7 +98,11 @@ public class LearningProfile implements Serializable {
     }
 
     public void setSessionStats(List<ProfileSessionStat> sessionStats) {
-        this.sessionStats = sessionStats == null ? new ArrayList<>() : sessionStats;
+        if (sessionStats == null) {
+            this.sessionStats = new ArrayList<>();
+        } else {
+            this.sessionStats = sessionStats;
+        }
     }
 
     public List<ProfileQuizAttempt> getQuizAttempts() {
@@ -108,7 +110,11 @@ public class LearningProfile implements Serializable {
     }
 
     public void setQuizAttempts(List<ProfileQuizAttempt> quizAttempts) {
-        this.quizAttempts = quizAttempts == null ? new ArrayList<>() : quizAttempts;
+        if (quizAttempts == null) {
+            this.quizAttempts = new ArrayList<>();
+        } else {
+            this.quizAttempts = quizAttempts;
+        }
     }
 
     public List<String> getCompletedComponentNames() {
@@ -116,7 +122,11 @@ public class LearningProfile implements Serializable {
     }
 
     public void setCompletedComponentNames(List<String> completedComponentNames) {
-        this.completedComponentNames = completedComponentNames == null ? new ArrayList<>() : completedComponentNames;
+        if (completedComponentNames == null) {
+            this.completedComponentNames = new ArrayList<>();
+        } else {
+            this.completedComponentNames = completedComponentNames;
+        }
     }
 
     public List<ProfileRobotEntry> getRobotEntries() {
@@ -124,7 +134,11 @@ public class LearningProfile implements Serializable {
     }
 
     public void setRobotEntries(List<ProfileRobotEntry> robotEntries) {
-        this.robotEntries = robotEntries == null ? new ArrayList<>() : robotEntries;
+        if (robotEntries == null) {
+            this.robotEntries = new ArrayList<>();
+        } else {
+            this.robotEntries = robotEntries;
+        }
     }
 
     public List<ProfileSkill> getSkillLines() {
@@ -132,7 +146,11 @@ public class LearningProfile implements Serializable {
     }
 
     public void setSkillLines(List<ProfileSkill> skillLines) {
-        this.skillLines = skillLines == null ? new ArrayList<>() : skillLines;
+        if (skillLines == null) {
+            this.skillLines = new ArrayList<>();
+        } else {
+            this.skillLines = skillLines;
+        }
     }
 
     public int getCompletedRobotCount() {
@@ -217,31 +235,60 @@ public class LearningProfile implements Serializable {
 
     /** Gom dữ kiện từ DB vào các khối robot và áp dụng thống nhất các luật hồ sơ. */
     public void buildProfile() {
-        generatedAtDisplay = formatUtcDateTime(generatedAtUtc);
+        generatedAtDisplay = formatDateTime(generatedAt);
         robotEntries = new ArrayList<>();
 
         Map<String, List<ProfileSessionStat>> sessionsByRobot = new HashMap<>();
-        for (ProfileSessionStat stat : sessionStats) {
-            sessionsByRobot.computeIfAbsent(stat.getRobotId(), key -> new ArrayList<>()).add(stat);
+        for (int i = 0; i < sessionStats.size(); i++) {
+            ProfileSessionStat stat = sessionStats.get(i);
+            List<ProfileSessionStat> group = sessionsByRobot.get(stat.getRobotId());
+            if (group == null) {
+                group = new ArrayList<>();
+                sessionsByRobot.put(stat.getRobotId(), group);
+            }
+            group.add(stat);
         }
         Map<String, List<ProfileQuizAttempt>> attemptsByRobot = new HashMap<>();
-        for (ProfileQuizAttempt attempt : quizAttempts) {
-            attemptsByRobot.computeIfAbsent(attempt.getRobotId(), key -> new ArrayList<>()).add(attempt);
+        for (int i = 0; i < quizAttempts.size(); i++) {
+            ProfileQuizAttempt attempt = quizAttempts.get(i);
+            List<ProfileQuizAttempt> group = attemptsByRobot.get(attempt.getRobotId());
+            if (group == null) {
+                group = new ArrayList<>();
+                attemptsByRobot.put(attempt.getRobotId(), group);
+            }
+            group.add(attempt);
         }
 
-        for (Robot robot : catalogRobots) {
+        for (int i = 0; i < catalogRobots.size(); i++) {
+            Robot robot = catalogRobots.get(i);
             ProfileRobotEntry entry = new ProfileRobotEntry();
             entry.setRobot(robot);
-            applySessionFacts(entry, sessionsByRobot.getOrDefault(robot.getId(), List.of()));
-            applyQuizFacts(entry, attemptsByRobot.getOrDefault(robot.getId(), List.of()));
+            List<ProfileSessionStat> robotSessions = sessionsByRobot.get(robot.getId());
+            if (robotSessions == null) {
+                robotSessions = new ArrayList<>();
+            }
+            List<ProfileQuizAttempt> robotAttempts = attemptsByRobot.get(robot.getId());
+            if (robotAttempts == null) {
+                robotAttempts = new ArrayList<>();
+            }
+            applySessionFacts(entry, robotSessions);
+            applyQuizFacts(entry, robotAttempts);
             robotEntries.add(entry);
         }
 
         robotCount = robotEntries.size();
-        completedRobotCount = (int) robotEntries.stream()
-                .filter(entry -> COMPLETED.equals(entry.getStatusKey())).count();
+        completedRobotCount = 0;
+        quizRobotCount = 0;
+        for (int i = 0; i < robotEntries.size(); i++) {
+            ProfileRobotEntry entry = robotEntries.get(i);
+            if (entry.isCompleted()) {
+                completedRobotCount++;
+            }
+            if (entry.isQuizDataAvailable()) {
+                quizRobotCount++;
+            }
+        }
         quizAttemptCount = quizAttempts.size();
-        quizRobotCount = (int) robotEntries.stream().filter(ProfileRobotEntry::isQuizDataAvailable).count();
         quizDataAvailable = quizRobotCount > 0;
         completionSummary = "Đã hoàn thành " + completedRobotCount + "/" + robotCount + " mẫu robot";
         updateOverallStatus();
@@ -249,12 +296,12 @@ public class LearningProfile implements Serializable {
         buildSkillLines();
     }
 
-    public static String formatUtcDate(String utcTimestamp) {
-        return formatUtc(utcTimestamp, VIET_DATE);
+    public static String formatDate(Date date) {
+        return formatDate(date, "dd/MM/yyyy");
     }
 
-    public static String formatUtcDateTime(String utcTimestamp) {
-        return formatUtc(utcTimestamp, VIET_DATE_TIME);
+    public static String formatDateTime(Date date) {
+        return formatDate(date, "dd/MM/yyyy HH:mm");
     }
 
     private void applySessionFacts(ProfileRobotEntry entry, List<ProfileSessionStat> facts) {
@@ -264,7 +311,8 @@ public class LearningProfile implements Serializable {
         ProfileSessionStat latestAbandoned = null;
         boolean hasOpenSession = false;
 
-        for (ProfileSessionStat fact : facts) {
+        for (int i = 0; i < facts.size(); i++) {
+            ProfileSessionStat fact = facts.get(i);
             if (COMPLETED.equals(fact.getStatus())) {
                 completedCount += fact.getSessionCount();
                 if (isLater(fact, latestCompletion)) latestCompletion = fact;
@@ -281,7 +329,7 @@ public class LearningProfile implements Serializable {
             entry.setStatusKey(COMPLETED);
             entry.setStatusLabel("Đã hoàn thành");
             if (latestCompletion != null) {
-                entry.setCompletionDate(formatUtcDate(latestCompletion.getLatestEventAtUtc()));
+                entry.setCompletionDate(formatDate(latestCompletion.getLatestEventAt()));
                 entry.setCompletionSessionId(latestCompletion.getLatestSessionId());
             }
         } else if (hasOpenSession) {
@@ -298,22 +346,31 @@ public class LearningProfile implements Serializable {
     private void setLatestSessionDisplay(ProfileRobotEntry entry, ProfileSessionStat fact) {
         if (fact == null) return;
         entry.setLatestSessionStatusLabel(statusLabel(fact.getStatus()));
-        entry.setLatestSessionDate(formatUtcDate(fact.getLatestEventAtUtc()));
+        entry.setLatestSessionDate(formatDate(fact.getLatestEventAt()));
     }
 
     private void applyQuizFacts(ProfileRobotEntry entry, List<ProfileQuizAttempt> attempts) {
         if (attempts.isEmpty()) return;
 
-        ProfileQuizAttempt best = attempts.stream().max(this::compareBestAttempts).orElseThrow();
-        ProfileQuizAttempt latest = attempts.stream().max(this::compareLatestAttempts).orElseThrow();
+        ProfileQuizAttempt best = attempts.get(0);
+        ProfileQuizAttempt latest = attempts.get(0);
+        for (int i = 1; i < attempts.size(); i++) {
+            ProfileQuizAttempt candidate = attempts.get(i);
+            if (compareBestAttempts(candidate, best) > 0) {
+                best = candidate;
+            }
+            if (compareLatestAttempts(candidate, latest) > 0) {
+                latest = candidate;
+            }
+        }
         entry.setQuizDataAvailable(true);
         entry.setQuizAttemptCount(attempts.size());
         entry.setBestQuizScore(best.getScore());
         entry.setBestQuizTotalQuestions(best.getTotalQuestions());
-        entry.setBestQuizDate(formatUtcDate(best.getSubmittedAtUtc()));
+        entry.setBestQuizDate(formatDate(best.getSubmittedAt()));
         entry.setLatestQuizScore(latest.getScore());
         entry.setLatestQuizTotalQuestions(latest.getTotalQuestions());
-        entry.setLatestQuizDate(formatUtcDate(latest.getSubmittedAtUtc()));
+        entry.setLatestQuizDate(formatDate(latest.getSubmittedAt()));
     }
 
     private int compareBestAttempts(ProfileQuizAttempt left, ProfileQuizAttempt right) {
@@ -325,8 +382,11 @@ public class LearningProfile implements Serializable {
     }
 
     private int compareLatestAttempts(ProfileQuizAttempt left, ProfileQuizAttempt right) {
-        int byDate = compareInstants(left.getSubmittedAtUtc(), right.getSubmittedAtUtc());
-        return byDate != 0 ? byDate : Long.compare(left.getAttemptId(), right.getAttemptId());
+        int byDate = compareDates(left.getSubmittedAt(), right.getSubmittedAt());
+        if (byDate != 0) {
+            return byDate;
+        }
+        return Long.compare(left.getAttemptId(), right.getAttemptId());
     }
 
     private void updateOverallStatus() {
@@ -334,51 +394,73 @@ public class LearningProfile implements Serializable {
             overallStatusLabel = "Đã hoàn thành " + completedRobotCount + " mẫu";
             return;
         }
-        boolean anyOpenSession = robotEntries.stream().anyMatch(entry -> IN_PROGRESS.equals(entry.getStatusKey()));
+        boolean anyOpenSession = false;
+        boolean anyAbandonedSession = false;
+        for (int i = 0; i < robotEntries.size(); i++) {
+            ProfileRobotEntry entry = robotEntries.get(i);
+            if (entry.isInProgress()) {
+                anyOpenSession = true;
+            }
+            if (entry.isStopped()) {
+                anyAbandonedSession = true;
+            }
+        }
         if (anyOpenSession) {
             overallStatusLabel = "Đang thực hiện";
             return;
         }
-        boolean anyAbandonedSession = robotEntries.stream().anyMatch(entry -> ABANDONED.equals(entry.getStatusKey()));
         if (anyAbandonedSession) {
             overallStatusLabel = "Đã dừng";
             return;
         }
-        overallStatusLabel = quizAttemptCount > 0 ? "Chưa hoàn thành mẫu nào" : NO_DATA;
+        if (quizAttemptCount > 0) {
+            overallStatusLabel = "Chưa hoàn thành mẫu nào";
+        } else {
+            overallStatusLabel = NO_DATA;
+        }
     }
 
     private void updateAverageBestScore() {
-        List<BigDecimal> bestPercentages = new ArrayList<>();
-        for (ProfileRobotEntry entry : robotEntries) {
+        // BigDecimal giữ phép tính và làm tròn HALF_UP chính xác, không dùng số thực nhị phân.
+        BigDecimal total = BigDecimal.ZERO;
+        int bestPercentageCount = 0;
+        for (int i = 0; i < robotEntries.size(); i++) {
+            ProfileRobotEntry entry = robotEntries.get(i);
             if (!entry.isQuizDataAvailable() || entry.getBestQuizTotalQuestions() <= 0) continue;
             BigDecimal percentage = BigDecimal.valueOf(entry.getBestQuizScore())
                     .multiply(BigDecimal.valueOf(100))
                     .divide(BigDecimal.valueOf(entry.getBestQuizTotalQuestions()), 16, RoundingMode.HALF_UP);
-            bestPercentages.add(percentage);
+            total = total.add(percentage);
+            bestPercentageCount++;
         }
 
-        if (bestPercentages.isEmpty()) {
+        if (bestPercentageCount == 0) {
             quizDataAvailable = false;
             averageBestScoreLabel = NO_DATA;
             averageBestScorePercent = 0;
             return;
         }
 
-        BigDecimal total = bestPercentages.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
         averageBestScorePercent = total
-                .divide(BigDecimal.valueOf(bestPercentages.size()), 0, RoundingMode.HALF_UP)
+                .divide(BigDecimal.valueOf(bestPercentageCount), 0, RoundingMode.HALF_UP)
                 .intValue();
         averageBestScoreLabel = averageBestScorePercent + "%";
     }
 
     private void buildSkillLines() {
         skillLines = new ArrayList<>();
-        List<ProfileRobotEntry> completed = robotEntries.stream()
-                .filter(entry -> COMPLETED.equals(entry.getStatusKey())).toList();
+        List<ProfileRobotEntry> completed = new ArrayList<>();
+        for (int i = 0; i < robotEntries.size(); i++) {
+            ProfileRobotEntry entry = robotEntries.get(i);
+            if (entry.isCompleted()) {
+                completed.add(entry);
+            }
+        }
         if (completed.isEmpty()) return;
 
         List<String> completedNames = new ArrayList<>();
-        for (ProfileRobotEntry entry : completed) {
+        for (int i = 0; i < completed.size(); i++) {
+            ProfileRobotEntry entry = completed.get(i);
             Robot robot = entry.getRobot();
             String robotName = safe(robot.getName());
             completedNames.add(robotName);
@@ -394,11 +476,21 @@ public class LearningProfile implements Serializable {
             skillLines.add(skill);
         }
 
-        Set<String> distinctNames = new LinkedHashSet<>(completedComponentNames);
+        List<String> distinctNames = new ArrayList<>();
+        for (int i = 0; i < completedComponentNames.size(); i++) {
+            String name = completedComponentNames.get(i);
+            if (!distinctNames.contains(name)) {
+                distinctNames.add(name);
+            }
+        }
         ProfileSkill components = new ProfileSkill();
         components.setTitle("Nhận biết và chuẩn bị linh kiện");
-        components.setContent(distinctNames.isEmpty() ? NO_DATA : String.join(", ", distinctNames));
-        components.setEvidence(String.join(", ", completedNames));
+        if (distinctNames.isEmpty()) {
+            components.setContent(NO_DATA);
+        } else {
+            components.setContent(joinNames(distinctNames));
+        }
+        components.setEvidence(joinNames(completedNames));
         skillLines.add(components);
     }
 
@@ -406,44 +498,59 @@ public class LearningProfile implements Serializable {
         return PREPARING.equals(status) || READY.equals(status) || IN_PROGRESS.equals(status);
     }
 
+    private static String joinNames(List<String> names) {
+        StringBuilder text = new StringBuilder();
+        for (int i = 0; i < names.size(); i++) {
+            if (i > 0) {
+                text.append(", ");
+            }
+            text.append(names.get(i));
+        }
+        return text.toString();
+    }
+
     private static boolean isLater(ProfileSessionStat candidate, ProfileSessionStat current) {
         if (current == null) return true;
-        int byDate = compareInstants(candidate.getLatestEventAtUtc(), current.getLatestEventAtUtc());
+        int byDate = compareDates(candidate.getLatestEventAt(), current.getLatestEventAt());
         return byDate > 0 || (byDate == 0 && candidate.getLatestSessionId() > current.getLatestSessionId());
     }
 
-    private static int compareInstants(String left, String right) {
-        Instant leftInstant = parseInstant(left);
-        Instant rightInstant = parseInstant(right);
-        int comparison = leftInstant.compareTo(rightInstant);
-        return comparison != 0 ? comparison : safe(left).compareTo(safe(right));
-    }
-
-    private static Instant parseInstant(String value) {
-        try {
-            return Instant.parse(value);
-        } catch (DateTimeParseException | NullPointerException exception) {
-            return Instant.MIN;
+    private static int compareDates(Date left, Date right) {
+        if (left == null && right == null) {
+            return 0;
+        } else if (left == null) {
+            return -1;
+        } else if (right == null) {
+            return 1;
         }
+        return left.compareTo(right);
     }
 
     private static String statusLabel(String status) {
-        return switch (status) {
-            case PREPARING -> "Đang chuẩn bị";
-            case READY -> "Sẵn sàng";
-            case IN_PROGRESS -> "Đang lắp ráp";
-            case ABANDONED -> "Đã dừng";
-            default -> NO_DATA;
-        };
+        if (PREPARING.equals(status)) {
+            return "Đang chuẩn bị";
+        } else if (READY.equals(status)) {
+            return "Sẵn sàng";
+        } else if (IN_PROGRESS.equals(status)) {
+            return "Đang lắp ráp";
+        } else if (ABANDONED.equals(status)) {
+            return "Đã dừng";
+        }
+        return NO_DATA;
     }
 
-    private static String formatUtc(String utcTimestamp, DateTimeFormatter formatter) {
-        Instant instant = parseInstant(utcTimestamp);
-        if (instant.equals(Instant.MIN)) return NO_DATA;
-        return formatter.format(instant.atZone(VIETNAM_ZONE));
+    private static String formatDate(Date date, String pattern) {
+        if (date == null) return NO_DATA;
+        // Tạo formatter mới mỗi lần như Ch9/29; SimpleDateFormat không an toàn khi dùng chung giữa các luồng.
+        SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.ENGLISH);
+        format.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+        return format.format(date);
     }
 
     private static String safe(String value) {
-        return value == null ? "" : value;
+        if (value == null) {
+            return "";
+        }
+        return value;
     }
 }

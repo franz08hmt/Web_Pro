@@ -1,6 +1,7 @@
 package vn.edu.webpro.robotlab.business;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /** Một lượt làm bài thật của tài khoản, dùng để tính tốt nhất và gần nhất trong JavaBean. */
 public class ProfileQuizAttempt implements Serializable {
@@ -8,11 +9,11 @@ public class ProfileQuizAttempt implements Serializable {
     private long attemptId;
     private int score;
     private int totalQuestions;
-    private String submittedAtUtc;
+    private Date submittedAt;
 
     public ProfileQuizAttempt() {
         robotId = "";
-        submittedAtUtc = "";
+        submittedAt = null;
     }
 
     public String getRobotId() {
@@ -47,11 +48,11 @@ public class ProfileQuizAttempt implements Serializable {
         this.totalQuestions = totalQuestions;
     }
 
-    public String getSubmittedAtUtc() {
-        return submittedAtUtc;
+    public Date getSubmittedAt() {
+        return submittedAt;
     }
 
-    public void setSubmittedAtUtc(String submittedAtUtc) {
-        this.submittedAtUtc = submittedAtUtc;
+    public void setSubmittedAt(Date submittedAt) {
+        this.submittedAt = submittedAt;
     }
 }

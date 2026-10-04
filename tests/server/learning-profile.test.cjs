@@ -32,6 +32,41 @@ function methodBody(source, methodName) {
   throw new Error(`Thiếu dấu đóng method ${methodName}`);
 }
 
+test("phase 5 application code only uses the techniques listed in the course slides", () => {
+  function withoutComments(source) {
+    return source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/[^\r\n]*/g, "");
+  }
+
+  const sources = [
+    "LearningProfile", "ProfileRobotEntry", "ProfileSessionStat", "ProfileQuizAttempt", "ProfileSkill"
+  ].map(name => [name, read(path.join(javaRoot, "business", `${name}.java`))]);
+  sources.push(["LearningProfileServlet", read(servletPath)]);
+  for (const name of ["selectLearningProfileSessionStats", "selectLearningProfileQuizAttempts", "selectCompletedRobotComponentNames"]) {
+    sources.push([`StatsDB.${name}`, methodBody(read(statsPath), name)]);
+  }
+  const forbidden = [
+    /\.stream\s*\(/, /\.toList\s*\(/, /::/, /\w\s*->/, /\)\s*->/, /\bOptional\b/, /orElseThrow/,
+    /\bswitch\s*\(/, /computeIfAbsent|getOrDefault/, /\.forEach\s*\(/,
+    /\b(List|Set|Map)\.of\s*\(/, /\bvar\s+\w+\s*=/, /"""/,
+    /java\.time|\bInstant\b|\bZoneId\b|DateTimeFormatter|\bLocalDate|\.toInstant\s*\(/,
+    /\brecord\s+\w+/, /\b\w*(?:Dao|DAO|Service)\b/
+  ];
+  const violations = [];
+  for (const [name, rawSource] of sources) {
+    const source = withoutComments(rawSource);
+    for (const pattern of forbidden) {
+      if (pattern.test(source)) violations.push(`${name}: ${pattern}`);
+    }
+  }
+  const jsp = withoutComments(read(jspPath));
+  const allowedTags = new Set(["out", "if", "choose", "when", "otherwise", "forEach", "set"]);
+  for (const tag of jsp.matchAll(/<\/?c:(\w+)\b/g)) {
+    if (!allowedTags.has(tag[1])) violations.push(`JSP: c:${tag[1]}`);
+  }
+  if (/<\/?(?:fmt|fn):|<%(?!@)/.test(jsp)) violations.push("JSP: fmt/fn/scriptlet");
+  assert.deepEqual(violations, [], "Code Đợt 5 phải bám đúng bảng kiến thức chapter/slide");
+});
+
 test("learning profile is an authenticated GET with private no-store response and a literal login redirect", () => {
   const servlet = read(servletPath);
   assert.match(servlet, /@WebServlet\("\/learning-profile"\)/);
@@ -44,6 +79,8 @@ test("learning profile is an authenticated GET with private no-store response an
     "Chủ sở hữu hồ sơ chỉ được lấy từ HttpSession, không từ query/form parameters");
   assert.match(servlet, /SC_SERVICE_UNAVAILABLE/);
   assert.match(servlet, /learning-profile\.jsp/);
+  assert.match(servlet, /String url = "\/WEB-INF\/views\/learning-profile\.jsp";/);
+  assert.match(servlet, /getServletContext\(\)\.getRequestDispatcher\(url\)\.forward\(request, response\)/);
 });
 
 test("profile facts are fetched in a fixed number of prepared, user-scoped queries without cross-joining session and quiz rows", () => {
@@ -104,6 +141,9 @@ test("profile presents explicit empty states, real quiz fractions, and the docum
   assert.match(jsp, /empty profile\.skillLines/);
   assert.match(jsp, /Chưa có dữ liệu/);
   assert.match(jsp, /quizDataAvailable|hasQuizAttempts/);
+  assert.match(jsp, /<c:when test="\$\{profileRobot\.completed\}">/);
+  assert.match(jsp, /<c:when test="\$\{profileRobot\.inProgress or profileRobot\.stopped\}">/);
+  assert.doesNotMatch(jsp, /profileRobot\.statusKey/);
   assert.match(jsp, /bestQuizScore/);
   assert.match(jsp, /bestQuizTotalQuestions/);
   assert.match(jsp, /Ghi chú|Công thức/);

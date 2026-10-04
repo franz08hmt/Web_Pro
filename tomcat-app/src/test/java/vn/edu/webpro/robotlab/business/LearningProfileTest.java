@@ -3,8 +3,15 @@ package vn.edu.webpro.robotlab.business;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 import org.junit.jupiter.api.Test;
 
 final class LearningProfileTest {
@@ -14,10 +21,10 @@ final class LearningProfileTest {
         LearningProfile profile = profile(
                 List.of(robot("complete"), robot("active"), robot("stopped"), robot("new")),
                 List.of(
-                        session("complete", "COMPLETED", 2, 13, "2026-09-24T17:30:00Z"),
-                        session("active", "PREPARING", 1, 21, "2026-09-24T10:00:00Z"),
-                        session("active", "IN_PROGRESS", 1, 22, "2026-09-24T11:00:00Z"),
-                        session("stopped", "ABANDONED", 1, 33, "2026-09-23T10:00:00Z")
+                        session("complete", "COMPLETED", 2, 13, date("2026-09-24T17:30:00Z")),
+                        session("active", "PREPARING", 1, 21, date("2026-09-24T10:00:00Z")),
+                        session("active", "IN_PROGRESS", 1, 22, date("2026-09-24T11:00:00Z")),
+                        session("stopped", "ABANDONED", 1, 33, date("2026-09-23T10:00:00Z"))
                 ), List.of(), List.of());
 
         profile.buildProfile();
@@ -38,12 +45,12 @@ final class LearningProfileTest {
     @Test
     void selectsBestByPercentageThenRecencyAndLatestByTimestampThenId() {
         LearningProfile profile = profile(List.of(robot("quiz")), List.of(), List.of(
-                attempt("quiz", 1, 4, 5, "2026-09-20T10:00:00Z"),
-                attempt("quiz", 2, 8, 10, "2026-09-21T10:00:00Z"),
-                attempt("quiz", 3, 18, 30, "2026-09-22T10:00:00Z"),
-                attempt("quiz", 4, 0, 7, "2026-09-23T10:00:00Z"),
-                attempt("quiz", 5, 1, 3, "2026-09-24T10:00:00Z"),
-                attempt("quiz", 6, 2, 6, "2026-09-24T10:00:00Z")
+                attempt("quiz", 1, 4, 5, date("2026-09-20T10:00:00Z")),
+                attempt("quiz", 2, 8, 10, date("2026-09-21T10:00:00Z")),
+                attempt("quiz", 3, 18, 30, date("2026-09-22T10:00:00Z")),
+                attempt("quiz", 4, 0, 7, date("2026-09-23T10:00:00Z")),
+                attempt("quiz", 5, 1, 3, date("2026-09-24T10:00:00Z")),
+                attempt("quiz", 6, 2, 6, date("2026-09-24T10:00:00Z"))
         ), List.of());
 
         profile.buildProfile();
@@ -60,7 +67,7 @@ final class LearningProfileTest {
     @Test
     void preservesRealZeroOutOfSevenAndSeparatesItFromNoAttempt() {
         LearningProfile profile = profile(List.of(robot("zero"), robot("none")), List.of(), List.of(
-                attempt("zero", 5, 0, 7, "2026-09-22T10:00:00Z")
+                attempt("zero", 5, 0, 7, date("2026-09-22T10:00:00Z"))
         ), List.of());
 
         profile.buildProfile();
@@ -75,8 +82,8 @@ final class LearningProfileTest {
     @Test
     void computesAverageOfEachRobotsBestPercentageAndRoundsHalfUp() {
         LearningProfile profile = profile(List.of(robot("first"), robot("second")), List.of(), List.of(
-                attempt("first", 1, 2, 3, "2026-09-20T00:00:00Z"),
-                attempt("second", 2, 1, 2, "2026-09-20T00:00:00Z")
+                attempt("first", 1, 2, 3, date("2026-09-20T00:00:00Z")),
+                attempt("second", 2, 1, 2, date("2026-09-20T00:00:00Z"))
         ), List.of());
 
         profile.buildProfile();
@@ -87,13 +94,13 @@ final class LearningProfileTest {
         assertEquals("58%", profile.getAverageBestScoreLabel());
 
         LearningProfile one = profile(List.of(robot("single")), List.of(), List.of(
-                attempt("single", 1, 2, 3, "2026-09-20T00:00:00Z")
+                attempt("single", 1, 2, 3, date("2026-09-20T00:00:00Z"))
         ), List.of());
         one.buildProfile();
         assertEquals(67, one.getAverageBestScorePercent());
 
         LearningProfile halfUp = profile(List.of(robot("half-up")), List.of(), List.of(
-                attempt("half-up", 1, 1, 8, "2026-09-20T00:00:00Z")
+                attempt("half-up", 1, 1, 8, date("2026-09-20T00:00:00Z"))
         ), List.of());
         halfUp.buildProfile();
         assertEquals(13, halfUp.getAverageBestScorePercent(), "12.5% phải làm tròn HALF_UP thành 13%");
@@ -101,8 +108,8 @@ final class LearningProfileTest {
 
     @Test
     void formatsUtcAtTheVietnamMidnightBoundary() {
-        assertEquals("25/09/2026 00:30", LearningProfile.formatUtcDateTime("2026-09-24T17:30:00Z"));
-        assertEquals("25/09/2026", LearningProfile.formatUtcDate("2026-09-24T17:30:00Z"));
+        assertEquals("25/09/2026 00:30", LearningProfile.formatDateTime(date("2026-09-24T17:30:00Z")));
+        assertEquals("25/09/2026", LearningProfile.formatDate(date("2026-09-24T17:30:00Z")));
     }
 
     @Test
@@ -114,8 +121,8 @@ final class LearningProfileTest {
         Robot notDone = robot("not-done");
         notDone.setSkills("Không được thêm dòng này");
         LearningProfile profile = profile(List.of(done, notDone), List.of(
-                session("done", "COMPLETED", 1, 61, "2026-09-24T17:30:00Z")
-        ), List.of(attempt("done", 3, 5, 7, "2026-09-24T18:00:00Z")), List.of("Bánh xe", "Arduino Uno"));
+                session("done", "COMPLETED", 1, 61, date("2026-09-24T17:30:00Z"))
+        ), List.of(attempt("done", 3, 5, 7, date("2026-09-24T18:00:00Z"))), List.of("Bánh xe", "Arduino Uno"));
 
         profile.buildProfile();
 
@@ -131,7 +138,7 @@ final class LearningProfileTest {
     @Test
     void quizOnlyProfileReportsNoCompletedRobotInsteadOfNoData() {
         LearningProfile profile = profile(List.of(robot("quiz")), List.of(), List.of(
-                attempt("quiz", 1, 0, 7, "2026-09-24T10:00:00Z")
+                attempt("quiz", 1, 0, 7, date("2026-09-24T10:00:00Z"))
         ), List.of());
 
         profile.buildProfile();
@@ -146,9 +153,9 @@ final class LearningProfileTest {
     @Test
     void abandonedProfileReportsStoppedWithOrWithoutQuiz() {
         for (List<ProfileQuizAttempt> attempts : List.of(List.<ProfileQuizAttempt>of(), List.of(
-                attempt("stopped", 1, 5, 7, "2026-09-24T10:00:00Z")))) {
+                attempt("stopped", 1, 5, 7, date("2026-09-24T10:00:00Z"))))) {
             LearningProfile profile = profile(List.of(robot("stopped")), List.of(
-                    session("stopped", "ABANDONED", 1, 33, "2026-09-23T10:00:00Z")
+                    session("stopped", "ABANDONED", 1, 33, date("2026-09-23T10:00:00Z"))
             ), attempts, List.of());
 
             profile.buildProfile();
@@ -163,16 +170,16 @@ final class LearningProfileTest {
     void overallStatusPrioritizesCompletionThenEveryOpenSessionState() {
         for (String openStatus : List.of("PREPARING", "READY", "IN_PROGRESS")) {
             LearningProfile profile = profile(List.of(robot("done"), robot("active"), robot("stopped")), List.of(
-                    session("active", openStatus, 1, 22, "2026-09-24T11:00:00Z"),
-                    session("stopped", "ABANDONED", 1, 33, "2026-09-23T10:00:00Z")
-            ), List.of(attempt("stopped", 1, 5, 7, "2026-09-24T10:00:00Z")), List.of());
+                    session("active", openStatus, 1, 22, date("2026-09-24T11:00:00Z")),
+                    session("stopped", "ABANDONED", 1, 33, date("2026-09-23T10:00:00Z"))
+            ), List.of(attempt("stopped", 1, 5, 7, date("2026-09-24T10:00:00Z"))), List.of());
             profile.buildProfile();
             assertEquals("Đang thực hiện", profile.getOverallStatusLabel());
 
             profile.setSessionStats(List.of(
-                    session("done", "COMPLETED", 1, 13, "2026-09-24T17:30:00Z"),
-                    session("active", openStatus, 1, 22, "2026-09-24T11:00:00Z"),
-                    session("stopped", "ABANDONED", 1, 33, "2026-09-23T10:00:00Z")
+                    session("done", "COMPLETED", 1, 13, date("2026-09-24T17:30:00Z")),
+                    session("active", openStatus, 1, 22, date("2026-09-24T11:00:00Z")),
+                    session("stopped", "ABANDONED", 1, 33, date("2026-09-23T10:00:00Z"))
             ));
             profile.buildProfile();
             assertEquals("Đã hoàn thành 1 mẫu", profile.getOverallStatusLabel());
@@ -199,11 +206,68 @@ final class LearningProfileTest {
         assertEquals("Chưa có dữ liệu", noCatalog.getOverallStatusLabel());
     }
 
+    @Test
+    void statusGettersKeepPresentationRulesInTheBean() {
+        ProfileRobotEntry result = new ProfileRobotEntry();
+        assertFalse(result.isCompleted());
+        assertFalse(result.isInProgress());
+        assertFalse(result.isStopped());
+
+        result.setStatusKey("COMPLETED");
+        assertTrue(result.isCompleted());
+        assertFalse(result.isInProgress());
+        assertFalse(result.isStopped());
+
+        result.setStatusKey("IN_PROGRESS");
+        assertFalse(result.isCompleted());
+        assertTrue(result.isInProgress());
+        assertFalse(result.isStopped());
+
+        result.setStatusKey("ABANDONED");
+        assertFalse(result.isCompleted());
+        assertFalse(result.isInProgress());
+        assertTrue(result.isStopped());
+
+        result.setStatusKey(null);
+        assertFalse(result.isCompleted());
+        assertFalse(result.isInProgress());
+        assertFalse(result.isStopped());
+    }
+
+    @Test
+    void missingDatesAreSafeAndSortBeforeRecordedDatesThenUseAttemptIdForTies() {
+        assertEquals("Chưa có dữ liệu", LearningProfile.formatDate(null));
+        assertEquals("Chưa có dữ liệu", LearningProfile.formatDateTime(null));
+        LearningProfile result = new LearningProfile();
+        result.buildProfile();
+        assertEquals("Chưa có dữ liệu", result.getGeneratedAtDisplay());
+
+        List<Robot> robots = new ArrayList<>();
+        robots.add(robot("dated"));
+        List<ProfileQuizAttempt> attempts = new ArrayList<>();
+        attempts.add(attempt("dated", 20, 4, 7, null));
+        attempts.add(attempt("dated", 10, 4, 7, date("2026-09-24T17:30:00Z")));
+        result.setCatalogRobots(robots);
+        result.setQuizAttempts(attempts);
+        result.buildProfile();
+        assertEquals("25/09/2026", entry(result, "dated").getBestQuizDate());
+        assertEquals("25/09/2026", entry(result, "dated").getLatestQuizDate());
+
+        attempts.clear();
+        attempts.add(attempt("dated", 10, 4, 7, null));
+        attempts.add(attempt("dated", 20, 8, 14, null));
+        result.buildProfile();
+        assertEquals(8, entry(result, "dated").getBestQuizScore());
+        assertEquals(14, entry(result, "dated").getBestQuizTotalQuestions());
+        assertEquals(8, entry(result, "dated").getLatestQuizScore());
+        assertEquals("Chưa có dữ liệu", entry(result, "dated").getLatestQuizDate());
+    }
+
     private static LearningProfile profile(List<Robot> robots, List<ProfileSessionStat> sessions,
             List<ProfileQuizAttempt> attempts, List<String> components) {
         LearningProfile profile = new LearningProfile();
         profile.setFullName("Người học");
-        profile.setGeneratedAtUtc("2026-09-24T17:30:00Z");
+        profile.setGeneratedAt(date("2026-09-24T17:30:00Z"));
         profile.setCatalogRobots(robots);
         profile.setSessionStats(sessions);
         profile.setQuizAttempts(attempts);
@@ -212,9 +276,14 @@ final class LearningProfileTest {
     }
 
     private static ProfileRobotEntry entry(LearningProfile profile, String robotId) {
-        return profile.getRobotEntries().stream()
-                .filter(value -> robotId.equals(value.getRobot().getId()))
-                .findFirst().orElseThrow();
+        for (int i = 0; i < profile.getRobotEntries().size(); i++) {
+            ProfileRobotEntry value = profile.getRobotEntries().get(i);
+            if (robotId.equals(value.getRobot().getId())) {
+                return value;
+            }
+        }
+        fail("Không tìm thấy robot " + robotId);
+        return null;
     }
 
     private static Robot robot(String id) {
@@ -226,23 +295,35 @@ final class LearningProfileTest {
         return robot;
     }
 
-    private static ProfileSessionStat session(String robotId, String status, int count, long latestId, String date) {
+    private static ProfileSessionStat session(String robotId, String status, int count, long latestId, Date date) {
         ProfileSessionStat result = new ProfileSessionStat();
         result.setRobotId(robotId);
         result.setStatus(status);
         result.setSessionCount(count);
         result.setLatestSessionId(latestId);
-        result.setLatestEventAtUtc(date);
+        result.setLatestEventAt(date);
         return result;
     }
 
-    private static ProfileQuizAttempt attempt(String robotId, long id, int score, int total, String submittedAt) {
+    private static ProfileQuizAttempt attempt(String robotId, long id, int score, int total, Date submittedAt) {
         ProfileQuizAttempt result = new ProfileQuizAttempt();
         result.setRobotId(robotId);
         result.setAttemptId(id);
         result.setScore(score);
         result.setTotalQuestions(total);
-        result.setSubmittedAtUtc(submittedAt);
+        result.setSubmittedAt(submittedAt);
         return result;
+    }
+
+    private static Date date(String timestamp) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
+        format.setTimeZone(TimeZone.getTimeZone("UTC"));
+        format.setLenient(false);
+        try {
+            return format.parse(timestamp);
+        } catch (ParseException exception) {
+            fail("Timestamp test không hợp lệ: " + timestamp);
+            return null;
+        }
     }
 }

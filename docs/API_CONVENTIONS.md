@@ -193,6 +193,13 @@ bằng các truy vấn `StatsDB` riêng theo `user_id`, dựng `LearningProfile`
 forward sang `WEB-INF/views/learning-profile.jsp`. Đây là trang chỉ đọc, không
 ghi dữ liệu và không thêm bảng.
 
+Đợt 5b không đổi route/response hay câu SQL. Thời điểm trong bean dùng
+`java.util.Date` (dữ kiện JDBC từ `Timestamp.getTime()`), được định dạng bằng
+`SimpleDateFormat` tạo riêng mỗi lần theo `Asia/Ho_Chi_Minh`: `dd/MM/yyyy`,
+hoặc `dd/MM/yyyy HH:mm` cho lúc lập hồ sơ. Thiếu Date hiển thị "Chưa có dữ
+liệu". Servlet dùng `String url` + `getRequestDispatcher(url).forward(...)`;
+JSP chỉ trình bày các getter `completed`, `inProgress`, `stopped` của bean.
+
 Tình trạng chung ưu tiên: có mẫu hoàn thành → "Đã hoàn thành n mẫu"; nếu chưa
 có mẫu hoàn thành nhưng có phiên mở → "Đang thực hiện"; nếu chỉ còn phiên đã
 dừng → "Đã dừng"; nếu chỉ có lượt quiz → "Chưa hoàn thành mẫu nào"; không có

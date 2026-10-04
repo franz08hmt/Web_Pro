@@ -1,6 +1,7 @@
 package vn.edu.webpro.robotlab.business;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /** Dữ kiện phiên đã gom theo robot và trạng thái để dựng hồ sơ cá nhân. */
 public class ProfileSessionStat implements Serializable {
@@ -8,12 +9,12 @@ public class ProfileSessionStat implements Serializable {
     private String status;
     private long sessionCount;
     private long latestSessionId;
-    private String latestEventAtUtc;
+    private Date latestEventAt;
 
     public ProfileSessionStat() {
         robotId = "";
         status = "";
-        latestEventAtUtc = "";
+        latestEventAt = null;
     }
 
     public String getRobotId() {
@@ -48,11 +49,11 @@ public class ProfileSessionStat implements Serializable {
         this.latestSessionId = latestSessionId;
     }
 
-    public String getLatestEventAtUtc() {
-        return latestEventAtUtc;
+    public Date getLatestEventAt() {
+        return latestEventAt;
     }
 
-    public void setLatestEventAtUtc(String latestEventAtUtc) {
-        this.latestEventAtUtc = latestEventAtUtc;
+    public void setLatestEventAt(Date latestEventAt) {
+        this.latestEventAt = latestEventAt;
     }
 }
