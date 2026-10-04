@@ -36,14 +36,18 @@ migration đã ghi nhận. Nếu dùng một DB khác, kiểm tra `schema_migrat
 chỉ nhờ chủ DB chạy migration còn thiếu bằng tài khoản được cấp quyền, không dùng
 tài khoản ứng dụng để `ALTER`.
 
-Các tài khoản dưới đây dành riêng cho buổi demo trên DB cục bộ. Cả bốn được tạo
+Các tài khoản dưới đây là dữ liệu demo đã tạo trên một DB cục bộ, không có seed
+khôi phục tài khoản trong repo và không bảo đảm đăng nhập được trên DB khác.
+Lần QA Đợt 5 trước ghi nhận API từ chối mật khẩu được ghi ở đây; lần kiểm chứng
+ngày 04/10/2026 đã đăng nhập thành công cả bốn trên Tomcat QA/MySQL hiện tại.
+Trước buổi bảo vệ vẫn phải kiểm tra trên đúng instance đang dùng. Cả bốn được tạo
 qua `POST /api/auth/register`; role ADMIN được cấp sau đó bằng một câu `UPDATE`
 có điều kiện và tăng `session_version` để vô hiệu hóa phiên cũ. Đăng ký công khai
 luôn tạo role USER, không gửi role từ trình duyệt.
 
 | Email | Quyền | Dữ liệu lịch sử để trình bày |
 | --- | --- | --- |
-| `ral-demo-admin@robotlab.test` | ADMIN | Đăng nhập được; xem `/admin-stats`; không có dữ liệu thực hành riêng |
+| `ral-demo-admin@robotlab.test` | ADMIN | Dự kiến xem `/admin-stats`; không có dữ liệu thực hành riêng |
 | `ral-demo-builder@robotlab.test` | USER | Đã hoàn tất Robot dò đường; có 3 lượt kiểm tra, mỗi mẫu robot một lượt (7/7) |
 | `ral-demo-practice@robotlab.test` | USER | Phiên Robot tránh vật cản ở `PREPARING`, đã chuẩn bị 4/8 nhóm linh kiện |
 | `ral-demo-student@robotlab.test` | USER | Có một lượt kiểm tra Cánh tay robot mini (7/7) |
@@ -151,9 +155,18 @@ mới thêm vào đồ án.
     `/order-history` xem snapshot. Nói rõ đây không phải thanh toán thật. Với
     ADMIN, mở `/pages/admin-shop.html`, sửa giá demo rồi ngừng bán; catalog ẩn
     sản phẩm nhưng đơn cũ vẫn giữ tên/giá tại thời điểm đặt.
-19. Mở `/learning-profile` bằng một tài khoản demo: chỉ ra danh mục đủ năm mẫu,
+19. Chuẩn bị trước một tài khoản đăng nhập được trên DB hiện tại. Nếu tài khoản
+    demo cũ bị từ chối, đăng ký tài khoản mới ở `/pages/tai-khoan.html` bằng mật
+    khẩu tự chọn; hoàn tất ít nhất một mẫu qua luồng chuẩn bị → lắp ráp 3D →
+    phiếu kết quả, rồi nộp một bài quiz. Không sửa dữ liệu hay mật khẩu tài khoản
+    demo cũ chỉ để buổi trình bày chạy được. Đăng ký mới chỉ có quyền USER;
+    phần demo ADMIN cần một tài khoản ADMIN đã được xác thực riêng.
+    Mở `/learning-profile` bằng tài khoản đã chuẩn bị: chỉ ra danh mục đủ năm mẫu,
     số liệu của session hiện tại, trạng thái/quiz/kỹ năng có căn cứ; dùng In / Lưu
-    PDF và chọn A4. So sánh cùng tài khoản ở `/learning-summary`; nếu lịch sử
+    PDF, chọn A4 và nên tắt **Đầu trang và chân trang**. Kiểm tra mục Kỹ năng
+    giữ tiêu đề/caption cùng bảng; số trang CSS tùy hỗ trợ trình duyệt. Nếu cần
+    bật lại đầu/chân trang để có số trang, chấp nhận ngày giờ/tiêu đề/URL do
+    trình duyệt thêm vào. So sánh cùng tài khoản ở `/learning-summary`; nếu lịch sử
     quiz có mẫu số thay đổi, giải thích rằng hồ sơ chọn đúng lượt theo tỷ lệ
     `score/total_questions`, còn trang tổng kết cũ giữ nguyên cách tổng hợp trước.
 
@@ -312,9 +325,23 @@ với tiến độ thật; nút in dùng chức năng in/lưu PDF sẵn có củ
 Hai trang đọc cùng các bảng của đúng tài khoản. Hồ sơ áp dụng định nghĩa đã công
 bố: lượt tốt nhất là tỷ lệ `score/total_questions` cao nhất, hòa thì lấy lượt
 mới hơn và giữ đúng tổng câu của lượt đó. Trang tổng kết cũ vẫn giữ nguyên cách
-tổng hợp trước; dữ liệu lịch sử có mẫu số thay đổi có thể làm hai cách hiển thị
+tổng hợp `MAX(score)` và `MAX(total_questions)` độc lập; dữ liệu lịch sử có mẫu
+số thay đổi có thể làm hai cách hiển thị
 khác nhau. Hồ sơ cũng là tài liệu in tĩnh, không hiện email hay giải thích kiến
 trúc dài như trang tổng kết.
+
+### "Tình trạng chung được xác định thế nào?"
+
+Ưu tiên mẫu đã hoàn thành, rồi phiên đang thực hiện, rồi phiên đã dừng. Nếu chỉ
+có lượt quiz thì ghi "Chưa hoàn thành mẫu nào"; chỉ ghi "Chưa có dữ liệu" khi
+không có phiên hay lượt quiz. Điểm và căn cứ kỹ năng vẫn tuân theo dữ liệu thực
+tế, không suy ra đã lắp ráp từ việc làm quiz.
+
+### "Vì sao bản in giữ mã phiên?"
+
+Mã phiên lắp ráp dùng để đối chiếu căn cứ hoàn thành với phiếu kết quả, đúng
+đặc tả hồ sơ. Đây không phải ID người dùng; hồ sơ không in email, quyền hay
+thông tin xác thực của tài khoản.
 
 ## Chuỗi file nên mở khi bảo vệ
 

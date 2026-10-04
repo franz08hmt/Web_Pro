@@ -193,6 +193,12 @@ bằng các truy vấn `StatsDB` riêng theo `user_id`, dựng `LearningProfile`
 forward sang `WEB-INF/views/learning-profile.jsp`. Đây là trang chỉ đọc, không
 ghi dữ liệu và không thêm bảng.
 
+Tình trạng chung ưu tiên: có mẫu hoàn thành → "Đã hoàn thành n mẫu"; nếu chưa
+có mẫu hoàn thành nhưng có phiên mở → "Đang thực hiện"; nếu chỉ còn phiên đã
+dừng → "Đã dừng"; nếu chỉ có lượt quiz → "Chưa hoàn thành mẫu nào"; không có
+phiên/lượt quiz → "Chưa có dữ liệu". Đây là luật trong JavaBean, không suy ra
+đã hoàn thành lắp ráp từ điểm quiz.
+
 ## Cửa hàng và đơn hàng mô phỏng (đợt 4)
 
 `GET /api/shop/products?page=1&limit=20` là catalog công khai, chỉ trả sản phẩm

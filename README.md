@@ -131,7 +131,9 @@ WHERE email = 'admin@example.com';
   dựng JavaBean rồi forward sang JSP. Response dùng `Cache-Control: no-store`;
   không nhận chủ sở hữu từ query string.
 - Nút **In / Lưu PDF** gọi hộp thoại in của trình duyệt. Chọn khổ A4 và
-  **Lưu dưới dạng PDF**; không có dịch vụ hoặc thư viện xuất PDF riêng.
+  **Lưu dưới dạng PDF**, nên tắt **Đầu trang và chân trang** để tránh thêm ngày
+  giờ/tiêu đề của trình duyệt. Số trang do CSS tạo phụ thuộc trình duyệt;
+  không có dịch vụ hoặc thư viện xuất PDF riêng.
 
 ## Kiểm tra
 

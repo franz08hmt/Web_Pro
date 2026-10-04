@@ -129,6 +129,57 @@ final class LearningProfileTest {
     }
 
     @Test
+    void quizOnlyProfileReportsNoCompletedRobotInsteadOfNoData() {
+        LearningProfile profile = profile(List.of(robot("quiz")), List.of(), List.of(
+                attempt("quiz", 1, 0, 7, "2026-09-24T10:00:00Z")
+        ), List.of());
+
+        profile.buildProfile();
+
+        assertEquals("Chưa hoàn thành mẫu nào", profile.getOverallStatusLabel());
+        assertEquals(1, profile.getQuizAttemptCount());
+        assertEquals("0%", profile.getAverageBestScoreLabel());
+        assertEquals("Chưa có dữ liệu", entry(profile, "quiz").getStatusLabel());
+        assertTrue(profile.getSkillLines().isEmpty());
+    }
+
+    @Test
+    void abandonedProfileReportsStoppedWithOrWithoutQuiz() {
+        for (List<ProfileQuizAttempt> attempts : List.of(List.<ProfileQuizAttempt>of(), List.of(
+                attempt("stopped", 1, 5, 7, "2026-09-24T10:00:00Z")))) {
+            LearningProfile profile = profile(List.of(robot("stopped")), List.of(
+                    session("stopped", "ABANDONED", 1, 33, "2026-09-23T10:00:00Z")
+            ), attempts, List.of());
+
+            profile.buildProfile();
+
+            assertEquals("Đã dừng", profile.getOverallStatusLabel());
+            assertEquals(0, profile.getCompletedRobotCount());
+            assertTrue(profile.getSkillLines().isEmpty());
+        }
+    }
+
+    @Test
+    void overallStatusPrioritizesCompletionThenEveryOpenSessionState() {
+        for (String openStatus : List.of("PREPARING", "READY", "IN_PROGRESS")) {
+            LearningProfile profile = profile(List.of(robot("done"), robot("active"), robot("stopped")), List.of(
+                    session("active", openStatus, 1, 22, "2026-09-24T11:00:00Z"),
+                    session("stopped", "ABANDONED", 1, 33, "2026-09-23T10:00:00Z")
+            ), List.of(attempt("stopped", 1, 5, 7, "2026-09-24T10:00:00Z")), List.of());
+            profile.buildProfile();
+            assertEquals("Đang thực hiện", profile.getOverallStatusLabel());
+
+            profile.setSessionStats(List.of(
+                    session("done", "COMPLETED", 1, 13, "2026-09-24T17:30:00Z"),
+                    session("active", openStatus, 1, 22, "2026-09-24T11:00:00Z"),
+                    session("stopped", "ABANDONED", 1, 33, "2026-09-23T10:00:00Z")
+            ));
+            profile.buildProfile();
+            assertEquals("Đã hoàn thành 1 mẫu", profile.getOverallStatusLabel());
+        }
+    }
+
+    @Test
     void emptyProfileHasNoInventedQuizScoreOrSkillEvidence() {
         LearningProfile profile = profile(List.of(robot("empty")), List.of(), List.of(), List.of());
         profile.buildProfile();

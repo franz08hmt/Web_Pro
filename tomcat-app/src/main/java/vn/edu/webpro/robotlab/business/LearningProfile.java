@@ -335,7 +335,16 @@ public class LearningProfile implements Serializable {
             return;
         }
         boolean anyOpenSession = robotEntries.stream().anyMatch(entry -> IN_PROGRESS.equals(entry.getStatusKey()));
-        overallStatusLabel = anyOpenSession ? "Đang thực hiện" : NO_DATA;
+        if (anyOpenSession) {
+            overallStatusLabel = "Đang thực hiện";
+            return;
+        }
+        boolean anyAbandonedSession = robotEntries.stream().anyMatch(entry -> ABANDONED.equals(entry.getStatusKey()));
+        if (anyAbandonedSession) {
+            overallStatusLabel = "Đã dừng";
+            return;
+        }
+        overallStatusLabel = quizAttemptCount > 0 ? "Chưa hoàn thành mẫu nào" : NO_DATA;
     }
 
     private void updateAverageBestScore() {

@@ -7,14 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hồ sơ học tập - <c:out value="${profile.fullName}"/> | Robot Assembly Lab</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-profile.css?v=20261003.1">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-profile.css?v=20261004.1">
 </head>
 <body>
 <main class="learning-profile">
     <nav class="profile-toolbar no-print" aria-label="Công cụ hồ sơ">
         <a class="profile-back" href="${pageContext.request.contextPath}/pages/tai-khoan.html">← Quay lại tài khoản</a>
         <button class="profile-print-button" id="print-profile" type="button">In / Lưu PDF</button>
-        <span class="print-hint">Trong hộp thoại in, chọn Lưu dưới dạng PDF và khổ A4.</span>
+        <span class="print-hint">Trong hộp thoại in, chọn Lưu dưới dạng PDF, khổ A4; nên tắt Đầu trang và chân trang để tránh thêm ngày giờ và tiêu đề của trình duyệt.</span>
     </nav>
     <noscript><p class="profile-noscript no-print">Bạn có thể dùng Ctrl+P (Windows/Linux) hoặc Command+P (macOS) để in hoặc lưu PDF.</p></noscript>
 
@@ -122,7 +122,7 @@
     </article>
 
     <aside class="profile-technical-note no-print" aria-label="Ghi chú kỹ thuật cho buổi bảo vệ">
-        Luồng trong mã: <code>LearningProfileServlet → StatsDB/RobotDB → LearningProfile → JSP</code>. Bộ đếm trang ở chân giấy phụ thuộc hỗ trợ margin box của trình duyệt; nếu không thấy, bật Đầu trang và chân trang trong hộp thoại in.
+        Luồng trong mã: <code>LearningProfileServlet → StatsDB/RobotDB → LearningProfile → JSP</code>. Bộ đếm trang ở chân giấy phụ thuộc hỗ trợ margin box của trình duyệt. Nên tắt Đầu trang và chân trang; nếu trình duyệt không hiện số trang do CSS tạo và bạn cần số trang, có thể bật lại tùy chọn này, nhưng bản in sẽ có thêm ngày giờ, tiêu đề hoặc URL do trình duyệt tạo, theo định dạng của trình duyệt.
     </aside>
 </main>
 <script src="${pageContext.request.contextPath}/assets/js/learning-profile.js?v=20261003.1"></script>

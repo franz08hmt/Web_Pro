@@ -219,10 +219,44 @@ Cho phép người dùng tự bật chế độ lái thử mô hình 3D sau khi 
 - [x] Công thức quiz, trạng thái, thời gian Việt Nam và kỹ năng có căn cứ được
   kiểm thử trong JavaBean.
 - [x] JSP escape mọi chuỗi động; CSS in A4 ẩn công cụ, giữ khối/hàng và lặp thead.
-- [ ] `npm test`, `mvn test`, `mvn clean package`, live Tomcat/MySQL và khả năng
+- [x] `npm test`, `mvn test`, `mvn clean package`, live Tomcat/MySQL và khả năng
   in PDF được kiểm chứng; giới hạn trình duyệt được ghi trung thực. Bộ test và
-  bản in A4 đã đạt; kiểm tra tài khoản demo có dữ liệu còn chờ thông tin đăng nhập
-  hợp lệ do mật khẩu trong `TEAM_FLOW_DEMO_GUIDE.md` và giá trị vừa cung cấp đều
-  bị từ chối.
-- [ ] Không thêm migration; tổng kết và chức năng cũ không đổi; chỉ stage file
-  Đợt 5, commit và push nhánh hiện tại.
+  bản in A4 đã đạt. Kiểm chứng bổ sung ngày 04/10/2026 đã đăng nhập cả bốn tài
+  khoản demo, đối chiếu SQL/tổng kết và thử query đổi chủ hồ sơ thành công.
+- [x] Không thêm migration; tổng kết và chức năng cũ không đổi; Đợt 5 ban đầu
+  đã commit/push tại `adec65f`. Lượt sửa sau review chỉ commit local theo yêu
+  cầu mới, không push.
+
+## Sửa sau review Đợt 5 — 04/10/2026
+
+- Giữ mục Kỹ năng cùng tiêu đề/caption/bảng khi đủ chỗ trên một trang bằng
+  `break-inside: avoid`/`page-break-inside: avoid` ở section trong CSS in. Bảng
+  quá dài vẫn được ngắt trang; giữ từng hàng và lặp `thead`.
+- Bổ sung nhãn tổng quan cho phiên ABANDONED và tài khoản chỉ làm quiz; kiểm
+  tra ưu tiên hoàn thành → phiên mở → đã dừng → chỉ quiz → không có dữ liệu.
+- Sửa gợi ý tắt đầu/chân trang mặc định của trình duyệt, nêu rõ cách dự phòng
+  khi trình duyệt không hỗ trợ số trang CSS; bump phiên bản CSS riêng.
+- Giữ mã phiên lắp ráp để truy vết theo đặc tả. Giữ logic tổng kết; ghi rõ
+  khác biệt giữa MAX độc lập và tỷ lệ của đúng lượt quiz trong demo guide.
+- Tài khoản demo không có seed trong repo. Cả bốn đăng nhập được trong lần QA
+  này; bổ sung cách chuẩn bị một tài khoản USER mới nếu DB khác không có demo.
+- Baseline Node: 104 test, 103 pass/1 skip vì chưa có exploded WAR; Maven ban
+  đầu 32/32. Target cũ còn một số class Java 25 gây lỗi khi biên dịch test mới
+  trên JDK 17; `clean package` dựng lại đúng Java 17, không đổi SDK/pom nguồn.
+- Sau sửa: Node 104/104, JUnit 35/35; `mvn clean package` thành công với JDK 17.
+  Ba test mới kiểm tra quiz 0/7 thật, phiên đã dừng và thứ tự ưu tiên trạng thái.
+- Tomcat 9 QA chỉ nghe loopback cổng 8081, MySQL connected. Guest nhận 302 và
+  no-store; cả bốn demo nhận hồ sơ 200. Số mẫu/lượt/điểm/kỹ năng khớp JDBC đọc
+  trực tiếp và `/learning-summary`; query userId/user/email không đổi nội dung.
+- Smoke hồi quy: tổng kết, phiếu kết quả của builder, trang 3D/quiz/shop, API
+  robots/components/shop và lịch sử đơn đều 200. Không làm lại thao tác ghi
+  lắp ráp/quiz/checkout trong lượt này.
+- Chrome headless: PDF live builder 3 trang; fixture qua JSP thật với 3 hoặc
+  5 mẫu hoàn thành đều 3 trang, tiêu đề Kỹ năng cùng trang với đầu bảng. Fixture
+  kỹ năng dài 6 trang lặp `thead` trên trang 3–6; hàng không cắt ngang. Đã xem
+  ảnh PDF và màn hình 390px không tràn ngang. Tên HTML ở fixture được escape;
+  giờ biên UTC hiển thị 25/09/2026 00:30. Fixture nằm trong runtime tạm, không
+  vào repo/WAR chính, không ghi DB. Firefox/Safari chưa kiểm chứng.
+- Không tạo tài khoản mới, không sửa dữ liệu/tài khoản demo. Artifact PDF/ảnh
+  QA giữ ở `tomcat-app/target/phase5-qa/` (gitignored); runtime/log/cookie tạm
+  được dọn sau khi kiểm chứng. Chỉ stage các file sửa của Đợt 5 và commit local.

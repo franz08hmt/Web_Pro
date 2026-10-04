@@ -305,6 +305,7 @@
   }
 
   .learning-profile .profile-robot,
+  .learning-profile section[aria-labelledby="profile-skills-heading"],
   .learning-profile tr,
   .learning-profile .profile-header,
   .learning-profile .confirmation-section,

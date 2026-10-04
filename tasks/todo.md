@@ -57,13 +57,29 @@
 - [x] Cập nhật API conventions, demo guide, ERD, README và plan.
 - [x] Chạy lại toàn bộ `npm test` (104/104), `mvn clean test` (32/32),
   `mvn clean package` (32/32, JDK 17).
-- [ ] Live Tomcat/MySQL: health, guest redirect/no-store, hai hồ sơ QA rỗng,
+- [x] Live Tomcat/MySQL: health, guest redirect/no-store, hai hồ sơ QA rỗng,
   escape tên HTML và số liệu demo đọc trực tiếp bằng JDBC đã kiểm tra. Đăng nhập
   bốn tài khoản demo bằng mật khẩu trong `TEAM_FLOW_DEMO_GUIDE.md` và giá trị
   xác thực người dùng cung cấp đều bị từ chối;
-  cần xác nhận lại thông tin để kiểm tra tài khoản có dữ liệu, đối chiếu
-  `/learning-summary` và owner-query tampering trong phiên đăng nhập.
+  lần bổ sung ngày 04/10/2026 đăng nhập thành công cả bốn demo, đối chiếu
+  JDBC/`/learning-summary` và owner-query tampering trong phiên đăng nhập.
 - [x] Xuất PDF A4 bằng Chrome headless, xác nhận no-print, tiêu đề, chân hồ sơ,
   ngày giờ Việt Nam và 2 trang; đã render và xem trực quan cả hai trang. Tài khoản
   QA rỗng nên bảng kỹ năng có thead chưa xuất hiện trong PDF live.
 - [x] Rà diff/no secrets, commit đúng file Đợt 5 và push nhánh hiện tại.
+
+### Sửa sau review — 04/10/2026 (chỉ commit local, không push)
+
+- [x] CSS in giữ mục Kỹ năng cùng tiêu đề/caption/bảng; bảng quá dài vẫn lặp thead.
+- [x] Tổng quan phản ánh phiên đã dừng và quiz-only; thêm ba JUnit test cho luật
+  và thứ tự ưu tiên, gồm 0/7 thật và nhiều trạng thái phiên mở.
+- [x] Chỉnh gợi ý in, cache-busting CSS, hướng dẫn chuẩn bị demo và giải thích mã phiên.
+- [x] Node 104/104, JUnit 35/35, `mvn clean package` JDK 17 thành công.
+- [x] Tomcat/MySQL thật: guest 302/no-store, bốn demo đăng nhập/hồ sơ 200;
+  đối chiếu JDBC/tổng kết; query owner không đổi dữ liệu. Smoke trang/API cũ 200.
+- [x] Chrome PDF live builder và fixture JSP đủ dữ liệu 3 trang; mục Kỹ năng
+  liền nhau. Fixture dài 6 trang lặp thead ở trang 3–6. Đã xem ảnh PDF/mobile;
+  no-print bị ẩn, tên HTML được escape. Chưa kiểm tra Firefox/Safari.
+- [x] Không thêm schema/migration/tài khoản hay ghi dữ liệu QA vào MySQL.
+- [x] Dọn Tomcat QA/log/cookie tạm; giữ bằng chứng trong target/phase5-qa (không stage).
+- [x] Review diff, commit đúng file sửa; không push theo yêu cầu hiện tại.
