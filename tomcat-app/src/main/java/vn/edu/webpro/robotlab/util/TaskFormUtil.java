@@ -75,8 +75,9 @@ public final class TaskFormUtil {
         task.setMaxSubmissions(integer(request, "maxSubmissions"));
         task.setPassThreshold(integer(request, "passThreshold"));
         task.setAllowPriorEvidence("true".equals(text(request, "allowPriorEvidence")));
-        if (!"A".equals(text(request, "rubricTemplate"))) {
-            throw new IllegalArgumentException("Chặng 1 chỉ dùng mẫu A.");
+        task.setRubricTemplate(text(request, "rubricTemplate"));
+        if (task.isRubricB()) {
+            task.setDiagnosisScenarioId(number(request, "diagnosisScenarioId"));
         }
         return task;
     }
@@ -86,6 +87,9 @@ public final class TaskFormUtil {
         TaskSubmission input = new TaskSubmission();
         input.setSessionId(number(request, "sessionId"));
         input.setRoundId(number(request, "roundId"));
+        if (!text(request, "diagnosisAttemptId").isEmpty()) {
+            input.setDiagnosisAttemptId(number(request, "diagnosisAttemptId"));
+        }
         input.setProblem(text(request, "problem"));
         input.setReasoning(text(request, "reasoning"));
         input.setImprovement(text(request, "improvement"));

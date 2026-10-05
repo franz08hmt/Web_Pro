@@ -70,6 +70,9 @@ public class TaskServlet extends HttpServlet {
                 TaskSubmissionDB.selectSubmissions(task.getId(), user.getId(), false));
         TaskSubmission quiz = TaskSubmissionDB.selectRoundQuiz(task.getId(), user.getId());
         request.setAttribute("taskQuiz", quiz);
+        if (task.isRubricB()) {
+            request.setAttribute("taskDiagnosis", TaskSubmissionDB.selectRoundDiagnosis(task.getId(), user.getId()));
+        }
         if (quiz != null && recipient.getCurrentRound().isHasQuizAttempt()) {
             request.setAttribute(
                     "quizAttempt",
@@ -94,6 +97,9 @@ public class TaskServlet extends HttpServlet {
                                 user.getId(), false, TaskFormUtil.text(request, "state")));
                 forward(request, response, "task-list");
                 return;
+            }
+            if (!"view".equals(action) && !"quiz".equals(action) && !"submit".equals(action)) {
+                throw new IllegalArgumentException("Thao tác không hợp lệ.");
             }
             PracticeTask task = owned(request, response, user);
             if (task == null) {
@@ -144,7 +150,16 @@ public class TaskServlet extends HttpServlet {
                 return;
             }
             String action = TaskFormUtil.text(request, "action");
-            if ("quiz".equals(action)) {
+            if ("diagnosis".equals(action)) {
+                long diagnosisId = DiagnosisDB.startTask(task.getId(), user.getId());
+                if (diagnosisId == 0) {
+                    response.sendError(404);
+                    return;
+                }
+                String diagnosisUrl = request.getContextPath() + "/diagnosis?action=play&id=" + diagnosisId;
+                response.sendRedirect(diagnosisUrl);
+                return;
+            } else if ("quiz".equals(action)) {
                 long roundId = TaskFormUtil.number(request, "roundId");
                 TaskRecipient recipient =
                         PracticeTaskDB.selectRecipients(task.getId(), user.getId(), false).get(0);

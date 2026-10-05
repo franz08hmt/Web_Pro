@@ -1,5 +1,24 @@
 # Implementation Plan: Đợt 2 — Lái thử 3D và Đợt 3 — Hai mẫu robot mới
 
+## Đợt 6 chặng 2 — Chẩn đoán tương tác và mẫu B
+
+- Khảo sát HEAD a1650e0, baseline Node114/JUnit52; đăng nhập bốn demo và lưu
+  golden77 trang trước sửa. Giữ mọi dữ liệu cũ và handoff ngoài commit.
+- Test trước: bean/nguồn đỏ vì lớp và view chưa có. Mở rộng guard slide-style
+  và định dạng, giữ toàn bộ test cũ.
+- Migration010 thêm năm bảng và liên kết nullable; chỉ đổi hai CHECK điểm
+  tối thiểu và mở ENUM rubric. Seed năm tình huống chính thức INSERT IGNORE.
+- Bean chứa luật công bố, chọn quan sát, kết luận 4/3/3, nguồn bằng chứng và
+  điểm B. JDBC/transaction giữ thứ tự task → recipient → round; conclude khóa
+  riêng lượt. JSP/form POST thuần, radio, role/CSRF/no-store như môn học.
+- Kiểm chứng điểm/nguồn/ẩn đáp án/quyền/ba tranh chấp thật; Chrome JS-off và
+  390px. So golden A:66/77 nguyên HTML;11 form ADMIN khác vì radio thay select,
+  ngoài form cả77 giống. Bản cuối69 trang chi tiết A giống bản after.
+- USER practice chưa có COMPLETED: phần nộp đầy đủ hai USER chờ quyết định;
+  không tự tạo/sửa phiên cũ. Hai cách vòng bổ sung đã chạy bằng builder.
+- Tài liệu slide/FAQ/seed/demo và báo cáo PHASE6C_QA_REPORT; một commit local
+  do diagnosis và B phụ thuộc nhau. Không push, dọn Tomcat8081 và bí mật tạm.
+
 ## Đợt 6b — Định dạng code và hai sửa nhỏ
 
 - Giữ SQL, chữ ký hàm, luật điểm/vòng/chấm và thứ tự transaction của Đợt 6.

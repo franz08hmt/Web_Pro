@@ -16,8 +16,8 @@
         <p>Mẫu: <c:out value="${task.robotName}"/> · <c:out value="${task.stateLabel}"/></p>
         <p>Hạn nộp: <c:out value="${task.dueDisplay}"/> · <c:out value="${task.latePolicyLabel}"/></p>
         <p>Tối đa <c:out value="${task.maxSubmissions}"/> lần nộp · Ngưỡng đạt <c:out value="${task.passThreshold}"/>/100.</p>
-        <p>Mẫu A: lắp ráp 40 + quiz 40 + giải thích 20 = 100. Điểm tự động làm tròn HALF_UP đến 1 chữ số thập phân; tổng điểm dùng điểm tự
-            động đã lưu.</p>
+        <p><c:out value="${task.rubric.label}"/>. Điểm tự động làm tròn HALF_UP đến 1 chữ số thập phân; tổng điểm dùng điểm tự
+        động đã lưu.</p>
         <c:choose>
             <c:when test="${adminView}">
                 <c:if test="${adminPreview}">
@@ -51,7 +51,7 @@
                             <input type="hidden" name="action" value="${learnerAction}">
                             <label>Tìm User theo tên <input name="q" value="<c:out value="${searchQuery}"/>" maxlength="100"></label>
                             <label>Trang danh sách User <input type="number" name="page" min="1" max="10000" value="<c:out
-                                value="${learnerPage}"/>"></label>
+                            value="${learnerPage}"/>"></label>
                             <button>Tìm</button>
                         </form>
                         <p>Mỗi trang tối đa 20 User. Người đã được giao vẫn được giữ trong nháp; bỏ chọn để gỡ.</p>
@@ -63,7 +63,7 @@
                                 <legend>Thêm người được giao</legend>
                                 <c:forEach var="learner" items="${learners}">
                                     <label class="task-choice"><input type="checkbox" name="recipientId" value="<c:out
-                                        value="${learner.id}"/>"> <c:out value="${learner.fullName}"/></label>
+                                    value="${learner.id}"/>"> <c:out value="${learner.fullName}"/></label>
                                 </c:forEach>
                             </fieldset>
                             <button type="submit">Thêm User</button>
@@ -110,14 +110,15 @@
                                 <tr>
                                     <td><c:out value="${recipient.fullName}"/></td>
                                     <td><c:out value="${recipient.statusLabel}"/><c:if test="${recipient.latestSubmission.late}"> · Nộp
-                                        muộn</c:if></td>
+                                            muộn</c:if></td>
                                     <td><c:if test="${not empty recipient.latestSubmission}"><a
                                         href="${pageContext.request.contextPath}/admin-task-reviews?id=<c:out
                                         value="${recipient.latestSubmission.id}"/>"><c:choose><c:when
-                                        test="${recipient.latestSubmission.reviewed}"><c:out
+                                                test="${recipient.latestSubmission.reviewed}"><c:out
                                         value="${recipient.latestSubmission.currentReview.totalDisplay}"/>/100</c:when><c:otherwise><c:out
-                                        value="${recipient.latestSubmission.automaticDisplay}"/>/80 — chờ đánh giá phần giải
-                                        thích</c:otherwise></c:choose></a></c:if></td>
+                                                value="${recipient.latestSubmission.automaticDisplay}"/>/<c:out
+                                                value="${task.rubric.automaticMaximum}"/> — chờ đánh giá phần giải
+                                                    thích</c:otherwise></c:choose></a></c:if></td>
                                 </tr>
                             </c:forEach>
                         </tbody>
@@ -127,12 +128,37 @@
             <c:otherwise>
                 <p><strong><c:out value="${recipient.statusLabel}"/></strong></p>
                 <p>Vòng <c:out value="${recipient.currentRound.roundNo}"/> · bắt đầu <c:out
-                    value="${recipient.currentRound.startedDisplay}"/></p>
+            value="${recipient.currentRound.startedDisplay}"/></p>
                 <c:if test="${recipient.showCurrentRoundQuiz and not empty taskQuiz}">
                     <p>Quiz lượt #<c:out value="${taskQuiz.quizAttemptId}"/> – <c:out value="${taskQuiz.quizScore}"/>/<c:out
-                        value="${taskQuiz.quizTotal}"/> – <c:out value="${taskQuiz.quizSubmittedDisplay}"/> <c:choose><c:when
+                value="${taskQuiz.quizTotal}"/> – <c:out value="${taskQuiz.quizSubmittedDisplay}"/> <c:choose><c:when
                         test="${taskQuiz.reusedQuiz}">(dùng lại từ lần nộp #<c:out
                         value="${taskQuiz.quizReusedFrom}"/>)</c:when><c:otherwise>(lượt của vòng này)</c:otherwise></c:choose></p>
+                </c:if>
+                <c:if test="${task.rubricB and recipient.showCurrentRoundQuiz}">
+                    <c:if test="${not empty taskDiagnosis}">
+                        <p>Chẩn đoán lượt #<c:out value="${taskDiagnosis.diagnosisAttemptId}"/> – <c:out
+                    value="${taskDiagnosis.diagnosisScoreDisplay}"/>/10 – lúc <c:out value="${taskDiagnosis.diagnosisSubmittedAtDisplay}"/>
+                        <c:choose>
+                            <c:when test="${taskDiagnosis.reusedDiagnosis}">(dùng lại từ lần nộp #<c:out
+                            value="${taskDiagnosis.diagnosisReusedFrom}"/>)</c:when>
+                            <c:otherwise>(lượt của vòng này)</c:otherwise>
+                        </c:choose>
+                        </p>
+                    </c:if>
+                    <c:if test="${recipient.canStartDiagnosis}">
+                        <form method="post" action="${pageContext.request.contextPath}/tasks">
+                            <input type="hidden" name="csrfToken" value="<c:out value="${sessionScope.csrfToken}"/>">
+                            <input type="hidden" name="action" value="diagnosis">
+                            <input type="hidden" name="id" value="<c:out value="${task.id}"/>">
+                            <button>
+                            <c:choose>
+                                <c:when test="${recipient.currentRound.hasDiagnosisAttempt}">Tiếp tục chẩn đoán</c:when>
+                                <c:otherwise>Bắt đầu chẩn đoán cho nhiệm vụ này</c:otherwise>
+                            </c:choose>
+                            </button>
+                        </form>
+                    </c:if>
                 </c:if>
                 <c:if test="${recipient.canTakeQuiz}">
                     <p><a href="?action=quiz&amp;id=<c:out value="${task.id}"/>">Làm quiz cho nhiệm vụ này</a></p>
@@ -141,7 +167,7 @@
                     <p><a href="?action=submit&amp;id=<c:out value="${task.id}"/>">Chọn bằng chứng và nộp bài</a></p>
                 </c:if>
                 <p><a href="${pageContext.request.contextPath}/pages/kiem-tra.html?model=<c:out value="${task.robotId}"/>">Quiz luyện tập
-                    (không thay lượt tính điểm)</a></p>
+                (không thay lượt tính điểm)</a></p>
             </c:otherwise>
         </c:choose>
         <c:if test="${not adminPreview}">
@@ -155,14 +181,31 @@
                     <p><c:out value="${taskSubmission.submittedDisplay}"/> <c:if test="${taskSubmission.late}"><strong> · Nộp
                         muộn</strong></c:if></p>
                     <p>Phiên lắp ráp #<c:out value="${taskSubmission.sessionId}"/> · <c:out value="${taskSubmission.robotName}"/> · hoàn
-                        thành <c:out value="${taskSubmission.assemblyCompletedDisplay}"/></p>
+                    thành <c:out value="${taskSubmission.assemblyCompletedDisplay}"/></p>
                     <p>Quiz lượt #<c:out value="${taskSubmission.quizAttemptId}"/>: <c:out value="${taskSubmission.quizScore}"/>/<c:out
-                        value="${taskSubmission.quizTotal}"/> · <c:out value="${taskSubmission.quizSubmittedDisplay}"/> <c:if
-                        test="${taskSubmission.reusedQuiz}">(dùng lại từ lần nộp #<c:out
-                        value="${taskSubmission.quizReusedFrom}"/>)</c:if></p>
-                    <p>Lắp ráp: 40,0/40 · Quiz: <c:out value="${taskSubmission.quizPointsDisplay}"/>/40</p>
-                    <p><strong>Điểm tự động: <c:out value="${taskSubmission.automaticDisplay}"/>/80</strong><c:if
-                        test="${taskSubmission.waiting}"> — chờ đánh giá phần giải thích</c:if></p>
+                value="${taskSubmission.quizTotal}"/> · <c:out value="${taskSubmission.quizSubmittedDisplay}"/> <c:if
+                    test="${taskSubmission.reusedQuiz}">(dùng lại từ lần nộp #<c:out
+                    value="${taskSubmission.quizReusedFrom}"/>)</c:if></p>
+                    <c:if test="${taskSubmission.hasDiagnosis}">
+                        <p>Tình huống: <c:out value="${taskSubmission.diagnosisTitle}"/></p>
+                        <p>Chẩn đoán lượt #<c:out value="${taskSubmission.diagnosisAttemptId}"/> – <c:out
+                    value="${taskSubmission.diagnosisScoreDisplay}"/>/10 – lúc <c:out
+                    value="${taskSubmission.diagnosisSubmittedAtDisplay}"/>
+                        <c:choose>
+                            <c:when test="${taskSubmission.reusedDiagnosis}">(dùng lại từ lần nộp #<c:out
+                            value="${taskSubmission.diagnosisReusedFrom}"/>)</c:when>
+                            <c:otherwise>(lượt của vòng này)</c:otherwise>
+                        </c:choose>
+                        </p>
+                        <p>Đóng góp chẩn đoán: <c:out value="${taskSubmission.diagnosisPointsDisplay}"/>/<c:out
+                    value="${taskSubmission.rubric.diagnosisWeight}"/></p>
+                    </c:if>
+                    <p>Lắp ráp: <c:out value="${taskSubmission.assemblyPointsDisplay}"/>/<c:out
+                value="${taskSubmission.rubric.assemblyWeight}"/> · Quiz: <c:out
+                value="${taskSubmission.quizPointsDisplay}"/>/<c:out value="${taskSubmission.rubric.quizWeight}"/></p>
+                    <p><strong>Điểm tự động: <c:out value="${taskSubmission.automaticDisplay}"/>/<c:out
+                value="${taskSubmission.rubric.automaticMaximum}"/></strong><c:if
+                    test="${taskSubmission.waiting}"> — chờ đánh giá phần giải thích</c:if></p>
                     <h4>Bạn gặp vấn đề gì?</h4>
                     <p class="task-text"><c:out value="${taskSubmission.problem}"/></p>
                     <h4>Vì sao chọn cách kiểm tra/xử lý đó?</h4>
@@ -171,21 +214,21 @@
                     <p class="task-text"><c:out value="${taskSubmission.improvement}"/></p>
                     <c:if test="${adminView}">
                         <p><a href="${pageContext.request.contextPath}/admin-task-reviews?id=<c:out value="${taskSubmission.id}"/>">Chấm /
-                            xem lịch sử chấm bài này</a></p>
+                        xem lịch sử chấm bài này</a></p>
                     </c:if>
                     <c:forEach var="taskReview" items="${taskSubmission.reviews}">
                         <div class="task-review">
-                            <p><strong><c:out value="${taskReview.conclusionLabel}"/> · Tổng: <c:out
-                                value="${taskReview.totalDisplay}"/>/100</strong> · Giải thích: <c:out
-                                value="${taskReview.explanationPoints}"/>/20 · <c:out value="${taskReview.reviewedDisplay}"/></p>
-                            <p>Người chấm: <c:out value="${taskReview.reviewerName}"/> · <c:out value="${taskReview.explanationLabel}"/></p>
-                            <p>Điểm mạnh: <c:out value="${taskReview.strengths}"/></p>
-                            <p>Cần cải thiện: <c:out value="${taskReview.improvements}"/></p>
-                            <p>Hướng làm lại: <c:out value="${taskReview.retryGuidance}"/></p>
-                            <c:if test="${taskReview.superseded}">
-                                <p>Đã được sửa lúc <c:out value="${taskReview.replacedDisplay}"/> – lý do: <c:out
-                                    value="${taskReview.replacementReason}"/></p>
-                            </c:if>
+                        <p><strong><c:out value="${taskReview.conclusionLabel}"/> · Tổng: <c:out
+                    value="${taskReview.totalDisplay}"/>/100</strong> · Giải thích: <c:out
+                    value="${taskReview.explanationPoints}"/>/20 · <c:out value="${taskReview.reviewedDisplay}"/></p>
+                        <p>Người chấm: <c:out value="${taskReview.reviewerName}"/> · <c:out value="${taskReview.explanationLabel}"/></p>
+                        <p>Điểm mạnh: <c:out value="${taskReview.strengths}"/></p>
+                        <p>Cần cải thiện: <c:out value="${taskReview.improvements}"/></p>
+                        <p>Hướng làm lại: <c:out value="${taskReview.retryGuidance}"/></p>
+                        <c:if test="${taskReview.superseded}">
+                            <p>Đã được sửa lúc <c:out value="${taskReview.replacedDisplay}"/> – lý do: <c:out
+                        value="${taskReview.replacementReason}"/></p>
+                        </c:if>
                         </div>
                     </c:forEach>
                 </section>

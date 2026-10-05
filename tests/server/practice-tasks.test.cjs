@@ -7,7 +7,7 @@ const os = require("node:os");
 const root = path.resolve(__dirname, "../..");
 const java = "tomcat-app/src/main/java/vn/edu/webpro/robotlab/";
 const read = file => fs.readFileSync(path.join(root,file), "utf8");
-const javaFiles = ["business/PracticeTask", "business/TaskRecipient", "business/TaskRound", "business/TaskSubmission", "business/TaskReview", "business/TaskRubric", "data/PracticeTaskDB", "data/TaskSubmissionDB", "controller/TaskServlet", "controller/AdminTaskServlet", "controller/AdminTaskReviewServlet"];
+const javaFiles = ["business/DiagnosisScenario", "business/DiagnosisCheck", "business/DiagnosisOption", "business/DiagnosisAttempt", "data/DiagnosisDB", "controller/DiagnosisServlet", "controller/AdminDiagnosisServlet", "util/DiagnosisFormUtil", "business/PracticeTask", "business/TaskRecipient", "business/TaskRound", "business/TaskSubmission", "business/TaskReview", "business/TaskRubric", "data/PracticeTaskDB", "data/TaskSubmissionDB", "controller/TaskServlet", "controller/AdminTaskServlet", "controller/AdminTaskReviewServlet"];
 const forbidden = /\.stream\s*\(|\.toList\s*\(|::|\w\s*->|\bOptional\b|orElseThrow|\bswitch\s*\(|computeIfAbsent|getOrDefault|\.forEach\s*\(|\b(List|Set|Map)\.of\s*\(|\bvar\s+\w+\s*=|"""|java\.time|\bInstant\b|\bZoneId\b|DateTimeFormatter|\bLocalDate|\brecord\s/;
 // Giữ vị trí/dòng nhưng bỏ literal và comment để guard không đọc nhầm SQL hoặc chữ hiển thị.
 function codeOnly(source) {
@@ -60,7 +60,7 @@ function formattingGuard(source, name) {
 test("phase 6 Java and JSP formatting remains readable", () => {
   for (const [name, source] of formattingJavaSources()) formattingGuard(source, name);
   const views = fs.readdirSync(path.join(root, "tomcat-app/src/main/webapp/WEB-INF/views"))
-    .filter(name => /^(task-|admin-task-)/.test(name));
+    .filter(name => /^(task-|admin-task-|diagnosis-|admin-diagnosis-)/.test(name));
   for (const name of views) {
     read("tomcat-app/src/main/webapp/WEB-INF/views/" + name).split(/\r?\n/).forEach((line, index) => {
       assert.ok(line.length <= 140, `${name}:${index + 1}: ${line.length}`);
@@ -68,6 +68,7 @@ test("phase 6 Java and JSP formatting remains readable", () => {
   }
   assert.throws(() => formattingGuard("if(x) return;", "copy"));
   assert.throws(() => formattingGuard("first(); second();", "copy"));
+  assert.throws(() => formattingGuard("x".repeat(121), "copy"));
 });
 test("unsupported GET task actions are validation errors instead of not-found errors", () => {
   for (const name of ["TaskServlet", "AdminTaskServlet", "AdminTaskReviewServlet"]) {
@@ -95,8 +96,10 @@ test("practice task code uses only course slide syntax and guard catches injecte
     const copy = path.join(temporary, "TaskRubric.java");
     fs.writeFileSync(copy, read(java + "business/TaskRubric.java") + "\nclass Injected { void example() { items.stream(); } }");
     assert.throws(() => guard(fs.readFileSync(copy, "utf8")));
+    fs.writeFileSync(copy, read(java + "business/TaskRubric.java") + "\n//" + "x".repeat(121));
+    assert.throws(() => formattingGuard(fs.readFileSync(copy, "utf8"), "long-line copy"));
   } finally { fs.rmSync(temporary, {recursive: true, force: true}); }
-  const views = fs.readdirSync(path.join(root, "tomcat-app/src/main/webapp/WEB-INF/views")).filter(n => /^(task-|admin-task-)/.test(n));
+  const views = fs.readdirSync(path.join(root, "tomcat-app/src/main/webapp/WEB-INF/views")).filter(n => /^(task-|admin-task-|diagnosis-|admin-diagnosis-)/.test(n));
   assert.ok(views.length >= 5);
   for(const view of views) {
     const source = read("tomcat-app/src/main/webapp/WEB-INF/views/" + view);
@@ -106,7 +109,7 @@ test("practice task code uses only course slide syntax and guard catches injecte
   }
 });
 test("new JSP forms escape hidden fields and run without JavaScript dependencies", () => {
- const views = fs.readdirSync(path.join(root, "tomcat-app/src/main/webapp/WEB-INF/views")).filter(n => /^(task-|admin-task-)/.test(n));
+ const views = fs.readdirSync(path.join(root, "tomcat-app/src/main/webapp/WEB-INF/views")).filter(n => /^(task-|admin-task-|diagnosis-|admin-diagnosis-)/.test(n));
  for(const view of views) {
    const source=read("tomcat-app/src/main/webapp/WEB-INF/views/"+view);
    assert.doesNotMatch(source, /<script\b/i);

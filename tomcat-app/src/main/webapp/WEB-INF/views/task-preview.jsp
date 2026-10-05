@@ -14,11 +14,23 @@
         <h1>Xem trước bài nộp</h1>
         <h2><c:out value="${task.title}"/></h2>
         <p>Phiên lắp ráp #<c:out value="${taskSubmission.sessionId}"/>, hoàn thành lúc <c:out
-            value="${taskSubmission.assemblyCompletedDisplay}"/></p>
+    value="${taskSubmission.assemblyCompletedDisplay}"/></p>
         <p>Quiz lượt #<c:out value="${taskSubmission.quizAttemptId}"/> – <c:out value="${taskSubmission.quizScore}"/>/<c:out
-            value="${taskSubmission.quizTotal}"/> – <c:out value="${taskSubmission.quizSubmittedDisplay}"/> <c:if
-            test="${taskSubmission.reusedQuiz}">(dùng lại từ lần nộp #<c:out value="${taskSubmission.quizReusedFrom}"/>)</c:if></p>
-        <p>Điểm tự động dự kiến: <c:out value="${taskSubmission.automaticDisplay}"/>/80 — chờ đánh giá phần giải thích</p>
+    value="${taskSubmission.quizTotal}"/> – <c:out value="${taskSubmission.quizSubmittedDisplay}"/> <c:if
+        test="${taskSubmission.reusedQuiz}">(dùng lại từ lần nộp #<c:out value="${taskSubmission.quizReusedFrom}"/>)</c:if></p>
+        <c:if test="${taskSubmission.hasDiagnosis}">
+            <p>Tình huống: <c:out value="${taskSubmission.diagnosisTitle}"/></p>
+            <p>Chẩn đoán lượt #<c:out value="${taskSubmission.diagnosisAttemptId}"/> – <c:out
+        value="${taskSubmission.diagnosisScoreDisplay}"/>/10 – lúc <c:out value="${taskSubmission.diagnosisSubmittedAtDisplay}"/>
+            <c:choose>
+                <c:when test="${taskSubmission.reusedDiagnosis}">(dùng lại từ lần nộp #<c:out
+                value="${taskSubmission.diagnosisReusedFrom}"/>)</c:when>
+                <c:otherwise>(lượt của vòng này)</c:otherwise>
+            </c:choose>
+            </p>
+        </c:if>
+        <p>Điểm tự động dự kiến: <c:out value="${taskSubmission.automaticDisplay}"/>/<c:out
+    value="${taskSubmission.rubric.automaticMaximum}"/> — chờ đánh giá phần giải thích</p>
         <c:if test="${taskSubmission.late}">
             <p>Nộp muộn</p>
         </c:if>
@@ -35,6 +47,10 @@
             <input type="hidden" name="action" value="confirm">
             <input type="hidden" name="sessionId" value="<c:out value="${taskSubmission.sessionId}"/>">
             <input type="hidden" name="roundId" value="<c:out value="${taskSubmission.roundId}"/>">
+            <c:if test="${taskSubmission.hasDiagnosis}">
+                <p>Tình huống: <c:out value="${taskSubmission.diagnosisTitle}"/></p>
+                <input type="hidden" name="diagnosisAttemptId" value="<c:out value="${taskSubmission.diagnosisAttemptId}"/>">
+            </c:if>
             <input type="hidden" name="problem" value="<c:out value="${taskSubmission.problem}"/>">
             <input type="hidden" name="reasoning" value="<c:out value="${taskSubmission.reasoning}"/>">
             <input type="hidden" name="improvement" value="<c:out value="${taskSubmission.improvement}"/>">

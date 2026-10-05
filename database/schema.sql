@@ -443,8 +443,83 @@ CREATE TABLE order_items (
 INSERT INTO schema_migrations (version)
 VALUES ('008_shop_cart_orders');
 
--- Đợt 6 chặng 1. Chạy một lần sau migration 008; chỉ bổ sung bảng.
+-- Đợt 6 chặng 1 và 2: schema cài mới đã gộp migration 009/010.
 SET NAMES utf8mb4;
+CREATE TABLE diagnosis_scenarios (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    robot_id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+    title VARCHAR(150) NOT NULL,
+    context_text TEXT NOT NULL,
+    symptom_text TEXT NOT NULL,
+    guide_id VARCHAR(64) CHARACTER SET ascii COLLATE ascii_bin NULL,
+    explanation_text TEXT NOT NULL,
+    state ENUM('DRAFT','PUBLISHED','ARCHIVED') NOT NULL DEFAULT 'DRAFT',
+    version_no INT NOT NULL DEFAULT 1 CHECK (version_no > 0),
+    parent_scenario_id BIGINT UNSIGNED NULL,
+    created_by BIGINT UNSIGNED NOT NULL,
+    created_at DATETIME NOT NULL,
+    published_at DATETIME NULL,
+    INDEX idx_diagnosis_catalog (state, robot_id),
+    FOREIGN KEY (robot_id) REFERENCES robots(id) ON DELETE RESTRICT,
+    FOREIGN KEY (guide_id) REFERENCES troubleshooting_guides(id) ON DELETE RESTRICT,
+    FOREIGN KEY (parent_scenario_id) REFERENCES diagnosis_scenarios(id) ON DELETE RESTRICT,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE diagnosis_checks (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    scenario_id BIGINT UNSIGNED NOT NULL,
+    label VARCHAR(200) NOT NULL,
+    observation_text TEXT NOT NULL,
+    is_required BOOLEAN NOT NULL DEFAULT FALSE CHECK (is_required IN (0,1)),
+    display_order INT NOT NULL CHECK (display_order BETWEEN 1 AND 4),
+    UNIQUE (scenario_id, display_order),
+    FOREIGN KEY (scenario_id) REFERENCES diagnosis_scenarios(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE diagnosis_options (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    scenario_id BIGINT UNSIGNED NOT NULL,
+    kind ENUM('CAUSE','ACTION') NOT NULL,
+    label VARCHAR(200) NOT NULL,
+    feedback_text TEXT NOT NULL,
+    is_correct BOOLEAN NOT NULL DEFAULT FALSE CHECK (is_correct IN (0,1)),
+    display_order INT NOT NULL CHECK (display_order BETWEEN 1 AND 4),
+    UNIQUE (scenario_id, kind, display_order),
+    FOREIGN KEY (scenario_id) REFERENCES diagnosis_scenarios(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE diagnosis_attempts (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    scenario_id BIGINT UNSIGNED NOT NULL,
+    user_id BIGINT UNSIGNED NOT NULL,
+    mode ENUM('PRACTICE','TASK') NOT NULL,
+    state ENUM('IN_PROGRESS','SUBMITTED') NOT NULL DEFAULT 'IN_PROGRESS',
+    started_at DATETIME NOT NULL,
+    submitted_at DATETIME NULL,
+    cause_option_id BIGINT UNSIGNED NULL,
+    action_option_id BIGINT UNSIGNED NULL,
+    required_done INT NULL,
+    required_total INT NULL,
+    cause_correct BOOLEAN NULL,
+    action_correct BOOLEAN NULL,
+    CHECK (required_total IS NULL OR (required_total > 0 AND required_done BETWEEN 0 AND required_total)),
+    CHECK (cause_correct IS NULL OR cause_correct IN (0,1)),
+    CHECK (action_correct IS NULL OR action_correct IN (0,1)),
+    INDEX idx_diagnosis_owner (user_id, state, id),
+    INDEX idx_diagnosis_scenario (scenario_id, mode),
+    FOREIGN KEY (scenario_id) REFERENCES diagnosis_scenarios(id) ON DELETE RESTRICT,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT,
+    FOREIGN KEY (cause_option_id) REFERENCES diagnosis_options(id) ON DELETE RESTRICT,
+    FOREIGN KEY (action_option_id) REFERENCES diagnosis_options(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE diagnosis_attempt_checks (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    attempt_id BIGINT UNSIGNED NOT NULL,
+    check_id BIGINT UNSIGNED NOT NULL,
+    chosen_at DATETIME NOT NULL,
+    UNIQUE (attempt_id, check_id),
+    FOREIGN KEY (attempt_id) REFERENCES diagnosis_attempts(id) ON DELETE RESTRICT,
+    FOREIGN KEY (check_id) REFERENCES diagnosis_checks(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE IF NOT EXISTS practice_tasks (
  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
  creator_id BIGINT UNSIGNED NOT NULL,
@@ -456,13 +531,15 @@ CREATE TABLE IF NOT EXISTS practice_tasks (
  max_submissions INT NOT NULL DEFAULT 2 CHECK (max_submissions BETWEEN 1 AND 3),
  pass_threshold INT NOT NULL DEFAULT 70 CHECK (pass_threshold BETWEEN 50 AND 100),
  allow_prior_evidence BOOLEAN NOT NULL DEFAULT FALSE,
- rubric_template ENUM('A') NOT NULL DEFAULT 'A',
+ rubric_template ENUM('A','B') NOT NULL DEFAULT 'A',
  state ENUM('DRAFT','OPEN','CLOSED','ARCHIVED') NOT NULL DEFAULT 'DRAFT',
  published_at DATETIME NULL,
  created_at DATETIME NOT NULL,
  INDEX idx_tasks_state (state, due_at),
  FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE RESTRICT,
- FOREIGN KEY (robot_id) REFERENCES robots(id) ON DELETE RESTRICT
+ FOREIGN KEY (robot_id) REFERENCES robots(id) ON DELETE RESTRICT,
+ diagnosis_scenario_id BIGINT UNSIGNED NULL,
+ CONSTRAINT fk_task_diagnosis FOREIGN KEY (diagnosis_scenario_id) REFERENCES diagnosis_scenarios(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 CREATE TABLE IF NOT EXISTS task_recipients (
  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -482,7 +559,9 @@ CREATE TABLE IF NOT EXISTS task_rounds (
  quiz_attempt_id BIGINT UNSIGNED NULL UNIQUE,
  UNIQUE (recipient_id, round_no),
  FOREIGN KEY (recipient_id) REFERENCES task_recipients(id) ON DELETE RESTRICT,
- FOREIGN KEY (quiz_attempt_id) REFERENCES quiz_attempts(id) ON DELETE RESTRICT
+ FOREIGN KEY (quiz_attempt_id) REFERENCES quiz_attempts(id) ON DELETE RESTRICT,
+ diagnosis_attempt_id BIGINT UNSIGNED NULL UNIQUE,
+ CONSTRAINT fk_round_diagnosis FOREIGN KEY (diagnosis_attempt_id) REFERENCES diagnosis_attempts(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 CREATE TABLE IF NOT EXISTS task_submissions (
  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -500,7 +579,7 @@ CREATE TABLE IF NOT EXISTS task_submissions (
  quiz_reused_from INT NOT NULL DEFAULT 0,
  assembly_points DECIMAL(4,1) NOT NULL,
  quiz_points DECIMAL(4,1) NOT NULL,
- automatic_points DECIMAL(4,1) NOT NULL CHECK (automatic_points BETWEEN 40 AND 80),
+ automatic_points DECIMAL(4,1) NOT NULL CHECK (automatic_points BETWEEN 30 AND 80),
  is_late BOOLEAN NOT NULL,
  problem TEXT NOT NULL,
  reasoning TEXT NOT NULL,
@@ -512,7 +591,17 @@ CREATE TABLE IF NOT EXISTS task_submissions (
  FOREIGN KEY (recipient_id) REFERENCES task_recipients(id) ON DELETE RESTRICT,
  FOREIGN KEY (round_id) REFERENCES task_rounds(id) ON DELETE RESTRICT,
  FOREIGN KEY (session_id) REFERENCES assembly_sessions(id) ON DELETE RESTRICT,
- FOREIGN KEY (quiz_attempt_id) REFERENCES quiz_attempts(id) ON DELETE RESTRICT
+ FOREIGN KEY (quiz_attempt_id) REFERENCES quiz_attempts(id) ON DELETE RESTRICT,
+ diagnosis_attempt_id BIGINT UNSIGNED NULL,
+ diagnosis_title VARCHAR(150) NULL,
+ diag_required_done INT NULL,
+ diag_required_total INT NULL,
+ diag_cause_correct BOOLEAN NULL,
+ diag_action_correct BOOLEAN NULL,
+ diagnosis_score DECIMAL(4,1) NULL,
+ diagnosis_points DECIMAL(4,1) NULL,
+ diagnosis_reused_from INT NOT NULL DEFAULT 0,
+ CONSTRAINT fk_submission_diagnosis FOREIGN KEY (diagnosis_attempt_id) REFERENCES diagnosis_attempts(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 CREATE TABLE IF NOT EXISTS task_reviews (
  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -520,7 +609,7 @@ CREATE TABLE IF NOT EXISTS task_reviews (
  reviewer_id BIGINT UNSIGNED NOT NULL,
  explanation_level INT NOT NULL CHECK (explanation_level BETWEEN 0 AND 4),
  explanation_points INT NOT NULL CHECK (explanation_points IN (0,5,10,15,20)),
- total_points DECIMAL(4,1) NOT NULL CHECK (total_points BETWEEN 40 AND 100),
+ total_points DECIMAL(4,1) NOT NULL CHECK (total_points BETWEEN 30 AND 100),
  conclusion ENUM('PASSED','NEEDS_REVISION','NOT_PASSED') NOT NULL,
  strengths TEXT NOT NULL,
  improvements TEXT NOT NULL,
@@ -534,3 +623,5 @@ CREATE TABLE IF NOT EXISTS task_reviews (
  FOREIGN KEY (supersedes_review_id) REFERENCES task_reviews(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 INSERT IGNORE INTO schema_migrations (version) VALUES ('009_practice_tasks');
+
+INSERT IGNORE INTO schema_migrations (version) VALUES ('010_diagnosis_practice');

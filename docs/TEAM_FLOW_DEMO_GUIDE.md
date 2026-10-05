@@ -1,5 +1,114 @@
 # Luồng demo và câu hỏi giảng viên
 
+## Chẩn đoán và Mẫu B bám slide nào? (Đợt 6, chặng 2)
+
+Node/JUnit là công cụ kiểm chứng lúc phát triển, không thay kiến trúc môn học.
+Ứng dụng mới chạy bằng Servlet/JSP/JDBC trên Tomcat, dùng form khi tắt JavaScript.
+
+| Phần triển khai | Chapter / slide | File |
+| --- | --- | --- |
+| Model 2, Servlet → bean → XxxDB → JSP | Ch2 slide 4–5, 20 | `DiagnosisServlet`, `AdminDiagnosisServlet`, `DiagnosisDB`, các bean `Diagnosis*` |
+| `@WebServlet` | Ch5 slide 10–11 | Hai Servlet chẩn đoán |
+| GET/POST, getParameter, checkbox getParameterValues | Ch5 slide 12–17 | Hai Servlet, `DiagnosisFormUtil`, `TaskServlet` |
+| Hidden action rẽ nhánh | Ch2 slide 9; Ch12 slide 40–44 | Form JSP và dispatcher Servlet |
+| setAttribute, String url, forward | Ch5 slide 22–24; Ch12 slide 42–44 | Hai Servlet chẩn đoán |
+| Redirect sau POST (PRG) | Ch5 slide 25–26 | start/check/conclude và quản lý tình huống |
+| HttpSession lấy user và kiểm token form | Ch7 slide 10–12 | `SessionUtil`, các Servlet |
+| JavaBean ctor rỗng, get/set, Serializable | Ch6 slide 4–6 | `DiagnosisScenario/Check/Option/Attempt`, các bean nhiệm vụ |
+| Luật trong bean, vòng for/if như Cart | Ch9 slide 32–33 | `DiagnosisScenario`, `DiagnosisAttempt`, `TaskRubric`, `TaskRecipient` |
+| Getter định dạng NumberFormat | Ch9 slide 28–31 | Điểm/display trong `DiagnosisAttempt`, `TaskSubmission` |
+| Date, SimpleDateFormat/TimeZone | Ch10 slide 6 | `TaskRubric`, ngày lượt và quan sát |
+| EL, empty/and/or/not, boolean getter | Ch6 slide 7–9; Ch8 slide 5–11, 32–35 | Các JSP chẩn đoán và nhiệm vụ |
+| c:out chống XSS | Ch9 slide 7–8 | Mọi chữ DB và người dùng trong JSP |
+| c:forEach, c:if, c:choose/when/otherwise | Ch9 slide 11, 17–19 | Các JSP mới/sửa |
+| Hidden/radio/checkbox, textarea | Ch7 slide 35–36; Ch12 slide 24 | Form biên soạn cố định bốn ô, chọn nguyên nhân/biện pháp, chấm |
+| PreparedStatement, XxxDB static, pool, DBUtil/finally | Ch12 slide 18–20, 32–38, 45–53 | `DiagnosisDB`, `PracticeTaskDB`, `TaskSubmissionDB` |
+| Transaction commit/rollback, khóa dòng | Ch13 slide 29–34 (khái niệm); mẫu `CartDB`/`AssemblySessionDB`/`TaskSubmissionDB` | Bắt đầu TASK, kết luận, confirm bài |
+
+BigDecimal/HALF_UP được prompt cho phép để làm tròn chính xác. FOR UPDATE là
+mẫu triển khai đã có trong repo, không khẳng định slide chứa đúng câu SQL này.
+Không dùng stream/lambda/switch/java.time trong code ứng dụng mới/sửa.
+Guard kiểm cả cú pháp và giới hạn Java 120/JSP 140 ký tự.
+
+### Kịch bản demo chẩn đoán và nhiệm vụ B
+
+1. ADMIN → **Quản lý tình huống chẩn đoán**: mở seed hoặc tạo nháp (bốn ô mỗi
+   nhóm, bỏ ô trống), xem trước không tạo lượt, công bố. Muốn sửa bản công bố
+   phải nhân bản; bản mới chỉ công bố khi đủ điều kiện.
+2. USER → **Luyện chẩn đoán**: chọn tình huống, chọn một phép kiểm tra để thấy
+   quan sát vừa được server ghi nhận. Bấm lại không cộng điểm. Chọn nguyên nhân
+   và xử lý, kết luận; khi đó mới thấy đúng/sai, giải thích và phép còn thiếu.
+3. ADMIN tạo nhiệm vụ B, robot và tình huống PUBLISHED cùng robot, giao USER,
+   hạn tương lai. Nếu demo bằng phiên hoàn thành cũ, bật cho phép bằng chứng cũ
+   trong nháp. Xem trước rồi công bố.
+4. USER làm quiz nhiệm vụ; bấm **Bắt đầu chẩn đoán cho nhiệm vụ này**, kết luận,
+   chọn phiên COMPLETED của mình, viết ba đoạn giải thích → xem trước → nộp.
+   Điểm tự động hiển thị /80, chưa chấm không hiển thị /100.
+5. ADMIN mở bài: xem snapshot và quá trình chẩn đoán, chọn **Cần bổ sung**,
+   ghi phản hồi. USER vòng 2 có thể dùng lại lượt cũ nếu chưa bắt đầu lượt mới,
+   hoặc bắt đầu và phải kết luận xong lượt mới. Nộp lại → ADMIN chấm đạt nếu đủ
+   ngưỡng. Lịch sử giữ cả hai vòng và nguồn dùng lại.
+6. Minh họa quyền trên màn hình: USER chỉ có link luyện/nhiệm vụ của tôi; ADMIN
+   có link quản lý. USER mở URL quản lý nhận 403; mở lượt người khác nhận 404.
+   ADMIN chỉ xem quá trình chẩn đoán của bài nộp, không làm lượt hay nộp bài.
+
+### Năm tình huống chính thức
+
+| ID / Robot | Phép cần thiết | Nguyên nhân đúng | Biện pháp đúng |
+| --- | --- | --- | --- |
+| 6101 / obstacle-avoider | Đầu nối động cơ trái; tín hiệu/nguồn L298N | Đầu nối động cơ trái lỏng | Ngắt nguồn, siết lại đầu nối và thử hai bánh |
+| 6102 / obstacle-avoider | Số đo/chân HC-SR04; điều kiện ngưỡng trong chương trình | Ngưỡng 100 cm thay vì yêu cầu 20 cm | Sửa ngưỡng, thử vật gần và xa hơn 20 cm |
+| 6103 / line-follower | Vị trí cảm biến; dây OUT/nguồn | Cảm biến lắp ngoài vùng đọc | Chỉnh độ cao, thử cả vạch và nền |
+| 6104 / mini-arm | Nguồn servo; tín hiệu/GND | Đầu nối VCC servo bị tuột | Ngắt nguồn, nối lại nguồn riêng và thử góc nhỏ |
+| 6105 / line-obstacle | Hai tín hiệu cảm biến; thứ tự nhánh điều khiển | Dò line được ưu tiên trước tránh vật cản | Ưu tiên xử lý vật cản, kiểm lại các tình huống phối hợp |
+
+Mỗi seed có ba phép (hai cần thiết), ba nguyên nhân, ba biện pháp và đúng một
+đáp án mỗi nhóm. `DiagnosisTest` đọc chính file seed rồi kiểm luật công bố.
+guide_id chỉ gắn nếu guide tương ứng tồn tại và cùng robot hoặc chung; chạy lại
+INSERT IGNORE không sửa guide hay nội dung bản đã có.
+
+### Vì sao chỉ đo “Thu thập đủ quan sát cần thiết”?
+
+Điểm quá trình = 4 × số phép cần thiết đã chọn / tổng phép cần thiết. Phép không
+liên quan và chọn lặp không cộng. Chỉ số này không đánh giá số thao tác ít nhất
+hay thứ tự tối ưu, nên không gọi là “chọn phép kiểm tra tối ưu”.
+
+### Vì sao lượt chẩn đoán gắn ngay khi bắt đầu, còn quiz khi nộp?
+
+Chọn phép đã tạo hoạt động và mở dữ kiện. Gắn ngay giữ một quá trình cố định
+của vòng, không cho bỏ lượt để đổi lượt khác. Quiz chỉ lưu khi đủ câu trả lời
+hợp lệ; mở rồi bỏ dở không tạo lượt. Vòng sau đã bắt đầu chẩn đoán thì phải kết
+luận lượt đó, không được quay lại dùng bài trước để bỏ qua quá trình đang dở.
+
+### Quan sát có phải phép đo robot thật? Đây có phải thi kín?
+
+Quan sát là dữ liệu mô phỏng của tình huống, không lấy telemetry robot. Hướng
+dẫn công khai và lượt luyện cho thấy đáp án sau kết luận; đây là đánh giá quá
+trình có tài liệu tham khảo, không phải thi kín. Lượt PRACTICE không dùng để
+nộp bài; lượt TASK và snapshot xác định quá trình nào đã được đánh giá.
+Đề quiz có thể thay đổi giữa đợt như chặng 1; lượt và snapshot cũ giữ nguyên.
+
+### Vì sao dùng radio thay select?
+
+Bảng kỹ thuật chặng 2 cho phép radio/checkbox, không có select. Các form mới và
+form nhiệm vụ được sửa dùng radio, chạy không cần JS. Đây là ngoại lệ HTML mẫu
+A ở form ADMIN: nội dung, giá trị field, điểm và luật vẫn giữ nguyên; xem bảng
+diff cụ thể trong [báo cáo QA](PHASE6C_QA_REPORT.md).
+
+### Transaction và khóa dòng tránh tranh chấp thế nào?
+
+Bắt đầu TASK khóa task → recipient → round; nếu đã có ID thì trả đúng lượt đó.
+Conclude chỉ khóa lượt của mình. Confirm theo thứ tự nhiệm vụ cũ và đọc lượt
+chẩn đoán thường, không khóa ngược. UNIQUE slot/log/submission bổ sung bảo vệ.
+Hai request thật đã kiểm cho ba thao tác: chỉ một lượt/một kết luận/một bài.
+
+### Vì sao phải dùng điểm chẩn đoán chưa làm tròn để tính B?
+
+Ví dụ quiz 6/7 và chẩn đoán 8/10: 30 + 6/7 × 25 + 8/10 × 25 = 71,4 sau một
+lần HALF_UP. Điểm /10 trên màn hình chỉ định dạng; nếu dùng số đã làm tròn
+này để nhân trọng số, tổng có thể lệch 0,1. Điểm tự động đã lưu dùng cho chấm
+và so ngưỡng; điểm thành phần có getter riêng, JSP không tự tính.
+
 ## Nhiệm vụ thực hành bám slide nào? (Đợt 6, chặng 1)
 
 | Phần triển khai | Chapter / slide | File |
@@ -76,8 +185,9 @@ cho toàn bộ nhiệm vụ.
 
 ### Mẫu B và chẩn đoán lỗi ở đâu?
 
-Chúng thuộc chặng 2, chưa triển khai. Chặng 1 chỉ có rubric A cố định
-40/40/20 và năm mức giải thích 0/5/10/15/20; không có màn hình sửa rubric.
+Chặng 2 đã triển khai ở phần đầu tài liệu. Chặng 1 giữ rubric A cố định
+40/40/20; B dùng 30/25/25/20. Hai mẫu có cùng năm mức giải thích 0/5/10/15/20
+và không có màn hình sửa trọng số.
 
 Bằng chứng và giới hạn QA: [PHASE6_QA_REPORT.md](PHASE6_QA_REPORT.md).
 
@@ -148,6 +258,8 @@ mới thêm vào đồ án.
 | Chức năng | Kiến thức môn học minh họa | Servlet | JavaBean / XxxDB | JSP | Bảng database |
 | --- | --- | --- | --- | --- | --- |
 | Nhiệm vụ thực hành và đánh giá (Đợt 6 chặng 1) | Form/action/PRG Ch5/12–26; session Ch7/10–12; bean Ch6/4–6, Ch9/28–33; EL/JSTL Ch8/5–11, 32–35, Ch9/7–8, 11, 17–19; JDBC Ch12/18–20, 32–38, 45–53; transaction Ch13/29–34 | `TaskServlet`, `AdminTaskServlet`, `AdminTaskReviewServlet` | Sáu bean nhiệm vụ; `PracticeTaskDB`, `TaskSubmissionDB`, overload `QuizAttemptDB` | `task-*.jsp`, `admin-task-*.jsp` | Năm bảng migration 009, nguồn `assembly_sessions`/`quiz_attempts` |
+| Chẩn đoán tương tác (Đợt 6 chặng 2) | Model 2 Ch2/4–5,20; form/action/session Ch5/10–26, Ch7/10–12; bean/Cart Ch6/4–6, Ch9/32–33; EL/JSTL Ch8/32–35, Ch9/7–8,11,17–19; JDBC Ch12/18–20,32–38,45–53 | `DiagnosisServlet`, `AdminDiagnosisServlet` | Bốn bean `Diagnosis*`, `DiagnosisDB` | `diagnosis-*.jsp`, `admin-diagnosis-*.jsp` | Năm bảng diagnosis của migration 010 |
+| Nhiệm vụ mẫu B và bằng chứng chẩn đoán | Getter định dạng Ch9/28–31; form/radio Ch5/12–17, Ch7/35–36; transaction Ch13/29–34 + mẫu repo | Các Servlet nhiệm vụ | `TaskRubric`, `TaskSubmission`, `TaskRound`, `TaskRecipient`; `PracticeTaskDB`, `TaskSubmissionDB` | Các JSP nhiệm vụ | Liên kết/snapshot nullable trên ba bảng 009; nguồn diagnosis_attempts |
 | 1. Hoàn tất thực hành + phiếu kết quả | Server-side validation (không tin client); atomic UPDATE tránh race condition; Servlet→JSP forward | `AssemblySessionServlet` (đổi trạng thái), `AssemblyReceiptPageServlet` (phiếu kết quả) | `AssemblySession.canCompleteAssembly()`; `AssemblySessionDB.completeSession()` | `assembly-receipt.jsp` | `assembly_sessions` (cột `completed_at`), `session_visual_parts`, `robot_components` |
 | 2. Bài kiểm tra kiến thức | Chấm điểm ở server, không tin client; snapshot dữ liệu lịch sử; JDBC transaction nhiều bảng | `QuizServlet` (làm bài), `AdminQuizServlet` (quản trị) | `QuizQuestion.isCorrectOption()`; `QuizAttemptDB.submitAttempt()` | *(API JSON, JS dựng giao diện — không dùng JSP)* | `quiz_questions`, `quiz_options`, `quiz_attempts`, `quiz_attempt_answers` |
 | 3. Tra cứu lỗi lắp ráp | Nội dung công khai đọc từ MySQL; lọc/tìm bằng `PreparedStatement` tham số hóa | `TroubleshootingServlet` (công khai), `AdminTroubleshootingServlet` (quản trị) | `TroubleshootingGuide`; `TroubleshootingGuideDB` | *(API JSON)* | `troubleshooting_guides` |

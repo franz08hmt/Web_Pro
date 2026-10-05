@@ -154,4 +154,8 @@ public class TaskRecipient implements Serializable {
     public boolean ownsRound(long roundId) {
         return currentRound != null && currentRound.getId() == roundId;
     }
+    /** Chỉ bắt đầu hoặc tiếp tục chẩn đoán trong vòng đang được nộp. */
+    public boolean isCanStartDiagnosis() {
+        return task != null && task.isRubricB() && canSubmit(new Date());
+    }
 }

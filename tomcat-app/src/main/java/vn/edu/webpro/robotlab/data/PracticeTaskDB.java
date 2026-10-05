@@ -81,6 +81,7 @@ public class PracticeTaskDB {
         task.setPassThreshold(rs.getInt("pass_threshold"));
         task.setAllowPriorEvidence(rs.getBoolean("allow_prior_evidence"));
         task.setRubricTemplate(rs.getString("rubric_template"));
+        task.setDiagnosisScenarioId(rs.getLong("diagnosis_scenario_id"));
         return task;
     }
 
@@ -205,6 +206,7 @@ public class PracticeTaskDB {
             round.setState(rs.getString("state"));
             round.setStartedAt(date(rs, "started_at"));
             round.setQuizAttemptId(rs.getLong("quiz_attempt_id"));
+            round.setDiagnosisAttemptId(rs.getLong("diagnosis_attempt_id"));
             return round;
         } finally {
             DBUtil.closeResultSet(rs);
@@ -300,6 +302,13 @@ public class PracticeTaskDB {
         }
     }
 
+    private static Object scenarioId(PracticeTask task) {
+        if (task.isRubricB()) {
+            return task.getDiagnosisScenarioId();
+        }
+        return null;
+    }
+
     static void validateCatalog(Connection connection, PracticeTask task) throws SQLException {
         task.validate(
                 scalar(connection, "SELECT COUNT(*) FROM robots WHERE id = ?", task.getRobotId())
@@ -309,6 +318,11 @@ public class PracticeTaskDB {
                                 "SELECT COUNT(*) FROM quiz_questions WHERE robot_id = ?",
                                 task.getRobotId())
                         > 0);
+        if (task.isRubricB() && scalar(connection,
+                "SELECT COUNT(*) FROM diagnosis_scenarios WHERE id=? AND robot_id=? AND state='PUBLISHED'",
+                task.getDiagnosisScenarioId(), task.getRobotId()) == 0) {
+            throw new IllegalArgumentException("Mẫu B cần tình huống đang công bố cùng robot.");
+        }
     }
 
     static void addRecipients(Connection connection, PracticeTask task, long[] userIds, Date now)
@@ -365,7 +379,7 @@ public class PracticeTaskDB {
                         connection,
                         "UPDATE practice_tasks SET title=?,description=?,robot_id=?,"
                                 + "due_at=?,late_policy=?,max_submissions=?,pass_threshold=?,"
-                                + "allow_prior_evidence=? WHERE id=?",
+                                + "allow_prior_evidence=?,rubric_template=?,diagnosis_scenario_id=? WHERE id=?",
                         input.getTitle(),
                         input.getDescription(),
                         input.getRobotId(),
@@ -374,6 +388,8 @@ public class PracticeTaskDB {
                         input.getMaxSubmissions(),
                         input.getPassThreshold(),
                         input.isAllowPriorEvidence(),
+                        input.getRubricTemplate(),
+                        scenarioId(input),
                         input.getId());
                 change(connection, "DELETE FROM task_recipients WHERE task_id = ?", input.getId());
             } else {
@@ -382,8 +398,9 @@ public class PracticeTaskDB {
                                 connection,
                                 "INSERT INTO practice_tasks(creator_id,title,description,robot_id,"
                                     + "due_at,late_policy,max_submissions,"
-                                    + "pass_threshold,allow_prior_evidence,created_at)"
-                                    + " VALUES (?,?,?,?,?,?,?,?,?,?)",
+                                    + "pass_threshold,allow_prior_evidence,rubric_template,"
+                                    + "diagnosis_scenario_id,created_at)"
+                                    + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
                                 adminId,
                                 input.getTitle(),
                                 input.getDescription(),
@@ -393,6 +410,8 @@ public class PracticeTaskDB {
                                 input.getMaxSubmissions(),
                                 input.getPassThreshold(),
                                 input.isAllowPriorEvidence(),
+                                input.getRubricTemplate(),
+                                scenarioId(input),
                                 now));
             }
             input.setState("DRAFT");
@@ -471,8 +490,9 @@ public class PracticeTaskDB {
                                 connection,
                                 "INSERT INTO practice_tasks(creator_id,title,description,robot_id,"
                                     + "due_at,late_policy,max_submissions,"
-                                    + "pass_threshold,allow_prior_evidence,created_at)"
-                                    + " VALUES (?,?,?,?,?,?,?,?,?,?)",
+                                    + "pass_threshold,allow_prior_evidence,rubric_template,"
+                                    + "diagnosis_scenario_id,created_at)"
+                                    + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
                                 adminId,
                                 task.getTitle(),
                                 task.getDescription(),
@@ -482,6 +502,8 @@ public class PracticeTaskDB {
                                 task.getMaxSubmissions(),
                                 task.getPassThreshold(),
                                 task.isAllowPriorEvidence(),
+                                task.getRubricTemplate(),
+                                scenarioId(task),
                                 now);
             } else if ("deleteDraft".equals(action)) {
                 task.requireDraft();

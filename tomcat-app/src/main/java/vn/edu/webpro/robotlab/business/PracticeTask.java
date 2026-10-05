@@ -8,7 +8,6 @@ import java.util.List;
 
 /** Nhiệm vụ mẫu A và điều kiện chuyển trạng thái. */
 public class PracticeTask implements Serializable {
-
     private long id;
     private long creatorId;
     private String title = "";
@@ -24,6 +23,9 @@ public class PracticeTask implements Serializable {
     private int maxSubmissions = 2;
     private int passThreshold = 70;
     private boolean allowPriorEvidence;
+    private long diagnosisScenarioId;
+
+
 
     /** Khởi tạo JavaBean với giá trị mặc định. */
     public PracticeTask() {
@@ -261,7 +263,7 @@ public class PracticeTask implements Serializable {
                 || maxSubmissions > 3
                 || passThreshold < 50
                 || passThreshold > 100
-                || !"A".equals(rubricTemplate)
+                || (!"A".equals(rubricTemplate) && !isRubricB()) || (isRubricB() && diagnosisScenarioId <= 0)
                 || (!"REJECT_LATE".equals(latePolicy) && !isAcceptLate())) {
             throw new IllegalArgumentException("Thông tin nhiệm vụ không hợp lệ.");
         }
@@ -304,4 +306,28 @@ public class PracticeTask implements Serializable {
             throw new IllegalArgumentException("Chỉ lưu trữ nhiệm vụ đã đóng.");
         }
     }
+
+    /** Đọc diagnosisScenarioId. */
+    public long getDiagnosisScenarioId() {
+        return diagnosisScenarioId;
+    }
+
+    /** Gán diagnosisScenarioId. */
+    public void setDiagnosisScenarioId(long diagnosisScenarioId) {
+        this.diagnosisScenarioId = diagnosisScenarioId;
+    }
+
+
+    /** Mẫu B yêu cầu chẩn đoán; mẫu A giữ nguyên luồng cũ. */
+    public boolean isRubricB() {
+        return "B".equals(rubricTemplate);
+    }
+
+    /** Dựng tiêu chí cố định từ mẫu của nhiệm vụ. */
+    public TaskRubric getRubric() {
+        TaskRubric rubric = new TaskRubric();
+        rubric.setTemplate(rubricTemplate);
+        return rubric;
+    }
+
 }

@@ -34,6 +34,18 @@ public class TaskSubmissionDB {
         value.setReasoning(rs.getString("reasoning"));
         value.setImprovement(rs.getString("improvement"));
         value.setState(rs.getString("state"));
+        value.setDiagnosisAttemptId(rs.getLong("diagnosis_attempt_id"));
+        if (value.isHasDiagnosis()) {
+            value.setDiagnosisTitle(rs.getString("diagnosis_title"));
+            value.setDiagRequiredDone(rs.getInt("diag_required_done"));
+            value.setDiagRequiredTotal(rs.getInt("diag_required_total"));
+            value.setDiagCauseCorrect(rs.getBoolean("diag_cause_correct"));
+            value.setDiagActionCorrect(rs.getBoolean("diag_action_correct"));
+            value.setDiagnosisScore(rs.getBigDecimal("diagnosis_score"));
+            value.setDiagnosisPoints(rs.getBigDecimal("diagnosis_points"));
+            value.setDiagnosisReusedFrom(rs.getInt("diagnosis_reused_from"));
+            value.setDiagnosisSubmittedAt(PracticeTaskDB.date(rs, "diagnosis_submitted_at"));
+        }
         return value;
     }
 
@@ -84,7 +96,10 @@ public class TaskSubmissionDB {
         try {
             ps =
                     connection.prepareStatement(
-                            "SELECT * FROM task_submissions WHERE recipient_id = ? ORDER BY "
+                            "SELECT s.*, "
+                            + "(SELECT d.submitted_at FROM diagnosis_attempts d WHERE d.id=s.diagnosis_attempt_id) "
+                            + "AS diagnosis_submitted_at, "
+                            + "s.id FROM task_submissions s WHERE recipient_id = ? ORDER BY "
                                     + "submission_no DESC LIMIT 1");
             ps.setLong(1, recipientId);
             rs = ps.executeQuery();
@@ -113,7 +128,10 @@ public class TaskSubmissionDB {
         ResultSet rs = null;
         try {
             String sql =
-                    "SELECT s.* FROM task_submissions s JOIN task_recipients tr ON "
+                    "SELECT s.*, "
+                            + "(SELECT d.submitted_at FROM diagnosis_attempts d WHERE d.id=s.diagnosis_attempt_id) "
+                            + "AS diagnosis_submitted_at, "
+                            + "s.id FROM task_submissions s JOIN task_recipients tr ON "
                             + "tr.id=s.recipient_id WHERE tr.task_id = ?";
             if (!admin) {
                 sql += " AND tr.user_id = ?";
@@ -153,7 +171,10 @@ public class TaskSubmissionDB {
         ResultSet rs = null;
         try {
             String sql =
-                    "SELECT s.* FROM task_submissions s JOIN task_recipients tr ON "
+                    "SELECT s.*, "
+                            + "(SELECT d.submitted_at FROM diagnosis_attempts d WHERE d.id=s.diagnosis_attempt_id) "
+                            + "AS diagnosis_submitted_at, "
+                            + "s.id FROM task_submissions s JOIN task_recipients tr ON "
                             + "tr.id=s.recipient_id WHERE s.id = ?";
             if (!admin) {
                 sql += " AND tr.user_id = ?";
@@ -371,10 +392,35 @@ public class TaskSubmissionDB {
             input.setRobotName(task.getRobotName());
             input.setLate(task.isLate(now));
             input.setSubmittedAt(now);
-            input.setAutomaticPoints(
-                    new TaskRubric().automaticPoints(input.getQuizScore(), input.getQuizTotal()));
-            input.setAssemblyPoints(new BigDecimal("40.0"));
-            input.setQuizPoints(input.getAutomaticPoints().subtract(input.getAssemblyPoints()));
+            TaskRubric rubric = task.getRubric();
+            input.setAssemblyPoints(new BigDecimal(rubric.getAssemblyWeight()).setScale(1));
+            if (task.isRubricB()) {
+                long previousDiagnosis = 0;
+                if (previous != null) {
+                    previousDiagnosis = previous.getDiagnosisAttemptId();
+                }
+                long diagnosisId = rubric.chooseDiagnosisAttempt(round.getRoundNo(),
+                        round.getDiagnosisAttemptId(), previousDiagnosis);
+                if (input.getDiagnosisAttemptId() > 0 && input.getDiagnosisAttemptId() != diagnosisId) {
+                    throw new IllegalArgumentException("Không được thay lượt chẩn đoán đã gắn vào vòng.");
+                }
+                DiagnosisAttempt diagnosis = DiagnosisDB.evidence(connection, diagnosisId, userId);
+                if (diagnosis == null || !diagnosis.validTaskEvidence(userId, task.getDiagnosisScenarioId())) {
+                    throw new IllegalArgumentException("Cần kết luận xong lượt chẩn đoán TASK của vòng này.");
+                }
+                diagnosisSnapshot(input, diagnosis, rubric);
+                if (round.getDiagnosisAttemptId() == 0 && previous != null) {
+                    input.setDiagnosisReusedFrom(previous.getSubmissionNo());
+                }
+                input.setAutomaticPoints(rubric.automaticPoints(input.getQuizScore(), input.getQuizTotal(),
+                        diagnosis.getScoreExact()));
+                input.setQuizPoints(rubric.roundAutomatic(rubric.quizContribution(
+                        input.getQuizScore(), input.getQuizTotal())));
+            } else {
+                input.setDiagnosisAttemptId(0);
+                input.setAutomaticPoints(rubric.automaticPoints(input.getQuizScore(), input.getQuizTotal()));
+                input.setQuizPoints(input.getAutomaticPoints().subtract(input.getAssemblyPoints()));
+            }
             if (confirm) {
                 input.setId(
                         PracticeTaskDB.change(
@@ -383,8 +429,11 @@ public class TaskSubmissionDB {
                                     + "session_id,quiz_attempt_id,robot_name,assembly_completed_at,"
                                     + "quiz_score,quiz_total,quiz_submitted_at,quiz_reused_from,"
                                     + "assembly_points,quiz_points,automatic_points,"
-                                    + "is_late,problem,reasoning,improvement,submitted_at)"
-                                    + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                                    + "is_late,problem,reasoning,improvement,submitted_at,"
+                                    + "diagnosis_attempt_id,diagnosis_title,diag_required_done,diag_required_total,"
+                                    + "diag_cause_correct,diag_action_correct,diagnosis_score,diagnosis_points,"
+                                    + "diagnosis_reused_from)"
+                                    + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                                 input.getRecipientId(),
                                 input.getRoundId(),
                                 input.getSubmissionNo(),
@@ -403,7 +452,16 @@ public class TaskSubmissionDB {
                                 input.getProblem(),
                                 input.getReasoning(),
                                 input.getImprovement(),
-                                now));
+                                now,
+                                diagnosisField(input, input.getDiagnosisAttemptId()),
+                                diagnosisField(input, input.getDiagnosisTitle()),
+                                diagnosisField(input, input.getDiagRequiredDone()),
+                                diagnosisField(input, input.getDiagRequiredTotal()),
+                                diagnosisField(input, input.isDiagCauseCorrect()),
+                                diagnosisField(input, input.isDiagActionCorrect()),
+                                diagnosisField(input, input.getDiagnosisScore()),
+                                diagnosisField(input, input.getDiagnosisPoints()),
+                                input.getDiagnosisReusedFrom()));
                 PracticeTaskDB.change(
                         connection,
                         "UPDATE task_rounds SET state='SUBMITTED' WHERE id=?",
@@ -422,6 +480,62 @@ public class TaskSubmissionDB {
             } finally {
                 pool.freeConnection(connection);
             }
+        }
+    }
+
+    private static Object diagnosisField(TaskSubmission value, Object field) {
+        if (!value.isHasDiagnosis()) {
+            return null;
+        }
+        return field;
+    }
+
+    private static void diagnosisSnapshot(TaskSubmission value, DiagnosisAttempt attempt, TaskRubric rubric) {
+        value.setDiagnosisAttemptId(attempt.getId());
+        value.setDiagnosisTitle(attempt.getScenario().getTitle());
+        value.setDiagRequiredDone(attempt.getRequiredDone());
+        value.setDiagRequiredTotal(attempt.getRequiredTotal());
+        value.setDiagCauseCorrect(attempt.isCauseCorrect());
+        value.setDiagActionCorrect(attempt.isActionCorrect());
+        value.setDiagnosisScore(rubric.roundAutomatic(attempt.getScoreExact()));
+        value.setDiagnosisPoints(rubric.roundAutomatic(rubric.diagnosisContribution(attempt.getScoreExact())));
+        value.setDiagnosisSubmittedAt(attempt.getSubmittedAt());
+        value.setDiagnosisReusedFrom(0);
+    }
+
+    /** Đọc bản chụp lượt của vòng hoặc lượt dùng lại, không thay thế lượt đang làm. */
+    public static TaskSubmission selectRoundDiagnosis(long taskId, long userId) throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        try {
+            PracticeTask task = PracticeTaskDB.task(connection, taskId, false);
+            TaskRecipient recipient = PracticeTaskDB.recipient(connection, taskId, userId, false);
+            if (task == null || recipient == null || !task.isRubricB()) {
+                return null;
+            }
+            TaskRound round = PracticeTaskDB.round(connection, recipient.getId(), 0, false);
+            if (round == null) {
+                return null;
+            }
+            TaskSubmission previous = latest(connection, recipient.getId());
+            long previousId = 0;
+            if (previous != null) {
+                previousId = previous.getDiagnosisAttemptId();
+            }
+            long id = task.getRubric().chooseDiagnosisAttempt(round.getRoundNo(),
+                    round.getDiagnosisAttemptId(), previousId);
+            DiagnosisAttempt attempt = DiagnosisDB.evidence(connection, id, userId);
+            if (attempt == null || !attempt.validTaskEvidence(userId, task.getDiagnosisScenarioId())) {
+                return null;
+            }
+            TaskSubmission value = new TaskSubmission();
+            diagnosisSnapshot(value, attempt, task.getRubric());
+            if (round.getDiagnosisAttemptId() == 0 && previous != null) {
+                value.setDiagnosisReusedFrom(previous.getSubmissionNo());
+            }
+            return value;
+        } finally {
+            pool.freeConnection(connection);
         }
     }
 
@@ -460,7 +574,10 @@ public class TaskSubmissionDB {
             PracticeTask task = PracticeTaskDB.task(connection, taskId, true);
             ps =
                     connection.prepareStatement(
-                            "SELECT s.*,tr.user_id FROM task_submissions s JOIN "
+                            "SELECT s.*, "
+                            + "(SELECT d.submitted_at FROM diagnosis_attempts d WHERE d.id=s.diagnosis_attempt_id) "
+                            + "AS diagnosis_submitted_at, "
+                            + "tr.user_id FROM task_submissions s JOIN "
                                     + "task_recipients tr ON tr.id=s.recipient_id WHERE s.id=? FOR UPDATE");
             ps.setLong(1, submissionId);
             rs = ps.executeQuery();

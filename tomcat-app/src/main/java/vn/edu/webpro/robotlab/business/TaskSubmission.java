@@ -8,7 +8,6 @@ import java.util.List;
 
 /** Bản chụp bằng chứng và nội dung giải thích khi nộp bài. */
 public class TaskSubmission implements Serializable {
-
     private long id;
     private long recipientId;
     private long roundId;
@@ -31,6 +30,18 @@ public class TaskSubmission implements Serializable {
     private String improvement = "";
     private String state = "SUBMITTED";
     private List<TaskReview> reviews = new ArrayList<>();
+    private long diagnosisAttemptId;
+    private String diagnosisTitle = "";
+    private int diagRequiredDone;
+    private int diagRequiredTotal;
+    private boolean diagCauseCorrect;
+    private boolean diagActionCorrect;
+    private BigDecimal diagnosisScore = BigDecimal.ZERO;
+    private BigDecimal diagnosisPoints = BigDecimal.ZERO;
+    private int diagnosisReusedFrom;
+    private Date diagnosisSubmittedAt;
+
+
 
     /** Khởi tạo JavaBean với giá trị mặc định. */
     public TaskSubmission() {
@@ -309,5 +320,154 @@ public class TaskSubmission implements Serializable {
         TaskRubric.requireText(problem, 20, 1500, "Vấn đề gặp phải");
         TaskRubric.requireText(reasoning, 20, 1500, "Lý do kiểm tra/xử lý");
         TaskRubric.requireText(improvement, 20, 1500, "Điều sẽ thay đổi");
+    }
+
+    /** Đọc diagnosisAttemptId. */
+    public long getDiagnosisAttemptId() {
+        return diagnosisAttemptId;
+    }
+
+    /** Gán diagnosisAttemptId. */
+    public void setDiagnosisAttemptId(long diagnosisAttemptId) {
+        this.diagnosisAttemptId = diagnosisAttemptId;
+    }
+
+
+    /** Đọc diagnosisTitle. */
+    public String getDiagnosisTitle() {
+        return diagnosisTitle;
+    }
+
+    /** Gán diagnosisTitle. */
+    public void setDiagnosisTitle(String diagnosisTitle) {
+        this.diagnosisTitle = diagnosisTitle;
+    }
+
+
+    /** Đọc diagRequiredDone. */
+    public int getDiagRequiredDone() {
+        return diagRequiredDone;
+    }
+
+    /** Gán diagRequiredDone. */
+    public void setDiagRequiredDone(int diagRequiredDone) {
+        this.diagRequiredDone = diagRequiredDone;
+    }
+
+
+    /** Đọc diagRequiredTotal. */
+    public int getDiagRequiredTotal() {
+        return diagRequiredTotal;
+    }
+
+    /** Gán diagRequiredTotal. */
+    public void setDiagRequiredTotal(int diagRequiredTotal) {
+        this.diagRequiredTotal = diagRequiredTotal;
+    }
+
+
+    /** Đọc diagCauseCorrect. */
+    public boolean isDiagCauseCorrect() {
+        return diagCauseCorrect;
+    }
+
+    /** Gán diagCauseCorrect. */
+    public void setDiagCauseCorrect(boolean diagCauseCorrect) {
+        this.diagCauseCorrect = diagCauseCorrect;
+    }
+
+
+    /** Đọc diagActionCorrect. */
+    public boolean isDiagActionCorrect() {
+        return diagActionCorrect;
+    }
+
+    /** Gán diagActionCorrect. */
+    public void setDiagActionCorrect(boolean diagActionCorrect) {
+        this.diagActionCorrect = diagActionCorrect;
+    }
+
+
+    /** Đọc diagnosisScore. */
+    public BigDecimal getDiagnosisScore() {
+        return diagnosisScore;
+    }
+
+    /** Gán diagnosisScore. */
+    public void setDiagnosisScore(BigDecimal diagnosisScore) {
+        this.diagnosisScore = diagnosisScore;
+    }
+
+
+    /** Đọc diagnosisPoints. */
+    public BigDecimal getDiagnosisPoints() {
+        return diagnosisPoints;
+    }
+
+    /** Gán diagnosisPoints. */
+    public void setDiagnosisPoints(BigDecimal diagnosisPoints) {
+        this.diagnosisPoints = diagnosisPoints;
+    }
+
+
+    /** Đọc diagnosisReusedFrom. */
+    public int getDiagnosisReusedFrom() {
+        return diagnosisReusedFrom;
+    }
+
+    /** Gán diagnosisReusedFrom. */
+    public void setDiagnosisReusedFrom(int diagnosisReusedFrom) {
+        this.diagnosisReusedFrom = diagnosisReusedFrom;
+    }
+
+
+    /** Đọc diagnosisSubmittedAt. */
+    public Date getDiagnosisSubmittedAt() {
+        return diagnosisSubmittedAt;
+    }
+
+    /** Gán diagnosisSubmittedAt. */
+    public void setDiagnosisSubmittedAt(Date diagnosisSubmittedAt) {
+        this.diagnosisSubmittedAt = diagnosisSubmittedAt;
+    }
+
+
+    /** Bài mẫu B luôn có bản chụp chẩn đoán. */
+    public boolean isHasDiagnosis() {
+        return diagnosisAttemptId > 0;
+    }
+
+    /** Nhận biết bằng chứng dùng lại từ bài trước. */
+    public boolean isReusedDiagnosis() {
+        return diagnosisReusedFrom > 0;
+    }
+
+    /** Tiêu chí của bản chụp bài nộp. */
+    public TaskRubric getRubric() {
+        TaskRubric rubric = new TaskRubric();
+        if (isHasDiagnosis()) {
+            rubric.setTemplate("B");
+        }
+        return rubric;
+    }
+
+    /** Điểm chẩn đoán đã lưu trên thang 10. */
+    public String getDiagnosisScoreDisplay() {
+        return TaskRubric.formatNumber(diagnosisScore);
+    }
+
+    /** Điểm đóng góp chẩn đoán đã lưu. */
+    public String getDiagnosisPointsDisplay() {
+        return TaskRubric.formatNumber(diagnosisPoints);
+    }
+
+    /** Thời điểm chốt lượt chẩn đoán bất biến. */
+    public String getDiagnosisSubmittedAtDisplay() {
+        return TaskRubric.formatDate(diagnosisSubmittedAt);
+    }
+
+    /** Điểm lắp ráp đã lưu theo mẫu của bài nộp. */
+    public String getAssemblyPointsDisplay() {
+        return TaskRubric.formatNumber(assemblyPoints);
     }
 }

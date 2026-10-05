@@ -85,6 +85,10 @@ public class AdminTaskServlet extends HttpServlet {
                 forward(request, response, "admin-task-list");
                 return;
             }
+            if (!"new".equals(action) && !"edit".equals(action)
+                    && !"view".equals(action) && !"preview".equals(action)) {
+                throw new IllegalArgumentException("Thao tác không hợp lệ.");
+            }
             PracticeTask task;
             if ("new".equals(action)) {
                 task = new PracticeTask();
@@ -111,6 +115,7 @@ public class AdminTaskServlet extends HttpServlet {
                                 + " nháp.");
                 }
                 request.setAttribute("robots", RobotDB.selectRobots(100, 0));
+                request.setAttribute("diagnosisScenarios", DiagnosisDB.selectScenarios(false));
                 learners(request, recipients);
                 forward(request, response, "admin-task-form");
             } else if ("view".equals(action) || "preview".equals(action)) {

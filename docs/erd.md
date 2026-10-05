@@ -1,5 +1,51 @@
 # ERD - Robot Lab
 
+## Chẩn đoán và mẫu B — migration 010
+
+```mermaid
+erDiagram
+    robots ||--o{ diagnosis_scenarios : catalog
+    users ||--o{ diagnosis_scenarios : author
+    troubleshooting_guides o|--o{ diagnosis_scenarios : reference
+    diagnosis_scenarios o|--o{ diagnosis_scenarios : version_parent
+    diagnosis_scenarios ||--o{ diagnosis_checks : checks
+    diagnosis_scenarios ||--o{ diagnosis_options : choices
+    diagnosis_scenarios ||--o{ diagnosis_attempts : attempts
+    users ||--o{ diagnosis_attempts : owner
+    diagnosis_attempts ||--o{ diagnosis_attempt_checks : chosen_log
+    diagnosis_checks ||--o{ diagnosis_attempt_checks : observation
+    diagnosis_options o|--o{ diagnosis_attempts : chosen_cause_or_action
+    diagnosis_scenarios o|--o{ practice_tasks : rubric_B
+    diagnosis_attempts o|--o| task_rounds : fixed_slot
+    diagnosis_attempts o|--o{ task_submissions : snapshot_source
+```
+
+| Bảng mới | Ràng buộc chính |
+| --- | --- |
+| diagnosis_scenarios | FK robot/author/guide/parent, DRAFT/PUBLISHED/ARCHIVED, version_no; PUBLISHED bất biến do business và khóa transaction |
+| diagnosis_checks | FK scenario, label/observation/is_required/display_order |
+| diagnosis_options | FK scenario, CAUSE/ACTION, label/feedback/is_correct/display_order |
+| diagnosis_attempts | FK scenario/user/cause/action, PRACTICE/TASK, IN_PROGRESS/SUBMITTED; snapshot required_done/total và đúng/sai; index(user_id,state) |
+| diagnosis_attempt_checks | FK attempt/check, chosen_at, UNIQUE(attempt_id,check_id) |
+
+Tất cả FK mới ON DELETE RESTRICT, utf8mb4. `practice_tasks` mở ENUM rubric A/B
+và thêm diagnosis_scenario_id nullable. `task_rounds` thêm diagnosis_attempt_id
+nullable UNIQUE: một lượt TASK chỉ gắn một vòng. `task_submissions` thêm ID lượt,
+tiêu đề, số phép cần thiết đã chọn/tổng, cờ đúng/sai, điểm /10, điểm đóng góp,
+số bài dùng lại. ID có thể được nhiều bài bổ sung cùng người tham chiếu.
+Thời điểm lượt được đọc từ lượt SUBMITTED bất biến.
+
+Hai CHECK cũ được tìm tên qua information_schema rồi thay: automatic_points
+BETWEEN 30 AND 80, total_points BETWEEN 30 AND 100. Không thay dữ liệu hay
+bảng khác của migration 009. CHECK nhiều cột đặt cấp bảng. Migration có kiểm
+tồn tại trước ALTER; seed INSERT IGNORE không ghi đè bản đã công bố.
+
+Điểm B dùng chẩn đoán chính xác, làm tròn tổng tự động một lần và lưu DECIMAL
+(4,1). Chấm so ngưỡng bằng giá trị đã lưu, không tính lại từ đề hiện hành.
+Lượt PRACTICE không có đường liên kết vào bài nộp: server kiểm mode, chủ,
+tình huống và SUBMITTED. Khóa bắt đầu TASK: task → recipient → round;
+conclude chỉ khóa lượt; confirm đọc lượt thường để tránh đảo thứ tự khóa.
+
 ## Nhiệm vụ thực hành — Đợt 6, chặng 1
 
 Migration `009_practice_tasks.sql` bổ sung năm bảng, không thay cột bảng cũ.

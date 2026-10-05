@@ -8,13 +8,15 @@ import java.util.List;
 
 /** Vòng nộp với một lượt quiz tính điểm được chốt. */
 public class TaskRound implements Serializable {
-
     private long id;
     private long recipientId;
     private int roundNo = 1;
     private String state = "ACTIVE";
     private Date startedAt;
     private long quizAttemptId;
+    private long diagnosisAttemptId;
+
+
 
     /** Khởi tạo JavaBean với giá trị mặc định. */
     public TaskRound() {
@@ -102,11 +104,26 @@ public class TaskRound implements Serializable {
 
     /** Kiểm vòng đã có quiz hoặc bài nộp để JSP chỉ trình bày. */
     public boolean isHasActivity() {
-        return quizAttemptId > 0 || isSubmitted();
+        return quizAttemptId > 0 || diagnosisAttemptId > 0 || isSubmitted();
     }
 
     /** Trả ngày bắt đầu vòng theo giờ Việt Nam cho JSP hoặc lớp dữ liệu. */
     public String getStartedDisplay() {
         return TaskRubric.formatDate(startedAt);
+    }
+
+    /** Đọc diagnosisAttemptId. */
+    public long getDiagnosisAttemptId() {
+        return diagnosisAttemptId;
+    }
+
+    /** Gán diagnosisAttemptId. */
+    public void setDiagnosisAttemptId(long diagnosisAttemptId) {
+        this.diagnosisAttemptId = diagnosisAttemptId;
+    }
+
+    /** Nhận biết lượt chẩn đoán đã được gắn ngay khi bắt đầu. */
+    public boolean isHasDiagnosisAttempt() {
+        return diagnosisAttemptId > 0;
     }
 }

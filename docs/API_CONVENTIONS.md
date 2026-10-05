@@ -1,5 +1,40 @@
 # Quy ước Servlet API
 
+## Chẩn đoán tương tác và mẫu B (Đợt 6, chặng 2)
+
+Các route sau là trang Servlet → JSP/form, không phải JSON API. Mọi trang có
+`Cache-Control: no-store`; khách redirect `/pages/tai-khoan.html`. Danh tính lấy
+từ HttpSession. Mọi POST kiểm hidden `csrfToken` bằng helper form hiện có.
+
+| Route | Quyền | GET (chỉ đọc) | POST action |
+| --- | --- | --- | --- |
+| `/diagnosis` | USER | Mặc định: PUBLISHED và lượt đang làm của mình; `play/result&id=<attempt>` | `start&scenarioId`, `check&id&checkId`, `conclude&id&causeOptionId&actionOptionId` |
+| `/admin-diagnosis` | ADMIN | Danh sách, `new`, `edit/view/preview&id=<scenario>` | `save`, `publish`, `duplicate`, `archive` |
+| `/tasks` | USER | Luồng nhiệm vụ cũ, thêm bằng chứng chẩn đoán cho B | Thêm `diagnosis&id=<task>` để tạo/tiếp tục lượt TASK của vòng |
+| `/admin-tasks` | ADMIN | Nháp chọn rubric A/B và tình huống PUBLISHED cùng robot | Công bố kiểm lại rubric/tình huống; khóa sau công bố |
+| `/admin-task-reviews` | ADMIN | Thêm quá trình chẩn đoán của bài nộp B | Chấm/sửa chấm theo luật cũ |
+
+422: action/id/field sai hoặc vi phạm luật; 404: không tồn tại/không thuộc quyền
+xem; 403: thiếu vai trò hoặc token; 503: SQLException. Thiếu/sai token bị chặn
+trước mọi ghi dữ liệu. ADMIN không làm lượt hoặc nộp; USER không xem lượt của
+người khác. Không có tham số userId để đổi chủ lượt.
+
+`check` idempotent, chỉ cho phép check của đúng tình huống. Quan sát chưa chọn,
+cờ cần thiết/đáp án, phản hồi và giải thích bị loại khỏi dữ liệu trả cho trang
+làm bài. `conclude` khóa riêng lượt của mình; kết luận lần hai nhận 422.
+`start` chỉ nhận PUBLISHED; lượt TASK của nhiệm vụ đang mở vẫn tiếp tục được
+khi tình huống đã ARCHIVED. Bản PUBLISHED bất biến, sửa phải nhân bản.
+
+POST nhiệm vụ `diagnosis` khóa task → recipient → round và trả về cùng lượt
+nếu đã gắn. Confirm chỉ đọc lượt chẩn đoán, kiểm mode TASK/user/tình huống/
+SUBMITTED và tự chọn ID của vòng hoặc bài trước. Hidden ID không được thay
+bằng lượt luyện hay lượt khác. Quiz API và header CSRF cũ giữ nguyên.
+
+| Servlet | JavaBean / XxxDB | JSP mới |
+| --- | --- | --- |
+| DiagnosisServlet | DiagnosisAttempt/Scenario/Check/Option, DiagnosisDB | diagnosis-list/play/result |
+| AdminDiagnosisServlet | DiagnosisScenario, DiagnosisDB | admin-diagnosis-list/form/preview |
+
 ## Nhiệm vụ thực hành và đánh giá (Đợt 6, chặng 1)
 
 | Route | GET | POST action | Quyền |

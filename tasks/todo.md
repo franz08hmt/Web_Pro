@@ -1,5 +1,27 @@
 # Đợt 2 — Lái thử mô hình 3D
 
+## Đợt 6 chặng 2 — Chẩn đoán tương tác và mẫu B
+
+- [x] HEAD a1650e0; chỉ handoff untracked; baseline Node114/JUnit52.
+- [x] Bốn tài khoản login;77 trang golden trước sửa, QA8081 riêng.
+- [x] Test bean/nguồn chạy đỏ trước triển khai; giữ test cũ.
+- [x] Migration010/seed additive chạy lại được; schema_migrations có010.
+- [x] Bốn bean diagnosis, DB/Servlet/JSP/form/role/CSRF/ẩn dữ kiện chưa được mở.
+- [x] Rubric B/slot TASK/snapshot/nguồn dùng lại/chấm, A giữ điểm và luật cũ.
+- [x] Node119/JUnit59, clean package JDK17; guard bắt stream và dòng quá dài trên bản sao.
+- [x] Golden77:66 giống nguyên HTML,11 form ADMIN đổi radio; ngoài form77 giống.
+- [x] Bản WAR cuối69 trang chi tiết A giống bản after; nhãn/điểm USER không đổi.
+- [x] Builder nộp/chấm/bổ sung/dùng lại hoặc lượt chẩn đoán mới; practice quiz/chẩn đoán.
+- [x] Kiểm âm quyền/CSRF/nguồn/điểm/hạn/trạng thái; ba tranh chấp bằng hai luồng và SQL.
+- [x] Chrome JS-off form thật,390px không tràn; role link USER/ADMIN.
+- [x] README/API/ERD/slide/FAQ/demo/seed/report và handoff cập nhật.
+- [ ] Nộp đầy đủ bằng USER practice: thiếu phiên COMPLETED, chưa được phép tạo qua luồng cũ.
+- [ ] Firefox/Safari và việc bảo vệ bài thi kín (ngoài phạm vi).
+- [x] Dừng/dọn QA8081; giữ175 file bằng chứng không bí mật ở target, không stage target/handoff.
+
+Bàn giao bằng một commit local chẩn đoán và mẫu B, không push. Các giới hạn
+chưa tick ở trên vẫn còn; không coi bộ test xanh là full-flow hai USER đạt.
+
 ## Đợt 6b — Định dạng code và hai sửa nhỏ
 
 - [x] Xác nhận HEAD a1273fe; chỉ handoff untracked, không có file lạ đang sửa.

@@ -70,6 +70,9 @@ public class AdminTaskReviewServlet extends HttpServlet {
             PracticeTask task = PracticeTaskDB.selectTask(taskId, user.getId(), true);
             request.setAttribute("task", task);
             request.setAttribute("taskSubmission", submission);
+            if (submission.isHasDiagnosis()) {
+                request.setAttribute("diagnosisAttempt", DiagnosisDB.selectForSubmission(id, user.getId(), true));
+            }
             request.setAttribute("currentReview", submission.getCurrentReview());
             for (TaskRecipient recipient :
                     PracticeTaskDB.selectRecipients(taskId, user.getId(), true)) {

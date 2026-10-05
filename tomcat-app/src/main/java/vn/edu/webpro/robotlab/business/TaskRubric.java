@@ -9,8 +9,10 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-/** Tiêu chí mẫu A, cách làm tròn điểm và điều kiện đánh giá. */
+/** Tiêu chí mẫu A/B, cách làm tròn điểm và điều kiện đánh giá. */
 public class TaskRubric implements Serializable {
+    private String template = "A";
+
 
     public static final int ASSEMBLY_WEIGHT = 40;
 
@@ -24,6 +26,9 @@ public class TaskRubric implements Serializable {
 
     /** Tính điểm tự động mẫu A và làm tròn HALF_UP để lưu. */
     public BigDecimal automaticPoints(int score, int total) {
+        if ("B".equals(template)) {
+            throw new IllegalArgumentException("Mẫu B cần điểm từ lượt chẩn đoán đã chốt.");
+        }
         if (total <= 0 || score < 0 || score > total) {
             throw new IllegalArgumentException("Lượt quiz không hợp lệ.");
         }
@@ -141,5 +146,94 @@ public class TaskRubric implements Serializable {
         format.setMinimumFractionDigits(1);
         format.setMaximumFractionDigits(1);
         return format.format(value);
+    }
+
+    /** Đọc template. */
+    public String getTemplate() {
+        return template;
+    }
+
+    /** Gán template. */
+    public void setTemplate(String template) {
+        this.template = template;
+    }
+
+
+    /** Trọng số lắp ráp theo mẫu đã chọn. */
+    public int getAssemblyWeight() {
+        if ("B".equals(template)) {
+            return 30;
+        }
+        return 40;
+    }
+
+    /** Trọng số quiz theo mẫu đã chọn. */
+    public int getQuizWeight() {
+        if ("B".equals(template)) {
+            return 25;
+        }
+        return 40;
+    }
+
+    /** Trọng số chẩn đoán, mẫu A không sử dụng. */
+    public int getDiagnosisWeight() {
+        if ("B".equals(template)) {
+            return 25;
+        }
+        return 0;
+    }
+
+    /** Điểm tự động tối đa của cả hai mẫu. */
+    public int getAutomaticMaximum() {
+        return 80;
+    }
+
+    /** Nhãn tiêu chí giữ nguyên văn bản mẫu A. */
+    public String getLabel() {
+        if ("B".equals(template)) {
+            return getTemplateBLabel();
+        }
+        return getTemplateALabel();
+    }
+
+    /** Nhãn cố định mẫu A cho lựa chọn trong form. */
+    public String getTemplateALabel() {
+        return "Mẫu A: lắp ráp 40 + quiz 40 + giải thích 20 = 100";
+    }
+
+    /** Nhãn cố định mẫu B cho lựa chọn trong form. */
+    public String getTemplateBLabel() {
+        return "Mẫu B: lắp ráp 30 + quiz 25 + chẩn đoán 25 + giải thích 20 = 100";
+    }
+
+    /** Tính đóng góp quiz theo mẫu, chưa làm tròn tổng. */
+    public BigDecimal quizContribution(int score, int total) {
+        if (total <= 0 || score < 0 || score > total) {
+            throw new IllegalArgumentException("Lượt quiz không hợp lệ.");
+        }
+        return new BigDecimal(score).multiply(new BigDecimal(getQuizWeight()))
+                .divide(new BigDecimal(total), 24, RoundingMode.HALF_UP);
+    }
+
+    /** Tính đóng góp chẩn đoán từ điểm chưa làm tròn trên thang 10. */
+    public BigDecimal diagnosisContribution(BigDecimal score) {
+        if (score == null || score.signum() < 0 || score.compareTo(BigDecimal.TEN) > 0) {
+            throw new IllegalArgumentException("Điểm chẩn đoán không hợp lệ.");
+        }
+        return score.multiply(new BigDecimal(getDiagnosisWeight())).divide(BigDecimal.TEN);
+    }
+
+    /** Mẫu B làm tròn một lần sau khi cộng ba phần tự động. */
+    public BigDecimal automaticPoints(int score, int total, BigDecimal diagnosis) {
+        if (!"B".equals(template)) {
+            return automaticPoints(score, total);
+        }
+        return roundAutomatic(new BigDecimal(getAssemblyWeight()).add(quizContribution(score, total))
+                .add(diagnosisContribution(diagnosis)));
+    }
+
+    /** Chọn lượt riêng nếu đã bắt đầu, không bỏ lượt để dùng lại lượt cũ. */
+    public long chooseDiagnosisAttempt(int round, long own, long previous) {
+        return chooseQuizAttempt(round, own, previous);
     }
 }

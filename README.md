@@ -1,5 +1,39 @@
 # Robot Assembly Lab
 
+## Chẩn đoán tương tác và nhiệm vụ mẫu B (Đợt 6, chặng 2)
+
+USER chọn phép kiểm tra bằng form để mở từng quan sát mô phỏng, rồi chọn nguyên
+nhân và biện pháp. Server ghi nhận thao tác, chấm thu thập quan sát /4, nguyên
+nhân /3 và xử lý /3; chỉ hiện đáp án/giải thích sau khi kết luận. Lượt PRACTICE
+để luyện độc lập; lượt TASK gắn cố định vào vòng nhiệm vụ ngay khi bắt đầu.
+ADMIN biên soạn nháp, xem trước, công bố bản bất biến, nhân bản và lưu trữ.
+
+Mẫu B: lắp ráp 30 + quiz 25 + chẩn đoán 25 + giải thích 20. Server dùng điểm
+chẩn đoán chính xác để tính tổng tự động, làm tròn HALF_UP một lần tới một chữ
+số thập phân và lưu snapshot. Mẫu A giữ luật 40 + 40 + 20. Vòng bổ sung dùng
+lượt chẩn đoán mới đã kết luận hoặc dùng lại bài trước nếu chưa bắt đầu lượt mới.
+
+DB đã có migration 009: chạy theo thứ tự, bằng MySQL client trên DB ứng dụng:
+
+```sql
+SOURCE database/migrations/010_diagnosis_practice.sql;
+SOURCE database/seed-diagnosis-phase6.sql;
+```
+
+Migration 010 cần CREATE/ALTER, thêm năm bảng và các liên kết nullable, mở rubric
+A/B, đổi hai CHECK điểm tối thiểu từ 40 thành 30. Không sửa dữ liệu cũ. Seed
+INSERT IGNORE gồm năm tình huống chính thức; cần catalog robot và ít nhất một
+ADMIN có sẵn. Có thể chạy lại; các bản công bố đã tồn tại không bị ghi đè.
+Schema cài mới đã gộp thay đổi này trong `database/schema.sql`.
+
+Tài khoản USER có **Luyện chẩn đoán**; ADMIN có **Quản lý tình huống chẩn đoán**.
+Trang Servlet/JSP và form hoạt động khi tắt JavaScript. Quan sát là dữ liệu
+mô phỏng của bài tập, không phải phép đo robot thật. Đây là đánh giá quá trình
+có tài liệu tham khảo và luyện tập, không phải thi kín.
+
+Xem [đối chiếu slide và kịch bản demo](docs/TEAM_FLOW_DEMO_GUIDE.md),
+[báo cáo QA chặng 2 và giới hạn](docs/PHASE6C_QA_REPORT.md).
+
 ## Nhiệm vụ thực hành và đánh giá (Đợt 6, chặng 1)
 
 ADMIN tạo nháp/giao USER/công bố/gia hạn/đóng/lưu trữ/nhân bản, chấm và sửa chấm
