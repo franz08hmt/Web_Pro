@@ -78,6 +78,7 @@ public class AdminTaskServlet extends HttpServlet {
             request.setAttribute("adminView", true);
             String action = TaskFormUtil.text(request, "action");
             if (action.isEmpty()) {
+                request.setAttribute("taskStateFilter", TaskFormUtil.text(request, "state"));
                 request.setAttribute(
                         "tasks",
                         PracticeTaskDB.selectTasks(

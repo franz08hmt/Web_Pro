@@ -7,6 +7,38 @@ const os = require("node:os");
 const root = path.resolve(__dirname, "../..");
 const java = "tomcat-app/src/main/java/vn/edu/webpro/robotlab/";
 const read = file => fs.readFileSync(path.join(root,file), "utf8");
+const viewsRoot = path.join(root, "tomcat-app/src/main/webapp/WEB-INF/views");
+function practiceViewNames(folder = viewsRoot) {
+  return fs.readdirSync(folder)
+    .filter(name => /^(task-|admin-task-|diagnosis-|admin-diagnosis-).*\.jsp$/.test(name)).sort();
+}
+function practiceViewHtmlGuard(source, name) {
+  assert.doesNotMatch(source, /<\s*(?:select|option)\b/i, `${name}: select/option không có trong slide`);
+  assert.doesNotMatch(source, /<fmt:|<fn:|<%(?!@)/, `${name}: chỉ dùng directive và JSTL core`);
+  assert.doesNotMatch(source, /<\/[a-zA-Z][\w-]*\s+[^>\s][^>]*>/,
+    `${name}: thẻ đóng không được có thuộc tính`);
+  source.split(/\r?\n/).forEach((line, index) => {
+    assert.ok(line.length <= 140, `${name}:${index + 1}: ${line.length}`);
+  });
+  // Bỏ directive/comment, EL và JSTL trước khi đọc thẻ HTML, kể cả c:out trong thuộc tính.
+  const html = source.replace(/<%@[^]*?%>|<%--[^]*?--%>|<!--[^]*?-->/g, "")
+    .replace(/\$\{[^}]*\}/g, "")
+    .replace(/<\/?c:\w+\b(?:[^>"']|"[^"]*"|'[^']*')*>/g, "");
+  const blocks = new Set(["form", "table", "section", "fieldset", "label", "ul", "ol",
+    "div", "thead", "tbody", "tr"]);
+  const stack = [];
+  for (const tag of html.matchAll(/<\/?([a-zA-Z][\w:-]*)\b(?:[^>"']|"[^"]*"|'[^']*')*>/g)) {
+    const block = tag[1].toLowerCase();
+    if (!blocks.has(block)) continue;
+    const line = html.slice(0, tag.index).split("\n").length;
+    if (tag[0].startsWith("</")) {
+      assert.equal(stack.pop(), block, `${name}:${line}: thẻ ${block} đóng lệch`);
+    } else {
+      stack.push(block);
+    }
+  }
+  assert.deepEqual(stack, [], `${name}: thẻ khối chưa đóng`);
+}
 const javaFiles = ["business/DiagnosisScenario", "business/DiagnosisCheck", "business/DiagnosisOption", "business/DiagnosisAttempt", "data/DiagnosisDB", "controller/DiagnosisServlet", "controller/AdminDiagnosisServlet", "util/DiagnosisFormUtil", "business/PracticeTask", "business/TaskRecipient", "business/TaskRound", "business/TaskSubmission", "business/TaskReview", "business/TaskRubric", "data/PracticeTaskDB", "data/TaskSubmissionDB", "controller/TaskServlet", "controller/AdminTaskServlet", "controller/AdminTaskReviewServlet"];
 const forbidden = /\.stream\s*\(|\.toList\s*\(|::|\w\s*->|\bOptional\b|orElseThrow|\bswitch\s*\(|computeIfAbsent|getOrDefault|\.forEach\s*\(|\b(List|Set|Map)\.of\s*\(|\bvar\s+\w+\s*=|"""|java\.time|\bInstant\b|\bZoneId\b|DateTimeFormatter|\bLocalDate|\brecord\s/;
 // Giữ vị trí/dòng nhưng bỏ literal và comment để guard không đọc nhầm SQL hoặc chữ hiển thị.
@@ -59,8 +91,7 @@ function formattingGuard(source, name) {
 }
 test("phase 6 Java and JSP formatting remains readable", () => {
   for (const [name, source] of formattingJavaSources()) formattingGuard(source, name);
-  const views = fs.readdirSync(path.join(root, "tomcat-app/src/main/webapp/WEB-INF/views"))
-    .filter(name => /^(task-|admin-task-|diagnosis-|admin-diagnosis-)/.test(name));
+  const views = practiceViewNames();
   for (const name of views) {
     read("tomcat-app/src/main/webapp/WEB-INF/views/" + name).split(/\r?\n/).forEach((line, index) => {
       assert.ok(line.length <= 140, `${name}:${index + 1}: ${line.length}`);
@@ -69,6 +100,42 @@ test("phase 6 Java and JSP formatting remains readable", () => {
   assert.throws(() => formattingGuard("if(x) return;", "copy"));
   assert.throws(() => formattingGuard("first(); second();", "copy"));
   assert.throws(() => formattingGuard("x".repeat(121), "copy"));
+});
+test("all phase 6 JSP families reject unsupported tags and malformed block HTML", () => {
+  for (const name of practiceViewNames()) {
+    practiceViewHtmlGuard(read("tomcat-app/src/main/webapp/WEB-INF/views/" + name), name);
+  }
+  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "practice-view-guard-"));
+  try {
+    const copy = path.join(temporary, "admin-task-list.jsp");
+    const validSource = read("tomcat-app/src/main/webapp/WEB-INF/views/admin-task-list.jsp");
+    fs.writeFileSync(copy, validSource + '\n<select name="bad"></select>');
+    assert.throws(() => practiceViewHtmlGuard(fs.readFileSync(copy, "utf8"), "select copy"), /select\/option/);
+    fs.writeFileSync(copy, validSource + '\n</option value="x">');
+    assert.throws(() => practiceViewHtmlGuard(fs.readFileSync(copy, "utf8"), "closing copy"), /thẻ đóng/);
+    fs.writeFileSync(path.join(temporary, "diagnosis-future.jsp"), '<form><label>Chọn<input></label></form>');
+    fs.writeFileSync(path.join(temporary, "order-history.jsp"), '<select></select>');
+    assert.deepEqual(practiceViewNames(temporary), ["admin-task-list.jsp", "diagnosis-future.jsp"]);
+  } finally {
+    fs.rmSync(temporary, {recursive: true, force: true});
+  }
+  practiceViewHtmlGuard('<div><label title="<c:out value="${text}"/>">Nhãn</label><input></div>', "EL/void");
+  assert.throws(() => practiceViewHtmlGuard('<form><label></form></label>', "crossed blocks"), /đóng lệch/);
+  assert.throws(() => practiceViewHtmlGuard('<div>', "unclosed block"), /chưa đóng/);
+});
+test("admin task filter retains five radio values and GET form", () => {
+  const source = read("tomcat-app/src/main/webapp/WEB-INF/views/admin-task-list.jsp");
+  const values = [...source.matchAll(/<input\s+type="radio"\s+name="state"\s+value="([^"]*)"/g)]
+    .map(match => match[1]);
+  assert.deepEqual(values, ["", "DRAFT", "OPEN", "CLOSED", "ARCHIVED"]);
+  assert.match(source, /<form method="get">/);
+  assert.match(source, /<button>Lọc<\/button>/);
+  assert.match(source, /empty taskStateFilter/);
+  for (const state of values.slice(1)) {
+    assert.match(source, new RegExp("taskStateFilter eq '" + state + "'"));
+  }
+  assert.match(read(java + "controller/AdminTaskServlet.java"),
+    /setAttribute\("taskStateFilter", TaskFormUtil\.text\(request, "state"\)\)/);
 });
 test("unsupported GET task actions are validation errors instead of not-found errors", () => {
   for (const name of ["TaskServlet", "AdminTaskServlet", "AdminTaskReviewServlet"]) {
@@ -99,7 +166,7 @@ test("practice task code uses only course slide syntax and guard catches injecte
     fs.writeFileSync(copy, read(java + "business/TaskRubric.java") + "\n//" + "x".repeat(121));
     assert.throws(() => formattingGuard(fs.readFileSync(copy, "utf8"), "long-line copy"));
   } finally { fs.rmSync(temporary, {recursive: true, force: true}); }
-  const views = fs.readdirSync(path.join(root, "tomcat-app/src/main/webapp/WEB-INF/views")).filter(n => /^(task-|admin-task-|diagnosis-|admin-diagnosis-)/.test(n));
+  const views = practiceViewNames();
   assert.ok(views.length >= 5);
   for(const view of views) {
     const source = read("tomcat-app/src/main/webapp/WEB-INF/views/" + view);
@@ -109,7 +176,7 @@ test("practice task code uses only course slide syntax and guard catches injecte
   }
 });
 test("new JSP forms escape hidden fields and run without JavaScript dependencies", () => {
- const views = fs.readdirSync(path.join(root, "tomcat-app/src/main/webapp/WEB-INF/views")).filter(n => /^(task-|admin-task-|diagnosis-|admin-diagnosis-)/.test(n));
+ const views = practiceViewNames();
  for(const view of views) {
    const source=read("tomcat-app/src/main/webapp/WEB-INF/views/"+view);
    assert.doesNotMatch(source, /<script\b/i);

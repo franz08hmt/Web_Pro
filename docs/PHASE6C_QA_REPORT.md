@@ -169,3 +169,67 @@ clean. Không giữ mysql.cnf, Tomcat conf/log/work, cookie, mật khẩu hay np
 Đã lưu175 file bằng chứng, dừng QA và xác nhận8081 đóng; thư mục riêng chứa
 config/log/work/npm được dọn hoàn toàn. Instance8080 không nhận lệnh stop/start.
 Hash commit local ghi trong handoff và báo cáo cuối; không push.
+
+## Đợt 6d — Bộ lọc nháp và guard JSP (05/10/2026)
+
+Lỗi duy nhất tìm thấy khi rà15 JSP Đợt6:
+`WEB-INF/views/admin-task-list.jsp:17` ở HEAD d608401 có
+`</option value="DRAFT">` thay vì mở option; ADMIN không chọn được Nháp qua UI.
+Cùng khối còn select/option ngoài kỹ thuật cho phép. Nay dòng17 bắt đầu
+fieldset, năm radio ở20/25/30/35/40 giữ `name=state`, giá trị rỗng/DRAFT/OPEN/
+CLOSED/ARCHIVED, nhãn và nút Lọc. Không thấy lỗi đóng/cân bằng form/table/
+section/fieldset/label/ul/ol/div/thead/tbody/tr khác trong phạm vi; không sửa
+HTML ở chỗ không lỗi.
+
+`AdminTaskServlet.java:81` chỉ thêm request attribute `taskStateFilter` bằng
+`TaskFormUtil.text(request,"state")`, cùng chuẩn hóa đang dùng khi gọi DB.
+Nhờ vậy radio phản ánh cả URL có khoảng trắng như `%20DRAFT%20`. Không đổi
+SQL, luật, tên tham số hay mã lỗi. JSP chỉ chọn checked bằng EL/c:if.
+
+Guard độ dài/core EL cũ thực tế đã quét15 JSP; khoảng trống là kiểm select ở
+diagnosis.test loại admin-task-list và chưa có kiểm closing attributes/balance.
+Nay practice-tasks.test dùng danh sách tự liệt kê bốn họ `task-*`,
+`admin-task-*`, `diagnosis-*`, `admin-diagnosis-*` kết thúc `.jsp` cho guard
+HTML/định dạng/slide/form; diagnosis.test cũng quét đủ bốn họ. Guard mới bỏ
+directive/comment/EL/JSTL khi kiểm stack11 thẻ khối, bỏ void tags. Test giả lập
+file diagnosis-future được quét, order-history cũ không bị kéo vào.
+
+| Kiểm chứng | Kết quả |
+| --- | --- |
+| Baseline → cuối | Node119→121,0 fail/skip; JUnit59→59,0 fail/skip; JDK17 clean package BUILD SUCCESS |
+| Test-first |3 test đỏ, đều ở admin-task-list: select, HTML guard, thiếu năm radio; sau sửa xanh |
+| Thử chèn | Bản sao admin-task-list thật chèn `<select>` và `</option value="x">` bị bắt đúng từng loại; lệch/chưa đóng thẻ cũng bị bắt; temp được dọn |
+| Golden |239 GET,106 trả200;233 giống sau chuẩn hóa whitespace/CSRF;6 chỉ đổi filter; mọi status giữ nguyên |
+| USER |204 GET (builder/practice/student mỗi68), trong đó73 trang200, HTML/status đều giống trước |
+| ADMIN khác biệt | Chỉ `/admin-tasks`, `?state=DRAFT`, `OPEN`, `CLOSED`, `ARCHIVED`, `zzz`; bỏ đúng form filter thì cả sáu giống; admin view/edit/preview/review/diagnosis không đổi |
+| Bộ lọc so SQL | DRAFT #20,#10; OPEN14 nhiệm vụ; CLOSED #16; ARCHIVED #6; mặc định17 nhiệm vụ, ẩn lưu trữ; radio checked đúng |
+| Invalid state | zzz200 và không có nhiệm vụ trước/sau; không thêm validation/mã lỗi mới |
+| Quyền GET | Khách302 `/pages/tai-khoan.html`+no-store; cả ba USER vào admin-tasks403 |
+| Chrome JS-off | Chọn Nháp→Lọc gửi GET, URL state=DRAFT, đúng hai ID; screenshot đã xem; viewport/scrollWidth390px |
+| DB chỉ đọc | SHA256 nội dung16 bảng trước/sau và sau browser giống; không migration/POST chức năng/ghi tài khoản; chỉ POST authentication để đăng nhập |
+| Log và dọn | VersionLogger logArgs/logEnv=false ngay từ đầu; không DB argument records/Exception/SEVERE;8081 tắt, thư mục config/log/work/npm đã dọn |
+
+Diff khối lọc (phần còn lại của trang giữ nguyên):
+
+```diff
+- <select name="state"><option value="">Danh sách mặc định</option value="DRAFT">Nháp</option>...
++ <fieldset><legend>Lọc trạng thái</legend>
++ <label><input type="radio" name="state" value="" ...>Danh sách mặc định</label>
++ <label><input type="radio" name="state" value="DRAFT" ...>Nháp</label>
++ ... radio OPEN/CLOSED/ARCHIVED có checked theo trạng thái ...
++ </fieldset>
+```
+
+Chi tiết HTML/diff từng route và492 file bằng chứng local ở
+`tomcat-app/target/phase6d-qa/` (Maven clean sẽ xóa): before/after, results JSON,
+hash DB, screenshot390px và log test đỏ/xanh. Không commit token/config/log QA.
+Đợt6d sửa sáu file tracked: JSP, một dòng Servlet, hai file Node test, todo và
+phần báo cáo này. Handoff ngoài commit; README/API/ERD không đổi vì không đổi
+route/quyền/SQL/dữ liệu hay luật nghiệp vụ. Commit local, không push.
+
+Ngoài phạm vi gặp khi rà, chỉ ghi nhận và không sửa:
+`pages/tra-cuu-loi.html:44,50`, `admin-content.html:112`, `admin-shop.html:40`,
+`lap-rap.html:90`, `admin-quiz.html:60`, `admin-troubleshooting.html:75` còn select;
+`WEB-INF/views/order-history.jsp:36,38,43` còn fmt:formatNumber.
+Chưa kiểm Firefox/Safari. Full-flow nộp B của hai USER vẫn chưa kiểm vì practice
+cần hoàn tất lắp ráp thật; đợt này chỉ đọc, không tự tạo/hoàn tất phiên.

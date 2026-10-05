@@ -1,5 +1,26 @@
 # Đợt 2 — Lái thử mô hình 3D
 
+## Đợt 6d — Sửa bộ lọc nháp và phủ guard JSP
+
+- [x] HEAD d608401/ahead4; chỉ handoff untracked, không có file người dùng đang sửa.
+- [x] Baseline Node119/JUnit59; WAR trước sửa bằng JDK17; bốn tài khoản đăng nhập được.
+- [x] Golden239 GET trước/sau,106 trang200; chỉ POST đăng nhập, không POST chức năng.
+- [x] Guard/source test chạy đỏ đúng admin-task-list.jsp trước khi sửa.
+- [x] Radio state đủ năm giá trị/nhãn; checked theo taskStateFilter đã chuẩn hóa từ request.
+- [x] Rà15 JSP Đợt6; không phát hiện lỗi đóng/cân bằng thẻ khác; chỉ sửa khối bộ lọc.
+- [x] Guard tự liệt kê bốn họ JSP, chặn select/option/closing attributes và cân bằng11 thẻ khối.
+- [x] Bản sao JSP thật chèn select và closing option sai đều bị bắt; kiểm future JSP/EL/void.
+- [x] Node121/JUnit59, clean package xanh; JspExpressionContract và guard slide/định dạng xanh.
+- [x] Golden233 GET giống,6 admin list chỉ đổi bộ lọc; toàn bộ204 USER GET giữ nguyên.
+- [x] Admin lọc đủ trạng thái đúng SQL/checked; zzz200 trước/sau; khách302/no-store, ba USER403.
+- [x] Chrome tắt JS chọn Nháp→GET→đúng #20/#10; ảnh390px đã xem, scrollWidth390.
+- [x] Hash16 bảng không đổi sau toàn bộ QA; không migration, không sửa dữ liệu hay tài khoản.
+- [x] Dừng8081/dọn config/log/work/npm; lưu492 file bằng chứng ở target/phase6d-qa (gitignored).
+- [x] Báo cáo6d cuối PHASE6C_QA_REPORT và handoff cập nhật; README/API/ERD không cần đổi.
+- [ ] Firefox/Safari; hai USER nộp mẫu B vẫn cần hoàn tất lắp ráp thật, ngoài QA chỉ đọc đợt này.
+
+Bàn giao một commit local `fix: repair admin task state filter and extend practice view guards`, không push.
+
 ## Đợt 6 chặng 2 — Chẩn đoán tương tác và mẫu B
 
 - [x] HEAD a1650e0; chỉ handoff untracked; baseline Node114/JUnit52.

@@ -14,9 +14,34 @@
         <h1>Quản lý nhiệm vụ</h1>
         <p><a href="?action=new">Tạo nháp mới</a></p>
         <form method="get">
-            <label>Lọc trạng thái <select name="state"><option value="">Danh sách mặc định</option value="DRAFT">Nháp</option><option
-                value="OPEN">Đang mở</option><option value="CLOSED">Đã đóng</option><option value="ARCHIVED">Đã lưu
-                trữ</option></select></label>
+            <fieldset>
+                <legend>Lọc trạng thái</legend>
+                <label class="task-choice">
+                    <input type="radio" name="state" value=""
+                        <c:if test="${empty taskStateFilter}">checked</c:if>>
+                    Danh sách mặc định
+                </label>
+                <label class="task-choice">
+                    <input type="radio" name="state" value="DRAFT"
+                        <c:if test="${taskStateFilter eq 'DRAFT'}">checked</c:if>>
+                    Nháp
+                </label>
+                <label class="task-choice">
+                    <input type="radio" name="state" value="OPEN"
+                        <c:if test="${taskStateFilter eq 'OPEN'}">checked</c:if>>
+                    Đang mở
+                </label>
+                <label class="task-choice">
+                    <input type="radio" name="state" value="CLOSED"
+                        <c:if test="${taskStateFilter eq 'CLOSED'}">checked</c:if>>
+                    Đã đóng
+                </label>
+                <label class="task-choice">
+                    <input type="radio" name="state" value="ARCHIVED"
+                        <c:if test="${taskStateFilter eq 'ARCHIVED'}">checked</c:if>>
+                    Đã lưu trữ
+                </label>
+            </fieldset>
             <button>Lọc</button>
         </form>
         <c:if test="${empty tasks}">

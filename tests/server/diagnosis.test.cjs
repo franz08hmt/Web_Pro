@@ -48,8 +48,7 @@ test("migration 010 is additive with two explicit check replacements", () => {
 test("diagnosis and task forms use radio inputs and rubric getters instead of select or hard-coded weights", () => {
   const folder = "tomcat-app/src/main/webapp/WEB-INF/views/";
   for (const name of fs.readdirSync(path.join(root, folder))) {
-    // Chỉ file mới/sửa; trang danh sách Admin cũ giữ nguyên để đối chiếu mẫu A.
-    if (!/^(diagnosis-|admin-diagnosis-|task-view|task-submit|task-preview|admin-task-form|admin-task-review)/.test(name)) continue;
+    if (!/^(task-|admin-task-|diagnosis-|admin-diagnosis-).*\.jsp$/.test(name)) continue;
     assert.doesNotMatch(read(folder + name), /<select\b|<script\b/i, name);
   }
   assert.match(read(folder + "admin-task-form.jsp"), /name="rubricTemplate" value="B"/);
