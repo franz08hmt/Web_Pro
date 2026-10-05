@@ -1,6 +1,33 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!doctype html>
-<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Nhiệm vụ thực hành | Robot Assembly Lab</title><link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css"><link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/practice-tasks.css?v=20261005.1"></head><body class="practice-tasks"><p><a href="${pageContext.request.contextPath}/pages/tai-khoan.html">← Tài khoản</a></p>
-<h1>Quản lý nhiệm vụ</h1><p><a href="?action=new">Tạo nháp mới</a></p><form method="get"><label>Lọc trạng thái <select name="state"><option value="">Danh sách mặc định</option value="DRAFT">Nháp</option><option value="OPEN">Đang mở</option><option value="CLOSED">Đã đóng</option><option value="ARCHIVED">Đã lưu trữ</option></select></label><button>Lọc</button></form><c:if test="${empty tasks}"><p>Chưa có nhiệm vụ.</p></c:if><c:forEach var="task" items="${tasks}"><section class="task-card"><h2><a href="?action=view&amp;id=<c:out value="${task.id}"/>"><c:out value="${task.title}"/></a></h2><p><c:out value="${task.robotName}"/> · <c:out value="${task.stateLabel}"/> · Hạn nộp <c:out value="${task.dueDisplay}"/></p></section></c:forEach>
-</body></html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Nhiệm vụ thực hành | Robot Assembly Lab</title>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/practice-tasks.css?v=20261005.1">
+    </head>
+    <body class="practice-tasks">
+        <p><a href="${pageContext.request.contextPath}/pages/tai-khoan.html">← Tài khoản</a></p>
+        <h1>Quản lý nhiệm vụ</h1>
+        <p><a href="?action=new">Tạo nháp mới</a></p>
+        <form method="get">
+            <label>Lọc trạng thái <select name="state"><option value="">Danh sách mặc định</option value="DRAFT">Nháp</option><option
+                value="OPEN">Đang mở</option><option value="CLOSED">Đã đóng</option><option value="ARCHIVED">Đã lưu
+                trữ</option></select></label>
+            <button>Lọc</button>
+        </form>
+        <c:if test="${empty tasks}">
+            <p>Chưa có nhiệm vụ.</p>
+        </c:if>
+        <c:forEach var="task" items="${tasks}">
+            <section class="task-card">
+                <h2><a href="?action=view&amp;id=<c:out value="${task.id}"/>"><c:out value="${task.title}"/></a></h2>
+                <p><c:out value="${task.robotName}"/> · <c:out value="${task.stateLabel}"/> · Hạn nộp <c:out
+                    value="${task.dueDisplay}"/></p>
+            </section>
+        </c:forEach>
+    </body>
+</html>

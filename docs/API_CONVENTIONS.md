@@ -14,6 +14,23 @@ trả 403. USER mở nhiệm vụ không được giao (hoặc nháp) trả 404.
 SessionUtil/HttpSession, không nhận userId trong luồng USER. SQLException trả
 503; điều kiện nghiệp vụ sai trả trang JSP 422 với thông báo, không tạo dữ liệu.
 
+Đợt 6b thống nhất mã lỗi cho ba route nhiệm vụ (không đổi API JSON cũ):
+
+| Trường hợp | HTTP / nội dung |
+| --- | --- |
+| ID sai định dạng, action không hỗ trợ, thiếu/sai field hoặc vi phạm luật | 422, forward `task-error.jsp` |
+| Không tồn tại hoặc không thuộc quyền xem | 404 |
+| Thiếu quyền vai trò | 403 |
+| Thiếu/sai hidden `csrfToken` | 403 |
+| SQLException / database không sẵn sàng | 503 |
+
+Kiểm đăng nhập/vai trò và token vẫn chạy trước xử lý form. GET trang chấm dùng
+action rỗng (URL đang có) hoặc `view`; action lạ trả 422. Các ID và mã lỗi khác
+giữ nguyên. Khối quiz của vòng hiện tại chỉ hiện khi
+`TaskRecipient.isShowCurrentRoundQuiz()` trả true, tức vòng ACTIVE; vòng
+SUBMITTED (kể cả đang chờ chấm), CANCELLED hoặc thiếu vòng không hiện khối này.
+Lịch sử bài nộp vẫn giữ nguồn quiz và nhãn dùng lại theo bản chụp.
+
 Mọi POST dùng form URL encoded và hidden `csrfToken` so với HttpSession bằng
 `SessionUtil.hasValidFormCsrfToken`; thiếu/sai trả 403. Token trong header
 `X-CSRF-Token` của API cũ không đổi. Thành công dùng PRG; riêng preview forward

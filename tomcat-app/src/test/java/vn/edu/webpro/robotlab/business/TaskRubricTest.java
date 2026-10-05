@@ -5,6 +5,18 @@ import java.util.Date;
 import org.junit.jupiter.api.Test;
 class TaskRubricTest {
     private final TaskRubric rubric = new TaskRubric();
+    @Test
+    void currentRoundQuizLabelIsVisibleOnlyForActiveRounds() {
+        TaskRecipient recipient = new TaskRecipient();
+        assertFalse(recipient.isShowCurrentRoundQuiz());
+        TaskRound round = new TaskRound();
+        recipient.setCurrentRound(round);
+        assertTrue(recipient.isShowCurrentRoundQuiz());
+        round.setState("SUBMITTED");
+        assertFalse(recipient.isShowCurrentRoundQuiz());
+        round.setState("CANCELLED");
+        assertFalse(recipient.isShowCurrentRoundQuiz());
+    }
     private PracticeTask task() {
         PracticeTask task = new PracticeTask();
         task.setState("OPEN");

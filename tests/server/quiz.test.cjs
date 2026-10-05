@@ -36,7 +36,7 @@ test("submitting an attempt never trusts a client-sent score — grading reads r
 
   assert.match(quizAttemptDB, /List<QuizQuestion> questions = QuizQuestionDB\.selectQuestionsByRobot\(robotId\)/);
   assert.match(quizAttemptDB, /boolean isCorrect = question\.isCorrectOption\(optionId\)/);
-  assert.match(quizAttemptDB, /if \(isCorrect\) score\+\+/);
+  assert.match(quizAttemptDB, /if \(isCorrect\) \{\s*score\+\+;/);
 });
 
 test("quiz submission rejects duplicate question ids and requires every question answered exactly once", () => {

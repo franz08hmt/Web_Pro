@@ -1,5 +1,19 @@
 # Implementation Plan: Đợt 2 — Lái thử 3D và Đợt 3 — Hai mẫu robot mới
 
+## Đợt 6b — Định dạng code và hai sửa nhỏ
+
+- Giữ SQL, chữ ký hàm, luật điểm/vòng/chấm và thứ tự transaction của Đợt 6.
+  Tách câu lệnh, bọc control flow bằng ngoặc nhọn, giới hạn Java120/JSP140;
+  thêm Javadoc ngắn và guard định dạng bên cạnh guard slide-style đang có.
+- Chỉ đổi hai hành vi: getter quiz của vòng hiện tại chỉ cho ACTIVE; GET
+  action không hỗ trợ trả task-error422, không dùng404 cho nhánh dispatcher.
+- Baseline111 Node/51 JUnit; chụp 77 trang của ba USER và ADMIN trước/sau.
+  Đối chiếu SQL/mã Java và digest tám bảng để kiểm không đổi dữ liệu.
+- Không migration hoặc POST có thể ghi dữ liệu. Chỉ GET/POST chắc chắn bị
+  từ chối; biên dịch chín JSP bằng Jasper; build JDK17 và dọn QA8081.
+- Báo cáo chi tiết ở docs/PHASE6B_QA_REPORT.md; một commit local, không push.
+  AGENT_HANDOFF.md nằm ngoài commit; không đụng file người dùng đang sửa.
+
 ## Đợt 6 — Nhiệm vụ thực hành và đánh giá, chặng 1
 
 Mục tiêu: luồng ADMIN giao → USER quiz/bằng chứng/giải thích → xem trước/nộp →

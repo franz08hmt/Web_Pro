@@ -157,3 +157,14 @@ lưu trữ các nhiệm vụ QA còn OPEN bằng giao diện quản trị.
 Commit tài liệu sửa ghi chú Đợt5b: `6018d7b` — `docs: correct phase 5b audit notes`.
 Commit chức năng: `feat: add practice tasks with submission and review`;
 hash xem git log hoặc bàn giao cuối. Không push.
+
+## Đợt 6b — 05/10/2026
+
+Định dạng code Đợt 6, chỉ sửa hiển thị quiz của vòng ACTIVE và GET action lạ
+trả422. Baseline111 Node/51 JUnit; sau sửa114 Node/52 JUnit. Golden77 trang
+(có ADMIN):71 giống nhau, sáu view builder bỏ đúng khối quiz hiện tại; #11 đang
+chờ chấm cũng bị ẩn vì vòng SUBMITTED theo công thức getter đã yêu cầu.
+60 kiểm âm đạt; tám bảng không đổi digest/số dòng; Jasper biên dịch đủ chín JSP.
+Không tạo/xoá dữ liệu QA, không migration. Chưa kiểm Firefox/Safari hoặc hai
+USER cùng nộp trong đợt chỉ đọc này. Bảng độ dài và từng diff được lưu trong
+[báo cáo Đợt 6b](PHASE6B_QA_REPORT.md). Commit local, không push.

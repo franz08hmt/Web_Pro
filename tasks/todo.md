@@ -1,5 +1,28 @@
 # Đợt 2 — Lái thử mô hình 3D
 
+## Đợt 6b — Định dạng code và hai sửa nhỏ
+
+- [x] Xác nhận HEAD a1273fe; chỉ handoff untracked, không có file lạ đang sửa.
+- [x] Baseline Node111/JUnit51 trên JDK17; build WAR trước sửa.
+- [x] Đăng nhập ba USER và ADMIN; chụp77 trang GET trước sửa, dừng QA.
+- [x] Node guard định dạng/mã lỗi/getter chạy đỏ; JUnit mới xác nhận đỏ với
+  bean baseline trên bản sao tạm, tránh class Java25 do IDE ghi vào target.
+- [x] Định dạng 15 file Java (các phần mở rộng cũ đúng phạm vi) và chín JSP;
+  Javadoc ngắn, braces, giữ literal SQL và chữ ký/thứ tự transaction.
+- [x] Getter showCurrentRoundQuiz chỉ ACTIVE; hai view dùng getter;
+  GET action lạ trả task-error422; lịch sử nộp/chấm giữ nguyên.
+- [x] Node114/JUnit52 xanh; guard slide-style bắt stream chèn vào bản sao.
+- [x] Golden77 trang:71 giống nhau, sáu view builder chỉ bỏ khối quiz hiện tại;
+  nhiệm vụ11 đang chờ chấm cũng SUBMITTED nên bị ẩn theo đúng getter ACTIVE.
+- [x] 60 kiểm âm đạt; digest/số dòng tám bảng giống trước, không ghi DB.
+- [x] Jasper biên dịch chín JSP,0 lỗi; log QA không có exception ứng dụng.
+- [x] Tài liệu API/plan/todo/báo cáo và handoff được cập nhật, handoff ngoài Git.
+- [x] Kiểm lại WAR cuối, dừng/dọn QA8081; kiểm diff và stage đúng file cho commit local.
+- [ ] Firefox/Safari và hai USER cùng nộp (không kiểm trong đợt chỉ đọc này).
+
+Bàn giao một commit local `refactor: format practice task code and tidy task
+status labels`; không push. Chi tiết diff và độ dài file ở PHASE6B_QA_REPORT.
+
 ## Đợt 6 chặng 1 — Nhiệm vụ thực hành
 
 - [x] Khảo sát repo/code/slide guard; HEAD thực tế f654840, ba file trang chủ sạch.

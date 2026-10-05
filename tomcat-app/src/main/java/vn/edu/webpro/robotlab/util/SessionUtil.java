@@ -102,11 +102,13 @@ public final class SessionUtil {
     }
 
     /** Form JSP gửi hidden csrfToken (Ch7/35–36); giữ kiểm header API riêng. */
-    public static boolean hasValidFormCsrfToken(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+    public static boolean hasValidFormCsrfToken(
+            HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
         Object token = session == null ? null : session.getAttribute("csrfToken");
-        if (token instanceof String && token.equals(request.getParameter("csrfToken"))) return true;
+        if (token instanceof String && token.equals(request.getParameter("csrfToken"))) {
+            return true;
+        }
         response.sendError(HttpServletResponse.SC_FORBIDDEN);
         return false;
     }
