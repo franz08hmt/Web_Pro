@@ -1,0 +1,29 @@
+.wiring { max-width: 1100px; margin: 0 auto; padding: 1rem; box-sizing: border-box; overflow-wrap: anywhere; }
+.wiring *, .wiring *::before, .wiring *::after { box-sizing: border-box; }
+.wiring { font-family: Arial, sans-serif; color: #20323d; background: #fff; line-height: 1.5; }
+.wiring h1, .wiring h2 { line-height: 1.25; }
+.wiring nav { display: flex; flex-wrap: wrap; gap: 1rem; }
+.wiring section, .wiring fieldset { border: 1px solid #a2b0b8; padding: 1rem; margin: 1rem 0; min-width: 0; }
+.wiring label { display: block; margin: .5rem 0; padding: .4rem; min-height: 44px; }
+.wiring input:not([type=radio]):not([type=hidden]), .wiring textarea { display: block; width: 100%; max-width: 100%; }
+.wiring textarea { min-height: 6rem; }
+.wiring input[type=radio] { width: 20px; height: 20px; vertical-align: middle; margin-right: .5rem; }
+.wiring button { min-height: 44px; padding: .6rem 1rem; margin: .3rem; white-space: normal; }
+.wiring :focus-visible { outline: 3px solid #165a93; outline-offset: 3px; }
+.wiring .wiring-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.wiring .wiring-diagram { max-width: 100%; overflow: auto; border: 1px solid #8196a3; background: #fff; }
+.wiring svg { display: block; width: 100%; min-width: 960px; font-size: 15px; }
+.wiring .wiring-terminal { cursor: pointer; touch-action: none; }
+.wiring .wiring-terminal circle { fill: #fff; stroke: #183f58; stroke-width: 3; }
+.wiring .wiring-terminal text { fill: #20323d; stroke: #fff; stroke-width: 4; paint-order: stroke; }
+.wiring .wiring-terminal.is-selected circle { fill: #ffd5a5; stroke-width: 6; }
+.wiring .wiring-wire { stroke: #294b67; stroke-width: 5; cursor: pointer; pointer-events: stroke; }
+.wiring .wiring-wire.is-selected, .wiring .wiring-wire:focus { stroke-width: 9; stroke-dasharray: 12 7; }
+.wiring .wiring-table { max-width: 100%; overflow: auto; }
+.wiring table { width: 100%; border-collapse: collapse; }
+.wiring th, .wiring td { border: 1px solid #83939d; padding: .6rem; text-align: left; }
+.wiring [hidden] { display: none !important; }
+@media (max-width: 600px) {
+    .wiring .wiring-choices { grid-template-columns: 1fr; }
+    .wiring { padding: .6rem; }
+}

@@ -414,3 +414,12 @@ các seed `database/seed-robots-phase3.sql`, `seed-quiz-phase3.sql` và
 Đợt 5b chỉ đổi biểu diễn ngày giờ ở JavaBean sang `java.util.Date` và cú pháp
 code theo slide; kiểu cột/thời điểm MySQL, câu SQL và ERD giữ nguyên. Bean định
 dạng ngày/giờ Việt Nam bằng `SimpleDateFormat` riêng mỗi lần gọi.
+
+## Phòng nối dây (Đợt 7, chặng 1)
+
+ERD chi tiết và thiết kế trước migration: [WIRING_DESIGN.md](WIRING_DESIGN.md).
+Migration 011 thêm wiring_exercises/terminals/rules/attempts/attempt_connections.
+FK ghép buộc hai đầu nối cùng bài và dòng dây cùng lượt/bài; chuẩn hóa a<b,
+UNIQUE cặp trong bài/lượt. FK RESTRICT giữ lịch sử. attempts version>=1,
+kết quả C/W/M/N và DECIMAL(4,1) NULL ở DRAFT; SUBMITTED phải có đủ dữ kiện.
+Không đổi bảng nhiệm vụ hoặc cấu trúc cũ. schema.sql đã fold năm bảng cho cài mới.

@@ -633,3 +633,50 @@ assets/js/api.js (fetch + JSON + cookie/CSRF)
 → util/ResponseUtil.java (HTTP status + JSON)
 → util/SessionUtil.java (HttpSession/JSESSIONID)
 ```
+
+## Phòng nối dây bám slide nào? (Đợt 7, chặng 1)
+
+| Phần | Chapter/slide | Code |
+| --- | --- | --- |
+| Model 2 request → Servlet → XxxDB → JavaBean → JSP | Ch2/4–5,20 | WiringServlet, AdminWiringServlet, WiringDB, Wiring* |
+| JavaBean ctor rỗng/get/set/Serializable | Ch6/4–6 | Sáu bean Wiring* |
+| Luật chuẩn hóa/chấm/công bố trong bean; vòng for/if | Ch9/32–33 Cart | WiringExercise, WiringGrade, WiringAttempt |
+| @WebServlet/getParameter/setAttribute/String url/forward/PRG | Ch5/10–17,22–26; Ch12/42–44 | Hai Servlet nối dây |
+| HttpSession và token form hidden | Ch7/10–12,35–36 | SessionUtil; wiring forms |
+| EL/JSTL c:out, if, choose, forEach | Ch8/5–11,32–35; Ch9/7–8,11,17–19 | wiring-*.jsp/admin-wiring-*.jsp |
+| JDBC PreparedStatement/pool/DBUtil/finally | Ch12/18–20,32–38,45–53 | WiringDB |
+| Transaction và khóa dòng | Ch13/29–34 khái niệm; mẫu CartDB | Khóa bài → lượt, version, atomic submit |
+| Getter NumberFormat/SimpleDateFormat riêng mỗi lần | Ch9/28–31; Ch10/6 DateFormat | WiringGrade/WiringAttempt |
+
+BigDecimal/HALF_UP được yêu cầu để tránh sai số điểm; không tuyên bố slide
+có ví dụ riêng về công thức nối dây. SVG và kéo thả chỉ là view phụ trợ;
+giảng viên xem luồng form POST → Servlet → WiringDB → WiringExercise.grade
+→ WiringGrade.calculate → lưu → JSP c:out. Tắt JS vẫn trình bày đủ luồng này.
+
+| Chức năng | Kiến thức | Servlet | Bean/XxxDB | JSP | Bảng |
+| --- | --- | --- | --- | --- | --- |
+| Lưu/nộp/chấm nối dây | Model2/session/form/JDBC/transaction | WiringServlet | WiringAttempt/Exercise/Grade, WiringDB | wiring-play/result/list | wiring_attempts, wiring_attempt_connections và bài |
+| Biên soạn/công bố/lưu trữ bài | Quyền ADMIN/form/JavaBean/JDBC | AdminWiringServlet | WiringExercise, WiringDB | admin-wiring-form/view/list | wiring_exercises, wiring_terminals, wiring_rules |
+
+### Demo nối sai → giải thích → luyện lại
+
+1. ADMIN xem bài mẫu, xem trước chỉ đọc; nhân bản để sửa, bản công bố bị khóa.
+2. USER mở Thực hành nối dây, bắt đầu line-follower. Nối đúng D5–ENA và nối
+   sai một cặp; lưu, tải lại để thấy dây đã lưu và phiên bản mới.
+3. Nộp để chấm: chỉ server tính C/W/M/N và điểm, bảng chỉ rõ cặp sai/thiếu.
+4. Luyện lại tạo nháp mới, dùng sơ đồ tham khảo bên ngoài, sửa/lưu/nộp.
+5. Hai tab cùng nháp: lưu tab thứ nhất; tab cũ bị yêu cầu tải lại, không mất dây.
+
+### Vì sao đây không phải mô phỏng điện hay thi kín?
+
+Bài chỉ so cặp trực tiếp đã biên soạn; không tính dòng/điện áp/jumper/robot thật,
+không chấm mọi sơ đồ điện tương đương. Tài liệu tham khảo vẫn công khai. Nguồn
+GND dùng chung có nhiều dây và hai cảm biến cùng loại có ID riêng.
+Hai mẫu không bổ sung Vs/đầu ra động cơ còn thiếu trong robots.wiring cũ;
+phạm vi mô phỏng in rõ trên bài. Căn cứ chân tại WIRING_DESIGN.md.
+
+### Vì sao không phòng nhóm hoặc đổi Mẫu A/B?
+
+Lượt nối dây có một owner; hỗ trợ Admin–User là chặng riêng sau review, không
+chia quyền sửa sơ đồ. Điểm nối dây độc lập với nhiệm vụ/rubric A/B để không
+đổi hành vi đã nghiệm thu. Hỗ trợ không đồng nghĩa đạt yêu cầu nối dây.

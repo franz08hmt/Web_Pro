@@ -196,3 +196,17 @@ Bàn giao bằng commit feat local sau khi review/stage; không push. Hash xem g
 
 Bàn giao bằng 1 commit local `refactor: align learning profile with course
 slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
+
+## Đợt 7 — Phòng nối dây, chặng 1
+
+- [x] Push năm commit Đợt6 theo yêu cầu trực tiếp, fetch xác nhận c2afc9b.
+- [x] Khảo sát, baseline121 Node/59JUnit; sao lưu bằng chứng QA cũ ngoài repo.
+- [x] ERD trước migration011; khóa ngoại ghép, version, nullable kết quả, FK RESTRICT.
+- [x] Test-first đỏ rồi xanh; JavaBean/grade/owner/CSRF/slide/format/HTML guards.
+- [x] Servlet/JSP + SVG/JS; form radio đầy đủ khi JS tắt; account links đúng vai trò.
+- [x] Migration/seed local; đối chiếu wiring DB/code; seed chạy lại không ghi đè.
+- [x] Live hai USER/Admin, SQL điểm, stale version, submit đồng thời, archive/continue.
+- [x] Chrome click/drag/keyboard/touch/JSoff/390; ảnh đã xem, console không lỗi ứng dụng.
+- [x] Review độc lập và sửa UTF-8/nhãn lưu/collation/guard/label SVG/công thức tie.
+- [x] Build cuối72JUnit/127Node; QA WAR cuối19Chrome xanh, runtime8081 đã dọn; commit local chặng1.
+- [ ] Mở chặng2 sau gate chặng1.

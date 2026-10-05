@@ -368,3 +368,10 @@ with course slides`, không push; handoff không stage. Hash xem `git log -1`.
 
 Firefox/Safari chưa kiểm chứng; không làm lại các luồng ghi 3D/quiz/shop vì
 phạm vi lần này chỉ refactor trang đọc và tuyệt đối không ghi database.
+
+## Đợt 7 — Phòng nối dây, chặng 1
+
+Khảo sát → baseline → ERD trước migration011 → test-first → bean/JDBC/
+Servlet/JSP/SVG/form + JS enhancement → migration/seed → live SQL/two USER/
+concurrency → Chrome keyboard/touch/JSoff/390 → review độc lập → local commit.
+Chặng hỗ trợ chỉ mở sau cổng review; không push commit mới.

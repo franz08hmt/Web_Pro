@@ -214,3 +214,24 @@ npm test
 - [Quy ước và danh sách API](docs/API_CONVENTIONS.md)
 - [ERD](docs/erd.md)
 - [Luồng demo và câu hỏi giảng viên](docs/TEAM_FLOW_DEMO_GUIDE.md)
+
+## Phòng thực hành nối dây (Đợt 7, chặng 1)
+
+USER vào `/wiring`: tạo nháp, nối chân bằng SVG hoặc form radio, lưu/tiếp tục,
+nộp/xem giải thích/luyện lại. Nhấn hai chân, kéo thả và bàn phím là tiện ích
+view; form vẫn chạy khi tắt JavaScript. ADMIN `/admin-wiring`: biên soạn nháp,
+xem trước, công bố bản bất biến, nhân bản và lưu trữ.
+
+Sau migration 010, chạy bằng tài khoản DDL trên đúng database:
+
+```sql
+SOURCE database/migrations/011_wiring_practice.sql;
+SOURCE database/seed-wiring-phase7.sql;
+```
+
+Hai bài chính thức: `wiring-line-follower-v2`, `wiring-obstacle-avoider-v2`.
+Seed chỉ thêm, chạy lại không sửa bài đã công bố. Chỉ chấm cặp trực tiếp được
+khai báo; không mô phỏng điện hay xác nhận robot thật. Điểm =
+HALF_UP(100 × max(C − W, 0) / N, 1), chỉ đúng toàn bộ khi C=N và W=0.
+Không đổi nhiệm vụ/rubric A/B. Xem [thiết kế](docs/WIRING_DESIGN.md),
+[kiểm chứng chặng 1](docs/PHASE7_WIRING_QA_REPORT.md).

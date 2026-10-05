@@ -43,6 +43,11 @@ final class JspExpressionContractTest {
 
     /** Tên biến Servlet đặt bằng setAttribute (hoặc var của c:forEach) → lớp JavaBean. */
     private static final Map<String, Class<?>> BEANS = Map.ofEntries(
+            Map.entry("wiringExercise", WiringExercise.class),
+            Map.entry("wiringAttempt", WiringAttempt.class),
+            Map.entry("wiringTerminal", WiringTerminal.class),
+            Map.entry("wiringRule", WiringRule.class),
+            Map.entry("wiringConnection", WiringConnection.class),
             Map.entry("diagnosisScenario", DiagnosisScenario.class),
             Map.entry("diagnosisCheck", DiagnosisCheck.class),
             Map.entry("diagnosisOption", DiagnosisOption.class),

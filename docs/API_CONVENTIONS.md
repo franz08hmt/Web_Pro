@@ -328,3 +328,22 @@ có tích hợp thanh toán hoặc giao hàng.
 - JDBC/SQL: `tomcat-app/src/main/java/vn/edu/webpro/robotlab/data`
 - JSON, session, mật khẩu, kiểm tra dữ liệu: `tomcat-app/src/main/java/vn/edu/webpro/robotlab/util`
 - Client gọi API: `assets/js/api.js`, `assets/js/content-api.js`
+
+## Phòng nối dây — form Servlet/JSP (Đợt 7, chặng 1)
+
+| Route | Quyền | GET | POST (PRG khi thành công) |
+| --- | --- | --- | --- |
+| `/wiring` | USER | Catalog/lịch sử; action=play/result&id= của chính mình | start, retry, add, remove, save, submit |
+| `/admin-wiring` | ADMIN | Danh sách; new/edit/view/preview&id= | saveDraft, publish, duplicate, archive |
+
+Identity từ HttpSession; tất cả POST hidden `csrfToken` kiểm bằng
+SessionUtil.hasValidFormCsrfToken. Giữ nguyên token header của API cũ.
+GET không ghi; Cache-Control:no-store. Khách redirect `/pages/tai-khoan.html`;
+sai vai trò/token 403, không tồn tại/khác owner 404, field/id/action/luật 422,
+SQL lỗi 503. Form POST có action URL riêng để query action của GET không lấn
+action trong body. Không nhận score/owner/state từ client.
+
+Nháp gửi expectedVersion; phiên bản cũ bị từ chối 422, không ghi một phần.
+pair=A:B lặp/đảo chiều được chuẩn hóa một lần. add dùng terminalA/B, remove
+dùng removePair; tối đa 80 dây thô. Bài công bố bất biến, lưu trữ chỉ chặn lượt
+mới. Submit lặp dẫn tới kết quả cũ có thông báo payload mới không được lưu.
