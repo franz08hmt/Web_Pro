@@ -63,5 +63,11 @@
         <a href="${pageContext.request.contextPath}/pages/lap-rap.html?model=<c:out value="${wiringExercise.robotId}"/>">
             Sơ đồ tham khảo hiện có
         </a>
+        <p>
+            <a href="${pageContext.request.contextPath}/wiring-support?action=new&amp;attemptId=${wiringAttempt.id}">
+                Gửi câu hỏi về kết quả đã nộp
+            </a>
+            · <a href="${pageContext.request.contextPath}/wiring-support">Xem lịch sử hỗ trợ</a>
+        </p>
     </body>
 </html>

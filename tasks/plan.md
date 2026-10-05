@@ -375,3 +375,10 @@ Khảo sát → baseline → ERD trước migration011 → test-first → bean/J
 Servlet/JSP/SVG/form + JS enhancement → migration/seed → live SQL/two USER/
 concurrency → Chrome keyboard/touch/JSoff/390 → review độc lập → local commit.
 Chặng hỗ trợ chỉ mở sau cổng review; không push commit mới.
+
+## Đợt 7 — hỗ trợ Admin–User, chặng 2
+
+Sau gate chặng 1 (commit a1822fd), viết test trước → ERD hai bảng → migration 012 →
+bean trạng thái/bản chụp → JDBC khóa bài/lượt/yêu cầu → Servlet/JSP form thuần →
+QA hai USER/Admin, version/concurrency/SQL/snapshot/JS-off/mobile → review độc lập →
+build/cleanup/commit local. Không sửa migration 011 hay rubric A/B.

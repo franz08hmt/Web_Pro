@@ -680,3 +680,41 @@ phạm vi mô phỏng in rõ trên bài. Căn cứ chân tại WIRING_DESIGN.md.
 Lượt nối dây có một owner; hỗ trợ Admin–User là chặng riêng sau review, không
 chia quyền sửa sơ đồ. Điểm nối dây độc lập với nhiệm vụ/rubric A/B để không
 đổi hành vi đã nghiệm thu. Hỗ trợ không đồng nghĩa đạt yêu cầu nối dây.
+
+## Hỗ trợ nối dây bám slide nào? (Đợt 7, chặng 2)
+
+| Phần | Chapter/slide | Code |
+| --- | --- | --- |
+| Model 2 Servlet → XxxDB → JavaBean → JSP | Ch2/4–5,20 | WiringSupportServlet, AdminWiringSupportServlet, WiringSupportDB |
+| JavaBean ctor rỗng, get/set, Serializable | Ch6/4–6 | WiringSupportRequest, WiringSupportMessage |
+| Luật trạng thái/version trong bean, vòng for/if | Ch9/32–33 Cart | Request.requireCurrent/applyMessage/close; Message.capture |
+| @WebServlet, form/action/getParameter/PRG/forward | Ch5/10–17,22–26; Ch12/42–44 | Hai Servlet hỗ trợ |
+| HttpSession, hidden token | Ch7/10–12,35–36 | SessionUtil, wiring-support forms |
+| EL/JSTL c:out/if/choose/forEach | Ch8/5–11,32–35; Ch9/7–8,11,17–19 | wiring-support-list/new/view.jsp |
+| StringBuilder dựng bản chụp | Ch12/29 | WiringSupportMessage.capture |
+| Date/SimpleDateFormat (cùng họ DateFormat) | Ch10/6 | WiringSupportMessage.getCreatedAtDisplay |
+| PreparedStatement, pool, DBUtil/finally | Ch12/18–20,32–38,45–53 | WiringSupportDB; overload WiringDB.selectAttempt |
+| Transaction/khoá dòng theo mẫu có sẵn | Ch13/29–34 khái niệm; CartDB | Khóa bài → lượt → yêu cầu; version + UNIQUE |
+
+| Chức năng | Kiến thức | Servlet | Bean/XxxDB | JSP | Bảng |
+| --- | --- | --- | --- | --- | --- |
+| Hỏi/phản hồi/cập nhật/giải quyết hỗ trợ | Model2/session/form/bean/JDBC/transaction | WiringSupportServlet, AdminWiringSupportServlet | WiringSupportRequest/Message, WiringSupportDB | wiring-support-list/new/view | wiring_support_requests, wiring_support_messages |
+
+### Demo User hỏi → Admin phản hồi → cập nhật → đóng
+
+1. USER lưu nháp nối dây, mở “Gửi câu hỏi hỗ trợ”; bản xem trước là dữ liệu đã lưu.
+2. Viết câu hỏi, chọn đầu nối liên quan nếu cần, gửi; server chụp version/nhãn/dây/trạng thái.
+3. ADMIN mở Quản lý hỗ trợ nối dây, xem bản chụp và SVG, phản hồi; không có nút sửa dây/điểm.
+4. USER sửa và lưu lượt gốc, gửi tiếp với checkbox bản chụp mới. Tin/bản chụp cũ vẫn hiện.
+5. USER đánh dấu đã giải quyết hỗ trợ; không đổi kết quả chấm. Form cũ của Admin bị từ chối.
+6. Có thể tắt JavaScript và thực hiện cùng các form trên, không cần chat realtime.
+
+**Vì sao bản chụp không lấy sơ đồ client?** Sơ đồ đang kéo chưa lưu không phải dữ liệu
+đã ghi nhận. Server khóa lượt, đọc trên cùng kết nối và INSERT bản chụp riêng cho từng tin.
+
+**Vì sao dùng version và UNIQUE?** Version từ chối phản hồi/đóng khi đã có tin mới;
+UNIQUE cột sinh cùng transaction ngăn hai yêu cầu hoạt động/lượt, kể cả bấm đồng thời.
+Cột sinh là ràng buộc MySQL hỗ trợ tính toàn vẹn; không chứa luật chấm.
+
+**Đã giải quyết hỗ trợ có đồng nghĩa đạt bài không?** Không. Hỗ trợ và chấm là hai trạng
+thái riêng. ADMIN không sửa dây/điểm và không nộp thay. Không có phòng nhóm, không đổi Mẫu A/B.

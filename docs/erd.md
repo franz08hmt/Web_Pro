@@ -423,3 +423,16 @@ FK ghép buộc hai đầu nối cùng bài và dòng dây cùng lượt/bài; c
 UNIQUE cặp trong bài/lượt. FK RESTRICT giữ lịch sử. attempts version>=1,
 kết quả C/W/M/N và DECIMAL(4,1) NULL ở DRAFT; SUBMITTED phải có đủ dữ kiện.
 Không đổi bảng nhiệm vụ hoặc cấu trúc cũ. schema.sql đã fold năm bảng cho cài mới.
+
+## Đợt 7, chặng 2 — hỗ trợ nối dây
+
+Migration 012 thêm `wiring_support_requests` và `wiring_support_messages`, không sửa
+migration 011 hoặc dữ liệu cũ. Request FK lượt/bài/owner; message FK request/bài/tác giả
+và đầu nối được nhắc tới cùng bài, tất cả RESTRICT. Cột sinh active_attempt_id với UNIQUE
+chặn hai yêu cầu đang mở trên cùng lượt. Index (user_id,id), (state,id), (request_id,id).
+Version và CHECK trạng thái/bản chụp bảo vệ tính nhất quán.
+
+Snapshot văn bản MEDIUMTEXT (hỗ trợ nhãn UTF-8 ở giới hạn 40 chân/80 dây) + cặp ID chuẩn hóa,
+version/trạng thái/điểm/thời điểm được lưu theo từng tin; không UPDATE đè tin hay snapshot.
+SVG dùng tọa độ của bài đã công bố bất biến và cặp dây của từng snapshot, không lấy dây
+hiện tại. Xem [thiết kế](WIRING_DESIGN.md) và [QA](PHASE7_WIRING_SUPPORT_QA_REPORT.md).

@@ -119,11 +119,32 @@ test("all wiring views escape text and reject unsupported JSP and HTML", () => {
     if (/method="post"/.test(s)) {
       assert.match(s, /name="csrfToken" value="<c:out value="\$\{sessionScope.csrfToken\}"/);
       for (const form of s.matchAll(/<form\b[^>]*method="post"[^>]*>/g)) {
-        assert.match(form[0], /action="\$\{pageContext.request.contextPath\}\/(?:admin-)?wiring"/);
+        assert.match(form[0], /action="\$\{pageContext.request.contextPath\}\/(?:(?:admin-)?wiring(?:-support)?|\$\{supportRoute\})"/);
       }
     }
   }
   assert.doesNotMatch(read(views + "wiring-play.jsp"), /wiringRule|\.rules|\.grade|\.explanation/);
+});
+
+test("support uses session roles form token immutable snapshots and locked versions", () => {
+  for (const name of ["WiringSupportServlet", "AdminWiringSupportServlet"]) {
+    const s = read(java + "controller/" + name + ".java");
+    for (const token of ["SessionUtil.getCurrentUser", "hasValidFormCsrfToken", "no-store", "isAdmin()"])
+      assert.ok(s.includes(token), name + token);
+    assert.doesNotMatch(s, /getParameter\("(?:userId|score|snapshot\w*)"\)/);
+  }
+  const s = read(java + "data/WiringSupportDB.java");
+  for (const token of ["FOR UPDATE", "user_id = ?", "expectedVersion", "commit()", "rollback()", "capture("])
+    assert.ok(s.includes(token), token);
+  assert.doesNotMatch(s, /UPDATE wiring_attempts|UPDATE wiring_attempt_connections|DELETE FROM/i);
+  const migration = read("database/migrations/012_wiring_support.sql");
+  assert.match(migration, /UNIQUE.*active_attempt_id/);
+  assert.match(migration, /snapshot_text MEDIUMTEXT/);
+  for (const name of ["wiring-support-new.jsp", "wiring-support-view.jsp"]) {
+    assert.match(read(views + name), /textarea[^>]+maxlength="4000"/);
+  }
+  assert.match(migration, /ON DELETE RESTRICT/);
+  assert.doesNotMatch(migration, /\bDROP\b|\bTRUNCATE\b|DELETE\s+FROM|UPDATE\s+\w+/i);
 });
 test("wiring enhancement has separate scoped assets and no answers", () => {
   const js = read("assets/js/wiring.js");

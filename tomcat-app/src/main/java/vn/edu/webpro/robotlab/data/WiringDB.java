@@ -384,6 +384,34 @@ public class WiringDB {
         }
     }
 
+    /** Đọc bản nguồn trên kết nối hỗ trợ đã khóa lượt, để chụp đúng dữ liệu đã lưu. */
+    public static WiringAttempt selectAttempt(Connection c, long id, long owner, boolean lock) throws SQLException {
+        WiringAttempt a = attempt(c, id, owner, lock);
+        if (a != null) {
+            a.setExercise(exercise(c, a.getExerciseId(), false));
+            connections(c, a);
+            a.getExercise().getRules().clear();
+        }
+        return a;
+    }
+
+    /** Khóa bài trước lượt trong transaction hỗ trợ, giữ cùng thứ tự với lưu/nộp nối dây. */
+    public static void lockExercise(Connection c, long id) throws SQLException {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = c.prepareStatement("SELECT id FROM wiring_exercises WHERE id = ? FOR UPDATE");
+            ps.setLong(1, id);
+            rs = ps.executeQuery();
+            if (!rs.next()) {
+                throw new SQLException("Missing referenced wiring exercise");
+            }
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+        }
+    }
+
     /** Lịch sử metadata của chính người dùng bằng một query, không tải con N+1. */
     public static ArrayList<WiringAttempt> selectAttempts(long owner) throws SQLException {
         ConnectionPool pool = ConnectionPool.getInstance();

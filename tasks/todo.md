@@ -209,4 +209,18 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] Chrome click/drag/keyboard/touch/JSoff/390; ảnh đã xem, console không lỗi ứng dụng.
 - [x] Review độc lập và sửa UTF-8/nhãn lưu/collation/guard/label SVG/công thức tie.
 - [x] Build cuối72JUnit/127Node; QA WAR cuối19Chrome xanh, runtime8081 đã dọn; commit local chặng1.
-- [ ] Mở chặng2 sau gate chặng1.
+- [x] Mở chặng 2 sau gate chặng 1 (review đạt, build/QA cuối xanh, commit a1822fd).
+
+## Đợt 7 — hỗ trợ Admin–User, chặng 2
+
+- [x] Gate chặng 1 đạt, commit local a1822fd trước khi triển khai.
+- [x] Test-first Node/JUnit đỏ do chưa có implementation, sau đó xanh.
+- [x] ERD trước migration 012; hai bảng với FK, UNIQUE active, CHECK snapshot/version.
+- [x] Snapshot server, tin bất biến, trạng thái và version trong bean; form không JS.
+- [x] USER/Admin session/CSRF/owner, radio đầu nối, account links/cache-busting.
+- [x] Live 85 ca API/SQL; hai USER/Admin; create/reply đồng thời, stale, snapshot/score bất biến.
+- [x] Chrome 12 ca; JS-off, 390px, bản chụp/SVG trước-sau, ảnh đã xem, XSS chữ.
+- [x] 14 HTML/JSON cũ diff rỗng (token/giờ lập được chuẩn hóa), 5 trang admin cũ 200.
+- [x] Review độc lập; sửa MEDIUMTEXT, CHECK NULL và thụt lề; worst-case snapshot test.
+- [x] Tài liệu/API/ERD/demo chapter-slide và QA/handoff đồng bộ.
+- [x] Build cuối79JUnit/128Node, QA Unicode+GET cuối, log sạch; runtime đã dọn; bàn giao commit local.

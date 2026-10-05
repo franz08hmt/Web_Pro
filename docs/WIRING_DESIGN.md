@@ -59,3 +59,22 @@ JUnit hành vi trước bean; Node guard trước route/view. Live Tomcat riêng
 MySQL thật, hai USER và ADMIN; SQL đối chiếu điểm, stale version, submit đôi,
 archive/continue. Chrome click/drag/keyboard/no-JS/mobile và hồi quy trang cũ.
 Review độc lập trước commit chặng 1 và trước khi mở chặng hỗ trợ.
+# Chặng 2 — bản chụp hỗ trợ và lịch sử
+
+Migration 012 thêm hai bảng, không sửa migration 011 đã chạy:
+
+- `wiring_support_requests`: PK id, FK attempt_id → wiring_attempts và user_id → users,
+  trạng thái OPEN/ANSWERED/CLOSED, version, timestamps; index (user_id,id), (state,id).
+  Cột sinh `active_attempt_id` chỉ có giá trị khi OPEN/ANSWERED, UNIQUE bảo đảm tối đa
+  một yêu cầu hoạt động/lượt ngay cả khi hai request đồng thời.
+- `wiring_support_messages`: PK id, FK request_id → request và author_id → users;
+  nội dung/tác giả/thời gian bất biến. Bản chụp tùy chọn gồm văn bản do server dựng,
+  các cặp ID chuẩn hóa, version/trạng thái/điểm/thời điểm của lượt đã lưu.
+  FK ghép (request_id,exercise_id) giữ đúng bài; FK ghép đầu nối được nhắc tới thuộc bài.
+  Mọi FK RESTRICT; không cập nhật/xóa tin nhắn đã lưu.
+
+Bản chụp dùng MEDIUMTEXT có cấu trúc đọc được và chuỗi cặp ID do server tạo, không nhận JSON
+từ client và không cần thư viện mới. Văn bản giữ cả nhãn đầu nối tại lúc gửi; SVG đọc
+tọa độ từ bài đã công bố bất biến, dây lấy từ bản chụp từng tin, không từ lượt hiện tại.
+Transaction khóa bài → lượt nguồn → yêu cầu; bản chụp được đọc trên cùng kết nối sau khóa.
+Form gửi expectedVersion; trả lời/đóng từ phiên bản cũ bị từ chối 422.

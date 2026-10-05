@@ -16,6 +16,12 @@
         </nav>
         <h1><c:out value="${wiringExercise.title}"/></h1>
         <p>Lượt #<c:out value="${wiringAttempt.id}"/> · phiên bản <c:out value="${wiringAttempt.version}"/> · chưa chấm.</p>
+        <p>
+            <a href="${pageContext.request.contextPath}/wiring-support?action=new&amp;attemptId=${wiringAttempt.id}">
+                Gửi câu hỏi hỗ trợ (lưu nháp trước)
+            </a>
+            · <a href="${pageContext.request.contextPath}/wiring-support">Xem lịch sử hỗ trợ</a>
+        </p>
         <p><c:out value="${wiringExercise.objective}"/></p>
         <p><c:out value="${wiringExercise.scopeText}"/></p>
         <p>Nhấn hai chân hoặc kéo chân A sang B. Dùng Enter/Space để chọn, Escape để hủy; chọn dây rồi nhấn Xóa dây.</p>

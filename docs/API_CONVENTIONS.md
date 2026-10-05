@@ -347,3 +347,24 @@ Nháp gửi expectedVersion; phiên bản cũ bị từ chối 422, không ghi m
 pair=A:B lặp/đảo chiều được chuẩn hóa một lần. add dùng terminalA/B, remove
 dùng removePair; tối đa 80 dây thô. Bài công bố bất biến, lưu trữ chỉ chặn lượt
 mới. Submit lặp dẫn tới kết quả cũ có thông báo payload mới không được lưu.
+
+## Đợt 7 — hỗ trợ nối dây (chặng 2)
+
+| Route | Quyền | GET | POST form |
+| --- | --- | --- | --- |
+| `/wiring-support` | USER | Danh sách; `action=new&attemptId=…`; `action=view&id=…` | `create`, `message`, `close` |
+| `/admin-wiring-support` | ADMIN | Danh sách; `action=view&id=…` | `message`, `close` |
+
+Mọi trang `Cache-Control: no-store`; khách redirect `/pages/tai-khoan.html`. Vai trò
+không phù hợp hoặc token form thiếu/sai: 403. Tài nguyên không tồn tại/khác owner: 404.
+ID/action/field/luật sai, version cũ, yêu cầu đã đóng: 422; lỗi JDBC: 503.
+POST URL encoded gửi hidden `action`, `csrfToken`, `expectedVersion`; thành công PRG.
+Không thay cơ chế header CSRF của API cũ. GET không tạo tin hay đổi trạng thái.
+
+`create` nhận `attemptId`, version lượt đã lưu, `content`, `terminalId` tùy chọn.
+`message` nhận id yêu cầu, version yêu cầu, content, terminalId tùy chọn; USER có
+checkbox `sendSnapshot=on`. Bản chụp luôn từ lượt gốc do server đọc sau khóa, không
+nhận JSON/dây/điểm của client. ADMIN không gửi bản chụp nguồn mới.
+`close` đóng theo version yêu cầu. Nội dung USER 20–2000, ADMIN 10–2000 ký tự sau trim.
+OPEN → Admin phản hồi ANSWERED; USER gửi tiếp → OPEN; USER giải quyết/Admin đóng → CLOSED.
+CLOSED không nhận thêm tin, có thể tạo yêu cầu mới. Một lượt chỉ có một OPEN/ANSWERED.

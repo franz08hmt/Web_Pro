@@ -1,0 +1,19 @@
+.wiring-support .support-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+.wiring-support .support-snapshot {
+    padding: 1rem;
+    border: 1px solid #999;
+}
+.wiring-support textarea {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    font: inherit;
+}
+.wiring-support .support-message {
+    border-left: 3px solid #777;
+    padding-left: 1rem;
+}

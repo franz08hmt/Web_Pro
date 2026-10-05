@@ -183,6 +183,8 @@
     document.querySelector("#admin-users-link").hidden = user.role !== "ADMIN";
     document.querySelector("#user-wiring-link").hidden = user.role !== "USER";
     document.querySelector("#admin-wiring-link").hidden = user.role !== "ADMIN";
+    document.querySelector("#user-wiring-support-link").hidden = user.role !== "USER";
+    document.querySelector("#admin-wiring-support-link").hidden = user.role !== "ADMIN";
     document.querySelector("#admin-tasks-link").hidden = user.role !== "ADMIN";
     document.querySelector("#admin-diagnosis-link").hidden = user.role !== "ADMIN";
     document.querySelector("#user-diagnosis-link").hidden = user.role !== "USER";

@@ -235,3 +235,14 @@ khai báo; không mô phỏng điện hay xác nhận robot thật. Điểm =
 HALF_UP(100 × max(C − W, 0) / N, 1), chỉ đúng toàn bộ khi C=N và W=0.
 Không đổi nhiệm vụ/rubric A/B. Xem [thiết kế](docs/WIRING_DESIGN.md),
 [kiểm chứng chặng 1](docs/PHASE7_WIRING_QA_REPORT.md).
+
+### Hỗ trợ phiên nối dây Admin–User (Đợt 7, chặng 2)
+
+USER gửi câu hỏi từ lượt đã lưu, xem phản hồi, gửi cập nhật/bản chụp mới và đánh dấu
+giải quyết. ADMIN xem đúng bản chụp tại lúc gửi, phản hồi hoặc đóng hỗ trợ; không sửa
+dây, nộp thay hay đổi điểm. Tin nhắn/bản chụp cũ bất biến, hỗ trợ độc lập với Mẫu A/B.
+
+Sau migration 011, chạy `database/migrations/012_wiring_support.sql` trên đúng schema.
+Migration chỉ thêm hai bảng, chạy lại không xóa/ghi đè lịch sử. Route USER:
+`/wiring-support`; ADMIN: `/admin-wiring-support`. Lối vào theo vai trò ở trang tài khoản
+và từ lượt nối dây. Báo cáo: [QA hỗ trợ](docs/PHASE7_WIRING_SUPPORT_QA_REPORT.md).
