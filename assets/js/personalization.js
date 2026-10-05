@@ -3,7 +3,8 @@
 (() => {
   const accountLink = document.querySelector('.nav-list a[href$="tai-khoan.html"]');
   const panel = document.querySelector("#home-progress");
-  if (!accountLink && !panel) return;
+  const accessCard = document.querySelector("#home-access-card");
+  if (!accountLink && !panel && !accessCard) return;
 
   const title = panel?.querySelector("#home-progress-title");
   const kicker = panel?.querySelector("#home-progress-kicker");
@@ -11,6 +12,10 @@
   const steps = panel?.querySelector("#home-progress-steps");
   const meter = panel?.querySelector("#home-progress-meter");
   const action = panel?.querySelector("#home-progress-link");
+  const accessRole = document.querySelector("#home-access-role");
+  const accessSummary = document.querySelector("#home-access-summary");
+  const learnerActions = document.querySelector("#home-learner-actions");
+  const adminActions = document.querySelector("#home-admin-actions");
   const api = window.RobotAssemblyApi;
 
   function finishPanel() {
@@ -57,6 +62,8 @@
   }
 
   api.auth.me().then(async (user) => {
+    const isAdmin = user.role === "ADMIN";
+
     if (accountLink) {
       const shortName = user.fullName.trim().split(/\s+/).at(-1);
       accountLink.querySelector("span").textContent = `Chào, ${shortName}`;
@@ -64,6 +71,18 @@
       accountLink.removeAttribute("data-guest");
       accountLink.dataset.authenticated = "true";
     }
+
+    if (accessCard) {
+      accessCard.dataset.role = isAdmin ? "ADMIN" : "USER";
+      accessRole.textContent = isAdmin ? "Quản trị viên · ADMIN" : "Học viên · USER";
+      accessSummary.textContent = isAdmin
+        ? "Tài khoản này có quyền quản trị nội dung và xem thống kê toàn hệ thống."
+        : "Tài khoản này có quyền học tập và xem hồ sơ của chính mình.";
+      learnerActions.hidden = isAdmin;
+      adminActions.hidden = !isAdmin;
+      accessCard.hidden = false;
+    }
+
     if (!panel) return;
     try {
       const { items } = await api.assemblySessions.list({ page: 1, pageSize: 1 });

@@ -283,6 +283,25 @@
   .home-progress-action { display: grid; gap: 12px; min-width: 210px; }
   .home-progress progress { width: 100%; height: 10px; accent-color: var(--accent); }
 
+  .home-access-card {
+    max-width: var(--shell); margin: 0 auto; padding: 24px var(--space);
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  .home-access-card[hidden], .home-access-actions[hidden] { display: none; }
+  .home-access-card h2 { font-size: clamp(20px, 2vw, 26px); margin-bottom: 8px; }
+  .home-access-copy > p:not(.section-label) { color: var(--muted); margin-bottom: 12px; }
+  .home-access-role {
+    display: inline-flex; align-items: center; min-height: 28px; padding: 4px 10px;
+    border: 1px solid var(--line-strong); border-radius: 999px; color: var(--primary);
+    font-size: 13px; font-weight: 700; letter-spacing: .02em;
+  }
+  .home-access-card[data-role="ADMIN"] .home-access-role {
+    color: var(--accent-strong); border-color: color-mix(in srgb, var(--accent) 42%, var(--line));
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+  }
+  .home-access-actions { display: flex; flex-wrap: wrap; justify-content: end; gap: 10px; }
+
   /* ---------- Dải ảnh đầu trang trong ----------
      Ảnh chỉ phủ phần đầu của main; chữ luôn nằm trên lớp scrim, không bao giờ
      đặt trực tiếp lên ảnh. */
@@ -803,6 +822,8 @@
   @media (max-width: 767px) {
     .home-progress { grid-template-columns: 1fr; }
     .home-progress-action { min-width: 0; }
+    .home-access-card { grid-template-columns: 1fr; }
+    .home-access-actions { justify-content: start; }
     .workspace-label { letter-spacing: .06em; }
     .nav-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .nav-list li:last-child { grid-column: span 2; }

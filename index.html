@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Website giúp người dùng lựa chọn mẫu robot, kiểm tra linh kiện và lắp ráp theo từng bước">
   <title>Robot Assembly Lab | Hướng dẫn lắp ráp robot</title>
-  <link rel="stylesheet" href="assets/css/style.css?v=20260928.1">
+  <link rel="stylesheet" href="assets/css/style.css?v=20261005.1">
   <link rel="stylesheet" href="assets/css/explore.css?v=20260921.2">
   <meta name="theme-color" content="#0e1215">
   <link rel="icon" href="assets/icons/cpu-chip.svg" type="image/svg+xml">
@@ -130,6 +130,23 @@
       <div class="home-progress-action">
         <progress id="home-progress-meter" max="100" value="0" aria-label="Tiến độ chuẩn bị linh kiện" hidden></progress>
         <a id="home-progress-link" class="button" href="pages/mau-robot.html">Xem mẫu robot</a>
+      </div>
+    </section>
+
+    <section id="home-access-card" class="home-access-card" aria-labelledby="home-access-title" data-role="USER" hidden>
+      <div class="home-access-copy">
+        <p class="section-label">Tài khoản đang hoạt động</p>
+        <h2 id="home-access-title">Quyền truy cập của bạn</h2>
+        <p id="home-access-summary"></p>
+        <span id="home-access-role" class="home-access-role"></span>
+      </div>
+      <div id="home-learner-actions" class="home-access-actions" hidden>
+        <a class="button" href="learning-profile">Hồ sơ học tập</a>
+        <a class="button button-secondary" href="learning-summary">Tổng kết học tập</a>
+      </div>
+      <div id="home-admin-actions" class="home-access-actions" hidden>
+        <a class="button" href="pages/admin-content.html">Quản trị nội dung</a>
+        <a class="button button-secondary" href="admin-stats">Thống kê quản trị</a>
       </div>
     </section>
 
@@ -369,6 +386,6 @@
   <script src="assets/js/explore.js?v=20260921.1"></script>
   <script src="assets/js/main.js?v=20260921.1"></script>
   <script src="assets/js/api.js?v=20260921.1"></script>
-  <script src="assets/js/personalization.js?v=20260928.2"></script>
+  <script src="assets/js/personalization.js?v=20261005.1"></script>
 </body>
 </html>
