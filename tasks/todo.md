@@ -1,5 +1,32 @@
 # Đợt 2 — Lái thử mô hình 3D
 
+## Đợt 6 chặng 1 — Nhiệm vụ thực hành
+
+- [x] Khảo sát repo/code/slide guard; HEAD thực tế f654840, ba file trang chủ sạch.
+- [x] Baseline Node105/JUnit37; DB có quyền CREATE; bốn demo đăng nhập được sau
+  khi chủ tài khoản cung cấp mật khẩu ADMIN hiện hành; không đổi tài khoản.
+- [x] Sửa audit 5b và tạo commit docs riêng 6018d7b.
+- [x] Test-first đỏ; triển khai bean/DB/Servlet/JSP/form/CSRF, không dùng kỹ thuật cấm.
+- [x] Migration009 chỉ thêm năm bảng; fold schema; đã chạy trên DB local.
+- [x] Node111/JUnit51, clean package JDK17 thành công; WAR bytecode61.
+- [x] Guard xanh; stream chèn vào bản sao tạm bị guard bắt; bản sao được dọn.
+- [x] QA giao/công bố/quiz/preview/nộp/bổ sung/nộp lại/chấm, lịch sử sửa;
+  hai cách quiz vòng2 ở builder theo lựa chọn người dùng.
+- [x] QA quyền/CSRF/bằng chứng/hạn/lượt/ngưỡng/feedback/OPEN core/sửa chấm;
+  confirm và quiz đồng thời mỗi cặp đúng một thành công, còn lại422.
+- [x] Smoke các trang/API cũ, API quiz luyện201 không đổi lượt chốt.
+- [x] Chrome giao diện đăng nhập, link đúng role, mobile390px và full luồng
+  nộp/chấm với JavaScript tắt; đã xem ảnh.
+- [x] Docs bảng chapter/slide + Hỏi–Đáp/demo/API/ERD/README/QA report.
+- [x] Dừng Tomcat QA8081, dọn cấu hình/log/cookie/password/npm tạm.
+- [x] Kiểm diff, stage file cụ thể; cập nhật handoff ngoài Git.
+- [ ] Hai USER khác nhau đều hoàn tất/nộp (chưa có dữ liệu; đã thống nhất QA builder).
+- [ ] Firefox/Safari và toàn bộ thao tác lái3D/checkout cũ (chưa kiểm chứng lại).
+
+Danh sách [QA] còn trong DB và giới hạn ở docs/PHASE6_QA_REPORT.md; không xoá
+dữ liệu đã nộp. File AGENT_HANDOFF.md vẫn untracked, không stage.
+Bàn giao bằng commit feat local sau khi review/stage; không push. Hash xem git log.
+
 - [x] Viết regression tests cho điều kiện phiên hoàn tất và các hành vi bàn phím.
 - [x] Implement controller lái thử 3D tách biệt; clamp theo footprint và bệ.
 - [x] Thêm UI có nút bật/tắt, hướng dẫn phím và thông báo chỉ mô phỏng.

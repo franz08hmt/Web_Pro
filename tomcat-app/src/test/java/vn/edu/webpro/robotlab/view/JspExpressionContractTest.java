@@ -29,6 +29,7 @@ import vn.edu.webpro.robotlab.business.Robot;
 import vn.edu.webpro.robotlab.business.RobotComponent;
 import vn.edu.webpro.robotlab.business.RobotPopularity;
 import vn.edu.webpro.robotlab.business.User;
+import vn.edu.webpro.robotlab.business.*;
 
 /**
  * Hợp đồng giữa JSP và JavaBean (Chapter 6: "Use EL to display properties of JavaBeans").
@@ -42,6 +43,19 @@ final class JspExpressionContractTest {
 
     /** Tên biến Servlet đặt bằng setAttribute (hoặc var của c:forEach) → lớp JavaBean. */
     private static final Map<String, Class<?>> BEANS = Map.ofEntries(
+            Map.entry("taskSubmission", TaskSubmission.class),
+            Map.entry("evidence", TaskSubmission.class),
+            Map.entry("quizQuestion", QuizQuestion.class),
+            Map.entry("recipient", TaskRecipient.class),
+            Map.entry("taskReview", TaskReview.class),
+            Map.entry("quizOption", QuizOption.class),
+            Map.entry("currentReview", TaskReview.class),
+            Map.entry("quizAttempt", QuizAttempt.class),
+            Map.entry("learner", User.class),
+            Map.entry("reviewRecipient", TaskRecipient.class),
+            Map.entry("task", PracticeTask.class),
+            Map.entry("quizAnswer", QuizAttemptAnswer.class),
+            Map.entry("taskQuiz", TaskSubmission.class),
             Map.entry("user", User.class),
             Map.entry("profile", LearningProfile.class),
             Map.entry("profileRobot", ProfileRobotEntry.class),

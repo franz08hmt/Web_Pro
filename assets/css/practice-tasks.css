@@ -1,0 +1,13 @@
+.practice-tasks { max-width: 1080px; margin: 0 auto; padding: 24px; }
+.practice-tasks form { margin: 20px 0; padding: 16px; border: 1px solid #ccd5d9; border-radius: 8px; }
+.practice-tasks label { display: block; margin: 12px 0; }
+.practice-tasks input:not([type="radio"]):not([type="checkbox"]), .practice-tasks select, .practice-tasks textarea { display: block; width: 100%; max-width: 720px; box-sizing: border-box; padding: 10px; font: inherit; }
+.practice-tasks textarea { min-height: 100px; }
+.practice-tasks .task-choice { display: flex; align-items: baseline; gap: 8px; }
+.practice-tasks .task-card { padding: 18px; margin: 20px 0; border: 1px solid #ccd5d9; border-radius: 8px; }
+.practice-tasks .task-review { border-left: 3px solid #567585; padding: 8px 16px; margin-top: 16px; }
+.practice-tasks .task-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.practice-tasks table { width: 100%; overflow-wrap: anywhere; }
+.practice-tasks button { font: inherit; padding: 10px 16px; cursor: pointer; }
+.practice-tasks fieldset { margin: 16px 0; }
+@media (max-width: 600px) { .practice-tasks { padding: 12px; } .practice-tasks form, .practice-tasks .task-card { padding: 12px; } }

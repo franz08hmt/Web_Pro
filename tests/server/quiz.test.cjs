@@ -40,7 +40,8 @@ test("submitting an attempt never trusts a client-sent score — grading reads r
 });
 
 test("quiz submission rejects duplicate question ids and requires every question answered exactly once", () => {
-  assert.match(quizAttemptDB, /if \(!seenQuestionIds\.add\(answer\[0\]\)\)/);
+  assert.match(quizAttemptDB, /if \(seenQuestionIds\.contains\(answer\[0\]\)\)/);
+  assert.match(quizAttemptDB, /seenQuestionIds\.add\(answer\[0\]\)/);
   assert.match(quizAttemptDB, /throw new IllegalArgumentException\("duplicate-question-"/);
   assert.match(quizAttemptDB, /submittedAnswers\.size\(\) != questions\.size\(\)/);
 });

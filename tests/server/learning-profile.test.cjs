@@ -180,6 +180,7 @@ test("print button uses the small dedicated script and both existing entry point
 
 test("the learning profile adds no schema migration", () => {
   const migrationDir = path.join(root, "database", "migrations");
-  const phaseFiveMigrations = fs.readdirSync(migrationDir).filter(name => /^00[9-9]|^0[1-9]\d/.test(name));
+  // Đợt 6 có migration riêng cho nhiệm vụ; hồ sơ học tập vẫn không thêm bảng.
+  const phaseFiveMigrations = fs.readdirSync(migrationDir).filter(name => (/^00[9-9]|^0[1-9]\d/.test(name)) && name !== "009_practice_tasks.sql");
   assert.deepEqual(phaseFiveMigrations, [], "Đợt 5 dùng dữ liệu đang có, không thêm migration");
 });

@@ -181,6 +181,8 @@
     document.querySelector("#account-user-email").textContent = user.email;
     document.querySelector("#account-user-role").textContent = user.role === "ADMIN" ? "Quản trị nội dung" : "Thành viên";
     document.querySelector("#admin-users-link").hidden = user.role !== "ADMIN";
+    document.querySelector("#admin-tasks-link").hidden = user.role !== "ADMIN";
+    document.querySelector("#user-tasks-link").hidden = user.role !== "USER";
     document.querySelector("#admin-stats-link").hidden = user.role !== "ADMIN";
     document.querySelector("#profile-name").value = user.fullName;
     const created = new Date(user.createdAt);

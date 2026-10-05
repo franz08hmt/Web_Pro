@@ -1,5 +1,25 @@
 # Robot Assembly Lab
 
+## Nhiệm vụ thực hành và đánh giá (Đợt 6, chặng 1)
+
+ADMIN tạo nháp/giao USER/công bố/gia hạn/đóng/lưu trữ/nhân bản, chấm và sửa chấm
+có lịch sử. USER làm quiz tính điểm theo vòng, chọn phiên lắp ráp COMPLETED,
+viết giải thích, xem trước rồi nộp; yêu cầu bổ sung mở vòng tiếp theo. Rubric A
+cố định: lắp ráp 40, quiz 40, giải thích 20. Chưa chấm hiện điểm tự động /80.
+
+Sau migration 008, chạy `database/migrations/009_practice_tasks.sql` trên đúng
+database bằng tài khoản có quyền CREATE/REFERENCES. Kiểm schema_migrations
+trước; database mới dùng schema.sql đã chứa năm bảng nhiệm vụ, không chạy lại
+các migration đã có. Migration 009 chỉ thêm bảng, không đổi dữ liệu cũ;
+IF NOT EXISTS cho phép tiếp tục khi lần chạy DDL trước bị ngắt, không thay thế
+việc kiểm cấu trúc các bảng hiện có.
+
+Lối vào ở trang Tài khoản: USER **Nhiệm vụ của tôi**, ADMIN **Quản lý nhiệm vụ**.
+Trang mới dùng Servlet → JavaBean → XxxDB → JSP/form, chạy khi tắt JavaScript.
+Xem [đối chiếu chương/slide và demo](docs/TEAM_FLOW_DEMO_GUIDE.md) và
+[bằng chứng kiểm chứng Đợt 6](docs/PHASE6_QA_REPORT.md).
+
+
 Ứng dụng Web Java giúp người học chọn mô hình robot, tra cứu linh kiện, thực hiện
 các bước lắp ráp và lưu tiến độ. Runtime duy nhất của dự án là **Java Servlet/JSP
 trên Tomcat 9**; Node.js không chạy backend.

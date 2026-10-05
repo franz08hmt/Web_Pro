@@ -1,5 +1,43 @@
 # ERD - Robot Lab
 
+## Nhiệm vụ thực hành — Đợt 6, chặng 1
+
+Migration `009_practice_tasks.sql` bổ sung năm bảng, không thay cột bảng cũ.
+`schema.sql` đã gộp các bảng này. Mỗi FK dùng ON DELETE RESTRICT; chỉ nháp
+không có vòng/bài nộp mới xoá được qua giao diện.
+
+```mermaid
+erDiagram
+    users ||--o{ practice_tasks : creates
+    robots ||--o{ practice_tasks : uses
+    practice_tasks ||--o{ task_recipients : assigns
+    users ||--o{ task_recipients : receives
+    task_recipients ||--o{ task_rounds : rounds
+    quiz_attempts o|--o| task_rounds : locked_attempt
+    task_rounds ||--o| task_submissions : submission
+    task_recipients ||--o{ task_submissions : history
+    assembly_sessions ||--o{ task_submissions : evidence
+    quiz_attempts ||--o{ task_submissions : snapshot_source
+    task_submissions ||--o{ task_reviews : reviews
+    users ||--o{ task_reviews : reviewer
+    task_reviews o|--o| task_reviews : supersedes
+```
+
+| Bảng | Dữ liệu và ràng buộc |
+| --- | --- |
+| practice_tasks | Tiêu đề/mô tả/robot/hạn/chính sách/ngưỡng/số lần, rubric A, creator_id, published_at; ENUM DRAFT/OPEN/CLOSED/ARCHIVED; CHECK số lần 1–3 và ngưỡng 50–100; index(state,due_at) |
+| task_recipients | UNIQUE(task_id,user_id), index(user_id,task_id); role USER do business/DB kiểm ở thời điểm giao/công bố |
+| task_rounds | UNIQUE(recipient_id,round_no); started_at; ACTIVE/SUBMITTED/CANCELLED; quiz_attempt_id nullable UNIQUE liên kết lượt tính điểm |
+| task_submissions | UNIQUE(round_id), UNIQUE(recipient_id,submission_no); ID nguồn + snapshot robot/phiên/quiz/điểm/giải thích/cờ muộn; SUBMITTED/REVIEWED; CHECK quiz total > 0 và score trong khoảng |
+| task_reviews | Điểm giải thích/tổng/kết luận/phản hồi/người chấm/ngày; supersedes_review_id nullable UNIQUE FK cùng bảng, change_reason; index(submission_id,id) |
+
+Trạng thái người được giao suy ra từ bài mới nhất/lần chấm mới nhất, không có
+cột trạng thái riêng. Lần chấm không UPDATE; lần sửa INSERT một bản ghi mới.
+Lượt quiz dùng lại có thể được nhiều bài của cùng người tham chiếu; chỉ
+quiz_attempt_id trên vòng là UNIQUE. Điểm tự động snapshot được dùng khi chấm,
+không tính lại từ câu hỏi hiện hành. Không có seed nhiệm vụ hay seed tài khoản.
+
+
 ```mermaid
 erDiagram
 

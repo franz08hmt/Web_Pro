@@ -6,14 +6,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import vn.edu.webpro.robotlab.business.QuizAttempt;
 import vn.edu.webpro.robotlab.business.QuizAttemptAnswer;
 import vn.edu.webpro.robotlab.business.QuizOption;
 import vn.edu.webpro.robotlab.business.QuizQuestion;
+import vn.edu.webpro.robotlab.business.PracticeTask;
+import vn.edu.webpro.robotlab.business.TaskRecipient;
+import vn.edu.webpro.robotlab.business.TaskRound;
+import java.util.Date;
 
 /**
  * Chấm và lưu lượt làm bài kiểm tra, cùng lịch sử theo tài khoản.
@@ -37,19 +39,29 @@ public class QuizAttemptDB {
      */
     public static QuizAttempt submitAttempt(long userId, String robotId, List<String[]> submittedAnswers)
             throws SQLException {
+        QuizAttempt graded = gradeAnswers(robotId, submittedAnswers);
+        return persistAttempt(userId, robotId, graded.getScore(), graded.getTotalQuestions(), graded.getAnswers());
+    }
+
+    private static QuizAttempt gradeAnswers(String robotId, List<String[]> submittedAnswers) throws SQLException {
         List<QuizQuestion> questions = QuizQuestionDB.selectQuestionsByRobot(robotId);
         if (questions.isEmpty()) {
             throw new IllegalArgumentException("robot-has-no-quiz");
         }
 
-        Set<String> seenQuestionIds = new HashSet<>();
+        List<String> seenQuestionIds = new ArrayList<>();
         for (String[] answer : submittedAnswers) {
-            if (!seenQuestionIds.add(answer[0])) {
+            if (answer == null || answer.length != 2) throw new IllegalArgumentException("invalid-answer");
+            if (seenQuestionIds.contains(answer[0])) {
                 throw new IllegalArgumentException("duplicate-question-" + answer[0]);
             }
+            seenQuestionIds.add(answer[0]);
         }
-        if (submittedAnswers.size() != questions.size() || !seenQuestionIds.containsAll(
-                questions.stream().map(QuizQuestion::getId).toList())) {
+        boolean everyQuestion = true;
+        for (QuizQuestion question : questions) {
+            if (!seenQuestionIds.contains(question.getId())) everyQuestion = false;
+        }
+        if (submittedAnswers.size() != questions.size() || !everyQuestion) {
             throw new IllegalArgumentException("must-answer-every-question");
         }
 
@@ -82,7 +94,9 @@ public class QuizAttemptDB {
             gradedAnswers.add(graded);
         }
 
-        return persistAttempt(userId, robotId, score, questions.size(), gradedAnswers);
+        QuizAttempt graded = new QuizAttempt();
+        graded.setScore(score); graded.setTotalQuestions(questions.size()); graded.setAnswers(gradedAnswers);
+        return graded;
     }
 
     private static QuizAttempt persistAttempt(long userId, String robotId, int score, int totalQuestions,
@@ -98,37 +112,7 @@ public class QuizAttemptDB {
             originalAutoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
 
-            ps = connection.prepareStatement(
-                    "INSERT INTO quiz_attempts (user_id, robot_id, score, total_questions) VALUES (?, ?, ?, ?)",
-                    Statement.RETURN_GENERATED_KEYS);
-            ps.setLong(1, userId);
-            ps.setString(2, robotId);
-            ps.setInt(3, score);
-            ps.setInt(4, totalQuestions);
-            ps.executeUpdate();
-            rs = ps.getGeneratedKeys();
-            rs.next();
-            long attemptId = rs.getLong(1);
-            DBUtil.closeResultSet(rs);
-            rs = null;
-            DBUtil.closePreparedStatement(ps);
-
-            ps = connection.prepareStatement("INSERT INTO quiz_attempt_answers ("
-                    + "attempt_id, question_id, question_prompt_snapshot, selected_option_id, "
-                    + "selected_option_label_snapshot, correct_option_label_snapshot, is_correct, "
-                    + "explanation_snapshot) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            for (QuizAttemptAnswer answer : answers) {
-                ps.setLong(1, attemptId);
-                ps.setString(2, answer.getQuestionId());
-                ps.setString(3, answer.getQuestionPromptSnapshot());
-                ps.setString(4, answer.getSelectedOptionId());
-                ps.setString(5, answer.getSelectedOptionLabelSnapshot());
-                ps.setString(6, answer.getCorrectOptionLabelSnapshot());
-                ps.setBoolean(7, answer.isCorrect());
-                ps.setString(8, answer.getExplanationSnapshot());
-                ps.addBatch();
-            }
-            ps.executeBatch();
+            long attemptId = insertAttempt(connection, userId, robotId, score, totalQuestions, answers);
             connection.commit();
             transactionFinished = true;
 
@@ -159,6 +143,82 @@ public class QuizAttemptDB {
                 System.out.println(e);
             }
             pool.freeConnection(connection);
+        }
+    }
+
+
+    private static long insertAttempt(Connection connection,long userId,String robotId,int score,int totalQuestions,
+            List<QuizAttemptAnswer> answers) throws SQLException {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+        ps = connection.prepareStatement(
+                    "INSERT INTO quiz_attempts (user_id, robot_id, score, total_questions) VALUES (?, ?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS);
+            ps.setLong(1, userId);
+            ps.setString(2, robotId);
+            ps.setInt(3, score);
+            ps.setInt(4, totalQuestions);
+            ps.executeUpdate();
+            rs = ps.getGeneratedKeys();
+            rs.next();
+            long attemptId = rs.getLong(1);
+            DBUtil.closeResultSet(rs);
+            rs = null;
+            DBUtil.closePreparedStatement(ps);
+
+            ps = connection.prepareStatement("INSERT INTO quiz_attempt_answers ("
+                    + "attempt_id, question_id, question_prompt_snapshot, selected_option_id, "
+                    + "selected_option_label_snapshot, correct_option_label_snapshot, is_correct, "
+                    + "explanation_snapshot) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            for (QuizAttemptAnswer answer : answers) {
+                ps.setLong(1, attemptId);
+                ps.setString(2, answer.getQuestionId());
+                ps.setString(3, answer.getQuestionPromptSnapshot());
+                ps.setString(4, answer.getSelectedOptionId());
+                ps.setString(5, answer.getSelectedOptionLabelSnapshot());
+                ps.setString(6, answer.getCorrectOptionLabelSnapshot());
+                ps.setBoolean(7, answer.isCorrect());
+                ps.setString(8, answer.getExplanationSnapshot());
+                ps.addBatch();
+            }
+            ps.executeBatch();
+
+            return attemptId;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+        }
+    }
+
+    /** Lượt tính điểm của vòng nhiệm vụ: khóa theo cùng thứ tự task/recipient/round. */
+    public static QuizAttempt submitAttempt(long userId, String robotId, List<String[]> answers, long roundId) throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        boolean original = connection.getAutoCommit();
+        try {
+            long taskId = PracticeTaskDB.scalar(connection,
+                "SELECT tr.task_id FROM task_rounds r JOIN task_recipients tr ON tr.id=r.recipient_id WHERE r.id=? AND tr.user_id = ?", roundId, userId);
+            connection.setAutoCommit(false);
+            PracticeTask task = PracticeTaskDB.task(connection, taskId, true);
+            TaskRecipient recipient = PracticeTaskDB.recipient(connection, taskId, userId, true);
+            if (task == null || recipient == null || !task.getRobotId().equals(robotId))
+                throw new IllegalArgumentException("Không tìm thấy nhiệm vụ được giao.");
+            TaskRound round = PracticeTaskDB.round(connection, recipient.getId(), 0, true);
+            PracticeTaskDB.hydrate(connection, recipient, task);
+            if (round == null || round.getId() != roundId || !round.isActive() || round.getQuizAttemptId() != 0 || !recipient.isCanTakeQuiz())
+                throw new IllegalArgumentException("Vòng không còn mở hoặc lượt tính điểm đã chốt.");
+            QuizAttempt graded = gradeAnswers(robotId, answers);
+            long attemptId = insertAttempt(connection,userId,robotId,graded.getScore(),graded.getTotalQuestions(),graded.getAnswers());
+            PracticeTaskDB.change(connection,"UPDATE task_rounds SET quiz_attempt_id=? WHERE id=?",attemptId,roundId);
+            connection.commit();
+            graded.setId(attemptId); graded.setUserId(userId); graded.setRobotId(robotId);
+            return graded;
+        } catch (SQLException | RuntimeException e) {
+            connection.rollback(); throw e;
+        } finally {
+            try { connection.setAutoCommit(original); }
+            finally { pool.freeConnection(connection); }
         }
     }
 

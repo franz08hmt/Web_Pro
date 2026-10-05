@@ -247,6 +247,27 @@ public class UserDB {
         }
     }
 
+    /** USER đủ điều kiện được giao; tìm kiếm/phân trang đều tham số hóa. */
+    public static List<User> selectLearners(String search, int limit, int offset) throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement("SELECT " + FIELDS
+                    + " FROM users WHERE role='user' AND display_name LIKE ? ORDER BY display_name,id LIMIT ? OFFSET ?");
+            ps.setString(1, "%" + search + "%");
+            ps.setInt(2, limit); ps.setInt(3, offset);
+            rs = ps.executeQuery();
+            List<User> result = new ArrayList<>();
+            while (rs.next()) result.add(readUser(rs));
+            return result;
+        } finally {
+            DBUtil.closeResultSet(rs); DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
+
     /** Tạo JavaBean User từ dòng hiện tại của ResultSet bằng các setter (slide 50). */
     private static User readUser(ResultSet rs) throws SQLException {
         User user = new User();

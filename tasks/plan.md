@@ -1,5 +1,30 @@
 # Implementation Plan: Đợt 2 — Lái thử 3D và Đợt 3 — Hai mẫu robot mới
 
+## Đợt 6 — Nhiệm vụ thực hành và đánh giá, chặng 1
+
+Mục tiêu: luồng ADMIN giao → USER quiz/bằng chứng/giải thích → xem trước/nộp →
+ADMIN chấm → bổ sung/nộp lại, mẫu A cố định 40/40/20. Không triển khai mẫu B
+hay chẩn đoán (chặng 2), không sửa phòng 3D/hồ sơ/tổng kết/shop.
+
+- Model 2: ba Servlet, sáu JavaBean, hai XxxDB; mở rộng QuizAttemptDB dùng
+  chung luật chấm, thêm USER lookup và CSRF hidden form. JSP chạy khi tắt JS.
+- Migration 009 bổ sung năm bảng, FK RESTRICT/UNIQUE/CHECK/index; nguồn phiên/
+  quiz từ bảng cũ, bản chụp và đánh giá bất biến. Khóa task/recipient/round,
+  commit/rollback; điểm lưu BigDecimal HALF_UP một chữ số rồi dùng để so ngưỡng.
+- Luật bean và guard slide-style được viết test trước. Baseline 105 Node,
+  37 JUnit; cuối 111 Node, 51 JUnit, Maven clean package JDK17 thành công.
+- QA Tomcat8081/MySQL thật qua bốn demo, có concurrency confirm/quiz, quyền/
+  CSRF/bằng chứng/hạn/lượt/đánh giá, Chrome desktop/mobile/NoJS. Chỉ builder có
+  phiên hoàn tất; người dùng chọn hai nhiệm vụ builder cho hai cách quiz vòng2.
+- Bảng chương/slide, Hỏi–Đáp và kịch bản demo ở TEAM_FLOW_DEMO_GUIDE;
+  ma trận chi tiết/dữ liệu/giới hạn ở PHASE6_QA_REPORT.
+- Chỉ stage file thuộc chặng1. Giữ ba file trang chủ; AGENT_HANDOFF ngoài commit.
+  Hai commit local (docs ghi chú 5b và feat chặng1); không push.
+
+Rủi ro đã kiểm: ID/điểm hidden bị sửa, quiz chốt bị thay, nộp/chấm đồng thời,
+sửa chấm sau hoạt động, phân trang người được giao, đề quiz hiện hành thay đổi.
+Quiz không phải thi kín; chặng1 chưa đóng băng đề cho cả nhiệm vụ.
+
 ## Đợt 4 — Cửa hàng linh kiện và giỏ hàng mô phỏng
 
 ### Mục tiêu và giới hạn

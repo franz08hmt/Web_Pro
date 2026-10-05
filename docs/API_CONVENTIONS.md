@@ -1,5 +1,39 @@
 # Quy ước Servlet API
 
+## Nhiệm vụ thực hành và đánh giá (Đợt 6, chặng 1)
+
+| Route | GET | POST action | Quyền |
+| --- | --- | --- | --- |
+| `/tasks` | Danh sách; `action=view/quiz/submit&id=` | `quiz`, `preview`, `confirm` | USER được giao nhiệm vụ; dữ liệu riêng của mình |
+| `/admin-tasks` | Danh sách lọc state; `new/edit/view/preview` | `saveDraft/publish/addRecipients/extend/close/archive/duplicate/deleteDraft` | ADMIN |
+| `/admin-task-reviews?id=` | Bằng chứng, lịch sử nộp/chấm, form chấm | `review` | ADMIN |
+
+Tất cả trang đặt `Cache-Control: no-store`; khách redirect tới
+`/pages/tai-khoan.html`, USER vào trang ADMIN trả 403, ADMIN vào luồng nộp USER
+trả 403. USER mở nhiệm vụ không được giao (hoặc nháp) trả 404. Danh tính lấy từ
+SessionUtil/HttpSession, không nhận userId trong luồng USER. SQLException trả
+503; điều kiện nghiệp vụ sai trả trang JSP 422 với thông báo, không tạo dữ liệu.
+
+Mọi POST dùng form URL encoded và hidden `csrfToken` so với HttpSession bằng
+`SessionUtil.hasValidFormCsrfToken`; thiếu/sai trả 403. Token trong header
+`X-CSRF-Token` của API cũ không đổi. Thành công dùng PRG; riêng preview forward
+200 và không lưu bài. Hạn nhập datetime-local được parse strict bằng
+SimpleDateFormat theo Asia/Ho_Chi_Minh, hiển thị dd/MM/yyyy HH:mm.
+
+`confirm` nhận id nhiệm vụ, roundId, sessionId và ba đoạn problem/reasoning/
+improvement. Server đọc lại bằng chứng theo user_id, khóa task/recipient/round,
+kiểm hạn, trạng thái, số lượt, quiz của vòng và mốc phiên lắp ráp; không nhận điểm
+từ hidden field. Lưu snapshot và cập nhật vòng trong cùng transaction. Quiz
+nhiệm vụ gọi overload bốn tham số của QuizAttemptDB; overload ba tham số và
+`/api/quiz` giữ hợp đồng cũ, dùng chung luật chấm.
+
+Điểm tự động lưu DECIMAL(4,1) = HALF_UP(40 + score/total × 40, 1). Tổng dùng
+chính điểm tự động đã lưu cộng điểm giải thích. Chưa chấm hiển thị /80; đã chấm
+hiển thị /100. Lần chấm mới dùng expectedReviewId chống lưu từ form cũ, tạo bản
+ghi bất biến với supersedes_review_id/change_reason. Sửa bị chặn nếu vòng kế
+tiếp đã có quiz hoặc bài nộp; đổi kết luận có thể huỷ/kích hoạt lại vòng chưa dùng.
+
+
 API chạy trong cùng WAR và cùng origin với frontend, dưới `/api`. Servlet nhận
 HTTP và kiểm tra dữ liệu; lớp `XxxDB` trong package `data` dùng JDBC truy cập MySQL;
 dữ liệu đi giữa các tầng bằng JavaBean trong package `business`.
@@ -179,6 +213,9 @@ Một số màn hình forward thẳng sang JSP thay vì trả JSON, theo đúng 
 
 | URL | Servlet | Yêu cầu đăng nhập |
 | --- | --- | --- |
+| `/tasks` | `TaskServlet` | USER được giao; no-store; POST kiểm CSRF form |
+| `/admin-tasks` | `AdminTaskServlet` | ADMIN; no-store; POST kiểm CSRF form |
+| `/admin-task-reviews` | `AdminTaskReviewServlet` | ADMIN; no-store; POST kiểm CSRF form |
 | `/assembly-receipt?session={id}` | `AssemblyReceiptPageServlet` | Có — chỉ chủ phiên xem được |
 | `/learning-summary` | `LearningSummaryServlet` | Có — chỉ số liệu của chính mình |
 | `/learning-profile` | `LearningProfileServlet` | Có — chỉ dữ liệu của chính mình; `Cache-Control: no-store` |

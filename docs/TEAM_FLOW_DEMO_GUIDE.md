@@ -1,5 +1,87 @@
 # Luồng demo và câu hỏi giảng viên
 
+## Nhiệm vụ thực hành bám slide nào? (Đợt 6, chặng 1)
+
+| Phần triển khai | Chapter / slide | File |
+| --- | --- | --- |
+| Model 2: Servlet → JavaBean → XxxDB → JSP | Ch2 slide 4–5, 20 | `TaskServlet`, `AdminTaskServlet`, `AdminTaskReviewServlet`, `PracticeTaskDB`, `TaskSubmissionDB` |
+| Mapping `@WebServlet` | Ch5 slide 10–11 | Ba Servlet nhiệm vụ |
+| Form GET/POST, `getParameter`, checkbox `getParameterValues` | Ch5 slide 12–17 | `AdminTaskServlet`, `TaskServlet`, `TaskFormUtil` |
+| Hidden `action` để rẽ nhánh | Ch2 slide 9; Ch12 slide 40–44 | Ba Servlet và form JSP |
+| `setAttribute`, `String url`, forward | Ch5 slide 22–24; Ch12 slide 42–44 | Ba Servlet |
+| Redirect sau POST (PRG) | Ch5 slide 25–26 | Ba Servlet |
+| Danh tính/CSRF từ `HttpSession` | Ch7 slide 10–12 | `SessionUtil` |
+| JavaBean có ctor rỗng, getter/setter, Serializable | Ch6 slide 4–6 | `PracticeTask`, `TaskRecipient`, `TaskRound`, `TaskSubmission`, `TaskReview`, `TaskRubric` |
+| Luật nghiệp vụ trong bean, vòng for/if như Cart | Ch9 slide 32–33 | `PracticeTask`, `TaskRecipient`, `TaskReview`, `TaskRubric` |
+| Getter định dạng điểm bằng NumberFormat | Ch9 slide 28–31 | Getter display trong `TaskSubmission`, `TaskReview`; formatter `TaskRubric` |
+| Date + SimpleDateFormat thuộc họ DateFormat | Ch10 slide 6 | `TaskRubric`, `TaskFormUtil` |
+| EL, empty/and/or/not, getter boolean | Ch6 slide 7–9; Ch8 slide 5–11, 32–35 | `task-*.jsp`, `admin-task-*.jsp` |
+| c:out, c:forEach, c:if, c:choose | Ch9 slide 7–8, 11, 17–19 | Các JSP nhiệm vụ |
+| Hidden field, textarea | Ch7 slide 35–36; Ch12 slide 24 | Form quiz/nộp/xem trước/chấm |
+| PreparedStatement, ConnectionPool, DBUtil, XxxDB static/finally | Ch12 slide 18–20, 32–38, 45–53 | `PracticeTaskDB`, `TaskSubmissionDB`, phần mở rộng `QuizAttemptDB`/`UserDB` |
+| Transaction commit/rollback và khóa dòng | Ch13 slide 29–34 (khái niệm transaction), mẫu repo `CartDB`/`AssemblySessionDB` | Lưu quiz của vòng, xác nhận nộp, lưu chấm |
+
+Số slide lấy từ bảng đối chiếu trong prompt Đợt 6. `SELECT ... FOR UPDATE` là
+cách triển khai khóa dòng theo mẫu đã có trong repo, không khẳng định slide có
+đúng câu SQL này. BigDecimal/HALF_UP được prompt cho phép để lưu và so ngưỡng
+chính xác. Node/JUnit chỉ kiểm tra trong lúc phát triển; ứng dụng chạy trên Tomcat.
+
+### Kịch bản demo nhiệm vụ
+
+1. Đăng nhập ADMIN → Tài khoản → **Quản lý nhiệm vụ** → tạo nháp mẫu A, chọn
+   robot có quiz, hạn tương lai, chọn hai USER bằng checkbox; xem trước rồi công bố.
+2. USER → Tài khoản → **Nhiệm vụ của tôi** → mở nhiệm vụ; làm quiz nhiệm vụ.
+   Lượt hợp lệ đầu tiên của vòng được chốt. Quiz luyện tập cũ không thay lượt này.
+3. Hoàn tất robot qua luồng lắp ráp hiện có; chọn phiên của mình, viết ba đoạn
+   giải thích → xem trước (điểm tự động /80) → xác nhận.
+4. ADMIN mở bài nộp, chọn mức giải thích và **Cần bổ sung**, ghi cần cải thiện /
+   hướng làm lại. USER thấy vòng 2; dùng lại phiên hợp lệ, dùng quiz vòng trước
+   hoặc làm một lượt cho vòng mới, xem trước rồi nộp lại.
+5. ADMIN chấm **Đạt yêu cầu** khi tổng đủ ngưỡng; xem điểm từng vòng và lịch sử.
+   Thử sửa một lần chấm: phải có lý do; vòng kế tiếp đã hoạt động thì bị chặn.
+6. Minh họa quyền: USER không có link quản lý; mở `/admin-tasks` nhận 403.
+   USER không được giao nhiệm vụ mở id đó nhận 404. ADMIN không có form nộp.
+
+Mặc định không dùng phiên trước mốc vòng 1. Nếu dùng dữ liệu demo cũ để bảo vệ,
+ADMIN cần bật **Cho phép phiên lắp ráp hoàn thành trước vòng 1** ngay khi tạo nháp.
+Mỗi nhiệm vụ có chính sách muộn riêng; không tự thay đổi khi đã công bố.
+
+### Vì sao chỉ tính lượt quiz đầu tiên của vòng?
+
+Để bài nộp gắn với một lần kiểm tra xác định. `task_rounds.quiz_attempt_id` được
+chốt trong transaction, chỉ khi toàn bộ câu trả lời hợp lệ. Mở rồi bỏ dở hoặc
+gửi thiếu câu không tạo lượt. Vòng sau có thể làm lượt mới hoặc dùng lại lượt
+của bài nộp trước; trang xem trước ghi nguồn rõ ràng.
+
+### Transaction và FOR UPDATE dựa vào đâu?
+
+Ch13 slide 29–34 giải thích transaction; repo đã có mẫu commit/rollback trong
+CartDB và AssemblySessionDB. Ở đây khóa nhiệm vụ, người được giao và vòng giúp
+kiểm điều kiện và ghi kết quả cùng một transaction. UNIQUE(round_id) là lớp
+bảo vệ bổ sung: hai request xác nhận chỉ tạo một bài, request còn lại có thông báo.
+
+### Vì sao dùng form và hidden token thay API JSON?
+
+Form GET/POST, hidden action và forward/redirect là luồng cô dạy. Hidden
+csrfToken được so với token trong HttpSession; thiếu/sai trả 403. Token API qua
+header X-CSRF-Token vẫn giữ nguyên. Hidden field không đáng tin: server chỉ
+nhận ID nguồn và nội dung giải thích, tự đọc lại bằng chứng và tính điểm.
+
+### Đây có phải thi kín không? Nếu đổi đề giữa đợt thì sao?
+
+Đây là đánh giá quá trình có tài liệu tham khảo, không phải thi kín. Người học
+vẫn có thể xem quiz luyện tập. Nếu ADMIN đổi câu hỏi giữa đợt thì vòng mới đọc đề
+hiện hành; lượt đã chốt và bài đã nộp giữ snapshot cũ. Chặng 1 chưa đóng băng đề
+cho toàn bộ nhiệm vụ.
+
+### Mẫu B và chẩn đoán lỗi ở đâu?
+
+Chúng thuộc chặng 2, chưa triển khai. Chặng 1 chỉ có rubric A cố định
+40/40/20 và năm mức giải thích 0/5/10/15/20; không có màn hình sửa rubric.
+
+Bằng chứng và giới hạn QA: [PHASE6_QA_REPORT.md](PHASE6_QA_REPORT.md).
+
+
 Tài liệu chỉ tập trung vào luồng đã tích hợp: dữ liệu → Servlet → giao diện →
 phiên lắp ráp → phòng 3D. Bảng đối chiếu từng lớp với số slide nằm ở
 [ARCHITECTURE.md](ARCHITECTURE.md). Đây là ứng dụng Java Servlet/JSP chạy trong
@@ -52,7 +134,8 @@ luôn tạo role USER, không gửi role từ trình duyệt.
 | `ral-demo-practice@robotlab.test` | USER | Phiên Robot tránh vật cản ở `PREPARING`, đã chuẩn bị 4/8 nhóm linh kiện |
 | `ral-demo-student@robotlab.test` | USER | Có một lượt kiểm tra Cánh tay robot mini (7/7) |
 
-Mật khẩu demo chung: `RobotLabDemo#2026`. Đây là thông tin đăng nhập thử nghiệm,
+Mật khẩu demo chung: `RobotLabDemo#2026` (chỉ áp dụng ba USER; ADMIN đã được chủ
+tài khoản đổi mật khẩu và được kiểm chứng riêng ngày 05/10/2026). Đây là thông tin đăng nhập thử nghiệm,
 không dùng ngoài demo/không dùng cho người thật; đổi hoặc xóa các tài khoản này
 trước khi đưa một bản sao database lên môi trường công khai. Mật khẩu DB thật
 không nằm trong tài liệu này hay trong Git.
@@ -64,6 +147,7 @@ mới thêm vào đồ án.
 
 | Chức năng | Kiến thức môn học minh họa | Servlet | JavaBean / XxxDB | JSP | Bảng database |
 | --- | --- | --- | --- | --- | --- |
+| Nhiệm vụ thực hành và đánh giá (Đợt 6 chặng 1) | Form/action/PRG Ch5/12–26; session Ch7/10–12; bean Ch6/4–6, Ch9/28–33; EL/JSTL Ch8/5–11, 32–35, Ch9/7–8, 11, 17–19; JDBC Ch12/18–20, 32–38, 45–53; transaction Ch13/29–34 | `TaskServlet`, `AdminTaskServlet`, `AdminTaskReviewServlet` | Sáu bean nhiệm vụ; `PracticeTaskDB`, `TaskSubmissionDB`, overload `QuizAttemptDB` | `task-*.jsp`, `admin-task-*.jsp` | Năm bảng migration 009, nguồn `assembly_sessions`/`quiz_attempts` |
 | 1. Hoàn tất thực hành + phiếu kết quả | Server-side validation (không tin client); atomic UPDATE tránh race condition; Servlet→JSP forward | `AssemblySessionServlet` (đổi trạng thái), `AssemblyReceiptPageServlet` (phiếu kết quả) | `AssemblySession.canCompleteAssembly()`; `AssemblySessionDB.completeSession()` | `assembly-receipt.jsp` | `assembly_sessions` (cột `completed_at`), `session_visual_parts`, `robot_components` |
 | 2. Bài kiểm tra kiến thức | Chấm điểm ở server, không tin client; snapshot dữ liệu lịch sử; JDBC transaction nhiều bảng | `QuizServlet` (làm bài), `AdminQuizServlet` (quản trị) | `QuizQuestion.isCorrectOption()`; `QuizAttemptDB.submitAttempt()` | *(API JSON, JS dựng giao diện — không dùng JSP)* | `quiz_questions`, `quiz_options`, `quiz_attempts`, `quiz_attempt_answers` |
 | 3. Tra cứu lỗi lắp ráp | Nội dung công khai đọc từ MySQL; lọc/tìm bằng `PreparedStatement` tham số hóa | `TroubleshootingServlet` (công khai), `AdminTroubleshootingServlet` (quản trị) | `TroubleshootingGuide`; `TroubleshootingGuideDB` | *(API JSON)* | `troubleshooting_guides` |
