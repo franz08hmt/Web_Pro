@@ -13,6 +13,8 @@ JSP dưới `tomcat-app/src/main/webapp/WEB-INF/views/`.
 
 | File | Dòng | Kỹ thuật còn dùng |
 | --- | --- | --- |
+| `business/Robot.java` | 9 | Set.of |
+| `business/LibraryResource.java` | 9 | Set.of |
 | `business/AssemblySession.java` | 151, 152, 199, 200, 201 | stream, lambda, method reference |
 | `business/ShopOrder.java` | 29, 30 | stream, method reference, reduce |
 | `controller/AdminQuizServlet.java` | 136 | stream/lambda |

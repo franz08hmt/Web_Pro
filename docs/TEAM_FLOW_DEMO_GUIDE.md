@@ -73,8 +73,8 @@ mới thêm vào đồ án.
 
 ## Hồ sơ học tập bám slide nào?
 
-Bảng dưới dùng đúng số chương/slide đã được người dùng đối chiếu từ slide của
-giảng viên trong prompt Đợt 5b. Mở code theo cột cuối để giải thích mẫu đã học.
+Bảng dưới đã đối chiếu với nội dung slide Chapter 2, 5, 6, 7, 8, 9, 10, 12.
+Mở code theo cột cuối để giải thích mẫu đã học.
 Thứ tự thực thi cụ thể: Servlet lấy user từ session, đọc dữ kiện qua XxxDB,
 đặt dữ kiện vào JavaBean, gọi `buildProfile()`, setAttribute và forward tới JSP.
 
