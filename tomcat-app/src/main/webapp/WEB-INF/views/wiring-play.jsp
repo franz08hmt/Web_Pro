@@ -7,8 +7,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Thực hành nối dây | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/wiring.css?v=20261006.1">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.1">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/wiring.css?v=20261006.2">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-wiring-play wiring">
@@ -30,6 +30,7 @@
             <div class="workspace-workbench">
                 <section class="workspace-panel" id="wiring-interactive-diagram">
                     <h2>Sơ đồ thực hành</h2>
+                    <c:set var="wiringDiagramEditable" value="true"/>
                     <c:set var="wiringDiagramConnections" value="${wiringAttempt.connections}"/>
                     <%@ include file="wiring-diagram.jsp" %>
                     <p id="wiring-status" role="status" aria-live="polite">Sơ đồ đang hiển thị các dây đã lưu.</p>

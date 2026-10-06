@@ -6,7 +6,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Luồng Servlet/JSP | Robot Assembly Lab</title>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.1">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
         <meta name="description" content="Danh mục và kiến thức thực hành Robot Assembly Lab.">
     </head>
     <body class="learning-workspace workspace-page-architecture">

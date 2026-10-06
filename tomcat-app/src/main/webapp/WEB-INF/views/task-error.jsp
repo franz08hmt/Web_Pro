@@ -8,7 +8,7 @@
         <title>Thông báo nhiệm vụ | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/practice-tasks.css?v=20261005.1">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.1">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-task-error practice-tasks">
@@ -19,8 +19,16 @@
             <h1>Chưa thực hiện được thao tác</h1>
             <p role="alert"><c:out value="${taskError}"/></p>
             <p>Vui lòng quay lại nhiệm vụ để kiểm tra vòng hiện tại và điều kiện nộp.</p>
-            <p><a href="${pageContext.request.contextPath}/tasks">Nhiệm vụ của tôi</a> · <a
-            href="${pageContext.request.contextPath}/admin-tasks">Quản lý nhiệm vụ</a></p>
+            <p>
+            <c:choose>
+                <c:when test="${sessionScope.user.admin}">
+                    <a href="${pageContext.request.contextPath}/admin-tasks">Quản lý nhiệm vụ</a>
+                </c:when>
+                <c:otherwise>
+                    <a href="${pageContext.request.contextPath}/tasks">Nhiệm vụ của tôi</a>
+                </c:otherwise>
+            </c:choose>
+            </p>
         </main>
         <%@ include file="workspace-footer.jspf" %>
     </body>

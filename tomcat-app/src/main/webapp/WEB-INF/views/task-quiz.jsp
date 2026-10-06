@@ -8,7 +8,7 @@
         <title>Quiz nhiệm vụ | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/practice-tasks.css?v=20261005.1">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.1">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-task-quiz practice-tasks">
@@ -42,8 +42,8 @@
                     <c:if test="${not empty taskQuiz}">
                         <p>Quiz lượt #<c:out value="${taskQuiz.quizAttemptId}"/> – <c:out value="${taskQuiz.quizScore}"/>/<c:out
                         value="${taskQuiz.quizTotal}"/> – <c:out value="${taskQuiz.quizSubmittedDisplay}"/> <c:choose><c:when
-                            test="${taskQuiz.reusedQuiz}">(dùng lại từ lần nộp #<c:out
-                            value="${taskQuiz.quizReusedFrom}"/>)</c:when><c:otherwise>(lượt của vòng này)</c:otherwise></c:choose></p>
+                            test="${taskQuiz.reusedQuiz}">(dùng lại từ lần nộp #<c:out value="${taskQuiz.quizReusedFrom}"/>)</c:when>
+                        <c:otherwise>(lượt của vòng này)</c:otherwise></c:choose></p>
                 </c:if>
             </c:otherwise>
         </c:choose>

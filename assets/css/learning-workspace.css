@@ -255,7 +255,7 @@
   .learning-workspace .workspace-content:not(.learning-profile) dd { margin: 0; font-weight: 500; }
   .learning-workspace .workspace-metrics {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
     gap: 16px;
     margin: 24px 0;
   }
@@ -399,7 +399,10 @@
     border-color: #ff8b4b;
     color: #171c20;
   }
-  .learning-workspace .workspace-danger { color: #ffb4ac; border-color: #a36761; }
+  .learning-workspace .workspace-danger,
+  .learning-workspace button[value="archive"],
+  .learning-workspace button[value="delete"],
+  .learning-workspace button[value="close"] { color: #ffb4ac; border-color: #a36761; }
   .learning-workspace .workspace-content:not(.learning-profile) .task-review {
     padding: 16px 20px;
     border-left: 3px solid #2dd4bf;
