@@ -208,6 +208,21 @@ Nếu máy có Node.js 20, có thể chạy thêm các kiểm tra tĩnh; đây k
 npm test
 ```
 
+## Phân công nhóm
+
+Nhóm 4 · Web Programming. Mỗi thành viên giữ vai trò ban đầu, các chức năng thêm sau được chia
+lại để khối lượng và độ sâu tương đương; mỗi người sở hữu một luồng đầy đủ từ trình duyệt đến
+bảng MySQL.
+
+| Thành viên | Mảng phụ trách | Chức năng chính | Chuỗi file nên mở |
+| --- | --- | --- | --- |
+| Huỳnh Minh Tài | Nền tảng và phiên học tập (giao diện dùng chung, tích hợp, Servlet/Tomcat, phân quyền) | Đăng nhập, session, CSRF; phiên lắp ráp và phiếu kết quả; nhiệm vụ thực hành (rubric A/B); hồ sơ học tập in A4; khung giao diện JSP | `AuthServlet` → `SessionUtil` → `UserDB`; `AssemblySessionServlet`; `TaskServlet`; `LearningProfileServlet` |
+| Văn Phạm Thảo Nhi | Dữ liệu và nội dung (database, nội dung mô hình/linh kiện/thư viện) | Lớp dữ liệu (`ConnectionPool`, schema, migration, seed); catalog robot/linh kiện/thư viện và CRUD Admin; quiz; tra cứu lỗi; tổng kết và thống kê | `ConnectionPool` → `RobotDB`/`ComponentDB`; `QuizServlet` → `QuizAttemptDB`; `StatsDB`; `database/schema.sql` |
+| Phạm Tuấn Anh | Tương tác và thực hành (luồng lắp ráp, JavaScript, đa thiết bị) | Phòng 3D, hiệu ứng ăn mừng và lái thử; chẩn đoán lỗi tương tác; phòng nối dây có chấm và hỗ trợ Admin–User; cửa hàng mô phỏng; giao diện đáp ứng | `assembly-3d.js`; `WiringServlet` → `WiringExercise.grade` → `WiringDB`; `DiagnosisServlet`; `CartServlet`/`OrderServlet` |
+
+Bảng chi tiết kèm số liệu cân bằng, slide phải thuộc và câu hỏi dự kiến theo từng người:
+[mục 7 của file ôn tập cuối kỳ](docs/ON_TAP_VAN_DAP_CUOI_KY.md#7-phân-công-theo-thành-viên).
+
 ## Tài liệu bảo vệ bài
 
 - [Kiến trúc và luồng request/response](docs/ARCHITECTURE.md)
