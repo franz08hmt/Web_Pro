@@ -153,6 +153,93 @@ mvn -f tomcat-app/pom.xml clean package
 
 WAR được tạo tại `tomcat-app/target/robot-assembly-lab.war`.
 
+## Cài nhanh trên máy mới và khắc phục lỗi đăng nhập
+
+Mỗi máy có MySQL riêng nên **tài khoản và dữ liệu không đi theo Git**. Trên máy mới, đăng ký
+tài khoản mới; tài khoản demo của máy khác không tồn tại ở đây. Lỗi đăng nhập/đăng ký trên máy
+mới gần như luôn do cấu hình hoặc database, **không phải do code**: đừng sửa code, hãy làm
+theo các bước dưới đây (chi tiết đầy đủ ở mục "Chạy bằng IntelliJ + Tomcat" phía trên).
+
+### Bước 1. Cấu hình IntelliJ
+
+1. Dùng **JDK 17** (Project SDK) và Tomcat 9. Không dùng JDK 21 hoặc 25.
+2. Cấu hình Tomcat → **Deployment**: thêm artifact `robot-assembly-lab-tomcat:war exploded`,
+   **Application context = `/`** (nếu khác `/` thì mọi lời gọi `/api/...` bị 404).
+3. Chạy bằng nút Run Tomcat. Không mở `index.html` bằng Live Server hoặc bấm đúp.
+4. Sau khi pull hoặc sửa code: Build → Rebuild Project, rồi chạy lại.
+
+### Bước 2. Cài MySQL và khai báo kết nối
+
+1. Cài **MySQL 8** (không dùng MariaDB: `schema.sql` dùng collation `utf8mb4_0900_ai_ci`).
+2. Tab **Server** của cấu hình Tomcat, ô **VM options**, điền theo MySQL **của máy mình**:
+
+   ```text
+   -DDB_HOST=127.0.0.1 -DDB_PORT=3306 -DDB_NAME=robot_assembly_lab -DDB_USER=root -DDB_PASSWORD=mat_khau
+   ```
+
+   Tomcat không đọc file `.env`. Mật khẩu có ký tự đặc biệt hoặc dấu cách thì đặt trong dấu nháy kép.
+
+### Bước 3. Tạo database và nạp dữ liệu (một lần)
+
+Đăng nhập MySQL bằng tài khoản có quyền `CREATE` (ví dụ `root`) và chạy, thay đường dẫn cho đúng
+máy mình (dùng dấu `/`):
+
+```sql
+CREATE DATABASE robot_assembly_lab CHARACTER SET utf8mb4;
+USE robot_assembly_lab;
+SOURCE D:/duong-dan/robot-engine-website/database/schema.sql;
+SOURCE D:/duong-dan/robot-engine-website/database/seed.sql;
+```
+
+- `schema.sql` đã gồm đủ mọi bảng, chạy trên database **rỗng**, không cần chạy từng migration.
+- Nạp thêm dữ liệu đầy đủ như bản demo, theo thứ tự:
+  `seed-robots-phase3.sql`, `seed-quiz.sql`, `seed-quiz-phase3.sql`, `seed-troubleshooting.sql`,
+  `seed-troubleshooting-phase3.sql`, `seed-shop.sql`.
+- `seed-diagnosis-phase6.sql` và `seed-wiring-phase7.sql` chỉ thêm dữ liệu khi **đã có tài khoản
+  ADMIN** (xem Bước 5); chạy chúng sau cùng.
+
+### Bước 4. Kiểm tra bằng `/api/health`
+
+Chạy Tomcat rồi mở `http://localhost:8080/api/health`:
+
+| Kết quả | Nguyên nhân thường gặp | Cách xử lý |
+| --- | --- | --- |
+| Không mở được hoặc 404 | Chưa chạy Tomcat; Application context khác `/`; đang mở `index.html` trực tiếp | Sửa theo Bước 1 |
+| `"database":"unavailable"` | Sai `DB_*`, MySQL chưa chạy, chưa tạo database, sai user/mật khẩu | Sửa theo Bước 2–3; thử nối bằng MySQL Workbench trước |
+| `"database":"connected"` nhưng đăng nhập báo "Email hoặc mật khẩu không đúng" | Database của máy này chưa có tài khoản đó | Đăng ký tài khoản mới (Bước 5) |
+| `"database":"connected"` nhưng đăng ký báo lỗi 500 | Thiếu bảng (chưa chạy `schema.sql`) hoặc dùng MariaDB | Chạy lại Bước 3 trên database rỗng |
+| Màn hình đăng nhập báo "Cơ sở dữ liệu chưa sẵn sàng" | Mã 503: Tomcat không nối được MySQL | Như dòng `unavailable` |
+
+Phải thấy `"database":"connected"` thì đăng nhập/đăng ký mới hoạt động.
+
+### Bước 5. Đăng ký, đăng nhập và tạo ADMIN
+
+1. Mở `http://localhost:8080/` và đăng ký tài khoản mới ngay trên máy mình.
+2. Cần quyền quản trị thì chạy trong MySQL, rồi đăng xuất và đăng nhập lại:
+
+   ```sql
+   UPDATE users SET role = 'admin', session_version = session_version + 1
+   WHERE email = 'email_vua_dang_ky@example.com';
+   ```
+
+3. Có ADMIN rồi mới chạy `seed-diagnosis-phase6.sql` và `seed-wiring-phase7.sql`.
+
+### Muốn có đúng dữ liệu của người khác trong nhóm
+
+Người có dữ liệu xuất database rồi gửi **riêng trong nhóm** (file chứa mật khẩu đã băm và dữ liệu
+thử, **không đưa lên Git**):
+
+```text
+mysqldump -u root -p --default-character-set=utf8mb4 ten_database > robot_lab_dump.sql
+```
+
+Máy kia tạo database rỗng rồi nhập file này thay cho Bước 3; tài khoản và dữ liệu sẽ giống bản gốc.
+
+### Vẫn lỗi?
+
+Gửi kèm khi hỏi nhóm: kết quả `/api/health`, phiên bản Java và MySQL, và dòng lỗi **đầu tiên**
+(màu đỏ) trong cửa sổ Run của Tomcat hoặc thông báo hiện trên màn hình đăng nhập.
+
 ## Tài khoản quản trị
 
 Đăng ký trên giao diện tạo tài khoản thường. Sau đó cập nhật quyền trong MySQL:
