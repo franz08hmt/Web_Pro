@@ -102,7 +102,8 @@ test("profile facts are fetched in a fixed number of prepared, user-scoped queri
 });
 
 test("profile JSP escapes dynamic text and uses only profile fields, never personal identifiers or purchase data", () => {
-  const jsp = read(jspPath);
+  // Redesign wraps tag attributes to 140 columns; keep the same c:out privacy contract.
+  const jsp = read(jspPath).replace(/<c:out\s+value="([^"]*)"\s*\/>/g, '<c:out value="$1"/>');
   assert.match(jsp, /<html lang="vi">/);
   assert.match(jsp, /<h1>Hồ sơ học tập Robot Assembly Lab<\/h1>/);
   assert.match(jsp, /<title>\s*Hồ sơ học tập - <c:out value="\$\{profile\.fullName\}"\/>/);

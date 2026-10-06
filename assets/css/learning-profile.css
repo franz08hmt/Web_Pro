@@ -305,7 +305,6 @@
   }
 
   .learning-profile .profile-robot,
-  .learning-profile section[aria-labelledby="profile-skills-heading"],
   .learning-profile tr,
   .learning-profile .profile-header,
   .learning-profile .confirmation-section,
@@ -328,5 +327,41 @@
   .learning-profile .profile-skill-table th,
   .learning-profile .profile-skill-table td {
     border-color: #000;
+  }
+}
+
+@media screen {
+  .learning-workspace .learning-profile {
+    background: transparent;
+    color: #eef3f2;
+    min-height: 0;
+  }
+  .learning-workspace .learning-profile .profile-toolbar,
+  .learning-workspace .learning-profile .profile-technical-note,
+  .learning-workspace .learning-profile .profile-noscript {
+    border-color: #3d4a50;
+    background: #1b2226;
+    color: #a9b6b4;
+  }
+  .learning-workspace .learning-profile .profile-back { color: #ffa871; }
+  .learning-workspace .learning-profile .profile-print-button { background: #ff8b4b; color: #171c20; }
+  .learning-workspace .learning-profile .print-hint { color: #a9b6b4; }
+  .learning-workspace .learning-profile .profile-paper {
+    color-scheme: light;
+    overflow-wrap: anywhere;
+  }
+  .learning-workspace .learning-profile .profile-skill-table { display: table; }
+  .learning-workspace .learning-profile .profile-skill-table thead { display: table-header-group; }
+  .learning-workspace .learning-profile .profile-skill-table tbody { display: table-row-group; }
+  .learning-workspace .learning-profile .profile-skill-table tr { display: table-row; }
+  .learning-workspace .learning-profile .profile-skill-table th,
+  .learning-workspace .learning-profile .profile-skill-table td { display: table-cell; }
+}
+
+@media print {
+  .learning-profile .profile-skill-table caption,
+  .learning-profile .profile-skill-table thead {
+    break-after: avoid;
+    page-break-after: avoid;
   }
 }

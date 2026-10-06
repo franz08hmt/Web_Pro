@@ -262,6 +262,23 @@
   .learning-workspace .workspace-metric { padding: 20px; border: 1px solid var(--lab-border); border-radius: 12px; }
   .learning-workspace .workspace-metric dt { font-size: 13px; color: var(--lab-muted); }
   .learning-workspace .workspace-metric dd { font-size: 28px; margin: 8px 0 0; font-weight: 600; }
+  .learning-workspace .workspace-content .workspace-metrics .workspace-metric {
+    display: block;
+    margin: 0;
+    padding: 20px;
+    background: #1b2226;
+  }
+  .learning-workspace .workspace-content .workspace-metrics dd { font-size: 28px; line-height: 1.4; }
+  .learning-workspace .workspace-content .workspace-metrics dl:first-child dd { font-size: 17px; }
+  .learning-workspace .workspace-content .workspace-metrics .workspace-identity {
+    grid-column: 1 / -1;
+    border: 0;
+    padding: 0 0 8px;
+    background: transparent;
+  }
+  .learning-workspace .workspace-editor-grid { align-items: start; }
+  .learning-workspace .workspace-content .workspace-editor-grid > fieldset { margin: 0; }
+  .learning-workspace .workspace-content .workspace-workbench > .workspace-panel { margin-top: 0; }
   .learning-workspace .workspace-table {
     width: 100%;
     max-width: 100%;
