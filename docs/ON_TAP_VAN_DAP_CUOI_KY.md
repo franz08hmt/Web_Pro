@@ -7,6 +7,9 @@ project, chỉ mở khi muốn tra cứu sâu.
 Số liệu lấy từ mã nguồn ngày 06/10/2026 (nhánh `integration/fullstack-v2`). Số slide đối chiếu với
 nội dung thật trong `D:\Web-Pro\Chapter NN slides.pptx`; chỗ nào không có slide thì ghi "ngoài slide".
 
+> **Cách mở file code:** mọi tên file, lớp và hàm có dạng chữ mã có gạch chân (ví dụ [`AuthServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AuthServlet.java)) đều là liên kết.
+> Bấm vào để mở thẳng file đó (trên GitHub hoặc trong IntelliJ khi xem Markdown preview, giữ Ctrl rồi bấm). Đường dẫn tính từ thư mục `docs/`.
+
 ## Lộ trình học
 
 | Thời gian | Học gì |
@@ -15,9 +18,9 @@ nội dung thật trong `D:\Web-Pro\Chapter NN slides.pptx`; chỗ nào không c
 | 2 giờ | Thêm mục 2 (chapter → code), mục 6 (khái niệm), phần của mình ở mục 7 |
 | Đầy đủ | Thêm mục 5, mục 8 (47 câu hỏi–đáp, tự trả lời to trước khi xem đáp án), mục 10–11 |
 
-Khi cần xem sâu hơn trong project: `docs/ARCHITECTURE.md` (đối chiếu kỹ thuật với slide),
-`docs/TEAM_FLOW_DEMO_GUIDE.md` (kịch bản demo, tài khoản demo), `docs/erd.md` (quan hệ bảng),
-`docs/API_CONVENTIONS.md` (route, quyền, mã lỗi), `docs/PHASE5B_SLIDE_AUDIT.md` (chỗ chưa bám slide).
+Khi cần xem sâu hơn trong project: [`docs/ARCHITECTURE.md`](ARCHITECTURE.md) (đối chiếu kỹ thuật với slide),
+[`docs/TEAM_FLOW_DEMO_GUIDE.md`](TEAM_FLOW_DEMO_GUIDE.md) (kịch bản demo, tài khoản demo), [`docs/erd.md`](erd.md) (quan hệ bảng),
+[`docs/API_CONVENTIONS.md`](API_CONVENTIONS.md) (route, quyền, mã lỗi), [`docs/PHASE5B_SLIDE_AUDIT.md`](PHASE5B_SLIDE_AUDIT.md) (chỗ chưa bám slide).
 
 ## 1. Giới thiệu dự án trong 60 giây
 
@@ -34,8 +37,8 @@ Con số nên nhớ (06/10/2026):
 | --- | --- |
 | Servlet (`controller/`) | 37 |
 | JavaBean (`business/`) | 45 lớp |
-| Lớp truy cập dữ liệu (`data/`) | 22 (gồm `ConnectionPool`, `DBUtil`, `DatabaseLifecycleListener`) |
-| Lớp tiện ích (`util/`) | 8; thêm 1 filter `RequestContextFilter` |
+| Lớp truy cập dữ liệu (`data/`) | 22 (gồm [`ConnectionPool`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ConnectionPool.java), [`DBUtil`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/DBUtil.java), [`DatabaseLifecycleListener`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/DatabaseLifecycleListener.java)) |
+| Lớp tiện ích (`util/`) | 8; thêm 1 filter [`RequestContextFilter`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/filter/RequestContextFilter.java) |
 | JSP dưới `WEB-INF/views` | 35 trang + 2 file include `.jspf` |
 | Trang HTML tĩnh `pages/` | 16 |
 | Bảng MySQL | 37 (12 migration, từ 001 đến 012) |
@@ -51,14 +54,14 @@ phải biết giải thích vì sao.
 
 | Chapter | Kiến thức trong slide | Slide | Dự án dùng ở đâu |
 | --- | --- | --- | --- |
-| 2 | Model 1 và Model 2 (MVC); thuật ngữ model/view/controller; lớp `User`; loại file trong MVC | 3–5, 16–20 | Bốn tầng `business`, `controller`, `data`, JSP. Xem `docs/ARCHITECTURE.md` mục 1 |
-| 5 | Servlet và `@WebServlet`/`web.xml`; GET/POST, `getParameter`, `getParameterValues`; `setAttribute`; `forward`; `sendRedirect`; validate trong `doPost`; vòng đời servlet và vì sao không dùng biến instance | 6–11, 12–17, 21–26, 30–31, 46–50 | 37 servlet `@WebServlet`; forward bằng `String url = "..."; getRequestDispatcher(url).forward(...)`; `sendRedirect` đưa khách về trang tài khoản và dùng cho PRG; **không servlet nào có biến instance thay đổi** (đã kiểm) |
-| 6 | JavaBean (ctor rỗng, get/set, `Serializable`); EL hiển thị attribute/property; JSTL; 5 loại thẻ JSP; thẻ chuẩn `useBean`; **include** (compile-time/run-time) | 4–9, 12–13, 14–16, 23–25, 27–33 | 45 JavaBean (`JavaBeanRulesTest` kiểm cả ba quy tắc); `<%@ include file="workspace-header.jspf" %>` và `wiring-diagram.jsp` dùng chung; không scriptlet |
-| 7 | Session tracking, `request.getSession()`, `setAttribute/getAttribute`; truy cập session an toàn luồng (`synchronized`); cookie; URL rewriting và **hidden field** | 4–16, 17–31, 32–37 | `SessionUtil` lưu `user` và `csrfToken` trong `HttpSession`; cookie `JSESSIONID` do Tomcat quản lý (không tự dùng `Cookie`); hidden field mang `csrfToken`, `id`, `action`, `expectedVersion` trong mọi form |
+| 2 | Model 1 và Model 2 (MVC); thuật ngữ model/view/controller; lớp [`User`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/User.java); loại file trong MVC | 3–5, 16–20 | Bốn tầng `business`, `controller`, `data`, JSP. Xem [`docs/ARCHITECTURE.md`](ARCHITECTURE.md) mục 1 |
+| 5 | Servlet và `@WebServlet`/[`web.xml`](../tomcat-app/src/main/webapp/WEB-INF/web.xml); GET/POST, `getParameter`, `getParameterValues`; `setAttribute`; `forward`; `sendRedirect`; validate trong `doPost`; vòng đời servlet và vì sao không dùng biến instance | 6–11, 12–17, 21–26, 30–31, 46–50 | 37 servlet `@WebServlet`; forward bằng `String url = "..."; getRequestDispatcher(url).forward(...)`; `sendRedirect` đưa khách về trang tài khoản và dùng cho PRG; **không servlet nào có biến instance thay đổi** (đã kiểm) |
+| 6 | JavaBean (ctor rỗng, get/set, `Serializable`); EL hiển thị attribute/property; JSTL; 5 loại thẻ JSP; thẻ chuẩn `useBean`; **include** (compile-time/run-time) | 4–9, 12–13, 14–16, 23–25, 27–33 | 45 JavaBean ([`JavaBeanRulesTest`](../tomcat-app/src/test/java/vn/edu/webpro/robotlab/business/JavaBeanRulesTest.java) kiểm cả ba quy tắc); `<%@ include file="workspace-header.jspf" %>` và [`wiring-diagram.jsp`](../tomcat-app/src/main/webapp/WEB-INF/views/wiring-diagram.jsp) dùng chung; không scriptlet |
+| 7 | Session tracking, `request.getSession()`, `setAttribute/getAttribute`; truy cập session an toàn luồng (`synchronized`); cookie; URL rewriting và **hidden field** | 4–16, 17–31, 32–37 | [`SessionUtil`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java) lưu `user` và `csrfToken` trong `HttpSession`; cookie `JSESSIONID` do Tomcat quản lý (không tự dùng `Cookie`); hidden field mang `csrfToken`, `id`, `action`, `expectedVersion` trong mọi form |
 | 8 | EL: truy cập property, phạm vi (scope), `[ ]`, toán tử `== eq`, `empty`, `and or not`, `? :`, implicit object | 3–39 | `${profile.fullName}`, `${empty tasks}`, `${recipient.canSubmit}`, `${sessionScope.user.admin}` trong header; tránh tên biến trùng implicit object (`header`, `param`, `cookie`) |
 | 9 | JSTL: `c:out` chống XSS, `c:forEach`, `c:if`, `c:choose/when/otherwise`, `c:set`; ứng dụng giỏ hàng với `Product`, `LineItem`, `Cart` | 3–25, 28–33 | `c:out` cho mọi chuỗi từ DB hoặc người dùng; luật nghiệp vụ nằm trong bean như `Cart.addItem`; getter định dạng sẵn kiểu `getPriceCurrencyFormat()` → `getAutomaticDisplay()`, `getCompletionDate()` |
 | *10* | *Custom tag, TLD, `TagSupport`* | 3–42 | **Không dùng.** Thay bằng include + getter của bean. Chỉ mượn ví dụ `DateFormat` ở slide 6 để định dạng ngày |
-| 12 | JDBC: driver, URL, `ResultSet`, `executeUpdate`, `PreparedStatement`, connection pool, `context.xml`, `UserDB`, `DBUtil`, `EmailListServlet` | 4–53 | `ConnectionPool` (JNDI `jdbc/robotlab`), `DBUtil`, 22 lớp `XxxDB` method `static`, đóng tài nguyên trong `finally`; seed bằng SQL |
+| 12 | JDBC: driver, URL, `ResultSet`, `executeUpdate`, `PreparedStatement`, connection pool, [`context.xml`](../tomcat-app/src/main/webapp/META-INF/context.xml), [`UserDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/UserDB.java), [`DBUtil`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/DBUtil.java), `EmailListServlet` | 4–53 | [`ConnectionPool`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ConnectionPool.java) (JNDI `jdbc/robotlab`), [`DBUtil`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/DBUtil.java), 22 lớp `XxxDB` method `static`, đóng tài nguyên trong `finally`; seed bằng SQL |
 | *13* | *JPA, entity, `EntityManager`, transaction* | 4–39 | **Không dùng JPA** (đã chọn JDBC theo Chapter 12). Chỉ mượn khái niệm transaction (29–34) để giải thích `setAutoCommit(false)/commit/rollback` |
 | *14* | *JavaMail* | 3–28 | **Không có chức năng gửi mail** (email thông báo nằm ngoài phạm vi). Ôn riêng theo `D:\Web-Pro\ON_TAP_GIUA_KY_WEB_2026.md` |
 | 18 | HTTP request/response, mã trạng thái, header, MIME | cả chapter | Mã 200, 201, 302, 403, 404, 422, 503; header `Cache-Control: no-store`, `Location`, `Content-Type`, `X-CSRF-Token`; PRG |
@@ -67,11 +70,11 @@ Việc nên biết khi bị hỏi "ngoài slide":
 
 | Thứ dự án dùng | Có trong slide? | Cách nói |
 | --- | --- | --- |
-| `RequestContextFilter` (`@WebFilter`) | Không | "Gom việc chung: encoding UTF-8, mã `X-Request-Id`, bắt lỗi 500; không chứa nghiệp vụ." |
-| API JSON và `JsonUtil` tự viết | Không | "Phòng 3D, tick linh kiện cần dữ liệu không tải lại trang. Dùng chung tầng `data/` và `business/`, chỉ khác view." |
+| [`RequestContextFilter`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/filter/RequestContextFilter.java) (`@WebFilter`) | Không | "Gom việc chung: encoding UTF-8, mã `X-Request-Id`, bắt lỗi 500; không chứa nghiệp vụ." |
+| API JSON và [`JsonUtil`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/JsonUtil.java) tự viết | Không | "Phòng 3D, tick linh kiện cần dữ liệu không tải lại trang. Dùng chung tầng `data/` và `business/`, chỉ khác view." |
 | `setAutoCommit(false)`, `FOR UPDATE` | Khái niệm ở Ch13/29–34 | "Nhiều bảng phải cùng thành công hoặc cùng huỷ; khoá dòng để hai request cùng lúc không tạo trùng." |
 | `BigDecimal`, `SimpleDateFormat` | `Date`, `DateFormat`, `NumberFormat` có (Ch9/28–31, Ch10/6) | "Cùng họ `java.text`; cần mẫu `dd/MM/yyyy` và múi giờ Việt Nam; `BigDecimal` để làm tròn HALF_UP chính xác." |
-| Lambda, stream, `switch ->` ở ~11 chỗ code cũ | Không | Phải nói thật; danh sách ở `docs/PHASE5B_SLIDE_AUDIT.md` (trong project). Code mới từ Đợt 5 đã bám slide |
+| Lambda, stream, `switch ->` ở ~11 chỗ code cũ | Không | Phải nói thật; danh sách ở [`docs/PHASE5B_SLIDE_AUDIT.md`](PHASE5B_SLIDE_AUDIT.md) (trong project). Code mới từ Đợt 5 đã bám slide |
 
 ## 3. Ba luồng phải vẽ được trên bảng
 
@@ -102,7 +105,7 @@ assets/js/api.js  fetch("/api/auth/login", {method: "POST", body: JSON})
       └─ ResponseUtil.sendJson(response, 200, ...)
 ```
 
-Mọi request ghi của API gửi header `X-CSRF-Token`; `SessionUtil.hasValidCsrfToken` so với
+Mọi request ghi của API gửi header `X-CSRF-Token`; [`SessionUtil.hasValidCsrfToken`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java) so với
 token trong session.
 
 ### 3.3 Form POST có chống gian lận (nhiệm vụ, nối dây, chẩn đoán)
@@ -174,17 +177,17 @@ dữ liệu sai 422, database lỗi 503.
 | --- | --- | --- | --- | --- |
 | Nền | Đăng ký/đăng nhập, phân quyền, CSRF | `/api/auth/*`, `/api/admin/users/*` | `users` | Ch7, Ch12 |
 | Nền | Catalog robot/linh kiện/thư viện, CRUD Admin | `/robots`, `/components`, `/api/robots/*`… | `robots`, `components`, `robot_components`, `assembly_steps`, `library_resources` | Ch2, Ch5, Ch6, Ch12 |
-| Nền | Phiên lắp ráp, phòng 3D | `/api/assembly-sessions/*`, `pages/lap-rap-3d.html` | `assembly_sessions`, `session_*` | Ch7, Ch12 |
+| Nền | Phiên lắp ráp, phòng 3D | `/api/assembly-sessions/*`, [`pages/lap-rap-3d.html`](../pages/lap-rap-3d.html) | `assembly_sessions`, `session_*` | Ch7, Ch12 |
 | 1 | Hoàn tất lắp ráp, phiếu kết quả, ăn mừng, quiz, tra cứu lỗi, tổng kết/thống kê | `/assembly-receipt`, `/api/quiz/*`, `/learning-summary`, `/admin-stats` | `quiz_*`, `troubleshooting_guides` | Ch5, Ch6, Ch9, Ch12 |
-| 2 | Lái thử mô hình sau khi hoàn tất | `assembly-3d-drive.js` | không đổi | (JavaScript) |
+| 2 | Lái thử mô hình sau khi hoàn tất | [`assembly-3d-drive.js`](../assets/js/assembly-3d-drive.js) | không đổi | (JavaScript) |
 | 3 | Hai mẫu robot mới | seed | `robots`… | Ch12 |
 | 4 | Cửa hàng, giỏ, đơn mô phỏng | `/api/shop/*`, `/api/cart/*`, `/api/orders`, `/order-history` | `shop_products`, `cart_items`, `orders`, `order_items` | Ch9 (Cart), Ch12 |
 | 5, 5b | Hồ sơ học tập in A4, bám slide | `/learning-profile` | đọc bảng sẵn có | Ch6, Ch8, Ch9, Ch10/6 |
 | 6 | Nhiệm vụ thực hành, vòng nộp, rubric A/B, chẩn đoán lỗi | `/tasks`, `/admin-tasks`, `/admin-task-reviews`, `/diagnosis`, `/admin-diagnosis` | `practice_tasks`, `task_*`, `diagnosis_*` | Ch5, Ch7 (hidden), Ch9, Ch13/29–34 |
 | 7 | Phòng nối dây có chấm, hỗ trợ Admin–User | `/wiring`, `/admin-wiring`, `/wiring-support`, `/admin-wiring-support` | `wiring_*`, `wiring_support_*` | Ch5, Ch6, Ch9 |
-| UI | Giao diện học tập dùng chung (charcoal/cam, Poppins, Heroicons) | các JSP, `learning-workspace.css` | không đổi | Ch6 (include) |
+| UI | Giao diện học tập dùng chung (charcoal/cam, Poppins, Heroicons) | các JSP, [`learning-workspace.css`](../assets/css/learning-workspace.css) | không đổi | Ch6 (include) |
 
-Bản chi tiết kèm kịch bản demo và Hỏi–Đáp theo từng đợt nằm trong `docs/TEAM_FLOW_DEMO_GUIDE.md` của project.
+Bản chi tiết kèm kịch bản demo và Hỏi–Đáp theo từng đợt nằm trong [`docs/TEAM_FLOW_DEMO_GUIDE.md`](TEAM_FLOW_DEMO_GUIDE.md) của project.
 
 ## 6. Khái niệm nâng cao hơn slide và cách giải thích
 
@@ -199,8 +202,8 @@ Bản chi tiết kèm kịch bản demo và Hỏi–Đáp theo từng đợt n�
 | `SELECT … FOR UPDATE` | Khoá dòng để hai request đồng thời tuần tự hoá | nộp bài nhiệm vụ, bắt đầu chẩn đoán |
 | Optimistic version | Form mang `expectedVersion`; lệch thì 422, không ghi đè bản mới | lưu nháp nối dây, trả lời hỗ trợ |
 | Snapshot | Lưu bản chụp dữ liệu lúc xảy ra để lịch sử không đổi khi nội dung gốc đổi | `quiz_attempt_answers`, `order_items`, bài nộp nhiệm vụ |
-| `session_version` | Đổi mật khẩu/quyền thì tăng; phiên cũ mất hiệu lực ngay | `SessionUtil.isCurrent` |
-| PBKDF2 | Băm mật khẩu có salt, 210 000 vòng, SHA-256 | `PasswordUtil` |
+| `session_version` | Đổi mật khẩu/quyền thì tăng; phiên cũ mất hiệu lực ngay | [`SessionUtil.isCurrent`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java) |
+| PBKDF2 | Băm mật khẩu có salt, 210 000 vòng, SHA-256 | [`PasswordUtil`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/PasswordUtil.java) |
 | `Cache-Control: no-store` | Trang cá nhân không bị cache | mọi servlet trang |
 
 ## 7. Phân công theo thành viên
@@ -210,8 +213,8 @@ Bản chi tiết kèm kịch bản demo và Hỏi–Đáp theo từng đợt n�
 
 Cơ sở phân công:
 
-1. Giữ nguyên vai trò ban đầu của từng người (trang `pages/thanh-vien.html`
-   và bảng "Phân công" trong `docs/TEAM_FLOW_DEMO_GUIDE.md`).
+1. Giữ nguyên vai trò ban đầu của từng người (trang [`pages/thanh-vien.html`](../pages/thanh-vien.html)
+   và bảng "Phân công" trong [`docs/TEAM_FLOW_DEMO_GUIDE.md`](TEAM_FLOW_DEMO_GUIDE.md)).
 2. Các chức năng thêm sau (Đợt 1–7 và giao diện) được xếp về mảng gần nhất với vai trò
    gốc, rồi cân bằng khối lượng để ba người có độ sâu tương đương.
 3. Mỗi người sở hữu **một luồng đầy đủ từ trình duyệt đến bảng MySQL**, vì giảng viên hỏi
@@ -230,7 +233,7 @@ Kiến thức chung nằm ở các mục 1–6 và 8 của file này.
 | Java (dòng, xấp xỉ) | 7 200 | 4 900 | 6 000 |
 | JSP (dòng, xấp xỉ) | 1 400 | 450 | 1 400 |
 | JavaScript (dòng, xấp xỉ) | 1 100 | 2 450 | 2 100 |
-| Khác | CSS giao diện dùng chung 870 dòng | SQL (schema, seed, migration) 2 270 dòng | CSS `style.css` 2 200 dòng (3D, đáp ứng màn hình) |
+| Khác | CSS giao diện dùng chung 870 dòng | SQL (schema, seed, migration) 2 270 dòng | CSS [`style.css`](../assets/css/style.css) 2 200 dòng (3D, đáp ứng màn hình) |
 | Bảng MySQL | 10 | 11 (kể cả `schema_migrations`) | 16 |
 | Chapter nặng nhất | 2, 5, 7 | 12 (và 2, 6) | 5, 6, 9 (và JavaScript) |
 
@@ -243,19 +246,19 @@ CSRF, phiên lắp ráp, nhiệm vụ thực hành và hồ sơ học tập; m�
 
 | Phần | Route | File nên mở (theo chuỗi) | Bảng |
 | --- | --- | --- | --- |
-| Đăng ký, đăng nhập, phân quyền, CSRF | `/api/auth/*`, `/api/admin/users/*` | `api.js` → `AuthServlet` → `SessionUtil`, `PasswordUtil`, `ValidationUtil` → `UserDB` → `User` | `users` |
-| Khung chung | mọi `/api/*`, `/account`, `/architecture` | `RequestContextFilter`, `ResponseUtil`, `JsonUtil`, `HealthServlet` → `HealthDB` | — |
-| Phiên lắp ráp, hoàn tất, phiếu kết quả | `/api/assembly-sessions/*`, `/assembly-receipt` | `AssemblySessionServlet` → `AssemblySession` (luật) → `AssemblySessionDB` → `assembly-receipt.jsp` | `assembly_sessions`, `session_components`, `session_steps`, `session_visual_parts` |
-| Nhiệm vụ thực hành, vòng nộp, rubric A/B | `/tasks`, `/admin-tasks`, `/admin-task-reviews` | `TaskServlet`, `AdminTaskServlet` → `PracticeTask`, `TaskRecipient`, `TaskRound`, `TaskRubric`, `TaskSubmission`, `TaskReview` → `PracticeTaskDB`, `TaskSubmissionDB` | `practice_tasks`, `task_recipients`, `task_rounds`, `task_submissions`, `task_reviews` |
-| Hồ sơ học tập in A4 | `/learning-profile` | `LearningProfileServlet` → `LearningProfile`, `Profile*` → `StatsDB` → `learning-profile.jsp` + `learning-profile.css` | đọc bảng sẵn có |
-| Giao diện dùng chung | tất cả JSP | `workspace-header.jspf`, `workspace-footer.jspf`, `learning-workspace.css` | — |
+| Đăng ký, đăng nhập, phân quyền, CSRF | `/api/auth/*`, `/api/admin/users/*` | [`api.js`](../assets/js/api.js) → [`AuthServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AuthServlet.java) → [`SessionUtil`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java), [`PasswordUtil`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/PasswordUtil.java), [`ValidationUtil`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/ValidationUtil.java) → [`UserDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/UserDB.java) → [`User`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/User.java) | `users` |
+| Khung chung | mọi `/api/*`, `/account`, `/architecture` | [`RequestContextFilter`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/filter/RequestContextFilter.java), [`ResponseUtil`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/ResponseUtil.java), [`JsonUtil`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/JsonUtil.java), [`HealthServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/HealthServlet.java) → [`HealthDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/HealthDB.java) | — |
+| Phiên lắp ráp, hoàn tất, phiếu kết quả | `/api/assembly-sessions/*`, `/assembly-receipt` | [`AssemblySessionServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblySessionServlet.java) → [`AssemblySession`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblySession.java) (luật) → [`AssemblySessionDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblySessionDB.java) → [`assembly-receipt.jsp`](../tomcat-app/src/main/webapp/WEB-INF/views/assembly-receipt.jsp) | `assembly_sessions`, `session_components`, `session_steps`, `session_visual_parts` |
+| Nhiệm vụ thực hành, vòng nộp, rubric A/B | `/tasks`, `/admin-tasks`, `/admin-task-reviews` | [`TaskServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TaskServlet.java), [`AdminTaskServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AdminTaskServlet.java) → [`PracticeTask`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/PracticeTask.java), [`TaskRecipient`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/TaskRecipient.java), [`TaskRound`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/TaskRound.java), [`TaskRubric`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/TaskRubric.java), [`TaskSubmission`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/TaskSubmission.java), [`TaskReview`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/TaskReview.java) → [`PracticeTaskDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/PracticeTaskDB.java), [`TaskSubmissionDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/TaskSubmissionDB.java) | `practice_tasks`, `task_recipients`, `task_rounds`, `task_submissions`, `task_reviews` |
+| Hồ sơ học tập in A4 | `/learning-profile` | [`LearningProfileServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/LearningProfileServlet.java) → [`LearningProfile`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/LearningProfile.java), `Profile*` → [`StatsDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/StatsDB.java) → [`learning-profile.jsp`](../tomcat-app/src/main/webapp/WEB-INF/views/learning-profile.jsp) + [`learning-profile.css`](../assets/css/learning-profile.css) | đọc bảng sẵn có |
+| Giao diện dùng chung | tất cả JSP | [`workspace-header.jspf`](../tomcat-app/src/main/webapp/WEB-INF/views/workspace-header.jspf), [`workspace-footer.jspf`](../tomcat-app/src/main/webapp/WEB-INF/views/workspace-footer.jspf), [`learning-workspace.css`](../assets/css/learning-workspace.css) | — |
 
 **Slide phải thuộc:** Ch2 slide 3–5, 16–20 (Model 2); Ch5 slide 6–26, 46–50; Ch7 slide 4–16, 35–37
-(session, hidden field); Ch6 slide 27–33 (include); Ch12 slide 34–38 (pool, `context.xml`).
+(session, hidden field); Ch6 slide 27–33 (include); Ch12 slide 34–38 (pool, [`context.xml`](../tomcat-app/src/main/webapp/META-INF/context.xml)).
 
 **Câu hỏi dự kiến (ngoài 43 câu chung):**
 
-1. Vẽ luồng đăng nhập từ `api.js` đến cookie `JSESSIONID`. Session lưu những gì?
+1. Vẽ luồng đăng nhập từ [`api.js`](../assets/js/api.js) đến cookie `JSESSIONID`. Session lưu những gì?
 2. Vì sao `getCurrentUser` đọc lại user từ database thay vì tin bản trong session?
 3. Một phiên lắp ráp chuyển trạng thái như thế nào, ai kiểm tra? (`canChangeStatusTo`,
    `getExpectedPreparationStatus`.) Vì sao không tin phần trăm hoàn thành từ trình duyệt?
@@ -266,20 +269,20 @@ CSRF, phiên lắp ráp, nhiệm vụ thực hành và hồ sơ học tập; m�
 8. `include` trong JSP khác custom tag ở đâu? Dự án dùng cái nào, vì sao?
 
 **Demo 3 phút:** đăng nhập → mở DevTools thấy `JSESSIONID` → `/learning-profile` (xem source
-Ctrl+U thấy dữ liệu đã dựng sẵn) → in PDF → mở `TaskServlet` chỉ `hasValidFormCsrfToken` và PRG.
+Ctrl+U thấy dữ liệu đã dựng sẵn) → in PDF → mở [`TaskServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TaskServlet.java) chỉ `hasValidFormCsrfToken` và PRG.
 
 ### 7.3 Văn Phạm Thảo Nhi — Dữ liệu và nội dung
 
-**Câu chốt:** "Em phụ trách lớp dữ liệu: thiết kế bảng, migration, seed, `ConnectionPool` và
+**Câu chốt:** "Em phụ trách lớp dữ liệu: thiết kế bảng, migration, seed, [`ConnectionPool`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ConnectionPool.java) và
 các lớp `XxxDB`, cùng nội dung robot, linh kiện, quiz, hướng dẫn xử lý lỗi và thống kê."
 
 | Phần | Route | File nên mở (theo chuỗi) | Bảng |
 | --- | --- | --- | --- |
-| Lớp dữ liệu nền | — | `context.xml` → `ConnectionPool` → `DBUtil` → `DatabaseLifecycleListener`; `schema.sql`, `migrations/001–012`, `erd.md` | 37 bảng |
-| Catalog robot, linh kiện, bước, thư viện (đọc và CRUD Admin) | `/robots`, `/components`, `/api/robots/*`, `/api/admin/*` | `RobotCatalogPageServlet`, `ComponentCatalogPageServlet` → `RobotDB`, `ComponentDB`, `AssemblyStepDB`, `LibraryResourceDB` → `Robot`, `Component`, `AssemblyStep` → `robots.jsp`, `components.jsp` | `robots`, `components`, `robot_components`, `assembly_steps`, `library_resources` |
-| Quiz | `/api/quiz/*`, `/api/admin/quiz/*` | `QuizServlet`, `AdminQuizServlet` → `QuizAttemptDB`, `QuizQuestionDB` → `Quiz*` | `quiz_questions`, `quiz_options`, `quiz_attempts`, `quiz_attempt_answers` |
-| Tra cứu lỗi | `/api/troubleshooting-guides`, `/api/admin/troubleshooting-guides/*` | `TroubleshootingServlet` → `TroubleshootingGuideDB` → `TroubleshootingGuide` | `troubleshooting_guides` |
-| Tổng kết và thống kê | `/learning-summary`, `/admin-stats` | `LearningSummaryServlet`, `AdminStatsServlet` → `StatsDB` (`GROUP BY`, `COUNT DISTINCT`) → `QuizRobotScore`, `RobotPopularity`, `QuizRobotAggregate`, `QuestionMissRate` | đọc nhiều bảng |
+| Lớp dữ liệu nền | — | [`context.xml`](../tomcat-app/src/main/webapp/META-INF/context.xml) → [`ConnectionPool`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ConnectionPool.java) → [`DBUtil`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/DBUtil.java) → [`DatabaseLifecycleListener`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/DatabaseLifecycleListener.java); [`schema.sql`](../database/schema.sql), `migrations/001–012`, [`erd.md`](erd.md) | 37 bảng |
+| Catalog robot, linh kiện, bước, thư viện (đọc và CRUD Admin) | `/robots`, `/components`, `/api/robots/*`, `/api/admin/*` | [`RobotCatalogPageServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/RobotCatalogPageServlet.java), [`ComponentCatalogPageServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/ComponentCatalogPageServlet.java) → [`RobotDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/RobotDB.java), [`ComponentDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ComponentDB.java), [`AssemblyStepDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyStepDB.java), [`LibraryResourceDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/LibraryResourceDB.java) → [`Robot`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/Robot.java), [`Component`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/Component.java), [`AssemblyStep`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyStep.java) → [`robots.jsp`](../tomcat-app/src/main/webapp/WEB-INF/views/robots.jsp), [`components.jsp`](../tomcat-app/src/main/webapp/WEB-INF/views/components.jsp) | `robots`, `components`, `robot_components`, `assembly_steps`, `library_resources` |
+| Quiz | `/api/quiz/*`, `/api/admin/quiz/*` | [`QuizServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/QuizServlet.java), [`AdminQuizServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AdminQuizServlet.java) → [`QuizAttemptDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/QuizAttemptDB.java), [`QuizQuestionDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/QuizQuestionDB.java) → `Quiz*` | `quiz_questions`, `quiz_options`, `quiz_attempts`, `quiz_attempt_answers` |
+| Tra cứu lỗi | `/api/troubleshooting-guides`, `/api/admin/troubleshooting-guides/*` | [`TroubleshootingServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TroubleshootingServlet.java) → [`TroubleshootingGuideDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/TroubleshootingGuideDB.java) → [`TroubleshootingGuide`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/TroubleshootingGuide.java) | `troubleshooting_guides` |
+| Tổng kết và thống kê | `/learning-summary`, `/admin-stats` | [`LearningSummaryServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/LearningSummaryServlet.java), [`AdminStatsServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AdminStatsServlet.java) → [`StatsDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/StatsDB.java) (`GROUP BY`, `COUNT DISTINCT`) → [`QuizRobotScore`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/QuizRobotScore.java), [`RobotPopularity`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/RobotPopularity.java), [`QuizRobotAggregate`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/QuizRobotAggregate.java), [`QuestionMissRate`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/QuestionMissRate.java) | đọc nhiều bảng |
 
 **Slide phải thuộc:** Ch12 slide 4–53 (toàn bộ JDBC, trọng tâm 18–20, 32–38, 45–53); Ch13 slide 29–34
 (khái niệm transaction); Ch2 slide 5, 16 (model và data access layer); Ch9 slide 28–33 (`Product`,
@@ -287,9 +290,9 @@ các lớp `XxxDB`, cùng nội dung robot, linh kiện, quiz, hướng dẫn x�
 
 **Câu hỏi dự kiến:**
 
-1. Giải thích từng dòng `UserDB.selectUser`: vì sao có `finally`, vì sao `static`?
-2. `ConnectionPool` lấy kết nối từ đâu? `context.xml` khai báo gì (`maxTotal`, `maxWaitMillis`)?
-3. Migration khác `schema.sql` thế nào? Vì sao có 12 migration thay vì sửa thẳng schema?
+1. Giải thích từng dòng [`UserDB.selectUser`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/UserDB.java): vì sao có `finally`, vì sao `static`?
+2. [`ConnectionPool`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ConnectionPool.java) lấy kết nối từ đâu? [`context.xml`](../tomcat-app/src/main/webapp/META-INF/context.xml) khai báo gì (`maxTotal`, `maxWaitMillis`)?
+3. Migration khác [`schema.sql`](../database/schema.sql) thế nào? Vì sao có 12 migration thay vì sửa thẳng schema?
 4. Quan hệ `robots — robot_components — components` là loại quan hệ gì? Khoá chính, khoá ngoại?
 5. Quiz lưu "bản chụp" câu trả lời để làm gì? Admin sửa câu hỏi thì điểm cũ có đổi không?
 6. Vì sao `quiz_attempt_answers` lưu cả nhãn lựa chọn và đáp án đúng tại thời điểm làm bài?
@@ -308,12 +311,12 @@ tương tác và phòng nối dây; JavaScript chỉ quản lý thao tác, còn 
 
 | Phần | Route | File nên mở (theo chuỗi) | Bảng |
 | --- | --- | --- | --- |
-| Phòng 3D, dựng linh kiện, camera, hiệu ứng ăn mừng, toàn màn hình, lái thử | `pages/lap-rap-3d.html` | `assembly-3d-parts.js`, `assembly-3d-config.js`, `assembly-3d.js`, `assembly-3d-drive.js`, `confetti.js` (dữ liệu từ `data.js` / API) | `session_visual_parts` (qua phiên) |
-| Chẩn đoán lỗi tương tác | `/diagnosis`, `/admin-diagnosis` | `DiagnosisServlet` → `DiagnosisAttempt` (điểm 4/3/3) → `DiagnosisDB` → `diagnosis-play.jsp` | `diagnosis_scenarios`, `_checks`, `_options`, `_attempts`, `_attempt_checks` |
-| Phòng nối dây có chấm | `/wiring`, `/admin-wiring` | `wiring.js` (nhấn/kéo/bàn phím) → `WiringServlet` → `WiringExercise.grade` → `WiringDB` → `wiring-play.jsp`, `wiring-diagram.jsp` | `wiring_exercises`, `_terminals`, `_rules`, `_attempts`, `_attempt_connections` |
-| Hỗ trợ Admin–User | `/wiring-support`, `/admin-wiring-support` | `WiringSupportServlet` → `WiringSupportRequest`, `WiringSupportMessage` → `WiringSupportDB` | `wiring_support_requests`, `wiring_support_messages` |
-| Cửa hàng, giỏ, đơn mô phỏng (giao diện giỏ bằng JS, checkout là transaction nhiều bảng) | `/api/shop/*`, `/api/cart/*`, `/api/orders`, `/order-history` | `shop.js`, `cart.js` → `CartServlet`, `OrderServlet` → `CartDB`, `OrderDB`, `ShopProductDB` → `ShopOrder`, `CartItem`, `OrderItem` → `order-history.jsp` | `shop_products`, `cart_items`, `orders`, `order_items` |
-| Giao diện đáp ứng màn hình | tất cả trang | `style.css`, `wiring.css`, `wiring-support.css`, kiểm 390/768/1024/1440 px | — |
+| Phòng 3D, dựng linh kiện, camera, hiệu ứng ăn mừng, toàn màn hình, lái thử | [`pages/lap-rap-3d.html`](../pages/lap-rap-3d.html) | [`assembly-3d-parts.js`](../assets/js/assembly-3d-parts.js), [`assembly-3d-config.js`](../assets/js/assembly-3d-config.js), [`assembly-3d.js`](../assets/js/assembly-3d.js), [`assembly-3d-drive.js`](../assets/js/assembly-3d-drive.js), [`confetti.js`](../assets/js/confetti.js) (dữ liệu từ [`data.js`](../assets/js/data.js) / API) | `session_visual_parts` (qua phiên) |
+| Chẩn đoán lỗi tương tác | `/diagnosis`, `/admin-diagnosis` | [`DiagnosisServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/DiagnosisServlet.java) → [`DiagnosisAttempt`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DiagnosisAttempt.java) (điểm 4/3/3) → [`DiagnosisDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/DiagnosisDB.java) → [`diagnosis-play.jsp`](../tomcat-app/src/main/webapp/WEB-INF/views/diagnosis-play.jsp) | `diagnosis_scenarios`, `_checks`, `_options`, `_attempts`, `_attempt_checks` |
+| Phòng nối dây có chấm | `/wiring`, `/admin-wiring` | [`wiring.js`](../assets/js/wiring.js) (nhấn/kéo/bàn phím) → [`WiringServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/WiringServlet.java) → [`WiringExercise.grade`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/WiringExercise.java) → [`WiringDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/WiringDB.java) → [`wiring-play.jsp`](../tomcat-app/src/main/webapp/WEB-INF/views/wiring-play.jsp), [`wiring-diagram.jsp`](../tomcat-app/src/main/webapp/WEB-INF/views/wiring-diagram.jsp) | `wiring_exercises`, `_terminals`, `_rules`, `_attempts`, `_attempt_connections` |
+| Hỗ trợ Admin–User | `/wiring-support`, `/admin-wiring-support` | [`WiringSupportServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/WiringSupportServlet.java) → [`WiringSupportRequest`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/WiringSupportRequest.java), [`WiringSupportMessage`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/WiringSupportMessage.java) → [`WiringSupportDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/WiringSupportDB.java) | `wiring_support_requests`, `wiring_support_messages` |
+| Cửa hàng, giỏ, đơn mô phỏng (giao diện giỏ bằng JS, checkout là transaction nhiều bảng) | `/api/shop/*`, `/api/cart/*`, `/api/orders`, `/order-history` | [`shop.js`](../assets/js/shop.js), [`cart.js`](../assets/js/cart.js) → [`CartServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/CartServlet.java), [`OrderServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/OrderServlet.java) → [`CartDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/CartDB.java), [`OrderDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/OrderDB.java), [`ShopProductDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ShopProductDB.java) → [`ShopOrder`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/ShopOrder.java), [`CartItem`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/CartItem.java), [`OrderItem`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/OrderItem.java) → [`order-history.jsp`](../tomcat-app/src/main/webapp/WEB-INF/views/order-history.jsp) | `shop_products`, `cart_items`, `orders`, `order_items` |
+| Giao diện đáp ứng màn hình | tất cả trang | [`style.css`](../assets/css/style.css), [`wiring.css`](../assets/css/wiring.css), [`wiring-support.css`](../assets/css/wiring-support.css), kiểm 390/768/1024/1440 px | — |
 
 **Slide phải thuộc:** Ch5 slide 12–17, 21–26 (form, `getParameterValues`, forward, redirect); Ch6 slide 4–9
 (bean, EL); Ch9 slide 11, 17–19 (`c:forEach`, `c:if`, `c:choose`); Ch7 slide 35–36 (hidden field).
@@ -333,7 +336,7 @@ JavaScript, SVG và Three.js nằm ngoài slide nên phải nắm chắc để g
 10. Checkout làm những bước nào, rollback khi nào? Giá lấy từ đâu, vì sao không tin giá từ trình duyệt? `order_items` giữ snapshot để làm gì?
 
 **Demo 3 phút:** lắp robot trong phòng 3D → hoàn tất → ăn mừng → `/wiring`: nối đúng, nối sai và một
-cặp bị cấm 5V–GND → nộp → xem điểm và giải thích → luyện lại → gửi câu hỏi hỗ trợ → mở `pages/cua-hang.html` đặt một đơn mô phỏng và xem `order_items`.
+cặp bị cấm 5V–GND → nộp → xem điểm và giải thích → luyện lại → gửi câu hỏi hỗ trợ → mở [`pages/cua-hang.html`](../pages/cua-hang.html) đặt một đơn mô phỏng và xem `order_items`.
 
 ### 7.5 Kiến thức chung cả ba người phải biết
 
@@ -352,7 +355,7 @@ cặp bị cấm 5V–GND → nộp → xem điểm và giải thích → luyệ
 2. **Controller ở đâu?** `controller/`, 37 lớp `@WebServlet`. Mỗi servlet nhận request,
    kiểm quyền, gọi `XxxDB` và bean, rồi forward hoặc trả JSON.
 3. **Vì sao không có Service hay DAO?** Slide không dạy hai tầng đó. Giống
-   `EmailListServlet` (Ch12/42–44), servlet gọi thẳng `UserDB`; luật nghiệp vụ nằm trong bean
+   `EmailListServlet` (Ch12/42–44), servlet gọi thẳng [`UserDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/UserDB.java); luật nghiệp vụ nằm trong bean
    như lớp `Cart` (Ch9/32–33).
 4. **forward khác redirect thế nào?** `forward` chuyển nội bộ trong cùng request, URL không
    đổi, giữ được `setAttribute` (Ch5/24). `sendRedirect` bảo trình duyệt gọi URL mới
@@ -361,15 +364,15 @@ cặp bị cấm 5V–GND → nộp → xem điểm và giải thích → luyệ
    một lượt; `user` đặt vào session sống suốt phiên đăng nhập (Ch7/10).
 6. **Vì sao servlet không có biến instance?** Một servlet dùng chung cho nhiều luồng
    (Ch5/48–50); biến instance gây tranh chấp. Dự án chỉ có hằng `static final`.
-7. **`@WebServlet` hay `web.xml`?** Cả hai có trong Ch5 (slide 7–11). Dự án dùng annotation;
-   `web.xml` chỉ khai báo trang chào.
+7. **`@WebServlet` hay [`web.xml`](../tomcat-app/src/main/webapp/WEB-INF/web.xml)?** Cả hai có trong Ch5 (slide 7–11). Dự án dùng annotation;
+   [`web.xml`](../tomcat-app/src/main/webapp/WEB-INF/web.xml) chỉ khai báo trang chào.
 
 ### B. JDBC
 
 8. **PreparedStatement khác Statement?** Tham số `?` gán bằng `setXxx`, nên dữ liệu người
    dùng không thành mã SQL (chống SQL injection) (Ch12/18–20).
 9. **Connection pool là gì, cấu hình ở đâu?** Giữ sẵn một tập kết nối để dùng lại. Khai báo
-   trong `META-INF/context.xml` (Ch12/34); `ConnectionPool` lấy qua JNDI `java:/comp/env/jdbc/robotlab`
+   trong [`META-INF/context.xml`](../tomcat-app/src/main/webapp/META-INF/context.xml) (Ch12/34); [`ConnectionPool`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ConnectionPool.java) lấy qua JNDI `java:/comp/env/jdbc/robotlab`
    (Ch12/35–37). `freeConnection` trả kết nối về pool trong `finally`.
 10. **Vì sao ném `SQLException` thay vì in lỗi như slide?** Để servlet trả 503 "database chưa
     sẵn sàng"; slide in lỗi rồi trả `null` khiến sai mật khẩu và database hỏng khó phân biệt.
@@ -406,11 +409,11 @@ cặp bị cấm 5V–GND → nộp → xem điểm và giải thích → luyệ
 22. **EL tìm biến ở đâu?** Lần lượt page, request, session, application (Ch6/9, Ch8/7). Vì vậy
     không đặt tên vòng lặp trùng implicit object như `header`, `param`, `cookie`.
 23. **Dự án dùng `c:forEach`, `c:if`, `c:choose` ở đâu?** Các JSP trong `WEB-INF/views`, ví dụ
-    danh sách bài trong `wiring-list.jsp`, trạng thái nhiệm vụ trong `task-view.jsp`.
+    danh sách bài trong [`wiring-list.jsp`](../tomcat-app/src/main/webapp/WEB-INF/views/wiring-list.jsp), trạng thái nhiệm vụ trong [`task-view.jsp`](../tomcat-app/src/main/webapp/WEB-INF/views/task-view.jsp).
 24. **include dùng để làm gì?** Gắn header/footer chung: `<%@ include file="workspace-header.jspf" %>`
     (compile-time include, Ch6/31) để 34 trang có cùng khung.
 25. **JavaBean cần ba quy tắc nào?** Constructor không tham số, get/set cho mọi field private,
-    `Serializable` (Ch6/6). `JavaBeanRulesTest` quét mọi lớp trong `business/`.
+    `Serializable` (Ch6/6). [`JavaBeanRulesTest`](../tomcat-app/src/test/java/vn/edu/webpro/robotlab/business/JavaBeanRulesTest.java) quét mọi lớp trong `business/`.
 26. **Vì sao JSP không có `if (status.equals("COMPLETED"))`?** Luật thuộc bean:
     `profileRobot.completed` là getter boolean; JSP chỉ hiển thị.
 27. **Dự án có dùng custom tag không?** Không (Ch10). Phần dùng chung làm bằng include và
@@ -424,7 +427,7 @@ cặp bị cấm 5V–GND → nộp → xem điểm và giải thích → luyệ
 30. **Vì sao vừa có JSP vừa có API JSON?** Trang tĩnh trong `pages/` (phòng 3D, tick linh kiện)
     cần dữ liệu không tải lại trang; trang cá nhân dựng ở server cho dễ kiểm quyền. Cả hai dùng
     chung `data/` và `business/`.
-31. **`RequestContextFilter` làm gì?** Ngoài slide: đặt UTF-8, gắn `X-Request-Id`, bắt lỗi 500 để
+31. **[`RequestContextFilter`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/filter/RequestContextFilter.java) làm gì?** Ngoài slide: đặt UTF-8, gắn `X-Request-Id`, bắt lỗi 500 để
     trả thông báo an toàn; không chứa nghiệp vụ.
 32. **`Cache-Control: no-store` để làm gì?** Trình duyệt không lưu trang cá nhân; đăng xuất rồi bấm
     Back không xem lại được dữ liệu.
@@ -433,10 +436,10 @@ cặp bị cấm 5V–GND → nộp → xem điểm và giải thích → luyệ
 
 33. **Chấm nối dây thế nào?** Cặp dây là không hướng, chuẩn hoá theo ID. `N` cặp bắt buộc, `C`
     cặp đúng, `W` cặp sai/thừa/cấm. Điểm = `100 × max(C − W, 0) / N`, làm tròn HALF_UP một chữ số.
-    Chỉ ghi "đúng toàn bộ" khi `C = N` và `W = 0`. Luật ở `WiringExercise.grade` và `WiringGrade`.
+    Chỉ ghi "đúng toàn bộ" khi `C = N` và `W = 0`. Luật ở [`WiringExercise.grade`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/WiringExercise.java) và [`WiringGrade`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/WiringGrade.java).
 34. **Hai tab cùng sửa một lượt thì sao?** Mỗi form mang `expectedVersion`; tab lưu sau bị 422,
     không ghi đè.
-35. **Quiz chấm ở đâu?** Server (`QuizAttemptDB` + bean), lưu bản chụp câu trả lời. Trình duyệt chỉ
+35. **Quiz chấm ở đâu?** Server ([`QuizAttemptDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/QuizAttemptDB.java) + bean), lưu bản chụp câu trả lời. Trình duyệt chỉ
     gửi lựa chọn, không gửi đáp án đúng.
 36. **Nhiệm vụ có vòng nộp thế nào?** Mỗi người được giao có các vòng; chỉ tính lượt quiz/chẩn
     đoán đầu của vòng; Admin chấm, "cần bổ sung" mở vòng mới. Mẫu A: lắp ráp 40, quiz 40, giải
@@ -456,37 +459,37 @@ cặp bị cấm 5V–GND → nộp → xem điểm và giải thích → luyệ
     chưa có email thông báo; custom tag (Ch10) được thay bằng include và getter của bean. Biết
     nội dung các chapter đó vẫn phải trả lời được.
 42. **"Chỗ nào chưa đúng slide?"** Trả lời thật: filter, API JSON, `FOR UPDATE`, và khoảng 11 chỗ
-    code cũ dùng stream/`switch ->`/`fmt:`; có danh sách trong `PHASE5B_SLIDE_AUDIT.md`.
+    code cũ dùng stream/`switch ->`/`fmt:`; có danh sách trong [`PHASE5B_SLIDE_AUDIT.md`](PHASE5B_SLIDE_AUDIT.md).
 43. **"Phần này em làm hay công cụ làm?"** Trả lời trung thực về cách làm việc; quan trọng hơn là
     giải thích được từng dòng và chỉ ra file, hàm, bảng liên quan.
 
 ### H. Câu hỏi bổ sung (từ phần demo)
 
-44. **Dữ liệu khởi nguồn từ đâu?** `database/seed.sql` là dữ liệu mẫu cho MySQL; nguồn chính khi chạy
-    đầy đủ là MySQL qua servlet. `assets/js/data.js` chỉ là bản dự phòng để giao diện vẫn có nội dung khi
+44. **Dữ liệu khởi nguồn từ đâu?** [`database/seed.sql`](../database/seed.sql) là dữ liệu mẫu cho MySQL; nguồn chính khi chạy
+    đầy đủ là MySQL qua servlet. [`assets/js/data.js`](../assets/js/data.js) chỉ là bản dự phòng để giao diện vẫn có nội dung khi
     API chưa sẵn sàng.
-45. **Vì sao không chạy `index.html` trực tiếp?** HTML chỉ là view. Đăng nhập, `HttpSession`, servlet và
+45. **Vì sao không chạy [`index.html`](../index.html) trực tiếp?** HTML chỉ là view. Đăng nhập, `HttpSession`, servlet và
     JDBC chỉ hoạt động khi WAR được deploy trên Tomcat; giao diện gọi `/api` cùng origin nên cần context `/`.
 46. **Vì sao không tin phần trăm hoàn thành do trình duyệt tính?** Người dùng sửa được JavaScript hoặc gọi
-    thẳng API. `AssemblySessionDB.completeSession()` chỉ ghi `COMPLETED` khi chính câu `UPDATE` đối chiếu
+    thẳng API. [`AssemblySessionDB.completeSession()`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblySessionDB.java) chỉ ghi `COMPLETED` khi chính câu `UPDATE` đối chiếu
     `session_visual_parts` với `robot_components` và thấy đủ; điều kiện nằm ngay trong `WHERE` nên kiểm tra và
     ghi xảy ra nguyên tử, hai request gần đồng thời không tạo hai kết quả khác nhau.
 47. **Sao vừa có `/components` vừa có `/api/components`?** Hai view của cùng dữ liệu: `/components` trả HTML dựng ở
-    server (xem source thấy bảng đã đầy đủ), `/api/components` trả JSON cho JavaScript; cùng dùng `ComponentDB`.
+    server (xem source thấy bảng đã đầy đủ), `/api/components` trả JSON cho JavaScript; cùng dùng [`ComponentDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ComponentDB.java).
 
 ## 9. Kiểm thử và chạy dự án
 
 | Loại | Công cụ | Kiểm gì |
 | --- | --- | --- |
 | Kiểm nguồn | Node (`npm test`, 21 file trong `tests/server/`) | cấu trúc môn học (`course-structure`), cấm kỹ thuật ngoài slide, form/CSRF/no-store, hợp đồng giao diện |
-| Luật nghiệp vụ | JUnit (`mvn -f tomcat-app/pom.xml test`) | điểm rubric, chấm nối dây, luật công bố, `JavaBeanRulesTest`, `JspExpressionContractTest` |
+| Luật nghiệp vụ | JUnit (`mvn -f tomcat-app/pom.xml test`) | điểm rubric, chấm nối dây, luật công bố, [`JavaBeanRulesTest`](../tomcat-app/src/test/java/vn/edu/webpro/robotlab/business/JavaBeanRulesTest.java), [`JspExpressionContractTest`](../tomcat-app/src/test/java/vn/edu/webpro/robotlab/view/JspExpressionContractTest.java) |
 | Chạy thật | Tomcat + MySQL (cổng 8080) | `/api/health` phải trả `"database":"connected"` |
 
 Số liệu gần nhất: 131 Node (130 đạt + 1 bỏ qua nếu chưa build exploded WAR) và 79 JUnit,
 đều xanh. Node và JUnit chỉ là công cụ kiểm tra lúc phát triển, **không phải runtime**.
 
 Nhớ: IntelliJ phải dùng **JDK 17** (Project SDK); Tomcat truyền
-`-DDB_HOST -DDB_PORT -DDB_NAME -DDB_USER -DDB_PASSWORD` qua VM options vì `context.xml`
+`-DDB_HOST -DDB_PORT -DDB_NAME -DDB_USER -DDB_PASSWORD` qua VM options vì [`context.xml`](../tomcat-app/src/main/webapp/META-INF/context.xml)
 đọc các giá trị đó; Tomcat không tự đọc `.env`.
 
 ## 10. Cách luyện chéo và lịch ôn
@@ -520,13 +523,13 @@ nói "em kiểm tra lại trong code" và mở file, không đoán.
 trang/JS → Servlet (doGet/doPost) → bean (luật) → XxxDB (SQL, transaction) → bảng → JSP
 ```
 
-Mở mục 3 của file này cho luồng mẫu; khi cần xem code thật thì mở `docs/ARCHITECTURE.md`.
+Mở mục 3 của file này cho luồng mẫu; khi cần xem code thật thì mở [`docs/ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ### Danh sách việc trước ngày kiểm tra
 
 - [ ] Chạy được Tomcat 8080; `/api/health` báo `connected`; đăng nhập USER và ADMIN.
 - [ ] IntelliJ dùng JDK 17; Rebuild Project trước khi chạy.
-- [ ] Tài khoản demo đăng nhập được (bảng ở `docs/TEAM_FLOW_DEMO_GUIDE.md` trong project); nếu không, tạo
+- [ ] Tài khoản demo đăng nhập được (bảng ở [`docs/TEAM_FLOW_DEMO_GUIDE.md`](TEAM_FLOW_DEMO_GUIDE.md) trong project); nếu không, tạo
       tài khoản mới và ghi lại mật khẩu ở nơi riêng, **không** ghi vào Git.
 - [ ] Dữ liệu demo: ít nhất một phiên đã hoàn tất, một lượt quiz, một nhiệm vụ đang mở.
 - [ ] `npm test` và `mvn -f tomcat-app/pom.xml test` đều xanh trên máy sẽ trình bày.

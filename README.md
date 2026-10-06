@@ -214,6 +214,7 @@ npm test
 - [Quy ước và danh sách API](docs/API_CONVENTIONS.md)
 - [ERD](docs/erd.md)
 - [Luồng demo và câu hỏi giảng viên](docs/TEAM_FLOW_DEMO_GUIDE.md)
+- [Ôn tập vấn đáp cuối kỳ (một file duy nhất: kiến thức chapter, luồng code, phân công, câu hỏi–đáp)](docs/ON_TAP_VAN_DAP_CUOI_KY.md)
 
 ## Phòng thực hành nối dây (Đợt 7, chặng 1)
 
