@@ -1,5 +1,22 @@
 # Implementation Plan: Đợt 2 — Lái thử 3D và Đợt 3 — Hai mẫu robot mới
 
+## Redesign JSP học tập — 06/10/2026
+
+34 trang độc lập + fragment wiring-diagram; manifest và bằng chứng trong
+docs/UI_REDESIGN_QA_REPORT.md. Giữ Servlet/bean/JDBC, mọi form/token/version,
+rubric và điểm. Không schema, không đổi trang HTML/3D, không push.
+
+1. Khảo sát/manifest/baseline: Node128, JUnit79; local Poppins/Heroicons.
+2. Pilot receipt + wiring list/play, kiểm runtime rồi mới nhân rộng.
+3. Tổng kết/thông tin/profile: shell tối, giấy và PDF trắng, bảng ngữ nghĩa.
+4. Nhiệm vụ/chẩn đoán: card, nhóm form, không thay điều kiện lộ đáp án.
+5. Admin/hỗ trợ: biên soạn rõ nhóm, snapshot chỉ đọc, lịch sử bất biến.
+6. Manifest đầy đủ, form contract trước/sau, viewport/JS-off/PDF/hồi quy.
+
+CSS riêng .learning-workspace, include JSP đơn giản; selector SVG giới hạn
+đúng sơ đồ. Bằng chứng ngoài Git, runtime riêng8081 và dọn bí mật khi xong.
+Commit local từng mốc đã kiểm; bảo toàn AGENT_HANDOFF.md ngoài commit.
+
 ## Đợt 6 chặng 2 — Chẩn đoán tương tác và mẫu B
 
 - Khảo sát HEAD a1650e0, baseline Node114/JUnit52; đăng nhập bốn demo và lưu
