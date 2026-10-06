@@ -17,6 +17,11 @@ CSS riêng .learning-workspace, include JSP đơn giản; selector SVG giới h�
 đúng sơ đồ. Bằng chứng ngoài Git, runtime riêng8081 và dọn bí mật khi xong.
 Commit local từng mốc đã kiểm; bảo toàn AGENT_HANDOFF.md ngoài commit.
 
+Các mốc UI đã có f5e8446/2fc82ce/ac0feed/0b9daaa/ca0ffb7. Hoàn thiện guard
+giữ form/source ban đầu, focus SVG chỉ bật cùng JS và favicon cục bộ; chạy
+WAR cuối trên runtime sạch. Báo cáo ghi rõ CSS zoom/touch emulation, giới
+hạn Firefox/Safari/thead nhiều trang và các luồng nghiệp vụ không lặp lại.
+
 ## Đợt 6 chặng 2 — Chẩn đoán tương tác và mẫu B
 
 - Khảo sát HEAD a1650e0, baseline Node114/JUnit52; đăng nhập bốn demo và lưu

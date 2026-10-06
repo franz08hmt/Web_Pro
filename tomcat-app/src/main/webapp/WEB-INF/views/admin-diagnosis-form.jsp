@@ -4,6 +4,7 @@
 <html lang="vi">
     <head>
         <meta charset="UTF-8">
+        <link rel="icon" href="${pageContext.request.contextPath}/assets/icons/cpu-chip.svg" type="image/svg+xml">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Biên soạn chẩn đoán | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">

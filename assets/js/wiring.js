@@ -17,6 +17,11 @@
   let selectedWire = null;
   let pointerStart = null;
   let dirty = false;
+  // Chỉ sơ đồ có enhancement mới đưa chân/dây vào thứ tự bàn phím.
+  for (const node of svg.querySelectorAll("[data-terminal-id],[data-pair]")) {
+    node.setAttribute("tabindex", "0");
+    node.setAttribute("role", "button");
+  }
   for (const node of svg.querySelectorAll("[data-terminal-id]")) {
     terminals.set(node.dataset.terminalId, node);
   }
@@ -27,6 +32,10 @@
     status.textContent = message + (dirty ? " Chưa lưu; hãy bấm Lưu nháp hoặc Nộp để chấm." : "");
   };
   const label = id => terminals.get(id).getAttribute("aria-label");
+  for (const line of svg.querySelectorAll("[data-pair]")) {
+    const ends = line.dataset.pair.split(":");
+    line.setAttribute("aria-label", "Chọn dây " + label(ends[0]) + " ↔ " + label(ends[1]));
+  }
   const clearPending = () => {
     pending = null;
     for (const node of terminals.values()) node.classList.remove("is-selected");

@@ -4,6 +4,7 @@
 <html lang="vi">
     <head>
         <meta charset="UTF-8">
+        <link rel="icon" href="${pageContext.request.contextPath}/assets/icons/cpu-chip.svg" type="image/svg+xml">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Thực hành nối dây | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
@@ -30,7 +31,6 @@
             <div class="workspace-workbench">
                 <section class="workspace-panel" id="wiring-interactive-diagram">
                     <h2>Sơ đồ thực hành</h2>
-                    <c:set var="wiringDiagramEditable" value="true"/>
                     <c:set var="wiringDiagramConnections" value="${wiringAttempt.connections}"/>
                     <%@ include file="wiring-diagram.jsp" %>
                     <p id="wiring-status" role="status" aria-live="polite">Sơ đồ đang hiển thị các dây đã lưu.</p>
@@ -94,7 +94,7 @@
             <a href="${pageContext.request.contextPath}/pages/lap-rap.html?model=<c:out value="${wiringExercise.robotId}"/>">
             Sơ đồ tham khảo hiện có
             </a>
-            <script src="${pageContext.request.contextPath}/assets/js/wiring.js?v=20261006.1" defer></script>
+            <script src="${pageContext.request.contextPath}/assets/js/wiring.js?v=20261006.2" defer></script>
         </main>
         <%@ include file="workspace-footer.jspf" %>
     </body>

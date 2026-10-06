@@ -1,0 +1,3004 @@
+{
+  "account.jsp": {
+    "controls": [],
+    "bindings": [
+      "user.fullName",
+      "user.email",
+      "user.role",
+      "user.createdAt",
+      "isAdmin",
+      "pageContext.request.contextPath"
+    ]
+  },
+  "admin-diagnosis-form.jsp": {
+    "controls": [
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/admin-diagnosis"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "saveDraft"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${diagnosisScenario.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "title",
+          "maxlength": "150",
+          "value": "${diagnosisScenario.title}"
+        }
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "name": "contextText",
+          "maxlength": "1500"
+        }
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "name": "symptomText",
+          "maxlength": "1500"
+        }
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "name": "explanationText",
+          "maxlength": "2000"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "robotId",
+          "value": "${robot.id}",
+          "required": true,
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "guideId",
+          "value": "",
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "guideId",
+          "value": "${diagnosisGuide.id}",
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "checkLabel${diagnosisCheck.displayOrder}",
+          "maxlength": "200",
+          "value": "${diagnosisCheck.label}"
+        }
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "name": "observation${diagnosisCheck.displayOrder}",
+          "maxlength": "600"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "checkbox",
+          "name": "required${diagnosisCheck.displayOrder}",
+          "value": "true",
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "causeLabel${diagnosisOption.displayOrder}",
+          "maxlength": "200",
+          "value": "${diagnosisOption.label}"
+        }
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "name": "causeFeedback${diagnosisOption.displayOrder}",
+          "maxlength": "2000"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "causeCorrect",
+          "value": "${diagnosisOption.displayOrder}",
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "actionOptionLabel${diagnosisOption.displayOrder}",
+          "maxlength": "200",
+          "value": "${diagnosisOption.label}"
+        }
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "name": "actionOptionFeedback${diagnosisOption.displayOrder}",
+          "maxlength": "2000"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "actionOptionCorrect",
+          "value": "${diagnosisOption.displayOrder}",
+          "checked": true
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {}
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "sessionScope.csrfToken",
+      "diagnosisScenario.id",
+      "diagnosisScenario.title",
+      "diagnosisScenario.contextText",
+      "diagnosisScenario.symptomText",
+      "diagnosisScenario.explanationText",
+      "robots",
+      "robot.id",
+      "robot.id eq diagnosisScenario.robotId",
+      "robot.name",
+      "empty diagnosisScenario.guideId",
+      "diagnosisGuides",
+      "diagnosisGuide.id",
+      "diagnosisGuide.id eq diagnosisScenario.guideId",
+      "diagnosisGuide.symptom",
+      "diagnosisScenario.checkSlots",
+      "diagnosisCheck.displayOrder",
+      "diagnosisCheck.label",
+      "diagnosisCheck.observationText",
+      "diagnosisCheck.required",
+      "diagnosisScenario.causeSlots",
+      "diagnosisOption.displayOrder",
+      "diagnosisOption.label",
+      "diagnosisOption.feedbackText",
+      "diagnosisOption.correct",
+      "diagnosisScenario.actionSlots"
+    ]
+  },
+  "admin-diagnosis-list.jsp": {
+    "controls": [],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "diagnosisScenarios",
+      "diagnosisScenario.id",
+      "diagnosisScenario.title",
+      "diagnosisScenario.robotName",
+      "diagnosisScenario.stateLabel",
+      "diagnosisScenario.versionNo"
+    ]
+  },
+  "admin-diagnosis-preview.jsp": {
+    "controls": [
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/admin-diagnosis"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "publish"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${diagnosisScenario.id}"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {}
+      },
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/admin-diagnosis"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "archive"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${diagnosisScenario.id}"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {}
+      },
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/admin-diagnosis"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "duplicate"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${diagnosisScenario.id}"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {}
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "diagnosisScenario.title",
+      "diagnosisScenario.robotName",
+      "diagnosisScenario.stateLabel",
+      "diagnosisScenario.versionNo",
+      "diagnosisScenario.contextText",
+      "diagnosisScenario.symptomText",
+      "diagnosisPreview",
+      "diagnosisScenario.checks",
+      "diagnosisCheck.label",
+      "not diagnosisPreview",
+      "diagnosisCheck.observationText",
+      "diagnosisCheck.required",
+      "diagnosisScenario.options",
+      "diagnosisOption.label",
+      "diagnosisOption.correct",
+      "diagnosisOption.feedbackText",
+      "diagnosisScenario.explanationText",
+      "diagnosisScenario.id",
+      "diagnosisScenario.draft",
+      "sessionScope.csrfToken",
+      "diagnosisScenario.published"
+    ]
+  },
+  "admin-stats.jsp": {
+    "controls": [],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "totalSessions",
+      "sessionCounts.PREPARING",
+      "sessionCounts.READY",
+      "sessionCounts.IN_PROGRESS",
+      "sessionCounts.COMPLETED",
+      "sessionCounts.ABANDONED",
+      "totalLearners",
+      "activeLearners",
+      "empty popularRobots",
+      "popularRobots",
+      "popular.robotName",
+      "popular.sessionCount",
+      "empty quizAggregates",
+      "quizAggregates",
+      "aggregate.robotName",
+      "aggregate.attemptCount",
+      "aggregate.averageScorePercent",
+      "empty highMissQuestions",
+      "minQuestionAttempts",
+      "highMissQuestions",
+      "question.prompt",
+      "question.attemptCount",
+      "question.missRatePercent"
+    ]
+  },
+  "admin-task-form.jsp": {
+    "controls": [
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "get",
+          "action": "${pageContext.request.contextPath}/admin-tasks"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${task.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "${learnerAction}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "q",
+          "value": "${searchQuery}",
+          "maxlength": "100"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "number",
+          "name": "page",
+          "min": "1",
+          "max": "10000",
+          "value": "${learnerPage}"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {}
+      },
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/admin-tasks"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${task.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "saveDraft"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "rubricTemplate",
+          "value": "A",
+          "required": true,
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "rubricTemplate",
+          "value": "B",
+          "required": true,
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "diagnosisScenarioId",
+          "value": "0",
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "diagnosisScenarioId",
+          "value": "${diagnosisScenario.id}",
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "title",
+          "required": true,
+          "minlength": "5",
+          "maxlength": "150",
+          "value": "${task.title}"
+        }
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "name": "description",
+          "required": true,
+          "maxlength": "4000"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "robotId",
+          "value": "${robot.id}",
+          "required": true,
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "datetime-local",
+          "name": "dueAt",
+          "required": true,
+          "value": "${task.dueInput}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "latePolicy",
+          "value": "REJECT_LATE",
+          "required": true,
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "latePolicy",
+          "value": "ACCEPT_LATE_FLAGGED",
+          "required": true,
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "number",
+          "name": "maxSubmissions",
+          "min": "1",
+          "max": "3",
+          "value": "${task.maxSubmissions}",
+          "required": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "number",
+          "name": "passThreshold",
+          "min": "50",
+          "max": "100",
+          "value": "${task.passThreshold}",
+          "required": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "checkbox",
+          "name": "allowPriorEvidence",
+          "value": "true",
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "checkbox",
+          "name": "recipientId",
+          "value": "${recipient.userId}",
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "checkbox",
+          "name": "recipientId",
+          "value": "${learner.id}"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {}
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "task.id == 0",
+      "task.id",
+      "learnerAction",
+      "searchQuery",
+      "learnerPage",
+      "sessionScope.csrfToken",
+      "not task.rubricB",
+      "task.rubric.templateALabel",
+      "task.rubricB",
+      "task.rubric.templateBLabel",
+      "task.diagnosisScenarioId == 0",
+      "diagnosisScenarios",
+      "diagnosisScenario.id",
+      "diagnosisScenario.id == task.diagnosisScenarioId",
+      "diagnosisScenario.robotName",
+      "diagnosisScenario.title",
+      "task.title",
+      "task.description",
+      "robots",
+      "robot.id",
+      "robot.id eq task.robotId",
+      "robot.name",
+      "task.dueInput",
+      "not task.acceptLate",
+      "task.acceptLate",
+      "task.maxSubmissions",
+      "task.passThreshold",
+      "task.allowPriorEvidence",
+      "task.rubric.label",
+      "recipients",
+      "recipient.userId",
+      "recipient.fullName",
+      "learners",
+      "learner.id",
+      "learner.fullName"
+    ]
+  },
+  "admin-task-list.jsp": {
+    "controls": [
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "get"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "state",
+          "value": "",
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "state",
+          "value": "DRAFT",
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "state",
+          "value": "OPEN",
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "state",
+          "value": "CLOSED",
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "state",
+          "value": "ARCHIVED",
+          "checked": true
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {}
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "empty taskStateFilter",
+      "taskStateFilter eq 'DRAFT'",
+      "taskStateFilter eq 'OPEN'",
+      "taskStateFilter eq 'CLOSED'",
+      "taskStateFilter eq 'ARCHIVED'",
+      "empty tasks",
+      "tasks",
+      "task.id",
+      "task.title",
+      "task.robotName",
+      "task.stateLabel",
+      "task.dueDisplay"
+    ]
+  },
+  "admin-task-review.jsp": {
+    "controls": [
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/admin-task-reviews"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${taskSubmission.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "review"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "expectedReviewId",
+          "value": "0${currentReview.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "explanationLevel",
+          "value": "0",
+          "required": true,
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "explanationLevel",
+          "value": "1",
+          "required": true,
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "explanationLevel",
+          "value": "2",
+          "required": true,
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "explanationLevel",
+          "value": "3",
+          "required": true,
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "explanationLevel",
+          "value": "4",
+          "required": true,
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "conclusion",
+          "value": "PASSED",
+          "required": true,
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "conclusion",
+          "value": "NEEDS_REVISION",
+          "required": true,
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "conclusion",
+          "value": "NOT_PASSED",
+          "required": true,
+          "checked": true
+        }
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "name": "strengths",
+          "maxlength": "4000"
+        }
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "name": "improvements",
+          "maxlength": "4000"
+        }
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "name": "retryGuidance",
+          "maxlength": "4000"
+        }
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "name": "changeReason",
+          "maxlength": "4000"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {}
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "task.title",
+      "reviewRecipient.fullName",
+      "taskSubmission.submissionNo",
+      "task.id",
+      "sessionScope.csrfToken",
+      "taskSubmission.id",
+      "empty\n                currentReview",
+      "currentReview.id",
+      "empty currentReview or currentReview.explanationLevel == 0",
+      "not empty currentReview and currentReview.explanationLevel == 1",
+      "not empty currentReview and currentReview.explanationLevel == 2",
+      "not empty currentReview and currentReview.explanationLevel == 3",
+      "not empty currentReview and currentReview.explanationLevel == 4",
+      "empty currentReview or currentReview.passed",
+      "currentReview.needsRevision",
+      "currentReview.notPassed",
+      "currentReview.strengths",
+      "currentReview.improvements",
+      "currentReview.retryGuidance",
+      "not empty diagnosisAttempt",
+      "diagnosisAttempt.collectionPointsDisplay",
+      "diagnosisAttempt.requiredDone",
+      "diagnosisAttempt.requiredTotal",
+      "diagnosisAttempt.scoreDisplay",
+      "diagnosisAttempt.scenario.checks",
+      "diagnosisCheck.chosen",
+      "diagnosisCheck.label",
+      "diagnosisCheck.chosenAtDisplay",
+      "diagnosisCheck.observationDisplay",
+      "empty diagnosisAttempt.missingChecks",
+      "diagnosisAttempt.missingChecks",
+      "diagnosisAttempt.chosenCause.label",
+      "diagnosisAttempt.causeCorrect",
+      "diagnosisAttempt.chosenCause.feedbackText",
+      "diagnosisAttempt.chosenAction.label",
+      "diagnosisAttempt.actionCorrect",
+      "diagnosisAttempt.chosenAction.feedbackText",
+      "diagnosisAttempt.scenario.explanationText",
+      "submissions",
+      "taskSubmission.submittedDisplay",
+      "taskSubmission.late",
+      "taskSubmission.sessionId",
+      "taskSubmission.robotName",
+      "taskSubmission.assemblyCompletedDisplay",
+      "taskSubmission.quizAttemptId",
+      "taskSubmission.quizScore",
+      "taskSubmission.quizTotal",
+      "taskSubmission.quizSubmittedDisplay",
+      "taskSubmission.reusedQuiz",
+      "taskSubmission.quizReusedFrom",
+      "taskSubmission.hasDiagnosis",
+      "taskSubmission.diagnosisTitle",
+      "taskSubmission.diagnosisAttemptId",
+      "taskSubmission.diagnosisScoreDisplay",
+      "taskSubmission.diagnosisSubmittedAtDisplay",
+      "taskSubmission.reusedDiagnosis",
+      "taskSubmission.diagnosisReusedFrom",
+      "taskSubmission.diagnosisPointsDisplay",
+      "taskSubmission.rubric.diagnosisWeight",
+      "taskSubmission.assemblyPointsDisplay",
+      "taskSubmission.rubric.assemblyWeight",
+      "taskSubmission.quizPointsDisplay",
+      "taskSubmission.rubric.quizWeight",
+      "taskSubmission.automaticDisplay",
+      "taskSubmission.rubric.automaticMaximum",
+      "taskSubmission.waiting",
+      "taskSubmission.problem",
+      "taskSubmission.reasoning",
+      "taskSubmission.improvement",
+      "adminView",
+      "taskSubmission.reviews",
+      "taskReview.conclusionLabel",
+      "taskReview.totalDisplay",
+      "taskReview.explanationPoints",
+      "taskReview.reviewedDisplay",
+      "taskReview.reviewerName",
+      "taskReview.explanationLabel",
+      "taskReview.strengths",
+      "taskReview.improvements",
+      "taskReview.retryGuidance",
+      "taskReview.superseded",
+      "taskReview.replacedDisplay",
+      "taskReview.replacementReason"
+    ]
+  },
+  "admin-wiring-form.jsp": {
+    "controls": [
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/admin-wiring"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "saveDraft"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${wiringExercise.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "code",
+          "maxlength": "64",
+          "value": "${wiringExercise.code}",
+          "required": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "title",
+          "maxlength": "150",
+          "value": "${wiringExercise.title}",
+          "required": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "robotId",
+          "value": "${robot.id}",
+          "checked": true,
+          "required": true
+        }
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "name": "objective",
+          "maxlength": "2000",
+          "required": true
+        }
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "name": "scopeText",
+          "maxlength": "2000",
+          "required": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "terminalCode_${slot}",
+          "maxlength": "64",
+          "value": "${wiringTerminal.code}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "deviceCode_${slot}",
+          "maxlength": "64",
+          "value": "${wiringTerminal.deviceCode}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "deviceLabel_${slot}",
+          "maxlength": "100",
+          "value": "${wiringTerminal.deviceLabel}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "pinLabel_${slot}",
+          "maxlength": "50",
+          "value": "${wiringTerminal.pinLabel}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "x_${slot}",
+          "type": "number",
+          "min": "40",
+          "max": "960",
+          "value": "${wiringTerminal.x}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "y_${slot}",
+          "type": "number",
+          "min": "40",
+          "max": "960",
+          "value": "${wiringTerminal.y}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "ruleA_${slot}",
+          "type": "number",
+          "min": "1",
+          "max": "40",
+          "value": "${wiringRule.terminalA}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "ruleB_${slot}",
+          "type": "number",
+          "min": "1",
+          "max": "40",
+          "value": "${wiringRule.terminalB}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "ruleKind_${slot}",
+          "value": "REQUIRED",
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "ruleKind_${slot}",
+          "value": "FORBIDDEN",
+          "checked": true
+        }
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "name": "ruleExplanation_${slot}",
+          "maxlength": "1000"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {}
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "sessionScope.csrfToken",
+      "wiringExercise.id",
+      "wiringExercise.code",
+      "wiringExercise.title",
+      "robots",
+      "robot.id",
+      "wiringExercise.robotId eq robot.id",
+      "robot.name",
+      "wiringExercise.objective",
+      "wiringExercise.scopeText",
+      "wiringExercise.terminals[slot - 1]",
+      "slot",
+      "wiringTerminal.code",
+      "wiringTerminal.deviceCode",
+      "wiringTerminal.deviceLabel",
+      "wiringTerminal.pinLabel",
+      "wiringTerminal.x",
+      "wiringTerminal.y",
+      "wiringExercise.editRules",
+      "wiringEditRules[slot - 1]",
+      "wiringRule.terminalA",
+      "wiringRule.terminalB",
+      "empty wiringRule or wiringRule.required",
+      "wiringRule.forbidden",
+      "wiringRule.explanation"
+    ]
+  },
+  "admin-wiring-list.jsp": {
+    "controls": [],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "wiringExercises",
+      "wiringExercise.title",
+      "wiringExercise.code",
+      "wiringExercise.stateLabel",
+      "wiringExercise.id"
+    ]
+  },
+  "admin-wiring-view.jsp": {
+    "controls": [
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/admin-wiring"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${wiringExercise.id}"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "name": "action",
+          "value": "publish"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "name": "action",
+          "value": "archive"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "name": "action",
+          "value": "duplicate"
+        }
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "wiringExercise.title",
+      "wiringExercise.stateLabel",
+      "wiringExercise.robotName",
+      "wiringExercise.objective",
+      "wiringExercise.scopeText",
+      "wiringExercise.referenceConnections",
+      "wiringExercise.rules",
+      "wiringRule.terminalA",
+      "wiringRule.terminalB",
+      "wiringRule.kind",
+      "wiringRule.explanation",
+      "wiringPreview",
+      "wiringExercise.id",
+      "wiringExercise.draft",
+      "sessionScope.csrfToken",
+      "wiringExercise.published"
+    ]
+  },
+  "architecture.jsp": {
+    "controls": [],
+    "bindings": [
+      "controllerName",
+      "databaseLayer",
+      "apiContract",
+      "pageContext.request.contextPath"
+    ]
+  },
+  "assembly-receipt.jsp": {
+    "controls": [],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "session.status != 'COMPLETED'",
+      "session.status",
+      "session.robotId",
+      "session.id",
+      "robot.name",
+      "robot.level",
+      "robot.summary",
+      "session.createdAt",
+      "session.completedAt",
+      "fn:length(requiredComponents)",
+      "requiredComponents",
+      "rc.componentId",
+      "componentNames[rc.componentId]",
+      "rc.quantity"
+    ]
+  },
+  "components.jsp": {
+    "controls": [],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "not empty errorMessage",
+      "errorMessage",
+      "not empty components",
+      "total",
+      "page",
+      "components",
+      "component.image",
+      "component.name",
+      "component.id",
+      "component.category",
+      "component.description",
+      "page > 1",
+      "page - 1",
+      "hasNextPage",
+      "page + 1",
+      "empty components and empty errorMessage"
+    ]
+  },
+  "diagnosis-list.jsp": {
+    "controls": [
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/diagnosis"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "start"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "scenarioId",
+          "value": "${diagnosisScenario.id}"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {}
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "empty diagnosisAttempts",
+      "diagnosisAttempts",
+      "diagnosisAttempt.id",
+      "diagnosisAttempt.scenario.title",
+      "diagnosisScenarios",
+      "diagnosisScenario.title",
+      "diagnosisScenario.robotName",
+      "diagnosisScenario.versionNo",
+      "diagnosisScenario.symptomText",
+      "sessionScope.csrfToken",
+      "diagnosisScenario.id"
+    ]
+  },
+  "diagnosis-play.jsp": {
+    "controls": [
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/diagnosis"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "check"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${diagnosisAttempt.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "checkId",
+          "value": "${diagnosisCheck.id}"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {}
+      },
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/diagnosis"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "conclude"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${diagnosisAttempt.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "causeOptionId",
+          "value": "${diagnosisOption.id}",
+          "required": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "actionOptionId",
+          "value": "${diagnosisOption.id}",
+          "required": true
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {}
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "diagnosisAttempt.scenario.title",
+      "diagnosisAttempt.id",
+      "diagnosisAttempt.scenario.robotName",
+      "diagnosisAttempt.scenario.contextText",
+      "diagnosisAttempt.scenario.symptomText",
+      "diagnosisAttempt.scenario.checks",
+      "diagnosisCheck.label",
+      "diagnosisCheck.chosen",
+      "diagnosisCheck.observationDisplay",
+      "diagnosisCheck.chosenAtDisplay",
+      "sessionScope.csrfToken",
+      "diagnosisCheck.id",
+      "diagnosisAttempt.scenario.causes",
+      "diagnosisOption.id",
+      "diagnosisOption.label",
+      "diagnosisAttempt.scenario.actions"
+    ]
+  },
+  "diagnosis-result.jsp": {
+    "controls": [],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "diagnosisAttempt.scenario.title",
+      "diagnosisAttempt.id",
+      "diagnosisAttempt.submittedAtDisplay",
+      "diagnosisAttempt.requiredDone",
+      "diagnosisAttempt.requiredTotal",
+      "diagnosisAttempt.collectionPointsDisplay",
+      "diagnosisAttempt.scoreDisplay",
+      "diagnosisAttempt.scenario.checks",
+      "diagnosisCheck.chosen",
+      "diagnosisCheck.label",
+      "diagnosisCheck.chosenAtDisplay",
+      "diagnosisCheck.observationDisplay",
+      "empty diagnosisAttempt.missingChecks",
+      "diagnosisAttempt.missingChecks",
+      "diagnosisAttempt.chosenCause.label",
+      "diagnosisAttempt.causeCorrect",
+      "diagnosisAttempt.chosenCause.feedbackText",
+      "diagnosisAttempt.chosenAction.label",
+      "diagnosisAttempt.actionCorrect",
+      "diagnosisAttempt.chosenAction.feedbackText",
+      "diagnosisAttempt.scenario.explanationText",
+      "not empty diagnosisAttempt.scenario.guideId",
+      "diagnosisAttempt.scenario.robotId",
+      "diagnosisAttempt.scenario.guideId",
+      "empty diagnosisAttempt.scenario.guideId"
+    ]
+  },
+  "learning-profile.jsp": {
+    "controls": [
+      {
+        "tag": "button",
+        "attributes": {
+          "id": "print-profile",
+          "type": "button"
+        }
+      }
+    ],
+    "bindings": [
+      "profile.fullName",
+      "pageContext.request.contextPath",
+      "profile.generatedAtDisplay",
+      "profile.completionSummary",
+      "profile.quizAttemptCount",
+      "profile.quizRobotCount",
+      "profile.robotCount",
+      "profile.averageBestScoreLabel",
+      "profile.overallStatusLabel",
+      "empty profile.robotEntries",
+      "profile.robotEntries",
+      "profileRobot.robot.name",
+      "profileRobot.robot.summary",
+      "profileRobot.statusLabel",
+      "profileRobot.completed",
+      "profileRobot.completionDate",
+      "profileRobot.completionSessionId",
+      "profileRobot.completedCount",
+      "profileRobot.inProgress or profileRobot.stopped",
+      "profileRobot.latestSessionStatusLabel",
+      "profileRobot.latestSessionDate",
+      "profileRobot.quizDataAvailable",
+      "profileRobot.bestQuizScore",
+      "profileRobot.bestQuizTotalQuestions",
+      "profileRobot.bestQuizDate",
+      "profileRobot.latestQuizScore",
+      "profileRobot.latestQuizTotalQuestions",
+      "profileRobot.latestQuizDate",
+      "profileRobot.quizAttemptCount",
+      "empty profile.skillLines",
+      "profile.skillEmptyMessage",
+      "profile.skillLines",
+      "skillLine.title",
+      "skillLine.content",
+      "skillLine.evidence"
+    ]
+  },
+  "learning-summary.jsp": {
+    "controls": [],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "user.fullName",
+      "user.email",
+      "totalSessions",
+      "sessionCounts.COMPLETED",
+      "sessionCounts.PREPARING + sessionCounts.READY",
+      "sessionCounts.IN_PROGRESS",
+      "sessionCounts.ABANDONED",
+      "empty completedRobots",
+      "completedRobots",
+      "robot.name",
+      "robot.level",
+      "robot.summary",
+      "empty quizScores",
+      "quizScores",
+      "score.robotName",
+      "score.bestScore",
+      "score.totalQuestions",
+      "score.latestScore",
+      "score.attemptCount"
+    ]
+  },
+  "order-history.jsp": {
+    "controls": [],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "user.fullName",
+      "empty orders",
+      "orders",
+      "order.id",
+      "order.statusLabel",
+      "order.createdAt",
+      "order.items",
+      "item.productNameSnapshot",
+      "item.unitPriceVnd",
+      "item.quantity",
+      "item.lineTotalVnd",
+      "order.totalVnd",
+      "page > 1",
+      "page - 1",
+      "page",
+      "totalPages",
+      "page < totalPages",
+      "page + 1"
+    ]
+  },
+  "robots.jsp": {
+    "controls": [],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "not empty errorMessage",
+      "errorMessage",
+      "not empty robots",
+      "total",
+      "page",
+      "robots",
+      "robot.id",
+      "robot.name",
+      "robot.summary",
+      "robot.level",
+      "robot.mainSensor",
+      "robot.buildTime",
+      "page > 1",
+      "page - 1",
+      "hasNextPage",
+      "page + 1",
+      "empty robots and empty errorMessage"
+    ]
+  },
+  "task-error.jsp": {
+    "controls": [],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "taskError"
+    ]
+  },
+  "task-list.jsp": {
+    "controls": [],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "empty tasks",
+      "tasks",
+      "task.id",
+      "task.title",
+      "task.robotName",
+      "task.stateLabel",
+      "task.dueDisplay"
+    ]
+  },
+  "task-preview.jsp": {
+    "controls": [
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/tasks"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${task.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "confirm"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "sessionId",
+          "value": "${taskSubmission.sessionId}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "roundId",
+          "value": "${taskSubmission.roundId}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "diagnosisAttemptId",
+          "value": "${taskSubmission.diagnosisAttemptId}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "problem",
+          "value": "${taskSubmission.problem}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "reasoning",
+          "value": "${taskSubmission.reasoning}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "improvement",
+          "value": "${taskSubmission.improvement}"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {}
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "task.title",
+      "taskSubmission.sessionId",
+      "taskSubmission.assemblyCompletedDisplay",
+      "taskSubmission.quizAttemptId",
+      "taskSubmission.quizScore",
+      "taskSubmission.quizTotal",
+      "taskSubmission.quizSubmittedDisplay",
+      "taskSubmission.reusedQuiz",
+      "taskSubmission.quizReusedFrom",
+      "taskSubmission.hasDiagnosis",
+      "taskSubmission.diagnosisTitle",
+      "taskSubmission.diagnosisAttemptId",
+      "taskSubmission.diagnosisScoreDisplay",
+      "taskSubmission.diagnosisSubmittedAtDisplay",
+      "taskSubmission.reusedDiagnosis",
+      "taskSubmission.diagnosisReusedFrom",
+      "taskSubmission.automaticDisplay",
+      "taskSubmission.rubric.automaticMaximum",
+      "taskSubmission.late",
+      "taskSubmission.problem",
+      "taskSubmission.reasoning",
+      "taskSubmission.improvement",
+      "sessionScope.csrfToken",
+      "task.id",
+      "taskSubmission.roundId"
+    ]
+  },
+  "task-quiz.jsp": {
+    "controls": [
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/tasks"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${task.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "roundId",
+          "value": "${recipient.currentRound.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "quiz"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "answer_${quizQuestion.id}",
+          "value": "${quizOption.id}",
+          "required": true
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {}
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "task.title",
+      "not empty quizQuestions",
+      "sessionScope.csrfToken",
+      "task.id",
+      "recipient.currentRound.id",
+      "quizQuestions",
+      "quizQuestion.prompt",
+      "quizQuestion.options",
+      "quizQuestion.id",
+      "quizOption.id",
+      "quizOption.label",
+      "not empty taskQuiz",
+      "taskQuiz.quizAttemptId",
+      "taskQuiz.quizScore",
+      "taskQuiz.quizTotal",
+      "taskQuiz.quizSubmittedDisplay",
+      "taskQuiz.reusedQuiz",
+      "taskQuiz.quizReusedFrom",
+      "not empty quizAttempt",
+      "quizAttempt.answers",
+      "quizAnswer.questionPromptSnapshot",
+      "quizAnswer.selectedOptionLabelSnapshot",
+      "quizAnswer.correctOptionLabelSnapshot",
+      "quizAnswer.explanationSnapshot",
+      "task.robotId"
+    ]
+  },
+  "task-submit.jsp": {
+    "controls": [
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/tasks"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "diagnosis"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${task.id}"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {}
+      },
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/tasks"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${task.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "roundId",
+          "value": "${recipient.currentRound.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "preview"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "sessionId",
+          "value": "${evidence.sessionId}",
+          "required": true
+        }
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "name": "problem",
+          "required": true,
+          "minlength": "20",
+          "maxlength": "1500"
+        }
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "name": "reasoning",
+          "required": true,
+          "minlength": "20",
+          "maxlength": "1500"
+        }
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "name": "improvement",
+          "required": true,
+          "minlength": "20",
+          "maxlength": "1500"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {}
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "task.title",
+      "recipient.showCurrentRoundQuiz and not empty taskQuiz",
+      "taskQuiz.quizAttemptId",
+      "taskQuiz.quizScore",
+      "taskQuiz.quizTotal",
+      "taskQuiz.quizSubmittedDisplay",
+      "taskQuiz.reusedQuiz",
+      "taskQuiz.quizReusedFrom",
+      "task.rubricB and recipient.showCurrentRoundQuiz",
+      "not empty taskDiagnosis",
+      "taskDiagnosis.diagnosisAttemptId",
+      "taskDiagnosis.diagnosisScoreDisplay",
+      "taskDiagnosis.diagnosisSubmittedAtDisplay",
+      "taskDiagnosis.reusedDiagnosis",
+      "taskDiagnosis.diagnosisReusedFrom",
+      "recipient.canStartDiagnosis",
+      "sessionScope.csrfToken",
+      "task.id",
+      "recipient.currentRound.hasDiagnosisAttempt",
+      "empty evidenceList",
+      "recipient.currentRound.id",
+      "evidenceList",
+      "evidence.sessionId",
+      "evidence.robotName",
+      "evidence.assemblyCompletedDisplay"
+    ]
+  },
+  "task-view.jsp": {
+    "controls": [
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/admin-tasks"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${task.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "publish"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "submit"
+        }
+      },
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/admin-tasks"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${task.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "deleteDraft"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "submit"
+        }
+      },
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "get",
+          "action": "${pageContext.request.contextPath}/admin-tasks"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${task.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "${learnerAction}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "q",
+          "value": "${searchQuery}",
+          "maxlength": "100"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "number",
+          "name": "page",
+          "min": "1",
+          "max": "10000",
+          "value": "${learnerPage}"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {}
+      },
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/admin-tasks"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${task.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "addRecipients"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "checkbox",
+          "name": "recipientId",
+          "value": "${learner.id}"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "submit"
+        }
+      },
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/admin-tasks"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${task.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "extend"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "datetime-local",
+          "name": "dueAt",
+          "required": true
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "submit"
+        }
+      },
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/admin-tasks"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${task.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "close"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "submit"
+        }
+      },
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/admin-tasks"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${task.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "archive"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "submit"
+        }
+      },
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/admin-tasks"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${task.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "duplicate"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "submit"
+        }
+      },
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/tasks"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "diagnosis"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${task.id}"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {}
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "task.title",
+      "task.description",
+      "task.robotName",
+      "task.stateLabel",
+      "task.dueDisplay",
+      "task.latePolicyLabel",
+      "task.maxSubmissions",
+      "task.passThreshold",
+      "task.rubric.label",
+      "adminView",
+      "adminPreview",
+      "not adminPreview",
+      "task.id",
+      "task.draft",
+      "sessionScope.csrfToken",
+      "task.open",
+      "learnerAction",
+      "searchQuery",
+      "learnerPage",
+      "learners",
+      "learner.id",
+      "learner.fullName",
+      "task.closed",
+      "recipients",
+      "recipient.fullName",
+      "recipient.statusLabel",
+      "recipient.latestSubmission.late",
+      "not empty recipient.latestSubmission",
+      "recipient.latestSubmission.id",
+      "recipient.latestSubmission.reviewed",
+      "recipient.latestSubmission.currentReview.totalDisplay",
+      "recipient.latestSubmission.automaticDisplay",
+      "task.rubric.automaticMaximum",
+      "recipient.currentRound.roundNo",
+      "recipient.currentRound.startedDisplay",
+      "recipient.showCurrentRoundQuiz and not empty taskQuiz",
+      "taskQuiz.quizAttemptId",
+      "taskQuiz.quizScore",
+      "taskQuiz.quizTotal",
+      "taskQuiz.quizSubmittedDisplay",
+      "taskQuiz.reusedQuiz",
+      "taskQuiz.quizReusedFrom",
+      "task.rubricB and recipient.showCurrentRoundQuiz",
+      "not empty taskDiagnosis",
+      "taskDiagnosis.diagnosisAttemptId",
+      "taskDiagnosis.diagnosisScoreDisplay",
+      "taskDiagnosis.diagnosisSubmittedAtDisplay",
+      "taskDiagnosis.reusedDiagnosis",
+      "taskDiagnosis.diagnosisReusedFrom",
+      "recipient.canStartDiagnosis",
+      "recipient.currentRound.hasDiagnosisAttempt",
+      "recipient.canTakeQuiz",
+      "recipient.canSubmit",
+      "task.robotId",
+      "empty submissions",
+      "submissions",
+      "taskSubmission.submissionNo",
+      "taskSubmission.submittedDisplay",
+      "taskSubmission.late",
+      "taskSubmission.sessionId",
+      "taskSubmission.robotName",
+      "taskSubmission.assemblyCompletedDisplay",
+      "taskSubmission.quizAttemptId",
+      "taskSubmission.quizScore",
+      "taskSubmission.quizTotal",
+      "taskSubmission.quizSubmittedDisplay",
+      "taskSubmission.reusedQuiz",
+      "taskSubmission.quizReusedFrom",
+      "taskSubmission.hasDiagnosis",
+      "taskSubmission.diagnosisTitle",
+      "taskSubmission.diagnosisAttemptId",
+      "taskSubmission.diagnosisScoreDisplay",
+      "taskSubmission.diagnosisSubmittedAtDisplay",
+      "taskSubmission.reusedDiagnosis",
+      "taskSubmission.diagnosisReusedFrom",
+      "taskSubmission.diagnosisPointsDisplay",
+      "taskSubmission.rubric.diagnosisWeight",
+      "taskSubmission.assemblyPointsDisplay",
+      "taskSubmission.rubric.assemblyWeight",
+      "taskSubmission.quizPointsDisplay",
+      "taskSubmission.rubric.quizWeight",
+      "taskSubmission.automaticDisplay",
+      "taskSubmission.rubric.automaticMaximum",
+      "taskSubmission.waiting",
+      "taskSubmission.problem",
+      "taskSubmission.reasoning",
+      "taskSubmission.improvement",
+      "taskSubmission.id",
+      "taskSubmission.reviews",
+      "taskReview.conclusionLabel",
+      "taskReview.totalDisplay",
+      "taskReview.explanationPoints",
+      "taskReview.reviewedDisplay",
+      "taskReview.reviewerName",
+      "taskReview.explanationLabel",
+      "taskReview.strengths",
+      "taskReview.improvements",
+      "taskReview.retryGuidance",
+      "taskReview.superseded",
+      "taskReview.replacedDisplay",
+      "taskReview.replacementReason"
+    ]
+  },
+  "wiring-diagram.jsp": {
+    "controls": [],
+    "bindings": [
+      "wiringDiagramConnections",
+      "wiringConnection.pairKey",
+      "wiringConnection.first.x",
+      "wiringConnection.first.y",
+      "wiringConnection.second.x",
+      "wiringConnection.second.y",
+      "wiringConnection.first.label",
+      "wiringConnection.second.label",
+      "wiringExercise.terminals",
+      "wiringTerminal.label",
+      "wiringTerminal.id",
+      "wiringTerminal.x",
+      "wiringTerminal.y",
+      "wiringTerminal.labelX",
+      "wiringTerminal.y + 5",
+      "wiringTerminal.labelAnchor"
+    ]
+  },
+  "wiring-error.jsp": {
+    "controls": [],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "wiringError"
+    ]
+  },
+  "wiring-list.jsp": {
+    "controls": [
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/wiring"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "start"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "exerciseId",
+          "value": "${wiringExercise.id}"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {}
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "wiringExercises",
+      "wiringExercise.title",
+      "wiringExercise.robotName",
+      "wiringExercise.objective",
+      "wiringExercise.scopeText",
+      "sessionScope.csrfToken",
+      "wiringExercise.id",
+      "empty wiringAttempts",
+      "wiringAttempts",
+      "wiringAttempt.exercise.title",
+      "wiringAttempt.id",
+      "wiringAttempt.stateLabel",
+      "wiringAttempt.updatedAtDisplay",
+      "wiringAttempt.submitted",
+      "wiringAttempt.grade.scoreDisplay",
+      "wiringAttempt.grade.resultLabel"
+    ]
+  },
+  "wiring-play.jsp": {
+    "controls": [
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "button",
+          "id": "wiring-cancel"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "button",
+          "id": "wiring-delete"
+        }
+      },
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/wiring",
+          "id": "wiring-form"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${wiringAttempt.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "expectedVersion",
+          "value": "${wiringAttempt.version}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "pair",
+          "value": "${wiringConnection.pairKey}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "terminalA",
+          "value": "${wiringTerminal.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "terminalB",
+          "value": "${wiringTerminal.id}"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "name": "action",
+          "value": "add"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "removePair",
+          "value": "${wiringConnection.pairKey}"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "name": "action",
+          "value": "remove"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "name": "action",
+          "value": "save"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "name": "action",
+          "value": "submit"
+        }
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "wiringExercise.title",
+      "wiringAttempt.id",
+      "wiringAttempt.version",
+      "wiringExercise.objective",
+      "wiringExercise.scopeText",
+      "wiringAttempt.connections",
+      "sessionScope.csrfToken",
+      "wiringConnection.pairKey",
+      "wiringExercise.terminals",
+      "wiringTerminal.id",
+      "wiringTerminal.label",
+      "wiringConnection.first.label",
+      "wiringConnection.second.label",
+      "wiringExercise.robotId"
+    ]
+  },
+  "wiring-result.jsp": {
+    "controls": [
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/wiring"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${wiringAttempt.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "expectedVersion",
+          "value": "${wiringAttempt.version}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "retry"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "exerciseId",
+          "value": "${wiringExercise.id}"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {}
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "wiringAlreadySubmitted",
+      "wiringAttempt.id",
+      "wiringExercise.title",
+      "wiringExercise.robotName",
+      "wiringAttempt.submittedAtDisplay",
+      "wiringAttempt.grade.resultLabel",
+      "wiringAttempt.grade.scoreDisplay",
+      "wiringAttempt.grade.correctCount",
+      "wiringAttempt.grade.wrongCount",
+      "wiringAttempt.grade.missingCount",
+      "wiringAttempt.grade.requiredCount",
+      "wiringExercise.scopeText",
+      "wiringAttempt.connections",
+      "wiringAttempt.grade.rows",
+      "wiringConnection.first.label",
+      "wiringConnection.second.label",
+      "wiringConnection.resultLabel",
+      "wiringConnection.explanation",
+      "wiringExercise.published",
+      "sessionScope.csrfToken",
+      "wiringAttempt.version",
+      "wiringExercise.id",
+      "wiringExercise.robotId"
+    ]
+  },
+  "wiring-support-list.jsp": {
+    "controls": [],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "supportAdmin",
+      "supportRoute",
+      "not supportAdmin",
+      "empty supportRequests",
+      "supportRequests",
+      "supportItem.id",
+      "supportItem.stateLabel",
+      "supportItem.exerciseTitle",
+      "supportItem.attemptId",
+      "supportItem.ownerName"
+    ]
+  },
+  "wiring-support-new.jsp": {
+    "controls": [
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/wiring-support"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "create"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "attemptId",
+          "value": "${wiringAttempt.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "expectedVersion",
+          "value": "${wiringAttempt.version}"
+        }
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "id": "support-content",
+          "name": "content",
+          "minlength": "20",
+          "maxlength": "4000",
+          "required": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "terminalId",
+          "value": "",
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "terminalId",
+          "value": "${wiringTerminal.id}"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "submit"
+        }
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "supportAdmin",
+      "supportRoute",
+      "wiringAttempt.id",
+      "wiringAttempt.version",
+      "wiringExercise.title",
+      "wiringAttempt.connections",
+      "sessionScope.csrfToken",
+      "wiringExercise.terminals",
+      "wiringTerminal.id",
+      "wiringTerminal.label"
+    ]
+  },
+  "wiring-support-view.jsp": {
+    "controls": [
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/${supportRoute}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${supportRequest.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "expectedVersion",
+          "value": "${supportRequest.version}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "message"
+        }
+      },
+      {
+        "tag": "textarea",
+        "attributes": {
+          "id": "support-content",
+          "name": "content",
+          "maxlength": "4000",
+          "required": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "checkbox",
+          "name": "sendSnapshot"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "terminalId",
+          "value": "",
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "terminalId",
+          "value": "${wiringTerminal.id}"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "submit"
+        }
+      },
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/${supportRoute}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": "${supportRequest.id}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "expectedVersion",
+          "value": "${supportRequest.version}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "close"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "submit"
+        }
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "supportAdmin",
+      "supportRoute",
+      "supportRequest.id",
+      "supportRequest.stateLabel",
+      "supportRequest.attemptId",
+      "supportRequest.exerciseTitle",
+      "not supportAdmin",
+      "supportRequest.messages",
+      "supportMessage.id",
+      "supportMessage.authorName",
+      "supportMessage.admin",
+      "supportMessage.createdAtDisplay",
+      "supportMessage.content",
+      "supportMessage.terminalLabel",
+      "supportMessage.hasSnapshot",
+      "supportMessage.snapshotText",
+      "supportMessage.snapshotConnections",
+      "not supportRequest.closed",
+      "sessionScope.csrfToken",
+      "supportRequest.version",
+      "wiringExercise.terminals",
+      "wiringTerminal.id",
+      "wiringTerminal.label"
+    ]
+  }
+}

@@ -5,12 +5,12 @@
 - [x] Git/HEAD thực tế, đọc tài liệu/code/guard; manifest34 trang + fragment.
 - [x] Baseline thực chạy Node128/128, JUnit79/79; WAR JDK17 thành công.
 - [x] Lưu HTML trước sửa và ảnh đại diện bằng Chrome, credentials ngoài bằng chứng.
-- [ ] Pilot3 trang được kiểm runtime/form/SVG và commit local.
-- [ ] Nhóm thông tin/tổng kết/hồ sơ giấy được kiểm render/PDF.
-- [ ] Nhóm nhiệm vụ/chẩn đoán được kiểm form/EL/không lộ đáp án.
-- [ ] Admin/hỗ trợ được kiểm bản chụp/chỉ đọc/role.
-- [ ] Toàn manifest, viewport/JS-off/hồi quy/test cuối; dọn runtime.
-- [ ] Báo cáo đúng giới hạn, commit đúng file từng mốc, không push.
+- [x] Pilot3 trang được kiểm runtime/form/SVG và commit local 2fc82ce.
+- [x] Nhóm thông tin/tổng kết/hồ sơ giấy được kiểm render/PDF; commit ac0feed.
+- [x] Nhóm nhiệm vụ/chẩn đoán được kiểm form/EL/không lộ thêm đáp án; commit 0b9daaa.
+- [x] Admin/hỗ trợ được kiểm bản chụp/chỉ đọc/role; commit ca0ffb7.
+- [x] Toàn manifest, viewport/JS-off/hồi quy/test cuối; runtime 8081 đã dọn, log không có JasperException.
+- [x] Báo cáo đúng giới hạn, commit đúng file từng mốc; không push, handoff ngoài commit.
 
 ## Đợt 6d — Sửa bộ lọc nháp và phủ guard JSP
 
