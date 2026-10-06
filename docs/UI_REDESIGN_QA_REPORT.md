@@ -365,8 +365,9 @@ nhãn hoặc tách mã chân không đổi lời gốc, được ghi ở bảng 
 Mốc code UI-2: `6b07f1b` (`fix: tidy workspace navigation and learner-facing copy`).
 Tài liệu/checklist được lưu bằng commit local tiếp theo; không push, handoff giữ untracked.
 
-Trong lúc thực hiện, Git có thêm các commit README đến `d41c5f1`, origin cũng ở mốc này.
-Đối chiếu `7d27f18..d41c5f1` chỉ có README; giữ nguyên, không đưa vào commit UI-2.
+Trong lúc thực hiện, Git có thêm năm commit tài liệu đến `d41c5f1`, origin cũng ở mốc này.
+Đối chiếu `7d27f18..d41c5f1` gồm README, ARCHITECTURE, TEAM_FLOW_DEMO_GUIDE và hai
+tài liệu ôn tập; giữ nguyên, không đưa vào commit UI-2.
 Các golden/test ứng dụng vẫn áp dụng vì code ứng dụng của khoảng này không đổi.
 Không reset/sửa lịch sử hoặc push để khớp ghi chú ahead ban đầu.
 
