@@ -5,16 +5,23 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Nhiệm vụ thực hành | Robot Assembly Lab</title>
+        <title>Thông báo nhiệm vụ | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/practice-tasks.css?v=20261005.1">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.1">
+        <meta name="robots" content="noindex, nofollow">
     </head>
-    <body class="practice-tasks">
-        <p><a href="${pageContext.request.contextPath}/pages/tai-khoan.html">← Tài khoản</a></p>
-        <h1>Chưa thực hiện được thao tác</h1>
-        <p role="alert"><c:out value="${taskError}"/></p>
-        <p>Vui lòng quay lại nhiệm vụ để kiểm tra vòng hiện tại và điều kiện nộp.</p>
-        <p><a href="${pageContext.request.contextPath}/tasks">Nhiệm vụ của tôi</a> · <a
+    <body class="learning-workspace workspace-page-task-error practice-tasks">
+        <%@ include file="workspace-header.jspf" %>
+        <main class="workspace-content" id="workspace-main" tabindex="-1">
+
+            <p><a href="${pageContext.request.contextPath}/pages/tai-khoan.html">← Tài khoản</a></p>
+            <h1>Chưa thực hiện được thao tác</h1>
+            <p role="alert"><c:out value="${taskError}"/></p>
+            <p>Vui lòng quay lại nhiệm vụ để kiểm tra vòng hiện tại và điều kiện nộp.</p>
+            <p><a href="${pageContext.request.contextPath}/tasks">Nhiệm vụ của tôi</a> · <a
             href="${pageContext.request.contextPath}/admin-tasks">Quản lý nhiệm vụ</a></p>
+        </main>
+        <%@ include file="workspace-footer.jspf" %>
     </body>
 </html>

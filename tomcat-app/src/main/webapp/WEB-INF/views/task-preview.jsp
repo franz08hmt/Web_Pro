@@ -5,23 +5,28 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Nhiệm vụ thực hành | Robot Assembly Lab</title>
+        <title>Xem trước bài nộp | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/practice-tasks.css?v=20261005.1">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.1">
+        <meta name="robots" content="noindex, nofollow">
     </head>
-    <body class="practice-tasks">
-        <p><a href="${pageContext.request.contextPath}/pages/tai-khoan.html">← Tài khoản</a></p>
-        <h1>Xem trước bài nộp</h1>
-        <h2><c:out value="${task.title}"/></h2>
-        <p>Phiên lắp ráp #<c:out value="${taskSubmission.sessionId}"/>, hoàn thành lúc <c:out
-    value="${taskSubmission.assemblyCompletedDisplay}"/></p>
-        <p>Quiz lượt #<c:out value="${taskSubmission.quizAttemptId}"/> – <c:out value="${taskSubmission.quizScore}"/>/<c:out
-    value="${taskSubmission.quizTotal}"/> – <c:out value="${taskSubmission.quizSubmittedDisplay}"/> <c:if
-        test="${taskSubmission.reusedQuiz}">(dùng lại từ lần nộp #<c:out value="${taskSubmission.quizReusedFrom}"/>)</c:if></p>
+    <body class="learning-workspace workspace-page-task-preview practice-tasks">
+        <%@ include file="workspace-header.jspf" %>
+        <main class="workspace-content" id="workspace-main" tabindex="-1">
+
+            <p><a href="${pageContext.request.contextPath}/pages/tai-khoan.html">← Tài khoản</a></p>
+            <h1>Xem trước bài nộp</h1>
+            <h2><c:out value="${task.title}"/></h2>
+            <p>Phiên lắp ráp #<c:out value="${taskSubmission.sessionId}"/>, hoàn thành lúc <c:out
+            value="${taskSubmission.assemblyCompletedDisplay}"/></p>
+            <p>Quiz lượt #<c:out value="${taskSubmission.quizAttemptId}"/> – <c:out value="${taskSubmission.quizScore}"/>/<c:out
+            value="${taskSubmission.quizTotal}"/> – <c:out value="${taskSubmission.quizSubmittedDisplay}"/> <c:if
+            test="${taskSubmission.reusedQuiz}">(dùng lại từ lần nộp #<c:out value="${taskSubmission.quizReusedFrom}"/>)</c:if></p>
         <c:if test="${taskSubmission.hasDiagnosis}">
             <p>Tình huống: <c:out value="${taskSubmission.diagnosisTitle}"/></p>
             <p>Chẩn đoán lượt #<c:out value="${taskSubmission.diagnosisAttemptId}"/> – <c:out
-        value="${taskSubmission.diagnosisScoreDisplay}"/>/10 – lúc <c:out value="${taskSubmission.diagnosisSubmittedAtDisplay}"/>
+            value="${taskSubmission.diagnosisScoreDisplay}"/>/10 – lúc <c:out value="${taskSubmission.diagnosisSubmittedAtDisplay}"/>
             <c:choose>
                 <c:when test="${taskSubmission.reusedDiagnosis}">(dùng lại từ lần nộp #<c:out
                 value="${taskSubmission.diagnosisReusedFrom}"/>)</c:when>
@@ -30,7 +35,7 @@
             </p>
         </c:if>
         <p>Điểm tự động dự kiến: <c:out value="${taskSubmission.automaticDisplay}"/>/<c:out
-    value="${taskSubmission.rubric.automaticMaximum}"/> — chờ đánh giá phần giải thích</p>
+        value="${taskSubmission.rubric.automaticMaximum}"/> — chờ đánh giá phần giải thích</p>
         <c:if test="${taskSubmission.late}">
             <p>Nộp muộn</p>
         </c:if>
@@ -57,5 +62,7 @@
             <button>Xác nhận nộp bài</button>
         </form>
         <p><a href="?action=submit&amp;id=<c:out value="${task.id}"/>">Quay lại chọn bằng chứng</a></p>
-    </body>
+    </main>
+    <%@ include file="workspace-footer.jspf" %>
+</body>
 </html>

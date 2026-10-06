@@ -5,24 +5,29 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Nhiệm vụ thực hành | Robot Assembly Lab</title>
+        <title>Nộp bài nhiệm vụ | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/practice-tasks.css?v=20261005.1">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.1">
+        <meta name="robots" content="noindex, nofollow">
     </head>
-    <body class="practice-tasks">
-        <p><a href="${pageContext.request.contextPath}/pages/tai-khoan.html">← Tài khoản</a></p>
-        <h1>Nộp bài: <c:out value="${task.title}"/></h1>
-        <c:if test="${recipient.showCurrentRoundQuiz and not empty taskQuiz}">
-            <p>Quiz lượt #<c:out value="${taskQuiz.quizAttemptId}"/> – <c:out value="${taskQuiz.quizScore}"/>/<c:out
-        value="${taskQuiz.quizTotal}"/> – <c:out value="${taskQuiz.quizSubmittedDisplay}"/> <c:choose><c:when
-                test="${taskQuiz.reusedQuiz}">(dùng lại từ lần nộp #<c:out
-                value="${taskQuiz.quizReusedFrom}"/>)</c:when><c:otherwise>(lượt
+    <body class="learning-workspace workspace-page-task-submit practice-tasks">
+        <%@ include file="workspace-header.jspf" %>
+        <main class="workspace-content" id="workspace-main" tabindex="-1">
+
+            <p><a href="${pageContext.request.contextPath}/pages/tai-khoan.html">← Tài khoản</a></p>
+            <h1>Nộp bài: <c:out value="${task.title}"/></h1>
+            <c:if test="${recipient.showCurrentRoundQuiz and not empty taskQuiz}">
+                <p>Quiz lượt #<c:out value="${taskQuiz.quizAttemptId}"/> – <c:out value="${taskQuiz.quizScore}"/>/<c:out
+                value="${taskQuiz.quizTotal}"/> – <c:out value="${taskQuiz.quizSubmittedDisplay}"/> <c:choose><c:when
+                    test="${taskQuiz.reusedQuiz}">(dùng lại từ lần nộp #<c:out
+                    value="${taskQuiz.quizReusedFrom}"/>)</c:when><c:otherwise>(lượt
                     của vòng này)</c:otherwise></c:choose></p>
         </c:if>
         <c:if test="${task.rubricB and recipient.showCurrentRoundQuiz}">
             <c:if test="${not empty taskDiagnosis}">
                 <p>Chẩn đoán lượt #<c:out value="${taskDiagnosis.diagnosisAttemptId}"/> – <c:out
-            value="${taskDiagnosis.diagnosisScoreDisplay}"/>/10 – lúc <c:out value="${taskDiagnosis.diagnosisSubmittedAtDisplay}"/>
+                value="${taskDiagnosis.diagnosisScoreDisplay}"/>/10 – lúc <c:out value="${taskDiagnosis.diagnosisSubmittedAtDisplay}"/>
                 <c:choose>
                     <c:when test="${taskDiagnosis.reusedDiagnosis}">(dùng lại từ lần nộp #<c:out
                     value="${taskDiagnosis.diagnosisReusedFrom}"/>)</c:when>
@@ -61,7 +66,7 @@
                         <c:forEach var="evidence" items="${evidenceList}">
                             <label class="task-choice"><input type="radio" name="sessionId" value="<c:out value="${evidence.sessionId}"/>"
                             required> Phiên #<c:out value="${evidence.sessionId}"/> · <c:out value="${evidence.robotName}"/> · hoàn
-                                thành <c:out value="${evidence.assemblyCompletedDisplay}"/></label>
+                            thành <c:out value="${evidence.assemblyCompletedDisplay}"/></label>
                         </c:forEach>
                     </fieldset>
                     <label>Bạn gặp vấn đề gì?<textarea name="problem" required minlength="20" maxlength="1500"></textarea></label>
@@ -73,5 +78,7 @@
                 </form>
             </c:otherwise>
         </c:choose>
-    </body>
+    </main>
+    <%@ include file="workspace-footer.jspf" %>
+</body>
 </html>
