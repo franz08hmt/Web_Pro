@@ -38,6 +38,11 @@ liệu rồi gọi lớp `XxxDB`; luật nghiệp vụ nằm trong chính busine
 | `PreparedStatement` với `?` chống SQL injection (Ch12 slide 17-20) | Mọi câu SQL trong `data/`. Không có câu nào nối chuỗi từ dữ liệu người dùng |
 | Lớp `UserDB` với method `static` (Ch12 slide 45-51) | `data/UserDB`: `insert`, `update`, `emailExists`, `selectUser`… cùng tên với slide |
 | Lớp `DBUtil` đóng tài nguyên trong `finally` (Ch12 slide 52-53) | `data/DBUtil`, dùng trong khối `finally` của mọi method `XxxDB` |
+| Hidden field mang dữ liệu qua form (Ch7 slide 35-37) | `csrfToken`, `id`, `action`, `expectedVersion` trong form nhiệm vụ, chẩn đoán, nối dây, hỗ trợ |
+| `c:out` chống XSS (Ch9 slide 7-8) | Mọi chuỗi từ DB hoặc người dùng trong JSP |
+| Include file (Ch6 slide 27-33) | `workspace-header.jspf`, `workspace-footer.jspf`, `wiring-diagram.jsp` bằng `<%@ include file="..." %>` |
+| Luật nghiệp vụ trong bean, getter định dạng (Ch9 slide 28-33) | `TaskRubric`, `WiringExercise.grade`, `AssemblySession`; getter `...Display` |
+| `sendRedirect` (Ch5 slide 25-26) | Khách về trang tài khoản; PRG sau mọi POST thành công |
 
 ## 3. Một request đi qua các tầng thế nào
 
@@ -117,6 +122,12 @@ SQL của phiên đều kèm `user_id`, nên không đọc hay sửa được ph
 | `maxActive`, `maxWait` | `maxTotal`, `maxWaitMillis` | Tomcat 9 dùng DBCP2; đây là tên mới của cùng thuộc tính |
 | Driver `com.mysql.jdbc.Driver` | `com.mysql.cj.jdbc.Driver` | Tên lớp driver của MySQL Connector/J 8 trở lên |
 | Servlet trả trang HTML | Nhiều servlet trong `/api` trả JSON | Các trang trong `pages/` dùng JavaScript (phòng 3D, tick linh kiện) nên cần dữ liệu JSON |
+| Không có filter | `RequestContextFilter` (`@WebFilter`) | Gom việc chung: UTF-8, `X-Request-Id`, bắt lỗi 500; không chứa nghiệp vụ |
+| Truy vấn đơn lẻ | `setAutoCommit(false)`, `commit`, `rollback`, `SELECT ... FOR UPDATE` | Nhiều bảng phải cùng thành công; khoá dòng để request đồng thời tuần tự hoá (khái niệm transaction ở Ch13 slide 29-34) |
+| `Date`, `DateFormat` | `Date` + `SimpleDateFormat` + `TimeZone` | Cần mẫu `dd/MM/yyyy HH:mm` và múi giờ Việt Nam; cùng họ `java.text` |
+| Tiền, điểm bằng `double` | `BigDecimal` + `RoundingMode.HALF_UP` | Làm tròn chính xác một lần ở kết quả cuối |
+| Custom tag (Ch10) | Không dùng | Thay bằng include và getter của bean |
+| JPA (Ch13), JavaMail (Ch14) | Không dùng | Theo Chapter 12 dùng JDBC; không có email thông báo |
 
 ## 7. Database
 
@@ -150,3 +161,83 @@ request dùng chung giỏ được tuần tự hóa. Snapshot tên/giá giữ l�
 `OrderHistoryServlet` đọc `OrderDB`, `setAttribute` rồi forward tới JSP/JSTL;
 chỉ đọc đơn của phiên hiện tại. Tất cả tiền đều là dữ liệu mô phỏng, không thu
 tiền thật.
+
+## 9. Hồ sơ học tập (Đợt 5, 5b)
+
+```text
+GET /learning-profile
+  → LearningProfileServlet: SessionUtil.getCurrentUser, Cache-Control: no-store
+  → RobotDB.selectAllRobots, StatsDB.selectLearningProfile* (mọi câu SQL có user_id = ?)
+  → LearningProfile.buildProfile()   luật chọn lượt tốt nhất theo tỷ lệ, điểm trung bình HALF_UP, kỹ năng có căn cứ
+  → forward → learning-profile.jsp   (@media print: A4, nền trắng, không menu)
+```
+
+Không thêm bảng. Ngày giờ do bean định dạng bằng `SimpleDateFormat` múi giờ `Asia/Ho_Chi_Minh`.
+Đợt 5b viết lại bean bằng vòng `for`, `ArrayList`, `HashMap`, `Date` cho đúng kỹ thuật slide.
+
+## 10. Nhiệm vụ thực hành và chẩn đoán (Đợt 6)
+
+Dùng **form POST** thay API JSON để bám Ch5, Ch7 (hidden field), Ch9 (JSTL):
+
+```text
+POST /tasks  action=confirm
+  → TaskServlet.doPost
+      ├─ SessionUtil.hasValidFormCsrfToken      hidden csrfToken, sai → 403
+      ├─ TaskSubmissionDB.submit                setAutoCommit(false)
+      │     khoá theo thứ tự: nhiệm vụ → người được giao → vòng → phiên lắp ráp  (FOR UPDATE)
+      │     kiểm: được giao, còn lượt, đúng robot, phiên đã COMPLETED, bằng chứng đúng mốc
+      │     TaskRubric tính điểm tự động (BigDecimal, HALF_UP)  → INSERT bài nộp (snapshot) → commit
+      └─ sendRedirect (PRG)
+```
+
+- **Vòng nộp:** mỗi người được giao có vòng 1, 2…; chỉ tính lượt quiz/chẩn đoán đầu của vòng; kết luận
+  "cần bổ sung" mở vòng mới. Lần chấm là bản ghi mới, không sửa bản cũ.
+- **Rubric:** mẫu A (lắp ráp 40, quiz 40, giải thích 20) và mẫu B (30, 25, 25, 20). Hằng số nằm trong
+  `TaskRubric`; bài đã công bố bất biến, muốn đổi thì nhân bản.
+- **Chẩn đoán:** quan sát chỉ trả sau khi server ghi nhận lượt chọn phép kiểm tra
+  (`diagnosis_attempt_checks`); điểm quá trình `4 × số phép cần thiết đã làm / tổng` + nguyên nhân 3 + xử lý 3.
+- **Vì sao snapshot:** bài nộp giữ id nguồn **và** bản chụp (tên robot, điểm quiz, điểm chẩn đoán) nên
+  lịch sử không đổi khi nội dung gốc đổi.
+
+## 11. Phòng nối dây và hỗ trợ (Đợt 7)
+
+```text
+wiring.js (nhấn hai chân / kéo thả / bàn phím)  chỉ tạo danh sách cặp "pair=idA:idB" trong form
+  → POST /wiring  action=save | submit  (kèm csrfToken, expectedVersion)
+  → WiringServlet → WiringDB.mutate     khoá bài rồi lượt FOR UPDATE; kiểm chủ lượt, trạng thái, version
+  → WiringExercise.normalize            cặp không hướng: A–B = B–A, bỏ dây trùng, tối đa 80 dây
+  → WiringExercise.grade → WiringGrade  N, C, W, M; điểm = HALF_UP(100 × max(C − W, 0) / N, 1)
+  → UPDATE ... version = version + 1, state = 'SUBMITTED' ; commit ; sendRedirect
+```
+
+- Tắt JavaScript vẫn dùng được (hai nhóm radio chọn chân, nút thêm/xoá/lưu/nộp).
+- Hai tab cùng lưu một version: tab đến sau nhận 422, không ghi đè.
+- Hỗ trợ Admin–User: `WiringSupportDB` dựng **bản chụp từ lượt đã lưu trên server**; mỗi lượt chỉ có một
+  yêu cầu OPEN/ANSWERED; tin nhắn đã lưu bất biến. ADMIN không sửa dây, điểm hay nộp thay.
+- Đây là luyện tập có tài liệu, chỉ chấm cặp nối trực tiếp trong bài mẫu; không mô phỏng điện.
+
+## 12. Khung giao diện dùng chung
+
+Mọi JSP trong `WEB-INF/views` (34 trang) gắn `workspace-header.jspf` và `workspace-footer.jspf`
+bằng include directive; kiểu dáng ở `assets/css/learning-workspace.css` (nền charcoal, nhấn cam,
+Poppins, Heroicons cục bộ). Header chỉ hiện liên kết theo vai trò bằng `c:choose` trên
+`sessionScope.user.admin`. Trang hồ sơ học tập vẫn in A4 nền trắng bằng `@media print`.
+
+## 13. Kiểm thử (06/10/2026)
+
+| Loại | Số lượng | Vai trò |
+| --- | --- | --- |
+| Node (`tests/server/*.test.cjs`) | 21 file, 131 test | Kiểm nguồn: cấu trúc môn học, cấm kỹ thuật ngoài slide, form/CSRF/no-store, hợp đồng giao diện |
+| JUnit | 12 lớp, 79 test | Luật nghiệp vụ (rubric, nối dây, công bố), `JavaBeanRulesTest`, `JspExpressionContractTest` |
+
+Node và JUnit chỉ là công cụ kiểm tra khi phát triển, không phải runtime của website.
+
+## 14. Số lớp theo package
+
+| Package | Số file | Ghi chú |
+| --- | --- | --- |
+| `business/` | 45 | JavaBean + luật nghiệp vụ |
+| `controller/` | 37 | `@WebServlet`; 18 forward sang JSP, 19 trả JSON |
+| `data/` | 22 | `ConnectionPool`, `DBUtil`, `DatabaseLifecycleListener` và các `XxxDB` |
+| `util/` | 8 | `SessionUtil`, `PasswordUtil`, `JsonUtil`, `ResponseUtil`, `ValidationUtil`, các `...FormUtil` |
+| `filter/` | 1 | `RequestContextFilter` (ngoài slide) |

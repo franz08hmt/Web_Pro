@@ -307,11 +307,15 @@ Các chỗ code cũ ngoài Đợt 5 còn dùng kỹ thuật chưa có trong bả
 
 ## Phân công
 
-| Thành viên | Phần trình bày | File nên mở |
-| --- | --- | --- |
-| Nhi | Database, dữ liệu robot/linh kiện/bước/thư viện, CRUD nội dung | `database/schema.sql`, `database/seed.sql`, `data/RobotDB.java`, `data/ComponentDB.java`, `Admin*Servlet.java` |
-| Tuấn Anh | Phòng 3D, dựng linh kiện, camera và thao tác lắp ráp | `assets/js/assembly-3d-parts.js`, `assets/js/assembly-3d.js`, `pages/lap-rap-3d.html` |
-| Tài | Servlet/Tomcat, đăng nhập, session, phân quyền, phiên lắp ráp, tích hợp client-server | `AuthServlet.java`, `AdminUserServlet.java`, `data/UserDB.java`, `util/SessionUtil.java`, `AssemblySessionServlet.java`, `assets/js/api.js` |
+Từ Đợt 1 đến Đợt 7 và phần giao diện, các chức năng thêm vào được chia lại theo vai trò
+ban đầu để ba người có khối lượng và độ sâu tương đương (bảng dưới). Mỗi người sở hữu một
+luồng đầy đủ từ trình duyệt đến bảng MySQL.
+
+| Thành viên | Vai trò ban đầu | Mảng sở hữu hiện tại | File nên mở |
+| --- | --- | --- | --- |
+| Nhi | Database, dữ liệu robot/linh kiện/bước/thư viện, CRUD nội dung | **Dữ liệu và nội dung**: lớp dữ liệu, schema/migration/seed, catalog, quiz, tra cứu lỗi, tổng kết và thống kê | `database/schema.sql`, `database/seed.sql`, `ConnectionPool`, `RobotDB`, `ComponentDB`, `QuizAttemptDB`, `StatsDB`, `Admin*Servlet.java` |
+| Tuấn Anh | Phòng 3D, dựng linh kiện, camera và thao tác lắp ráp | **Tương tác và thực hành**: phòng 3D, chẩn đoán lỗi, phòng nối dây và hỗ trợ, cửa hàng mô phỏng, giao diện đáp ứng | `assembly-3d*.js`, `lap-rap-3d.html`, `wiring.js`, `WiringServlet`, `DiagnosisServlet`, `CartDB`, `OrderDB` |
+| Tài | Servlet/Tomcat, đăng nhập, session, phân quyền, phiên lắp ráp, tích hợp client-server, giao diện dùng chung | **Nền tảng và phiên học tập**: auth/CSRF/filter, phiên lắp ráp và phiếu kết quả, nhiệm vụ thực hành, hồ sơ học tập, khung giao diện JSP | `AuthServlet`, `SessionUtil`, `AssemblySessionServlet`, `TaskServlet`, `LearningProfileServlet`, `workspace-header.jspf` |
 
 ## Kịch bản demo ngắn
 
