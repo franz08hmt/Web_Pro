@@ -10,7 +10,7 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/wiring.css?v=20261006.2">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/wiring-support.css?v=20261005.1">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-wiring-support-list wiring wiring-support">
@@ -36,7 +36,18 @@
             <div class="workspace-grid">
                 <c:forEach var="supportItem" items="${supportRequests}">
                     <section class="workspace-panel">
-                        <h2>Yêu cầu #<c:out value="${supportItem.id}"/> · <c:out value="${supportItem.stateLabel}"/></h2>
+                        <h2>Yêu cầu #<c:out value="${supportItem.id}"/> · <c:set var="workspaceStatusTone" value="neutral"/>
+                        <c:choose>
+                            <c:when test="${supportItem.open}">
+                                <c:set var="workspaceStatusTone" value="warning"/>
+                            </c:when>
+                            <c:when test="${supportItem.answered}">
+                                <c:set var="workspaceStatusTone" value="info"/>
+                            </c:when>
+                        </c:choose>
+                        <span class="status-badge status-badge--<c:out value="${workspaceStatusTone}"/>">
+                            <c:out value="${supportItem.stateLabel}"/>
+                        </span></h2>
                         <p><c:out value="${supportItem.exerciseTitle}"/> · lượt #<c:out value="${supportItem.attemptId}"/></p>
                         <c:if test="${supportAdmin}">
                             <p>Người hỏi: <c:out value="${supportItem.ownerName}"/></p>

@@ -9,7 +9,7 @@
         <title>Kết quả nối dây | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/wiring.css?v=20261006.2">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-wiring-result wiring">
@@ -22,17 +22,32 @@
             </nav>
             <h1>Kết quả nối dây</h1>
             <c:if test="${wiringAlreadySubmitted}">
-                <p role="status">Lượt đã nộp trước đó. Đây là kết quả cũ; payload gửi lại không được lưu.</p>
+                <p role="status">Lượt đã nộp trước đó. Đây là kết quả cũ; sơ đồ gửi lại không được lưu.</p>
             </c:if>
             <p>Lượt #<c:out value="${wiringAttempt.id}"/> · <c:out value="${wiringExercise.title}"/></p>
             <p><c:out value="${wiringExercise.robotName}"/> · Nộp lúc <c:out value="${wiringAttempt.submittedAtDisplay}"/></p>
-            <h2><c:out value="${wiringAttempt.grade.resultLabel}"/></h2>
+            <h2><c:set var="workspaceStatusTone" value="neutral"/>
+            <c:choose>
+                <c:when test="${wiringAttempt.grade.entirelyCorrect}">
+                    <c:set var="workspaceStatusTone" value="success"/>
+                </c:when>
+                <c:when test="${not wiringAttempt.grade.entirelyCorrect}">
+                    <c:set var="workspaceStatusTone" value="warning"/>
+                </c:when>
+            </c:choose>
+            <span class="status-badge status-badge--<c:out value="${workspaceStatusTone}"/>">
+                <c:out value="${wiringAttempt.grade.resultLabel}"/>
+            </span></h2>
             <p>Điểm: <c:out value="${wiringAttempt.grade.scoreDisplay}"/>/100</p>
-            <p>Đúng C=<c:out value="${wiringAttempt.grade.correctCount}"/>;
-            sai/thừa W=<c:out value="${wiringAttempt.grade.wrongCount}"/>;
-            thiếu M=<c:out value="${wiringAttempt.grade.missingCount}"/>;
-            bắt buộc N=<c:out value="${wiringAttempt.grade.requiredCount}"/>.</p>
-            <p>Điểm = 100 × max(C − W, 0) / N, làm tròn HALF_UP đến 1 chữ số thập phân.</p>
+            <p>Dây đúng: <c:out value="${wiringAttempt.grade.correctCount}"/> ·
+Dây sai/thừa: <c:out value="${wiringAttempt.grade.wrongCount}"/> ·
+Còn thiếu: <c:out value="${wiringAttempt.grade.missingCount}"/> ·
+Tổng dây bắt buộc: <c:out value="${wiringAttempt.grade.requiredCount}"/>.</p>
+<details class="workspace-technical">
+<summary>Cách tính điểm</summary>
+<p>Điểm = 100 × max(C − W, 0) / N; C là số dây đúng, W là số dây sai/thừa, N là tổng dây bắt buộc.
+Làm tròn đến 1 chữ số thập phân: chữ số tiếp theo từ 5 trở lên thì tăng chữ số cuối.</p>
+</details>
             <p><c:out value="${wiringExercise.scopeText}"/></p>
             <p>Kết quả chỉ ghi nhận cặp trực tiếp trong bài mô phỏng, không xác nhận robot thật đấu nối/vận hành an toàn.</p>
             <c:set var="wiringDiagramConnections" value="${wiringAttempt.connections}"/>
@@ -48,9 +63,31 @@
                         <tbody>
                             <c:forEach var="wiringConnection" items="${wiringAttempt.grade.rows}">
                                 <tr>
-                                    <td><c:out value="${wiringConnection.first.label}"/> · <c:out
-                                    value="${wiringConnection.second.label}"/></td>
-                                    <td><strong><c:out value="${wiringConnection.resultLabel}"/></strong></td>
+                                    <td><span class="terminal-name" aria-label="<c:out value="${wiringConnection.first.label}"/>">
+<c:out value="${wiringConnection.first.deviceLabel}"/> · <c:out value="${wiringConnection.first.pinLabel}"/>
+<span class="terminal-code">[<c:out value="${wiringConnection.first.code}"/>]</span>
+</span> · <span class="terminal-name" aria-label="<c:out value="${wiringConnection.second.label}"/>">
+<c:out value="${wiringConnection.second.deviceLabel}"/> · <c:out value="${wiringConnection.second.pinLabel}"/>
+<span class="terminal-code">[<c:out value="${wiringConnection.second.code}"/>]</span>
+</span></td>
+                                    <td><strong><c:set var="workspaceStatusTone" value="neutral"/>
+                                    <c:choose>
+                                        <c:when test="${wiringConnection.forbidden}">
+                                            <c:set var="workspaceStatusTone" value="danger"/>
+                                        </c:when>
+                                        <c:when test="${wiringConnection.resultLabel eq 'Đúng'}">
+                                            <c:set var="workspaceStatusTone" value="success"/>
+                                        </c:when>
+                                        <c:when test="${wiringConnection.resultLabel eq 'Sai/thừa'}">
+                                            <c:set var="workspaceStatusTone" value="danger"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:set var="workspaceStatusTone" value="warning"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <span class="status-badge status-badge--<c:out value="${workspaceStatusTone}"/>">
+                                        <c:out value="${wiringConnection.resultLabel}"/>
+                                    </span></strong></td>
                                     <td><c:out value="${wiringConnection.explanation}"/></td>
                                 </tr>
                             </c:forEach>

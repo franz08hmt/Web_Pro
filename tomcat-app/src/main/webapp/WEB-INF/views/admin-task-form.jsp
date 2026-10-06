@@ -9,7 +9,7 @@
         <title>Biên soạn nhiệm vụ | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/practice-tasks.css?v=20261005.1">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-admin-task-form practice-tasks">
@@ -29,12 +29,12 @@
             <form method="get" action="${pageContext.request.contextPath}/admin-tasks">
                 <input type="hidden" name="id" value="<c:out value="${task.id}"/>">
                 <input type="hidden" name="action" value="${learnerAction}">
-                <label>Tìm User theo tên <input name="q" value="<c:out value="${searchQuery}"/>" maxlength="100"></label>
-                <label>Trang danh sách User <input type="number" name="page" min="1" max="10000" value="<c:out
+                <label>Tìm người học theo tên <input name="q" value="<c:out value="${searchQuery}"/>" maxlength="100"></label>
+                <label>Trang danh sách người học <input type="number" name="page" min="1" max="10000" value="<c:out
                 value="${learnerPage}"/>"></label>
                 <button>Tìm</button>
             </form>
-            <p>Mỗi trang tối đa 20 User. Người đã được giao vẫn được giữ trong nháp; bỏ chọn để gỡ.</p>
+            <p>Mỗi trang tối đa 20 người học. Người đã được giao vẫn được giữ trong nháp; bỏ chọn để gỡ.</p>
             <form method="post" action="${pageContext.request.contextPath}/admin-tasks">
                 <input type="hidden" name="csrfToken" value="<c:out value="${sessionScope.csrfToken}"/>">
                 <input type="hidden" name="id" value="<c:out value="${task.id}"/>">
@@ -44,12 +44,14 @@
                     <label class="task-choice">
                     <input type="radio" name="rubricTemplate" value="A" required
                     <c:if test="${not task.rubricB}">checked</c:if>>
-                    <c:out value="${task.rubric.templateALabel}"/>
+                    <c:set var="workspaceTemplateALabel" value="${task.rubric.templateALabel}"/>
+Mẫu A — lắp ráp 40, quiz 40, giải thích 20; tổng 100.
                     </label>
                     <label class="task-choice">
                     <input type="radio" name="rubricTemplate" value="B" required
                     <c:if test="${task.rubricB}">checked</c:if>>
-                    <c:out value="${task.rubric.templateBLabel}"/>
+                    <c:set var="workspaceTemplateBLabel" value="${task.rubric.templateBLabel}"/>
+Mẫu B — lắp ráp 30, quiz 25, chẩn đoán 25, giải thích 20; tổng 100.
                     </label>
                 </fieldset>
                 <fieldset>
@@ -101,9 +103,12 @@
                 required></label>
                 <label class="task-choice"><input type="checkbox" name="allowPriorEvidence" value="true" <c:if
                 test="${task.allowPriorEvidence}">checked</c:if>> Cho phép phiên lắp ráp hoàn thành trước vòng 1</label>
-            <p><c:out value="${task.rubric.label}"/>.</p>
+            <c:set var="workspaceRubricLabel" value="${task.rubric.label}"/>
+<p>Thang điểm đang chọn: lắp ráp <c:out value="${task.rubric.assemblyWeight}"/>, quiz <c:out
+value="${task.rubric.quizWeight}"/>, <c:if test="${task.rubricB}">chẩn đoán <c:out
+value="${task.rubric.diagnosisWeight}"/>, </c:if>giải thích 20 — tổng 100.</p>
             <fieldset>
-                <legend>Chọn người được giao (chỉ USER)</legend>
+                <legend>Chọn người học được giao nhiệm vụ</legend>
                 <c:forEach var="recipient" items="${recipients}">
                     <label class="task-choice"><input type="checkbox" name="recipientId" value="<c:out value="${recipient.userId}"/>"
                     checked> <c:out value="${recipient.fullName}"/></label>

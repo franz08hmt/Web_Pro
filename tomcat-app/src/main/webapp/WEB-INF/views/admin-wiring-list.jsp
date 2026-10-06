@@ -9,7 +9,7 @@
         <title>Quản lý bài nối dây | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/wiring.css?v=20261006.2">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-admin-wiring-list wiring">
@@ -26,7 +26,18 @@
                 <c:forEach var="wiringExercise" items="${wiringExercises}">
                     <section class="workspace-panel">
                         <h2><c:out value="${wiringExercise.title}"/></h2>
-                        <p><c:out value="${wiringExercise.code}"/> · <c:out value="${wiringExercise.stateLabel}"/></p>
+                        <p><c:out value="${wiringExercise.code}"/> · <c:set var="workspaceStatusTone" value="neutral"/>
+                        <c:choose>
+                            <c:when test="${wiringExercise.published}">
+                                <c:set var="workspaceStatusTone" value="info"/>
+                            </c:when>
+                            <c:when test="${wiringExercise.draft}">
+                                <c:set var="workspaceStatusTone" value="warning"/>
+                            </c:when>
+                        </c:choose>
+                        <span class="status-badge status-badge--<c:out value="${workspaceStatusTone}"/>">
+                            <c:out value="${wiringExercise.stateLabel}"/>
+                        </span></p>
                         <a href="?action=view&amp;id=${wiringExercise.id}">Chi tiết / quản lý</a>
                     </section>
                 </c:forEach>

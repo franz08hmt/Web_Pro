@@ -131,11 +131,47 @@
   .learning-workspace .workspace-nav a:hover { background: var(--lab-raised); color: var(--lab-text); }
   .learning-workspace .workspace-more { position: relative; }
   .learning-workspace .workspace-more > summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     min-height: 44px;
     padding: 8px 12px;
+    border-radius: 8px;
+    font-size: inherit;
+    font-weight: 500;
+    line-height: inherit;
+    list-style: none;
     cursor: pointer;
     color: var(--lab-muted);
   }
+  .learning-workspace .workspace-more > summary::-webkit-details-marker { display: none; }
+  .learning-workspace .workspace-more > summary::after { content: "⌄"; font-size: .85em; }
+  .learning-workspace .workspace-more[open] > summary::after { content: "⌃"; }
+  .learning-workspace .workspace-more > summary:hover { background: var(--lab-raised); color: var(--lab-text); }
+  .learning-workspace .status-badge {
+    display: inline-block;
+    max-width: 100%;
+    padding: 3px 10px;
+    border: 1px solid #66787e;
+    border-radius: 6px;
+    background: #232c31;
+    color: #eef3f2;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.6;
+    vertical-align: middle;
+    overflow-wrap: anywhere;
+  }
+  .learning-workspace .status-badge--success { color: #a3efbb; background: #163426; border-color: #48785a; }
+  .learning-workspace .status-badge--warning { color: #ffe099; background: #3b301b; border-color: #8f784b; }
+  .learning-workspace .status-badge--danger { color: #ffc0b8; background: #3b2326; border-color: #95605e; }
+  .learning-workspace .status-badge--info { color: #9cebe2; background: #173432; border-color: #487e76; }
+  .learning-workspace .learning-profile .status-badge { color: #24313a; background: #f2f5f7; border-color: #74818a; }
+  .learning-workspace .terminal-code { color: #a9b6b4; font-family: monospace; font-size: .9em; }
+  .learning-workspace .wiring-terminal .terminal-code { fill: #a9b6b4; font-size: 13px; }
+  .learning-workspace .terminal-name { min-width: 0; }
+  .learning-workspace .workspace-technical > summary { min-height: 44px; display: flex; align-items: center; }
+  .learning-workspace .workspace-more nav a { overflow-wrap: anywhere; }
   .learning-workspace .workspace-more nav {
     display: grid;
     position: absolute;
@@ -219,6 +255,8 @@
   .learning-workspace .workspace-technical > summary { cursor: pointer; font-weight: 500; }
   .learning-workspace .workspace-technical .lead { border: 0; padding: 0; color: inherit; }
   .learning-workspace .workspace-content:not(.learning-profile) .summary { color: var(--lab-muted); }
+  .learning-workspace .workspace-content:not(.learning-profile) .lead { color: var(--lab-muted); }
+  .learning-workspace .workspace-metric dd small { display: block; font-size: 14px; font-weight: 400; line-height: 1.7; }
   .learning-workspace .workspace-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -439,6 +477,7 @@
   .learning-workspace .workspace-role { margin-left: auto; }
   .learning-workspace .workspace-nav { width: 100%; gap: 0; }
   .learning-workspace .workspace-nav a { padding: 8px 10px; font-size: 13px; }
+  .learning-workspace .workspace-more > summary { padding: 8px 10px; font-size: 13px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .learning-workspace *, .learning-workspace *::before, .learning-workspace *::after {

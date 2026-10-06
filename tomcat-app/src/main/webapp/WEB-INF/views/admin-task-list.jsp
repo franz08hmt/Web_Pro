@@ -9,7 +9,7 @@
         <title>Quản lý nhiệm vụ | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/practice-tasks.css?v=20261005.1">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-admin-task-list practice-tasks">
@@ -57,7 +57,18 @@
                 <c:forEach var="task" items="${tasks}">
                     <section class="task-card">
                         <h2><a href="?action=view&amp;id=<c:out value="${task.id}"/>"><c:out value="${task.title}"/></a></h2>
-                        <p><c:out value="${task.robotName}"/> · <c:out value="${task.stateLabel}"/> · Hạn nộp <c:out
+                        <p><c:out value="${task.robotName}"/> · <c:set var="workspaceStatusTone" value="neutral"/>
+                        <c:choose>
+                            <c:when test="${task.open}">
+                                <c:set var="workspaceStatusTone" value="info"/>
+                            </c:when>
+                            <c:when test="${task.draft}">
+                                <c:set var="workspaceStatusTone" value="warning"/>
+                            </c:when>
+                        </c:choose>
+                        <span class="status-badge status-badge--<c:out value="${workspaceStatusTone}"/>">
+                            <c:out value="${task.stateLabel}"/>
+                        </span> · Hạn nộp <c:out
                         value="${task.dueDisplay}"/></p>
                     </section>
                 </c:forEach>

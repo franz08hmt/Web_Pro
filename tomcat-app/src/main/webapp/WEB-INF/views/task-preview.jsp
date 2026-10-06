@@ -9,7 +9,7 @@
         <title>Xem trước bài nộp | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/practice-tasks.css?v=20261005.1">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-task-preview practice-tasks">
@@ -38,7 +38,7 @@
         <p>Điểm tự động dự kiến: <c:out value="${taskSubmission.automaticDisplay}"/>/<c:out
         value="${taskSubmission.rubric.automaticMaximum}"/> — chờ đánh giá phần giải thích</p>
         <c:if test="${taskSubmission.late}">
-            <p>Nộp muộn</p>
+            <p><span class="status-badge status-badge--warning">Nộp muộn</span></p>
         </c:if>
         <h2>Giải thích</h2>
         <h3>Bạn gặp vấn đề gì?</h3>

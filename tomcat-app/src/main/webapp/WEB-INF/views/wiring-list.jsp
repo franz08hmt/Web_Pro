@@ -9,7 +9,7 @@
         <title>Phòng thực hành nối dây | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/wiring.css?v=20261006.2">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-wiring-list wiring">
@@ -46,10 +46,32 @@
             <c:forEach var="wiringAttempt" items="${wiringAttempts}">
                 <section class="workspace-panel">
                     <h3><c:out value="${wiringAttempt.exercise.title}"/> · lượt #<c:out value="${wiringAttempt.id}"/></h3>
-                    <p><c:out value="${wiringAttempt.stateLabel}"/> · <c:out value="${wiringAttempt.updatedAtDisplay}"/></p>
+                    <p><c:set var="workspaceStatusTone" value="neutral"/>
+                    <c:choose>
+                        <c:when test="${wiringAttempt.draft}">
+                            <c:set var="workspaceStatusTone" value="warning"/>
+                        </c:when>
+                        <c:when test="${wiringAttempt.submitted}">
+                            <c:set var="workspaceStatusTone" value="info"/>
+                        </c:when>
+                    </c:choose>
+                    <span class="status-badge status-badge--<c:out value="${workspaceStatusTone}"/>">
+                        <c:out value="${wiringAttempt.stateLabel}"/>
+                    </span> · <c:out value="${wiringAttempt.updatedAtDisplay}"/></p>
                     <c:if test="${wiringAttempt.submitted}">
                         <p><c:out value="${wiringAttempt.grade.scoreDisplay}"/>/100 —
-                        <c:out value="${wiringAttempt.grade.resultLabel}"/></p>
+                        <c:set var="workspaceStatusTone" value="neutral"/>
+                        <c:choose>
+                            <c:when test="${wiringAttempt.grade.entirelyCorrect}">
+                                <c:set var="workspaceStatusTone" value="success"/>
+                            </c:when>
+                            <c:when test="${not wiringAttempt.grade.entirelyCorrect}">
+                                <c:set var="workspaceStatusTone" value="warning"/>
+                            </c:when>
+                        </c:choose>
+                        <span class="status-badge status-badge--<c:out value="${workspaceStatusTone}"/>">
+                            <c:out value="${wiringAttempt.grade.resultLabel}"/>
+                        </span></p>
                     </c:if>
                     <a href="?action=play&amp;id=<c:out value="${wiringAttempt.id}"/>">Tiếp tục / xem kết quả</a>
                 </section>

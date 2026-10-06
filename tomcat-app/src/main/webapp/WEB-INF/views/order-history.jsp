@@ -9,7 +9,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Lịch sử đơn mô phỏng | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-order-history">
@@ -31,7 +31,10 @@
                     <c:forEach var="order" items="${orders}">
                         <section class="notice" aria-label="Đơn hàng ${order.id}">
                             <h2>Đơn #<c:out value="${order.id}"/></h2>
-                            <p>Trạng thái: <c:out value="${order.statusLabel}"/> · <c:out value="${order.createdAt}"/></p>
+                            <p>Trạng thái: <c:set var="workspaceStatusTone" value="neutral"/>
+                            <span class="status-badge status-badge--<c:out value="${workspaceStatusTone}"/>">
+                                <c:out value="${order.statusLabel}"/>
+                            </span> · <c:out value="${order.createdAt}"/></p>
                             <div class="workspace-table" role="region" aria-label="Bảng dữ liệu có thể cuộn ngang" tabindex="0">
                                 <table>
                                     <caption>Các mặt hàng đã được chụp thông tin tại lúc xác nhận</caption>

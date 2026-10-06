@@ -9,7 +9,7 @@
         <title>Biên soạn bài nối dây | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/wiring.css?v=20261006.2">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-admin-wiring-form wiring">
@@ -26,7 +26,7 @@
                 <input type="hidden" name="csrfToken" value="<c:out value="${sessionScope.csrfToken}"/>">
                 <input type="hidden" name="action" value="saveDraft">
                 <input type="hidden" name="id" value="${wiringExercise.id}">
-                <label>Mã ổn định (ASCII, số, dấu . _ -)
+                <label>Mã bài (chữ không dấu, số, dấu . _ -)
                 <input name="code" maxlength="64" value="<c:out value="${wiringExercise.code}"/>" required>
                 </label>
                 <label>Tên bài

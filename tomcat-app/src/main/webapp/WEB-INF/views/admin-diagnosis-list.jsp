@@ -9,7 +9,7 @@
         <title>Quản lý chẩn đoán | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/practice-tasks.css?v=20261005.1">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-admin-diagnosis-list practice-tasks">
@@ -25,7 +25,18 @@
                         <h2><a href="?action=view&amp;id=<c:out value="${diagnosisScenario.id}"/>">
                         <c:out value="${diagnosisScenario.title}"/>
                         </a></h2>
-                        <p><c:out value="${diagnosisScenario.robotName}"/> · <c:out value="${diagnosisScenario.stateLabel}"/>
+                        <p><c:out value="${diagnosisScenario.robotName}"/> · <c:set var="workspaceStatusTone" value="neutral"/>
+                        <c:choose>
+                            <c:when test="${diagnosisScenario.published}">
+                                <c:set var="workspaceStatusTone" value="info"/>
+                            </c:when>
+                            <c:when test="${diagnosisScenario.draft}">
+                                <c:set var="workspaceStatusTone" value="warning"/>
+                            </c:when>
+                        </c:choose>
+                        <span class="status-badge status-badge--<c:out value="${workspaceStatusTone}"/>">
+                            <c:out value="${diagnosisScenario.stateLabel}"/>
+                        </span>
                         · Phiên bản <c:out value="${diagnosisScenario.versionNo}"/></p>
                     </section>
                 </c:forEach>

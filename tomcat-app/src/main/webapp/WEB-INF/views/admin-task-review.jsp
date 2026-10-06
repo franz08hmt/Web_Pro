@@ -9,7 +9,7 @@
         <title>Đánh giá bài nộp | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/practice-tasks.css?v=20261005.1">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-admin-task-review practice-tasks">
@@ -108,14 +108,14 @@
             <h3>Nguyên nhân đã chọn</h3>
             <p><c:out value="${diagnosisAttempt.chosenCause.label}"/> —
             <c:choose><c:when
-                test="${diagnosisAttempt.causeCorrect}">Đúng (3/3)</c:when>
-            <c:otherwise>Sai (0/3)</c:otherwise></c:choose></p>
+                test="${diagnosisAttempt.causeCorrect}"><span class="status-badge status-badge--success">Đúng (3/3)</span></c:when>
+            <c:otherwise><span class="status-badge status-badge--danger">Sai (0/3)</span></c:otherwise></c:choose></p>
         <p class="task-text"><c:out value="${diagnosisAttempt.chosenCause.feedbackText}"/></p>
         <h3>Cách xử lý đã chọn</h3>
         <p><c:out value="${diagnosisAttempt.chosenAction.label}"/> —
         <c:choose><c:when
-            test="${diagnosisAttempt.actionCorrect}">Đúng (3/3)</c:when>
-        <c:otherwise>Sai (0/3)</c:otherwise></c:choose></p>
+            test="${diagnosisAttempt.actionCorrect}"><span class="status-badge status-badge--success">Đúng (3/3)</span></c:when>
+        <c:otherwise><span class="status-badge status-badge--danger">Sai (0/3)</span></c:otherwise></c:choose></p>
     <p class="task-text"><c:out value="${diagnosisAttempt.chosenAction.feedbackText}"/></p>
     <h3>Giải thích tình huống</h3>
     <p class="task-text"><c:out value="${diagnosisAttempt.scenario.explanationText}"/></p>
@@ -125,8 +125,8 @@
 <c:forEach var="taskSubmission" items="${submissions}">
     <section class="task-card">
         <h3>Lần nộp #<c:out value="${taskSubmission.submissionNo}"/></h3>
-        <p><c:out value="${taskSubmission.submittedDisplay}"/> <c:if test="${taskSubmission.late}"><strong> · Nộp
-            muộn</strong></c:if></p>
+        <p><c:out value="${taskSubmission.submittedDisplay}"/> <c:if test="${taskSubmission.late}"><span class="status-badge
+status-badge--warning"> · Nộp muộn</span></c:if></p>
         <p>Phiên lắp ráp #<c:out value="${taskSubmission.sessionId}"/> · <c:out value="${taskSubmission.robotName}"/> · hoàn thành
         <c:out value="${taskSubmission.assemblyCompletedDisplay}"/></p>
         <p>Quiz lượt #<c:out value="${taskSubmission.quizAttemptId}"/>: <c:out value="${taskSubmission.quizScore}"/>/<c:out
@@ -162,7 +162,21 @@
 </c:if>
 <c:forEach var="taskReview" items="${taskSubmission.reviews}">
     <div class="task-review">
-        <p><strong><c:out value="${taskReview.conclusionLabel}"/> · Tổng: <c:out value="${taskReview.totalDisplay}"/>/100</strong> ·
+        <p><strong><c:set var="workspaceStatusTone" value="neutral"/>
+        <c:choose>
+            <c:when test="${taskReview.passed}">
+                <c:set var="workspaceStatusTone" value="success"/>
+            </c:when>
+            <c:when test="${taskReview.needsRevision}">
+                <c:set var="workspaceStatusTone" value="warning"/>
+            </c:when>
+            <c:when test="${taskReview.notPassed}">
+                <c:set var="workspaceStatusTone" value="danger"/>
+            </c:when>
+        </c:choose>
+        <span class="status-badge status-badge--<c:out value="${workspaceStatusTone}"/>">
+            <c:out value="${taskReview.conclusionLabel}"/>
+        </span> · Tổng: <c:out value="${taskReview.totalDisplay}"/>/100</strong> ·
         Giải thích: <c:out value="${taskReview.explanationPoints}"/>/20 · <c:out value="${taskReview.reviewedDisplay}"/></p>
         <p>Người chấm: <c:out value="${taskReview.reviewerName}"/> · <c:out value="${taskReview.explanationLabel}"/></p>
         <p>Điểm mạnh: <c:out value="${taskReview.strengths}"/></p>

@@ -9,7 +9,7 @@
         <title>Thực hành nối dây | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/wiring.css?v=20261006.2">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-wiring-play wiring">
@@ -21,7 +21,8 @@
                 <a href="${pageContext.request.contextPath}/wiring">Thực hành nối dây</a>
             </nav>
             <h1><c:out value="${wiringExercise.title}"/></h1>
-            <p>Lượt #<c:out value="${wiringAttempt.id}"/> · phiên bản <c:out value="${wiringAttempt.version}"/> · chưa chấm.</p>
+            <p>Lượt #<c:out value="${wiringAttempt.id}"/> · phiên bản <c:out value="${wiringAttempt.version}"/> · <span
+class="status-badge status-badge--warning">chưa chấm</span>.</p>
             <p>
             <a href="${pageContext.request.contextPath}/wiring-support?action=new&amp;attemptId=${wiringAttempt.id}">
             Gửi câu hỏi hỗ trợ (lưu nháp trước)
@@ -62,7 +63,10 @@
                         <c:forEach var="wiringTerminal" items="${wiringExercise.terminals}">
                             <label>
                             <input type="radio" name="terminalA" value="${wiringTerminal.id}">
-                            <c:out value="${wiringTerminal.label}"/>
+                            <span class="terminal-name" aria-label="<c:out value="${wiringTerminal.label}"/>">
+    <c:out value="${wiringTerminal.deviceLabel}"/> · <c:out value="${wiringTerminal.pinLabel}"/>
+    <span class="terminal-code">[<c:out value="${wiringTerminal.code}"/>]</span>
+</span>
                             </label>
                         </c:forEach>
                     </fieldset>
@@ -71,7 +75,10 @@
                         <c:forEach var="wiringTerminal" items="${wiringExercise.terminals}">
                             <label>
                             <input type="radio" name="terminalB" value="${wiringTerminal.id}">
-                            <c:out value="${wiringTerminal.label}"/>
+                            <span class="terminal-name" aria-label="<c:out value="${wiringTerminal.label}"/>">
+    <c:out value="${wiringTerminal.deviceLabel}"/> · <c:out value="${wiringTerminal.pinLabel}"/>
+    <span class="terminal-code">[<c:out value="${wiringTerminal.code}"/>]</span>
+</span>
                             </label>
                         </c:forEach>
                     </fieldset>
@@ -82,7 +89,13 @@
                     <c:forEach var="wiringConnection" items="${wiringAttempt.connections}">
                         <label>
                         <input type="radio" name="removePair" value="<c:out value="${wiringConnection.pairKey}"/>">
-                        <c:out value="${wiringConnection.first.label}"/> · <c:out value="${wiringConnection.second.label}"/>
+                        <span class="terminal-name" aria-label="<c:out value="${wiringConnection.first.label}"/>">
+<c:out value="${wiringConnection.first.deviceLabel}"/> · <c:out value="${wiringConnection.first.pinLabel}"/>
+<span class="terminal-code">[<c:out value="${wiringConnection.first.code}"/>]</span>
+</span> · <span class="terminal-name" aria-label="<c:out value="${wiringConnection.second.label}"/>">
+<c:out value="${wiringConnection.second.deviceLabel}"/> · <c:out value="${wiringConnection.second.pinLabel}"/>
+<span class="terminal-code">[<c:out value="${wiringConnection.second.code}"/>]</span>
+</span>
                         </label>
                     </c:forEach>
                 </div>

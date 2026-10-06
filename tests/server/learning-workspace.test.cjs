@@ -70,3 +70,28 @@ test("shell fragments stay semantic and wiring targets exclude icons and snapsho
 });
 
 module.exports = {controlContract};
+
+test("UI-2 navigation and status labels keep native accessible presentation", () => {
+  const css = read("assets/css/learning-workspace.css");
+  assert.match(css, /workspace-more > summary\s*\{[^}]*font-weight:\s*500/);
+  assert.match(css, /workspace-more > summary\s*\{[^}]*min-height:\s*44px/);
+  assert.match(css, /\.status-badge--success/);
+  assert.match(css, /\.status-badge--warning/);
+  assert.match(css, /\.status-badge--danger/);
+  for (const name of ["task-view.jsp", "wiring-result.jsp", "wiring-support-view.jsp"]) {
+    assert.match(read(folder + name), /status-badge/, name);
+  }
+  assert.doesNotMatch(read(folder + "account.jsp"), /<c:out\s+value="\$\{user\.role\}"/);
+  assert.doesNotMatch(read(folder + "admin-wiring-view.jsp"), /<c:out\s+value="\$\{wiringRule\.kind\}"/);
+});
+
+test("UI-2 explains wiring counts plainly and keeps the formula in native details", () => {
+  const result = read(folder + "wiring-result.jsp");
+  for (const label of ["Dây đúng:", "Dây sai/thừa:", "Còn thiếu:", "Tổng dây bắt buộc:"]) {
+    assert.ok(result.includes(label), label);
+  }
+  assert.match(result, /<details[^>]*>[\s\S]*?<summary>Cách tính điểm<\/summary>[\s\S]*?max\(C − W, 0\)[\s\S]*?<\/details>/);
+  assert.doesNotMatch(read(folder + "task-view.jsp"), /HALF_UP/);
+  assert.match(read(folder + "wiring-diagram.jsp"), /class="terminal-code"/);
+  assert.match(read(folder + "wiring-diagram.jsp"), /wiringTerminal\.code/);
+});

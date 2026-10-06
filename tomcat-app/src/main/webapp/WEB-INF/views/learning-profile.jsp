@@ -9,7 +9,7 @@
         <title>Hồ sơ học tập - <c:out value="${profile.fullName}"/> | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-profile.css?v=20261006.1">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-learning-profile">
@@ -41,10 +41,12 @@
                     <div><dt>Mẫu đã làm
                         bài</dt><dd><c:out value="${profile.quizRobotCount}"/>/<c:out value="${profile.robotCount}"/></dd></div>
                     <div><dt>Điểm trung bình</dt><dd><c:out value="${profile.averageBestScoreLabel}"/></dd></div>
-                    <div><dt>Tình trạng chung</dt><dd><c:out value="${profile.overallStatusLabel}"/></dd></div>
+                    <div><dt>Tình trạng chung</dt><dd><span class="status-badge"><c:out
+value="${profile.overallStatusLabel}"/></span></dd></div>
                     </dl>
                     <p class="formula-note">Điểm trung bình là trung bình cộng tỷ lệ phần trăm của lượt tốt nhất ở từng mẫu đã làm bài;
-                    làm tròn HALF_UP đến số nguyên. Tốt nhất là tỷ lệ score/tổng câu cao nhất (hòa lấy lượt mới hơn); gần nhất là lượt
+                    làm tròn đến số nguyên (phần thập phân từ 0,5 trở lên được làm tròn lên). Tốt nhất là tỷ lệ câu đúng cao nhất
+(nếu bằng nhau, lấy lượt mới hơn); gần nhất là lượt
                     có thời điểm nộp mới nhất (hòa lấy mã lượt lớn hơn).</p>
                 </section>
 
@@ -61,7 +63,21 @@
                                         <h3><c:out value="${profileRobot.robot.name}"/></h3>
                                         <p class="robot-description"><c:out value="${profileRobot.robot.summary}"/></p>
                                         <dl class="robot-facts">
-                                        <div><dt>Trạng thái</dt><dd><c:out value="${profileRobot.statusLabel}"/></dd></div>
+                                        <div><dt>Trạng thái</dt><dd><c:set var="workspaceStatusTone" value="neutral"/>
+                                        <c:choose>
+                                            <c:when test="${profileRobot.completed}">
+                                                <c:set var="workspaceStatusTone" value="success"/>
+                                            </c:when>
+                                            <c:when test="${profileRobot.inProgress}">
+                                                <c:set var="workspaceStatusTone" value="info"/>
+                                            </c:when>
+                                            <c:when test="${profileRobot.stopped}">
+                                                <c:set var="workspaceStatusTone" value="warning"/>
+                                            </c:when>
+                                        </c:choose>
+                                        <span class="status-badge status-badge--<c:out value="${workspaceStatusTone}"/>">
+                                            <c:out value="${profileRobot.statusLabel}"/>
+                                        </span></dd></div>
                                         <c:choose>
                                             <c:when test="${profileRobot.completed}">
                                                 <div><dt>Hoàn thành</dt><dd><c:out value="${profileRobot.completionDate}"/> · phiên
@@ -70,7 +86,8 @@
                                             </c:when>
                                             <c:when test="${profileRobot.inProgress or profileRobot.stopped}">
                                                 <div><dt>Phiên gần
-                                                    nhất</dt><dd><c:out value="${profileRobot.latestSessionStatusLabel}"/> · cập nhật
+                                                    nhất</dt><dd><span class="status-badge"><c:out
+value="${profileRobot.latestSessionStatusLabel}"/></span> · cập nhật
                                                     <c:out value="${profileRobot.latestSessionDate}"/></dd></div>
                                             </c:when>
                                             <c:otherwise>

@@ -14,7 +14,10 @@
         data-terminal-id="${wiringTerminal.id}" data-x="${wiringTerminal.x}" data-y="${wiringTerminal.y}">
         <circle cx="${wiringTerminal.x}" cy="${wiringTerminal.y}" r="24"/>
         <text x="${wiringTerminal.labelX}" y="${wiringTerminal.y + 5}" text-anchor="${wiringTerminal.labelAnchor}">
-        <c:out value="${wiringTerminal.label}"/>
+        <c:out value="${wiringTerminal.deviceLabel}"/> · <c:out value="${wiringTerminal.pinLabel}"/>
+        <tspan class="terminal-code" x="${wiringTerminal.labelX}" dy="18">
+        [<c:out value="${wiringTerminal.code}"/>]
+        </tspan>
         </text>
         </g>
     </c:forEach>

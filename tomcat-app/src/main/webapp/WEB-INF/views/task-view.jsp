@@ -9,7 +9,7 @@
         <title>Chi tiết nhiệm vụ | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/practice-tasks.css?v=20261005.1">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-task-view practice-tasks">
@@ -20,20 +20,38 @@
             <h1><c:out value="${task.title}"/></h1>
             <section class="workspace-panel" aria-label="Yêu cầu và tiêu chí nhiệm vụ">
                 <p class="task-text"><c:out value="${task.description}"/></p>
-                <p>Mẫu: <c:out value="${task.robotName}"/> · <c:out value="${task.stateLabel}"/></p>
+                <p>Mẫu: <c:out value="${task.robotName}"/> · <c:set var="workspaceStatusTone" value="neutral"/>
+                <c:choose>
+                    <c:when test="${task.open}">
+                        <c:set var="workspaceStatusTone" value="info"/>
+                    </c:when>
+                    <c:when test="${task.draft}">
+                        <c:set var="workspaceStatusTone" value="warning"/>
+                    </c:when>
+                </c:choose>
+                <span class="status-badge status-badge--<c:out value="${workspaceStatusTone}"/>">
+                    <c:out value="${task.stateLabel}"/>
+                </span></p>
                 <p>Hạn nộp: <c:out value="${task.dueDisplay}"/> · <c:out value="${task.latePolicyLabel}"/></p>
                 <p>Tối đa <c:out value="${task.maxSubmissions}"/> lần nộp · Ngưỡng đạt <c:out value="${task.passThreshold}"/>/100.</p>
-                <p><c:out value="${task.rubric.label}"/>. Điểm tự động làm tròn HALF_UP đến 1 chữ số thập phân; tổng điểm dùng điểm tự
-                động đã lưu.</p>
+                <c:set var="workspaceRubricLabel" value="${task.rubric.label}"/>
+<p>Thang điểm: lắp ráp <c:out value="${task.rubric.assemblyWeight}"/>, quiz <c:out value="${task.rubric.quizWeight}"/>,
+<c:if test="${task.rubricB}">chẩn đoán <c:out value="${task.rubric.diagnosisWeight}"/>, </c:if>giải thích 20 — tổng 100.</p>
+<p>Điểm tự động được làm tròn đến 1 chữ số thập phân. Tổng điểm gồm điểm tự động và điểm giải thích.</p>
+<details class="workspace-technical">
+<summary>Cách tính điểm</summary>
+<p>Điểm tự động được làm tròn một lần: chữ số tiếp theo từ 5 trở lên thì tăng chữ số cuối.
+Điểm giải thích được cộng vào điểm tự động đã lưu; không làm tròn lại tổng điểm.</p>
+</details>
             </section>
             <c:choose>
                 <c:when test="${adminView}">
                     <c:if test="${adminPreview}">
-                        <p class="notice">Xem trước nội dung cho người học. ADMIN không được nộp bài.</p>
+                        <p class="notice">Xem trước nội dung cho người học. Quản trị viên không được nộp bài.</p>
                     </c:if>
                     <c:if test="${not adminPreview}">
                         <nav>
-                            <a href="?action=preview&amp;id=<c:out value="${task.id}"/>">Xem trước như User</a>
+                            <a href="?action=preview&amp;id=<c:out value="${task.id}"/>">Xem trước như người học</a>
                             ·
                             <a href="?">Danh sách nhiệm vụ</a>
                         </nav>
@@ -50,6 +68,7 @@
                                 <input type="hidden" name="id" value="<c:out value="${task.id}"/>">
                                 <input type="hidden" name="action" value="deleteDraft">
                                 <button type="submit">Xoá nháp</button>
+                                <p class="summary">Xóa nháp sẽ bỏ nội dung chưa công bố này. Hãy kiểm tra trước khi xác nhận.</p>
                             </form>
                         </c:if>
                         <c:if test="${task.open}">
@@ -57,12 +76,13 @@
                             <form method="get" action="${pageContext.request.contextPath}/admin-tasks">
                                 <input type="hidden" name="id" value="<c:out value="${task.id}"/>">
                                 <input type="hidden" name="action" value="${learnerAction}">
-                                <label>Tìm User theo tên <input name="q" value="<c:out value="${searchQuery}"/>" maxlength="100"></label>
-                                <label>Trang danh sách User <input type="number" name="page" min="1" max="10000" value="<c:out
+                                <label>Tìm người học theo tên <input name="q" value="<c:out
+value="${searchQuery}"/>" maxlength="100"></label>
+                                <label>Trang danh sách người học <input type="number" name="page" min="1" max="10000" value="<c:out
                                 value="${learnerPage}"/>"></label>
                                 <button>Tìm</button>
                             </form>
-                            <p>Mỗi trang tối đa 20 User. Người đã được giao vẫn được giữ trong nháp; bỏ chọn để gỡ.</p>
+                            <p>Mỗi trang tối đa 20 người học. Người đã được giao vẫn được giữ trong nháp; bỏ chọn để gỡ.</p>
                             <form method="post" action="${pageContext.request.contextPath}/admin-tasks">
                                 <input type="hidden" name="csrfToken" value="<c:out value="${sessionScope.csrfToken}"/>">
                                 <input type="hidden" name="id" value="<c:out value="${task.id}"/>">
@@ -74,7 +94,7 @@
                                         value="${learner.id}"/>"> <c:out value="${learner.fullName}"/></label>
                                     </c:forEach>
                                 </fieldset>
-                                <button type="submit">Thêm User</button>
+                                <button type="submit">Thêm người học</button>
                             </form>
                             <form method="post" action="${pageContext.request.contextPath}/admin-tasks">
                                 <input type="hidden" name="csrfToken" value="<c:out value="${sessionScope.csrfToken}"/>">
@@ -88,7 +108,8 @@
                                 <input type="hidden" name="id" value="<c:out value="${task.id}"/>">
                                 <input type="hidden" name="action" value="close">
                                 <button type="submit">Đóng nhiệm vụ</button>
-                            </form>
+                            <p class="summary">Đóng nhiệm vụ sẽ ngừng nhận bài mới và không thể mở lại. Các bài đang chờ vẫn được chấm.</p>
+</form>
                         </c:if>
                         <c:if test="${task.closed}">
                             <form method="post" action="${pageContext.request.contextPath}/admin-tasks">
@@ -96,7 +117,8 @@
                                 <input type="hidden" name="id" value="<c:out value="${task.id}"/>">
                                 <input type="hidden" name="action" value="archive">
                                 <button type="submit">Lưu trữ</button>
-                            </form>
+                            <p class="summary">Lưu trữ sẽ ẩn nhiệm vụ khỏi danh sách mặc định; bài nộp và lịch sử chấm vẫn được giữ.</p>
+</form>
                         </c:if>
                         <form method="post" action="${pageContext.request.contextPath}/admin-tasks">
                             <input type="hidden" name="csrfToken" value="<c:out value="${sessionScope.csrfToken}"/>">
@@ -118,7 +140,24 @@
                                     <c:forEach var="recipient" items="${recipients}">
                                         <tr>
                                             <td><c:out value="${recipient.fullName}"/></td>
-                                            <td><c:out value="${recipient.statusLabel}"/><c:if
+                                            <td><c:set var="workspaceStatusTone" value="neutral"/>
+                                            <c:choose>
+                                                <c:when test="${recipient.latestSubmission.currentReview.passed}">
+                                                    <c:set var="workspaceStatusTone" value="success"/>
+                                                </c:when>
+                                                <c:when test="${recipient.latestSubmission.currentReview.needsRevision}">
+                                                    <c:set var="workspaceStatusTone" value="warning"/>
+                                                </c:when>
+                                                <c:when test="${recipient.latestSubmission.currentReview.notPassed}">
+                                                    <c:set var="workspaceStatusTone" value="danger"/>
+                                                </c:when>
+                                                <c:when test="${recipient.latestSubmission.waiting}">
+                                                    <c:set var="workspaceStatusTone" value="info"/>
+                                                </c:when>
+                                            </c:choose>
+                                            <span class="status-badge status-badge--<c:out value="${workspaceStatusTone}"/>">
+                                                <c:out value="${recipient.statusLabel}"/>
+                                            </span><c:if
                                             test="${recipient.latestSubmission.late}"> · Nộp
                                             muộn</c:if></td>
                                         <td><c:if test="${not empty recipient.latestSubmission}"><a
@@ -137,7 +176,24 @@
             </c:if>
         </c:when>
         <c:otherwise>
-            <p><strong><c:out value="${recipient.statusLabel}"/></strong></p>
+            <p><strong><c:set var="workspaceStatusTone" value="neutral"/>
+            <c:choose>
+                <c:when test="${recipient.latestSubmission.currentReview.passed}">
+                    <c:set var="workspaceStatusTone" value="success"/>
+                </c:when>
+                <c:when test="${recipient.latestSubmission.currentReview.needsRevision}">
+                    <c:set var="workspaceStatusTone" value="warning"/>
+                </c:when>
+                <c:when test="${recipient.latestSubmission.currentReview.notPassed}">
+                    <c:set var="workspaceStatusTone" value="danger"/>
+                </c:when>
+                <c:when test="${recipient.latestSubmission.waiting}">
+                    <c:set var="workspaceStatusTone" value="info"/>
+                </c:when>
+            </c:choose>
+            <span class="status-badge status-badge--<c:out value="${workspaceStatusTone}"/>">
+                <c:out value="${recipient.statusLabel}"/>
+            </span></strong></p>
             <p>Vòng <c:out value="${recipient.currentRound.roundNo}"/> · bắt đầu <c:out
             value="${recipient.currentRound.startedDisplay}"/></p>
             <c:if test="${recipient.showCurrentRoundQuiz and not empty taskQuiz}">
@@ -189,8 +245,8 @@
     <c:forEach var="taskSubmission" items="${submissions}">
         <section class="task-card">
             <h3>Lần nộp #<c:out value="${taskSubmission.submissionNo}"/></h3>
-            <p><c:out value="${taskSubmission.submittedDisplay}"/> <c:if test="${taskSubmission.late}"><strong> · Nộp
-                muộn</strong></c:if></p>
+            <p><c:out value="${taskSubmission.submittedDisplay}"/> <c:if test="${taskSubmission.late}"><span class="status-badge
+status-badge--warning"> · Nộp muộn</span></c:if></p>
             <p>Phiên lắp ráp #<c:out value="${taskSubmission.sessionId}"/> · <c:out value="${taskSubmission.robotName}"/> · hoàn
             thành <c:out value="${taskSubmission.assemblyCompletedDisplay}"/></p>
             <p>Quiz lượt #<c:out value="${taskSubmission.quizAttemptId}"/>: <c:out value="${taskSubmission.quizScore}"/>/<c:out
@@ -226,7 +282,21 @@
     </c:if>
     <c:forEach var="taskReview" items="${taskSubmission.reviews}">
         <div class="task-review">
-            <p><strong><c:out value="${taskReview.conclusionLabel}"/> · Tổng: <c:out value="${taskReview.totalDisplay}"/>/100</strong> ·
+            <p><strong><c:set var="workspaceStatusTone" value="neutral"/>
+            <c:choose>
+                <c:when test="${taskReview.passed}">
+                    <c:set var="workspaceStatusTone" value="success"/>
+                </c:when>
+                <c:when test="${taskReview.needsRevision}">
+                    <c:set var="workspaceStatusTone" value="warning"/>
+                </c:when>
+                <c:when test="${taskReview.notPassed}">
+                    <c:set var="workspaceStatusTone" value="danger"/>
+                </c:when>
+            </c:choose>
+            <span class="status-badge status-badge--<c:out value="${workspaceStatusTone}"/>">
+                <c:out value="${taskReview.conclusionLabel}"/>
+            </span> · Tổng: <c:out value="${taskReview.totalDisplay}"/>/100</strong> ·
             Giải thích: <c:out value="${taskReview.explanationPoints}"/>/20 ·
             <c:out value="${taskReview.reviewedDisplay}"/></p>
             <p>Người chấm: <c:out value="${taskReview.reviewerName}"/> · <c:out value="${taskReview.explanationLabel}"/></p>

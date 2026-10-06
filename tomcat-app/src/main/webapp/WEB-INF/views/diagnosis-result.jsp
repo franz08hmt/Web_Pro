@@ -9,7 +9,7 @@
         <title>Kết quả chẩn đoán | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/practice-tasks.css?v=20261005.1">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-diagnosis-result practice-tasks">
@@ -39,15 +39,15 @@
             </c:forEach>
             <h3>Nguyên nhân đã chọn</h3>
             <p><c:out value="${diagnosisAttempt.chosenCause.label}"/> —
-            <c:choose><c:when test="${diagnosisAttempt.causeCorrect}">Đúng (3/3)</c:when>
-                <c:otherwise>Sai
-                    (0/3)</c:otherwise></c:choose></p>
+            <c:choose><c:when test="${diagnosisAttempt.causeCorrect}"><span
+class="status-badge status-badge--success">Đúng (3/3)</span></c:when>
+                <c:otherwise><span class="status-badge status-badge--danger">Sai (0/3)</span></c:otherwise></c:choose></p>
             <p class="task-text"><c:out value="${diagnosisAttempt.chosenCause.feedbackText}"/></p>
             <h3>Cách xử lý đã chọn</h3>
             <p><c:out value="${diagnosisAttempt.chosenAction.label}"/> —
-            <c:choose><c:when test="${diagnosisAttempt.actionCorrect}">Đúng (3/3)</c:when>
-                <c:otherwise>Sai
-                    (0/3)</c:otherwise></c:choose></p>
+            <c:choose><c:when test="${diagnosisAttempt.actionCorrect}"><span
+class="status-badge status-badge--success">Đúng (3/3)</span></c:when>
+                <c:otherwise><span class="status-badge status-badge--danger">Sai (0/3)</span></c:otherwise></c:choose></p>
             <p class="task-text"><c:out value="${diagnosisAttempt.chosenAction.feedbackText}"/></p>
             <h3>Giải thích tình huống</h3>
             <p class="task-text"><c:out value="${diagnosisAttempt.scenario.explanationText}"/></p>

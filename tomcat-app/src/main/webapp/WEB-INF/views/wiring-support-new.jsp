@@ -10,7 +10,7 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/wiring.css?v=20261006.2">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/wiring-support.css?v=20261005.1">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-wiring-support-new wiring wiring-support">
@@ -44,7 +44,10 @@
                     <c:forEach var="wiringTerminal" items="${wiringExercise.terminals}">
                         <label>
                         <input type="radio" name="terminalId" value="${wiringTerminal.id}">
-                        <c:out value="${wiringTerminal.label}"/>
+                        <span class="terminal-name" aria-label="<c:out value="${wiringTerminal.label}"/>">
+    <c:out value="${wiringTerminal.deviceLabel}"/> · <c:out value="${wiringTerminal.pinLabel}"/>
+    <span class="terminal-code">[<c:out value="${wiringTerminal.code}"/>]</span>
+</span>
                         </label>
                     </c:forEach>
                 </fieldset>

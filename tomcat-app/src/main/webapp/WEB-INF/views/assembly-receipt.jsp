@@ -9,7 +9,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Phiếu kết quả lắp ráp | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-assembly-receipt">
@@ -23,9 +23,17 @@
                 <c:when test="${session.status != 'COMPLETED'}">
                     <p class="notice notice-error">
                     Phiên lắp ráp này chưa hoàn tất nên chưa có phiếu kết quả.
-                    Trạng thái hiện tại: <strong><c:out value="${session.status}"/></strong>.
+                    Trạng thái hiện tại: <c:set var="workspaceAssemblyState" value="${session.status}"/>
+                    <span class="status-badge">
+                        <c:choose>
+                            <c:when test="${session.inProgress}">Đang lắp ráp</c:when>
+                            <c:when test="${session.status eq 'READY'}">Sẵn sàng</c:when>
+                            <c:when test="${session.inPreparation}">Đang chuẩn bị</c:when>
+                            <c:otherwise>Đã dừng</c:otherwise>
+                        </c:choose>
+                    </span>.
                     </p>
-                    <p class="links">
+                    <p class="links no-print">
                     <a
                     href="${pageContext.request.contextPath}/pages/lap-rap-3d.html?model=${session.robotId}&amp;session=${session.id}">Vào
                     phòng lắp ráp 3D để tiếp tục &rarr;</a>
@@ -33,7 +41,7 @@
                 </c:when>
                 <c:otherwise>
                     <section class="notice">
-                        <p class="workspace-eyebrow">Đã hoàn tất lắp ráp trong mô hình 3D</p>
+                        <p><span class="status-badge status-badge--success">Đã hoàn tất lắp ráp trong mô hình 3D</span></p>
                         <strong><c:out value="${robot.name}"/></strong> · <c:out value="${robot.level}"/>
                         <p class="summary"><c:out value="${robot.summary}"/></p>
                     </section>
@@ -77,7 +85,7 @@
                     khẳng định robot thật đã được đấu nối điện hoặc vận hành đúng.
                     </p>
 
-                    <p class="links">
+                    <p class="links no-print">
                     <a href="${pageContext.request.contextPath}/pages/kiem-tra.html?model=${session.robotId}">Làm bài kiểm tra kiến thức
                     &rarr;</a> ·
                     <a href="${pageContext.request.contextPath}/pages/lap-rap.html?model=${session.robotId}">Thực hành lại mẫu này
@@ -89,7 +97,7 @@
                 </c:otherwise>
             </c:choose>
 
-            <p class="links">
+            <p class="links no-print">
             <a href="${pageContext.request.contextPath}/index.html">Về trang chủ</a>
             </p>
             <details class="workspace-technical no-print">
@@ -99,7 +107,7 @@
                 theo <code>(id, user_id)</code> qua <code>AssemblySessionDB.selectSession()</code>
                 nên chỉ chủ phiên mới xem được, đặt robot và danh sách linh kiện vào request
                 bằng <code>setAttribute</code> rồi <code>forward()</code> sang JSP này. Trạng thái
-                <code>COMPLETED</code> và <code>completed_at</code> chỉ được
+                hoàn tất và <code>completed_at</code> chỉ được
                 <code>AssemblySessionDB.completeSession()</code> ghi sau khi đối chiếu tập hợp
                 linh kiện bắt buộc với dữ liệu thật trong <code>session_visual_parts</code> —
                 trang này không tin số phần trăm do trình duyệt tự tính.

@@ -10,7 +10,7 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/wiring.css?v=20261006.2">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/wiring-support.css?v=20261005.1">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.3">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <meta name="robots" content="noindex, nofollow">
     </head>
     <body class="learning-workspace workspace-page-wiring-support-view wiring wiring-support">
@@ -26,7 +26,18 @@
                 <a href="${pageContext.request.contextPath}/<c:out value="${supportRoute}"/>">Danh sách hỗ trợ</a>
             </nav>
             <h1>Trao đổi hỗ trợ nối dây</h1>
-            <h2>Yêu cầu #<c:out value="${supportRequest.id}"/> · <c:out value="${supportRequest.stateLabel}"/></h2>
+            <h2>Yêu cầu #<c:out value="${supportRequest.id}"/> · <c:set var="workspaceStatusTone" value="neutral"/>
+            <c:choose>
+                <c:when test="${supportRequest.open}">
+                    <c:set var="workspaceStatusTone" value="warning"/>
+                </c:when>
+                <c:when test="${supportRequest.answered}">
+                    <c:set var="workspaceStatusTone" value="info"/>
+                </c:when>
+            </c:choose>
+            <span class="status-badge status-badge--<c:out value="${workspaceStatusTone}"/>">
+                <c:out value="${supportRequest.stateLabel}"/>
+            </span></h2>
             <p>Lượt gốc #<c:out value="${supportRequest.attemptId}"/> · <c:out value="${supportRequest.exerciseTitle}"/></p>
             <p>Đã giải quyết hỗ trợ và sơ đồ đúng toàn bộ là hai kết quả riêng biệt.</p>
             <c:if test="${not supportAdmin}">
@@ -37,8 +48,8 @@
                     <h2>Tin #<c:out value="${supportMessage.id}"/> · <c:out value="${supportMessage.authorName}"/></h2>
                     <p>
                     <c:choose>
-                        <c:when test="${supportMessage.admin}">Admin phản hồi</c:when>
-                        <c:otherwise>User gửi</c:otherwise>
+                        <c:when test="${supportMessage.admin}">Quản trị viên phản hồi</c:when>
+                        <c:otherwise>Người học gửi</c:otherwise>
                     </c:choose>
                     · <c:out value="${supportMessage.createdAtDisplay}"/>
                     </p>
@@ -58,7 +69,7 @@
                     <input type="hidden" name="id" value="${supportRequest.id}">
                     <input type="hidden" name="expectedVersion" value="${supportRequest.version}">
                     <input type="hidden" name="action" value="message">
-                    <label for="support-content">Nội dung trao đổi (User 20–2000; Admin 10–2000 ký tự)</label>
+                    <label for="support-content">Nội dung trao đổi (người học 20–2000; quản trị viên 10–2000 ký tự)</label>
                     <textarea id="support-content" name="content" maxlength="4000" rows="5" required></textarea>
                     <c:if test="${not supportAdmin}">
                         <label><input type="checkbox" name="sendSnapshot">Gửi bản chụp mới từ lượt gốc đã lưu</label>
@@ -69,7 +80,10 @@
                         <c:forEach var="wiringTerminal" items="${wiringExercise.terminals}">
                             <label>
                             <input type="radio" name="terminalId" value="${wiringTerminal.id}">
-                            <c:out value="${wiringTerminal.label}"/>
+                            <span class="terminal-name" aria-label="<c:out value="${wiringTerminal.label}"/>">
+    <c:out value="${wiringTerminal.deviceLabel}"/> · <c:out value="${wiringTerminal.pinLabel}"/>
+    <span class="terminal-code">[<c:out value="${wiringTerminal.code}"/>]</span>
+</span>
                             </label>
                         </c:forEach>
                     </fieldset>
@@ -82,11 +96,12 @@
                     <input type="hidden" name="action" value="close">
                     <button type="submit">
                     <c:choose>
-                        <c:when test="${supportAdmin}">Đóng hỗ trợ</c:when>
+                        <c:when test="${supportAdmin}">Đóng yêu cầu</c:when>
                         <c:otherwise>Đánh dấu đã giải quyết hỗ trợ</c:otherwise>
                     </c:choose>
                     </button>
-                </form>
+                <p class="summary">Đóng yêu cầu sẽ kết thúc trao đổi này. Nếu cần, bạn có thể gửi yêu cầu hỗ trợ mới.</p>
+</form>
             </c:if>
         </main>
         <%@ include file="workspace-footer.jspf" %>
