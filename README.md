@@ -215,6 +215,7 @@ npm test
 - [ERD](docs/erd.md)
 - [Luồng demo và câu hỏi giảng viên](docs/TEAM_FLOW_DEMO_GUIDE.md)
 - [Ôn tập vấn đáp cuối kỳ (một file duy nhất: kiến thức chapter, luồng code, phân công, câu hỏi–đáp)](docs/ON_TAP_VAN_DAP_CUOI_KY.md)
+- [Ôn kiểm tra code giữa kỳ (MVC, JavaMail Chapter 14)](docs/ON_TAP_GIUA_KY_WEB_2026.md)
 
 ## Phòng thực hành nối dây (Đợt 7, chặng 1)
 

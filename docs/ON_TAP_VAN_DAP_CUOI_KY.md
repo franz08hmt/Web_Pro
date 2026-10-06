@@ -7,8 +7,11 @@ project, chỉ mở khi muốn tra cứu sâu.
 Số liệu lấy từ mã nguồn ngày 06/10/2026 (nhánh `integration/fullstack-v2`). Số slide đối chiếu với
 nội dung thật trong `D:\Web-Pro\Chapter NN slides.pptx`; chỗ nào không có slide thì ghi "ngoài slide".
 
-> **Cách mở file code:** mọi tên file, lớp và hàm có dạng chữ mã có gạch chân (ví dụ [`AuthServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AuthServlet.java)) đều là liên kết.
-> Bấm vào để mở thẳng file đó (trên GitHub hoặc trong IntelliJ khi xem Markdown preview, giữ Ctrl rồi bấm). Đường dẫn tính từ thư mục `docs/`.
+> **Cách mở file code:** tên file, lớp và hàm trong bảng là liên kết (ví dụ [`AuthServlet`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AuthServlet.java)). Đường dẫn tính từ thư mục `docs/`.
+> - **Trên GitHub:** bấm vào tên file.
+> - **IntelliJ, xem Markdown preview:** bấm chuột thường vào tên file (chữ có gạch chân) để mở file trong editor.
+> - **IntelliJ, xem ở chế độ code Markdown:** giữ Ctrl rồi bấm vào phần đường dẫn trong ngoặc tròn `(...)`.
+> - Nếu bấm không mở: kiểm tra đang mở đúng file `robot-engine-website/docs/ON_TAP_VAN_DAP_CUOI_KY.md` (không phải bản sao ở nơi khác).
 
 ## Lộ trình học
 
@@ -63,7 +66,7 @@ phải biết giải thích vì sao.
 | *10* | *Custom tag, TLD, `TagSupport`* | 3–42 | **Không dùng.** Thay bằng include + getter của bean. Chỉ mượn ví dụ `DateFormat` ở slide 6 để định dạng ngày |
 | 12 | JDBC: driver, URL, `ResultSet`, `executeUpdate`, `PreparedStatement`, connection pool, [`context.xml`](../tomcat-app/src/main/webapp/META-INF/context.xml), [`UserDB`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/UserDB.java), [`DBUtil`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/DBUtil.java), `EmailListServlet` | 4–53 | [`ConnectionPool`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ConnectionPool.java) (JNDI `jdbc/robotlab`), [`DBUtil`](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/DBUtil.java), 22 lớp `XxxDB` method `static`, đóng tài nguyên trong `finally`; seed bằng SQL |
 | *13* | *JPA, entity, `EntityManager`, transaction* | 4–39 | **Không dùng JPA** (đã chọn JDBC theo Chapter 12). Chỉ mượn khái niệm transaction (29–34) để giải thích `setAutoCommit(false)/commit/rollback` |
-| *14* | *JavaMail* | 3–28 | **Không có chức năng gửi mail** (email thông báo nằm ngoài phạm vi). Ôn riêng theo `D:\Web-Pro\ON_TAP_GIUA_KY_WEB_2026.md` |
+| *14* | *JavaMail* | 3–28 | **Không có chức năng gửi mail** (email thông báo nằm ngoài phạm vi). Ôn riêng theo [`ON_TAP_GIUA_KY_WEB_2026.md`](ON_TAP_GIUA_KY_WEB_2026.md) |
 | 18 | HTTP request/response, mã trạng thái, header, MIME | cả chapter | Mã 200, 201, 302, 403, 404, 422, 503; header `Cache-Control: no-store`, `Location`, `Content-Type`, `X-CSRF-Token`; PRG |
 
 Việc nên biết khi bị hỏi "ngoài slide":
