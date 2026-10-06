@@ -404,3 +404,11 @@ Sau gate chặng 1 (commit a1822fd), viết test trước → ERD hai bảng →
 bean trạng thái/bản chụp → JDBC khóa bài/lượt/yêu cầu → Servlet/JSP form thuần →
 QA hai USER/Admin, version/concurrency/SQL/snapshot/JS-off/mobile → review độc lập →
 build/cleanup/commit local. Không sửa migration 011 hay rubric A/B.
+
+## UI-2 — Rà soát giao diện và chữ viết, 06/10/2026
+
+Khởi đầu 7d27f18/ahead8, giữ mọi backend và hợp đồng. Baseline thực 131Node/79JUnit.
+Khảo sát 34 view + fragment → golden GET/token/form/SQL → Chrome từng viewport →
+menu/badges/copy/CSS và PDF → contract/GET hồi quy → báo cáo cùng inventory chuỗi →
+cleanup runtime → commit local, không push. Kết quả và giới hạn từng view ở
+docs/UI_REDESIGN_QA_REPORT.md mục UI-2. Hai trạng thái chỉ dựng HTML tạm vì cấm POST.

@@ -236,3 +236,21 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] Review độc lập; sửa MEDIUMTEXT, CHECK NULL và thụt lề; worst-case snapshot test.
 - [x] Tài liệu/API/ERD/demo chapter-slide và QA/handoff đồng bộ.
 - [x] Build cuối79JUnit/128Node, QA Unicode+GET cuối, log sạch; runtime đã dọn; bàn giao commit local.
+
+## UI-2 — Rà soát giao diện và chữ viết, 06/10/2026
+
+- [x] Xác nhận Git/đọc skill áp dụng, manifest 34 và guards/fixture; baseline131Node/79JUnit.
+- [x] Golden327GET bằng bốn demo, 283HTML200; hợp đồng form/HTTP/cache/dữ liệu hiển thị và hash38bảng.
+- [x] Chrome32view server × 5widths; 2view HTML tạm × 5widths; matrix136ô ghi rõ128server/8tạm.
+- [x] Rà menu, badges, enum/copy, mã chân, màu lead, chữ metric; đọc inventory793→843mảnh văn bản.
+- [x] Zoom200%, chuỗi dài/HTML dạng chữ,12tin và80dây bằng DOM tạm; không gửi mutation.
+- [x] Wiring6nhóm không lưu: click/drag/keyboard/delete/reload/JS-off; menu details bàn phím.
+- [x] 327response diff:0form/HTTP/cache/mất số-mã-ngày;38bảng không đổi;40GETquyền/hồi quy đạt.
+- [x] Node133/133, JUnit79/79; Maven test/clean package JDK17 thành công, guard cũ không nới.
+- [x] PDF hồ sơ3trang và phiếu1trang, render/xem mọi trang; ẩn link in gây trang gần trống.
+- [x] Báo cáo trong file UI hiện có, bảng chuỗi/matrix/inventory/giới hạn; handoff ngoài commit.
+- [ ] Kiểm task-preview/diagnosis-play với trạng thái server thật trong đợt cho phép ghi.
+- [ ] Firefox/Safari, cảm ứng vật lý, screen reader, Ctrl+Plus và Tab mọi control.
+- [ ] Sửa dữ liệu bài nối dây cũ lỗi dấu ? / getter ngày ISO: cần phạm vi riêng, chưa làm.
+
+- [x] Dừng đúng runtime QA, xác nhận 8081 đóng; xóa CATALINA_BASE/log/cookie tạm, giữ evidence ngoài Git.
