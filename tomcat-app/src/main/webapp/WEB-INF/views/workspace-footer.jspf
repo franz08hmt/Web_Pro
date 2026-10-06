@@ -1,0 +1,4 @@
+<%@ page pageEncoding="UTF-8" %>
+<footer class="workspace-footer no-print">
+    Robot Assembly Lab · Không gian học tập và thực hành mô phỏng
+</footer>

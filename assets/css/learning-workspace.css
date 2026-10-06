@@ -1,0 +1,434 @@
+/* JSP learning workspace. Local Poppins and Heroicons; no styles for HTML/3D pages. */
+@font-face {
+  font-family: "Lab Poppins";
+  src: url("../fonts/poppins-400.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Lab Poppins";
+  src: url("../fonts/poppins-500.ttf") format("truetype");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Lab Poppins";
+  src: url("../fonts/poppins-600.ttf") format("truetype");
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Lab Poppins";
+  src: url("../fonts/poppins-700.ttf") format("truetype");
+  font-weight: 700;
+  font-display: swap;
+}
+@media screen {
+  .learning-workspace {
+    --lab-bg: #0e1215;
+    --lab-panel: #1b2226;
+    --lab-raised: #232c31;
+    --lab-border: #3d4a50;
+    --lab-text: #eef3f2;
+    --lab-muted: #a9b6b4;
+    --lab-orange: #ff8b4b;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    background: var(--lab-bg);
+    color: var(--lab-text);
+    font-family: "Lab Poppins", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+    color-scheme: dark;
+  }
+  .learning-workspace *,
+  .learning-workspace *::before,
+  .learning-workspace *::after { box-sizing: border-box; }
+  .learning-workspace [hidden] { display: none !important; }
+  .learning-workspace a { color: #ffa871; text-underline-offset: 4px; }
+  .learning-workspace :focus-visible { outline: 3px solid #2dd4bf; outline-offset: 4px; }
+  .learning-workspace .workspace-skip {
+    position: absolute;
+    top: 8px;
+    left: 16px;
+    z-index: 10;
+    padding: 12px;
+    background: #eef3f2;
+    color: #0e1215;
+    transform: translateY(-150%);
+  }
+  .learning-workspace .workspace-skip:focus { transform: translateY(0); }
+  .learning-workspace .workspace-header {
+    border-bottom: 1px solid var(--lab-border);
+    background: #151b1f;
+  }
+  .learning-workspace .workspace-header-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 32px;
+    max-width: 1440px;
+    margin: auto;
+    padding: 20px 32px;
+  }
+  .learning-workspace .workspace-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--lab-text);
+    text-decoration: none;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .learning-workspace .workspace-brand small {
+    display: block;
+    color: var(--lab-muted);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .12em;
+    margin-top: 4px;
+  }
+  .learning-workspace .workspace-icon {
+    display: block;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    padding: 10px;
+    border-radius: 12px;
+    background: var(--lab-orange);
+    color: #171c20;
+  }
+  .learning-workspace .workspace-role {
+    padding: 4px 10px;
+    border: 1px solid var(--lab-border);
+    border-radius: 6px;
+    color: var(--lab-muted);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .learning-workspace .workspace-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+  }
+  .learning-workspace .workspace-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: var(--lab-muted);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .learning-workspace .workspace-nav a:hover { background: var(--lab-raised); color: var(--lab-text); }
+  .learning-workspace .workspace-more { position: relative; }
+  .learning-workspace .workspace-more > summary {
+    min-height: 44px;
+    padding: 8px 12px;
+    cursor: pointer;
+    color: var(--lab-muted);
+  }
+  .learning-workspace .workspace-more nav {
+    display: grid;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    z-index: 5;
+    width: 260px;
+    max-width: calc(100vw - 40px);
+    padding: 8px;
+    border: 1px solid var(--lab-border);
+    border-radius: 12px;
+    background: #151b1f;
+    box-shadow: 0 12px 40px #0006;
+  }
+  .learning-workspace .workspace-content {
+    max-width: 1440px;
+    margin: auto;
+    padding: 32px;
+    min-width: 0;
+  }
+  .learning-workspace .workspace-eyebrow {
+    margin: 0 0 8px;
+    color: var(--lab-muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+  .learning-workspace .workspace-content:not(.learning-profile) h1 {
+    margin: 0 0 24px;
+    max-width: 1000px;
+    color: var(--lab-text);
+    font-size: clamp(26px, 2.5vw, 34px);
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .learning-workspace .workspace-content:not(.learning-profile) h2 {
+    margin: 32px 0 16px;
+    font-size: 21px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  .learning-workspace .workspace-content:not(.learning-profile) h3 {
+    font-size: 17px;
+    line-height: 1.5;
+    font-weight: 600;
+  }
+  .learning-workspace .workspace-content:not(.learning-profile) p { margin: 12px 0; }
+  .learning-workspace .workspace-content:not(.learning-profile) code {
+    padding: 3px 6px;
+    border: 1px solid var(--lab-border);
+    border-radius: 4px;
+    background: #151b1f;
+    color: #c5e4df;
+    font-size: .85em;
+    white-space: normal;
+  }
+  .learning-workspace .workspace-content:not(.learning-profile) .notice,
+  .learning-workspace .workspace-panel,
+  .learning-workspace .workspace-content:not(.learning-profile) .task-card,
+  .learning-workspace .workspace-content:not(.learning-profile) .support-message {
+    padding: 24px;
+    margin: 16px 0;
+    border: 1px solid var(--lab-border);
+    border-radius: 12px;
+    background: var(--lab-panel);
+  }
+  .learning-workspace .workspace-panel > :first-child,
+  .learning-workspace .workspace-content:not(.learning-profile) .task-card > :first-child { margin-top: 0; }
+  .learning-workspace .workspace-content:not(.learning-profile) .notice-error {
+    border-left: 4px solid #fbbf24;
+  }
+  .learning-workspace .workspace-technical {
+    padding: 16px 20px;
+    margin: 24px 0;
+    border: 1px solid var(--lab-border);
+    border-radius: 8px;
+    color: var(--lab-muted);
+    background: #151b1f;
+  }
+  .learning-workspace .workspace-technical > summary { cursor: pointer; font-weight: 500; }
+  .learning-workspace .workspace-technical .lead { border: 0; padding: 0; color: inherit; }
+  .learning-workspace .workspace-content:not(.learning-profile) .summary { color: var(--lab-muted); }
+  .learning-workspace .workspace-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+  .learning-workspace .workspace-grid > .workspace-panel,
+  .learning-workspace .workspace-grid > .task-card { margin: 0; }
+  .learning-workspace .workspace-course { display: flex; flex-direction: column; min-width: 0; }
+  .learning-workspace .workspace-course form { margin-top: auto; }
+  .learning-workspace .workspace-course .workspace-scope {
+    padding-top: 12px;
+    border-top: 1px solid var(--lab-border);
+    color: var(--lab-muted);
+    font-size: 13px;
+  }
+  .learning-workspace .workspace-workbench {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+    gap: 24px;
+  }
+  .learning-workspace .workspace-workbench > * { min-width: 0; }
+  .learning-workspace .workspace-content:not(.learning-profile) dl {
+    display: grid;
+    grid-template-columns: minmax(120px, 28%) minmax(0, 1fr);
+    padding: 20px 24px;
+    border: 1px solid var(--lab-border);
+    border-radius: 12px;
+    background: var(--lab-panel);
+    gap: 12px 24px;
+    margin: 24px 0;
+  }
+  .learning-workspace .workspace-content:not(.learning-profile) dt { color: var(--lab-muted); font-weight: 500; }
+  .learning-workspace .workspace-content:not(.learning-profile) dd { margin: 0; font-weight: 500; }
+  .learning-workspace .workspace-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .learning-workspace .workspace-metric { padding: 20px; border: 1px solid var(--lab-border); border-radius: 12px; }
+  .learning-workspace .workspace-metric dt { font-size: 13px; color: var(--lab-muted); }
+  .learning-workspace .workspace-metric dd { font-size: 28px; margin: 8px 0 0; font-weight: 600; }
+  .learning-workspace .workspace-table {
+    width: 100%;
+    max-width: 100%;
+    overflow: auto;
+    border: 1px solid var(--lab-border);
+    border-radius: 12px;
+    margin: 20px 0;
+  }
+  .learning-workspace .workspace-content:not(.learning-profile) table {
+    display: table;
+    width: 100%;
+    min-width: 620px;
+    margin: 0;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: var(--lab-panel);
+  }
+  .learning-workspace .workspace-content:not(.learning-profile) caption {
+    text-align: left;
+    padding: 16px;
+    color: var(--lab-muted);
+    font-size: 13px;
+  }
+  .learning-workspace .workspace-content:not(.learning-profile) thead { display: table-header-group; }
+  .learning-workspace .workspace-content:not(.learning-profile) tbody { display: table-row-group; }
+  .learning-workspace .workspace-content:not(.learning-profile) tr { display: table-row; background: transparent; }
+  .learning-workspace .workspace-content:not(.learning-profile) th,
+  .learning-workspace .workspace-content:not(.learning-profile) td {
+    display: table-cell;
+    border: 0;
+    border-top: 1px solid var(--lab-border);
+    padding: 14px 16px;
+    background: transparent;
+    text-align: left;
+    vertical-align: top;
+  }
+  .learning-workspace .workspace-content:not(.learning-profile) th { background: #232c31; font-weight: 500; }
+  .learning-workspace .workspace-content:not(.learning-profile) form {
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid var(--lab-border);
+    border-radius: 12px;
+    background: #151b1f;
+  }
+  .learning-workspace .workspace-content .workspace-course form { padding: 0; border: 0; background: transparent; }
+  .learning-workspace .workspace-content:not(.learning-profile) label { display: block; margin: 12px 0; }
+  .learning-workspace .workspace-content:not(.learning-profile) label:has(input[type="radio"]),
+  .learning-workspace .workspace-content:not(.learning-profile) label:has(input[type="checkbox"]) {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: #1b2226;
+    cursor: pointer;
+  }
+  .learning-workspace .workspace-content:not(.learning-profile) label:has(input:checked) {
+    background: #342922;
+    outline: 1px solid var(--lab-orange);
+  }
+  .learning-workspace .workspace-content:not(.learning-profile) input:not([type="hidden"]):not([type="radio"]):not([type="checkbox"]),
+  .learning-workspace .workspace-content:not(.learning-profile) textarea {
+    display: block;
+    width: 100%;
+    max-width: 760px;
+    min-width: 0;
+    min-height: 44px;
+    padding: 12px;
+    margin-top: 8px;
+    border: 1px solid #66787e;
+    border-radius: 8px;
+    background: #0e1215;
+    color: var(--lab-text);
+    font: inherit;
+  }
+  .learning-workspace .workspace-content:not(.learning-profile) input[type="radio"],
+  .learning-workspace .workspace-content:not(.learning-profile) input[type="checkbox"] {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    accent-color: var(--lab-orange);
+  }
+  .learning-workspace .workspace-content:not(.learning-profile) fieldset {
+    min-width: 0;
+    margin: 20px 0;
+    padding: 16px;
+    border: 1px solid var(--lab-border);
+    border-radius: 8px;
+  }
+  .learning-workspace .workspace-content:not(.learning-profile) legend { padding: 0 8px; font-weight: 500; }
+  .learning-workspace button,
+  .learning-workspace .workspace-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 44px;
+    max-width: 100%;
+    padding: 10px 18px;
+    margin: 4px 4px 4px 0;
+    border: 1px solid #697b82;
+    border-radius: 8px;
+    background: #232c31;
+    color: #eef3f2;
+    font: inherit;
+    font-weight: 500;
+    line-height: 1.6;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: normal;
+  }
+  .learning-workspace button:hover { background: #334048; }
+  .learning-workspace button[value="submit"],
+  .learning-workspace .workspace-primary,
+  .learning-workspace .workspace-course button {
+    background: #ff8b4b;
+    border-color: #ff8b4b;
+    color: #171c20;
+  }
+  .learning-workspace .workspace-danger { color: #ffb4ac; border-color: #a36761; }
+  .learning-workspace .workspace-content:not(.learning-profile) .task-review {
+    padding: 16px 20px;
+    border-left: 3px solid #2dd4bf;
+    background: #151b1f;
+  }
+  .learning-workspace .workspace-footer {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 24px 32px;
+    color: var(--lab-muted);
+    border-top: 1px solid var(--lab-border);
+    font-size: 12px;
+  }
+  .learning-workspace .workspace-content:not(.learning-profile) img { object-fit: contain; border-radius: 8px; }
+  .learning-workspace .workspace-content:not(.learning-profile) pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .learning-workspace .workspace-content:not(.learning-profile) .links { display: flex; flex-wrap: wrap; gap: 16px; }
+  .learning-workspace .workspace-content:not(.learning-profile) .links a { min-height: 44px; }
+}
+@media screen and (max-width: 1024px) {
+  .learning-workspace .workspace-workbench { grid-template-columns: 1fr; }
+  .learning-workspace .workspace-header-inner { gap: 12px; }
+  .learning-workspace .workspace-nav { margin-left: 0; }
+}
+@media screen and (max-width: 767px) {
+  .learning-workspace .workspace-header-inner,
+  .learning-workspace .workspace-content,
+  .learning-workspace .workspace-footer { padding: 20px 16px; }
+  .learning-workspace .workspace-grid { grid-template-columns: 1fr; }
+  .learning-workspace .workspace-panel,
+  .learning-workspace .workspace-content:not(.learning-profile) .task-card { padding: 20px; }
+  .learning-workspace .workspace-content:not(.learning-profile) dl { grid-template-columns: 1fr; gap: 4px; }
+  .learning-workspace .workspace-content:not(.learning-profile) dd { margin-bottom: 12px; }
+  .learning-workspace .workspace-content:not(.learning-profile) form { padding: 16px; }
+  .learning-workspace .workspace-role { margin-left: auto; }
+  .learning-workspace .workspace-nav { width: 100%; gap: 0; }
+  .learning-workspace .workspace-nav a { padding: 8px 10px; font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .learning-workspace *, .learning-workspace *::before, .learning-workspace *::after {
+    animation: none;
+    transition: none;
+    scroll-behavior: auto;
+  }
+}
+@media print {
+  .learning-workspace { max-width: none; margin: 0; padding: 0; background: #fff; color: #000; }
+  .learning-workspace .no-print { display: none !important; }
+  .learning-workspace .workspace-table { overflow: visible; border: 0; }
+}

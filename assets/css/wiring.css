@@ -12,7 +12,7 @@
 .wiring :focus-visible { outline: 3px solid #165a93; outline-offset: 3px; }
 .wiring .wiring-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .wiring .wiring-diagram { max-width: 100%; overflow: auto; border: 1px solid #8196a3; background: #fff; }
-.wiring svg { display: block; width: 100%; min-width: 960px; font-size: 15px; }
+.wiring .wiring-diagram > svg { display: block; width: 100%; min-width: 960px; font-size: 15px; }
 .wiring .wiring-terminal { cursor: pointer; touch-action: none; }
 .wiring .wiring-terminal circle { fill: #fff; stroke: #183f58; stroke-width: 3; }
 .wiring .wiring-terminal text { fill: #20323d; stroke: #fff; stroke-width: 4; paint-order: stroke; }
@@ -23,6 +23,32 @@
 .wiring table { width: 100%; border-collapse: collapse; }
 .wiring th, .wiring td { border: 1px solid #83939d; padding: .6rem; text-align: left; }
 .wiring [hidden] { display: none !important; }
+
+/* The workstation theme touches diagrams only, never the Heroicons in the shell. */
+@media screen {
+    .learning-workspace.wiring .wiring-diagram {
+        max-height: 680px;
+        border: 1px solid #3d4a50;
+        border-radius: 12px;
+        background: radial-gradient(#2c363b 1px, transparent 1px) 0 0 / 20px 20px, #151b1f;
+        scrollbar-color: #66787e #151b1f;
+    }
+    .learning-workspace.wiring .wiring-terminal circle { fill: #232c31; stroke: #a9b6b4; }
+    .learning-workspace.wiring .wiring-terminal text { fill: #eef3f2; stroke: #151b1f; }
+    .learning-workspace.wiring .wiring-terminal.is-selected circle { fill: #ff8b4b; stroke: #ffa871; }
+    .learning-workspace.wiring .wiring-terminal:focus-visible circle { stroke: #2dd4bf; stroke-width: 5; }
+    .learning-workspace.wiring .wiring-wire { stroke: #2dd4bf; }
+    .learning-workspace.wiring .wiring-wire.is-selected { stroke: #ff8b4b; }
+    .learning-workspace.wiring #wiring-status {
+        padding: 12px 16px;
+        border-left: 3px solid #ff8b4b;
+        background: #1b2226;
+        font-size: 14px;
+    }
+    .learning-workspace.wiring .workspace-workbench aside h2 { margin-top: 0; }
+    .learning-workspace.wiring .wiring-choices { gap: 24px; }
+    .learning-workspace.wiring-support .wiring-diagram { max-height: 480px; }
+}
 @media (max-width: 600px) {
     .wiring .wiring-choices { grid-template-columns: 1fr; }
     .wiring { padding: .6rem; }

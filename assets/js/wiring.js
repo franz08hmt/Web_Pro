@@ -4,7 +4,8 @@
 (() => {
   const form = document.querySelector(".wiring #wiring-form");
   if (!form) return;
-  const svg = document.querySelector(".wiring svg");
+  const svg = document.querySelector(".wiring #wiring-interactive-diagram .wiring-diagram > svg");
+  if (!svg) return;
   const payload = document.querySelector("#wiring-payload");
   const list = document.querySelector("#wiring-connections");
   const status = document.querySelector("#wiring-status");

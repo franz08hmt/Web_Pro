@@ -1,0 +1,61 @@
+<%@ page pageEncoding="UTF-8" %>
+<!-- Heroicons outline cpu-chip; MIT license: assets/icons/LICENSE.txt. -->
+<a class="workspace-skip no-print" href="#workspace-main">Đi đến nội dung chính</a>
+<header class="workspace-header no-print">
+    <div class="workspace-header-inner">
+        <a class="workspace-brand" href="${pageContext.request.contextPath}/index.html">
+            <svg class="workspace-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.5" aria-hidden="true" focusable="false">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M8.25 3v1.5 M4.5 8.25H3 m18 0h-1.5 M4.5 12H3 m18 0h-1.5 m-15 3.75H3 m18 0h-1.5
+                    M8.25 19.5V21 M12 3v1.5 m0 15V21 m3.75-18v1.5 m0 15V21 m-9-1.5h10.5
+                    a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75
+                    A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25 Z m.75-12h9v9h-9v-9Z"/>
+            </svg>
+            <span>ROBOT<small>ASSEMBLY LAB</small></span>
+        </a>
+        <span class="workspace-role">
+            <c:choose>
+                <c:when test="${sessionScope.user.admin}">Khu vực Admin</c:when>
+                <c:when test="${not empty sessionScope.user}">Không gian học tập</c:when>
+                <c:otherwise>Thư viện học tập</c:otherwise>
+            </c:choose>
+        </span>
+        <nav class="workspace-nav" aria-label="Điều hướng học tập">
+            <a href="${pageContext.request.contextPath}/pages/tai-khoan.html">Tài khoản</a>
+            <c:choose>
+                <c:when test="${sessionScope.user.admin}">
+                    <a href="${pageContext.request.contextPath}/admin-tasks">Nhiệm vụ</a>
+                    <a href="${pageContext.request.contextPath}/admin-wiring">Bài nối dây</a>
+                </c:when>
+                <c:when test="${not empty sessionScope.user}">
+                    <a href="${pageContext.request.contextPath}/tasks">Nhiệm vụ</a>
+                    <a href="${pageContext.request.contextPath}/wiring">Nối dây</a>
+                </c:when>
+            </c:choose>
+            <details class="workspace-more">
+                <summary>Khám phá</summary>
+                <nav aria-label="Các trang liên quan">
+                    <a href="${pageContext.request.contextPath}/robots">Danh mục robot</a>
+                    <a href="${pageContext.request.contextPath}/components">Linh kiện</a>
+                    <c:choose>
+                        <c:when test="${sessionScope.user.admin}">
+                            <a href="${pageContext.request.contextPath}/admin-diagnosis">Tình huống chẩn đoán</a>
+                            <a href="${pageContext.request.contextPath}/admin-wiring-support">Yêu cầu hỗ trợ</a>
+                            <a href="${pageContext.request.contextPath}/admin-stats">Thống kê</a>
+                        </c:when>
+                        <c:when test="${not empty sessionScope.user}">
+                            <a href="${pageContext.request.contextPath}/diagnosis">Luyện chẩn đoán</a>
+                            <a href="${pageContext.request.contextPath}/wiring-support">Hỗ trợ nối dây</a>
+                        </c:when>
+                    </c:choose>
+                    <c:if test="${not empty sessionScope.user}">
+                        <a href="${pageContext.request.contextPath}/learning-summary">Tổng kết học tập</a>
+                        <a href="${pageContext.request.contextPath}/learning-profile">Hồ sơ in / PDF</a>
+                    </c:if>
+                    <a href="${pageContext.request.contextPath}/architecture">Kiến trúc môn học</a>
+                </nav>
+            </details>
+        </nav>
+    </div>
+</header>
