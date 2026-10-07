@@ -138,6 +138,8 @@
      trong lượt bấm này — nhờ vậy tải lại trang hoặc mở lại một phiên đã
      COMPLETED từ trước không bao giờ bắn confetti, dù vẫn thấy đủ hai nút. */
   function showCompletionResult(justCompleted) {
+    // Phiên đã hoàn tất chỉ để xem; thực hành lại dùng phiên mới qua liên kết bên dưới.
+    setPartInputsDisabled(true);
     if (completeButton) {
       completeButton.hidden = true;
       completeButton.disabled = true;
