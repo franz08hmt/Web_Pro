@@ -1,18 +1,34 @@
 # Ôn tập kiểm tra code Web Programming — 01/10/2026
 
-Tài liệu này dùng để ôn phần đã thực hành trong thư mục `D:\Web-Pro` và Chapter 14. Đề kiểm tra chưa được công bố, nên thứ tự dưới đây là **ưu tiên ôn tập**, không phải dự đoán chắc chắn về đề.
+Tài liệu này dùng để ôn phần đã thực hành trong thư mục `D:\Web-Pro` và bài tập gửi mail độc lập. Đề kiểm tra chưa được công bố, nên thứ tự dưới đây là **ưu tiên ôn tập**, không phải dự đoán chắc chắn về đề.
 
-Nguồn Chapter 14 hiện có là `D:\Web-Pro\Chapter 14 slides.pptx` (28 slide). Chưa tìm thấy `chap 14.pdf` trong thư mục này. Nếu bản PDF giảng viên phát có nội dung khác, cần so lại.
+## Dùng tài liệu này khi ôn vấn đáp Robot Assembly Lab
+
+Phần bên dưới là bài ôn giữa kỳ và bài tập độc lập, gồm cả JavaMail/JPA.
+Robot Assembly Lab hiện không có chức năng gửi mail hoặc dùng JPA; không dùng các ví dụ đó làm bằng chứng code của đồ án.
+Khi ôn phần của Tài, bắt đầu bằng code thật sau đây:
+
+1. **Client gửi form:** [task-submit.jsp:60](../tomcat-app/src/main/webapp/WEB-INF/views/task-submit.jsp#L60) — method/action/name/value.
+2. **Server nhận:** [TaskServlet.java:137](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TaskServlet.java#L137) — request/response, session, token, action.
+3. **Đọc dữ liệu:** [TaskFormUtil.java:19](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/TaskFormUtil.java#L19) — getParameter, trim, kiểm định dạng.
+4. **Giao dữ liệu xuống JSP:** [LearningProfileServlet.java:52](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/LearningProfileServlet.java#L52) — setAttribute/forward.
+5. **JSP đọc:** [learning-profile.jsp:31](../tomcat-app/src/main/webapp/WEB-INF/views/learning-profile.jsp#L31) — EL/c:out, getter của bean.
+6. **Database:** [UserDB.java:121](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/UserDB.java#L121) — PreparedStatement/ResultSet/finally.
+7. **Session:** [SessionUtil.java:23](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java#L23) — getSession/setAttribute/JSESSIONID.
+
+Với mỗi dòng: nói **dữ liệu vào → xử lý → dữ liệu ra**, rồi chỉ màn hình dùng kết quả.
+Không cần trả lời số trang bài giảng; cần mở đúng code. Bấm tên file trong Markdown preview;
+nếu IDE không nhảy dòng bằng `#L...`, dùng Ctrl+G theo số dòng ghi cạnh tên file.
 
 ## 1. Học theo thứ tự này
 
 | Ưu tiên | Kiến thức | Việc bạn phải tự code được |
 | --- | --- | --- |
-| 1 | MVC, Servlet, JSP, JavaBean (Ch. 2, 5, 6) | Nhận form bằng `doPost`, kiểm tra dữ liệu, tạo bean, `setAttribute`, `forward`, hiển thị bằng EL. |
-| 2 | JavaMail (Ch. 14) | Tạo `Properties`, `Session`, `MimeMessage`, địa chỉ người nhận; dùng `Transport` và xử lý `MessagingException`. |
-| 3 | EL, JSTL, session/cookie (Ch. 7–9) | Hiển thị `${user.email}`, thông báo bằng `<c:if>`, duy trì trạng thái bằng session hoặc cookie. |
-| 4 | JDBC/JPA (Ch. 12–13) | Giải thích và code một thao tác thêm/đọc dữ liệu; phân biệt `PreparedStatement` với `EntityManager`. |
-| 5 | HTTP, custom tag (Ch. 10, 18) | Giải thích status, header, redirect/forward; nhận diện TLD/tag handler nếu cô hỏi. |
+| 1 | MVC, Servlet, JSP, JavaBean  | Nhận form bằng `doPost`, kiểm tra dữ liệu, tạo bean, `setAttribute`, `forward`, hiển thị bằng EL. |
+| 2 | JavaMail  | Tạo `Properties`, `Session`, `MimeMessage`, địa chỉ người nhận; dùng `Transport` và xử lý `MessagingException`. |
+| 3 | EL, JSTL, session/cookie  | Hiển thị `${user.email}`, thông báo bằng `<c:if>`, duy trì trạng thái bằng session hoặc cookie. |
+| 4 | JDBC/JPA  | Giải thích và code một thao tác thêm/đọc dữ liệu; phân biệt `PreparedStatement` với `EntityManager`. |
+| 5 | HTTP, custom tag  | Giải thích status, header, redirect/forward; nhận diện TLD/tag handler nếu cô hỏi. |
 
 Không cần học thuộc nguyên một project. Hãy tự viết lại luồng nhỏ từ form đến kết quả mà không mở code mẫu.
 
@@ -75,13 +91,13 @@ Mở lại code đã làm:
 - `D:\Web-Pro\chapter-06-develop-JSP\src\main\java\murach\business\User.java`
 - `D:\Web-Pro\chapter-08-09-10-jsp-lab\src\main\webapp\chapter08\el-demo.jsp`
 
-## 3. Chapter 14: điều cần code được
+## 3. JavaMail: bài tập riêng, không phải chức năng Robot Assembly Lab
 
 ### Đường đi của email
 
-SMTP dùng để gửi thư; POP và IMAP dùng để nhận/đọc thư. MIME mô tả kiểu nội dung thư, ví dụ `text/plain` hoặc `text/html`. Đây là nội dung slide 3–6. Slide 4 diễn đạt IMAP qua ví dụ đọc trên trình duyệt; ý cần nhớ là client truy cập và đồng bộ thư còn lưu trên server.
+SMTP dùng để gửi thư; POP và IMAP dùng để nhận/đọc thư. MIME mô tả kiểu nội dung thư, ví dụ `text/plain` hoặc `text/html`.
 
-### Bốn bước JavaMail trong slide 9, 21–22
+### Bốn bước JavaMail
 
 ```java
 import java.util.Properties;
@@ -112,16 +128,16 @@ public final class MailUtilLocal {
 }
 ```
 
-`localhost:25` trong ví dụ chỉ chạy nếu có SMTP server cục bộ. Compile thành công **không chứng minh** email đã gửi được. Không dùng tài khoản hay mật khẩu email thật trong bài luyện. `javax.mail` phải có JAR hoặc dependency tương thích; JDK 17 không tự cấp thư viện này. Slide 5–7 nói về `activation.jar` và cho rằng Java SE 6+ đã có sẵn. Điều này đúng với Java SE 6–10, nhưng module `java.activation` đã bị gỡ từ JDK 11. Trên Java 17, kiểm tra để có **cả Mail lẫn Activation** phù hợp, qua Maven hoặc JAR do cô cấp.
+`localhost:25` trong ví dụ chỉ chạy nếu có SMTP server cục bộ. Compile thành công **không chứng minh** email đã gửi được. Không dùng tài khoản hay mật khẩu email thật trong bài luyện. `javax.mail` phải có JAR hoặc dependency tương thích; JDK 17 không tự cấp thư viện này. Các JDK cũ từng cung cấp Activation, nhưng module `java.activation` đã bị gỡ từ JDK 11. Trên Java 17, kiểm tra để có **cả Mail lẫn Activation** phù hợp qua dependency của bài tập độc lập.
 
 Nắm các biến thể:
 
-- Slide 10–13: `mail.smtp.host`, `mail.smtp.port`, `mail.smtp.auth`; `Session` giữ cấu hình. Với `smtps`, tên thuộc tính là `mail.smtps.*` như slide 12.
-- Slide 14–15: `setText` tạo thư văn bản; `setContent(html, "text/html")` tạo body HTML.
-- Slide 16–18: `setFrom`; `setRecipient(TO/CC/BCC, ...)`; `setRecipients` dùng khi nhiều người nhận; `addRecipient` thêm vào danh sách sẵn có.
-- Slide 19–20: `Transport.send(message)` là mẫu không tự gọi `connect`; với xác thực có thể lấy `Transport`, `connect`, `sendMessage`, rồi `close`.
-- Slide 23–26: servlet đọc form, lưu `User`, gọi helper gửi email, bắt `MessagingException`, ghi log và đưa thông báo lỗi sang JSP. Nếu đã lưu user trước khi gửi mail mà mail lỗi, user **vẫn có thể đã được lưu**; cần nói rõ trạng thái đó.
-- Slide 27–28: cấu hình Gmail là ví dụ lịch sử của slide 2014. Đừng chép nguyên tài khoản/mật khẩu mẫu hay dựa vào nó để gửi mail thật.
+- `mail.smtp.host`, `mail.smtp.port`, `mail.smtp.auth`; `Session` giữ cấu hình. Với `smtps`, tên thuộc tính là `mail.smtps.*`.
+- `setText` tạo thư văn bản; `setContent(html, "text/html")` tạo body HTML.
+- `setFrom`; `setRecipient(TO/CC/BCC, ...)`; `setRecipients` dùng khi nhiều người nhận; `addRecipient` thêm vào danh sách sẵn có.
+- `Transport.send(message)` là mẫu không tự gọi `connect`; với xác thực có thể lấy `Transport`, `connect`, `sendMessage`, rồi `close`.
+- servlet đọc form, lưu `User`, gọi helper gửi email, bắt `MessagingException`, ghi log và đưa thông báo lỗi sang JSP. Nếu đã lưu user trước khi gửi mail mà mail lỗi, user **vẫn có thể đã được lưu**; cần nói rõ trạng thái đó.
+- cấu hình Gmail cũ chỉ là ví dụ lịch sử, không phải cấu hình đăng nhập hiện hành. Đừng chép nguyên tài khoản/mật khẩu mẫu hay dựa vào nó để gửi mail thật.
 
 Khung gọi từ Servlet:
 
@@ -141,7 +157,7 @@ Ghi nhớ đường đi để tránh nhầm: **Servlet điều phối**, **MailU
 
 ## 4. Nhánh đề có database
 
-Nếu cô cho JDBC (Ch. 12):
+Nếu cô cho JDBC :
 
 ```java
 String sql = "INSERT INTO users (full_name, email) VALUES (?, ?)";
@@ -155,7 +171,7 @@ try (Connection connection = dataSource.getConnection();
 
 `?` và `setString` tách dữ liệu khỏi lệnh SQL. `executeUpdate()` dùng cho `INSERT/UPDATE/DELETE`; `executeQuery()` cho `SELECT`. Sau `SELECT`, đọc từng dòng bằng `ResultSet.next()`.
 
-Nếu cô cho JPA (Ch. 13):
+Nếu cô cho JPA :
 
 ```java
 EntityManager em = emf.createEntityManager();
@@ -172,7 +188,7 @@ try {
 }
 ```
 
-`@Entity` ánh xạ class với bảng; `@Id` là khóa chính; `persistence.xml` khai báo persistence unit. `persist` để thêm, `find` tìm theo khóa chính, `merge` cập nhật, `remove` xóa. Bạn đã chứng minh đường đi giao diện → JPA → MySQL trong báo cáo Chapter 13; hãy giải thích được **vì sao phải `commit`**.
+`@Entity` ánh xạ class với bảng; `@Id` là khóa chính; `persistence.xml` khai báo persistence unit. `persist` để thêm, `find` tìm theo khóa chính, `merge` cập nhật, `remove` xóa. Nếu làm bài tập JPA độc lập, đọc đường đi giao diện → JPA → MySQL; hãy giải thích được **vì sao phải `commit`**.
 
 ## 5. Các câu hỏi dễ bị hỏi thêm
 
@@ -183,7 +199,7 @@ try {
 5. Khi `request.getCookies()` là `null`? Khi request không gửi cookie; kiểm tra trước khi lặp.
 6. `<c:if test="${not empty error}">` dùng để làm gì? Chỉ hiển thị vùng báo lỗi khi có dữ liệu.
 7. `setText` và `setContent(..., "text/html")` khác gì? Khác MIME type và cách client hiển thị body.
-8. `Transport.send` và `Transport.sendMessage` khác gì trong slide? Mẫu đơn giản dùng `send`; mẫu có `connect` thủ công dùng `sendMessage` rồi `close`.
+8. `Transport.send` và `Transport.sendMessage` khác gì trong code gửi mail? Mẫu đơn giản dùng `send`; mẫu có `connect` thủ công dùng `sendMessage` rồi `close`.
 9. Vì sao không để mật khẩu SMTP trong code? Dễ lộ qua source, screenshot hoặc Git. Trong bài kiểm tra, dùng biến môi trường/cấu hình được cô cung cấp.
 10. Servlet bị lỗi 404 thì kiểm gì đầu tiên? Context path của WAR, `@WebServlet` hoặc `web.xml`, URL form, artifact đã deploy.
 
@@ -192,7 +208,7 @@ try {
 | Thời điểm | Bài tập | Tự kiểm tra |
 | --- | --- | --- |
 | Thứ Ba 29/9, 75–90 phút | Viết lại `User`, form, `EmailListServlet`, `thanks.jsp` không nhìn mẫu. | Form trống báo lỗi; form hợp lệ hiển thị đúng dữ liệu; giải thích `forward`. |
-| Thứ Tư 30/9, 75–90 phút | Học slide 9, 14–20, 21–28; tự viết `MailUtilLocal` và nhánh `try/catch` trong servlet. | Chỉ ra 4 bước JavaMail; phân biệt plain/HTML và `TO/CC/BCC`; không cần gửi mail thật. |
+| Thứ Tư 30/9, 75–90 phút | Đọc code tạo thư, đặt người nhận và gửi; tự viết `MailUtilLocal` và nhánh `try/catch` trong servlet. | Chỉ ra 4 bước JavaMail; phân biệt plain/HTML và `TO/CC/BCC`; không cần gửi mail thật. |
 | Thứ Tư 30/9, thêm 45 phút | Làm một đề trong `DE_LUYEN_GIUA_KY_WEB_2026.md` có đồng hồ. | So với checklist sau khi nộp bài của chính mình. |
 | Thứ Năm 01/10, 20–30 phút | Xem lại lỗi sai, URL Tomcat, import `javax.*`, file mapping. | Có thể phác lại luồng trên giấy trong 2 phút. |
 
@@ -205,4 +221,4 @@ try {
 - Đọc **dòng lỗi đầu tiên có ý nghĩa** trong Tomcat log: 404 thường là URL/deploy; 500 thường là lỗi code/runtime; mail connection refused là SMTP chưa chạy.
 - Không mất thời gian sửa giao diện CSS nếu luồng cơ bản chưa chạy.
 
-Nguồn đối chiếu: `Chapter 14 slides.pptx`, slide 1–28 trong thư mục này; các project thực hành Chapter 2, 5–10, 12–13, 18 đã học. Tham khảo API chính thức: [JavaMail `javax.mail` package](https://javaee.github.io/javamail/docs/api/javax/mail/package-summary.html), [Jakarta Mail lịch sử phiên bản](https://jakartaee.github.io/mail-api/), [SMTP RFC 5321](https://www.rfc-editor.org/info/rfc5321/), [Oracle JDK 11 migration guide về `java.activation`](https://docs.oracle.com/en/java/javase/11/migrate/).
+Phần giữa kỳ là ví dụ luyện tập độc lập; không dùng để khẳng định Robot Assembly Lab đã triển khai JavaMail/JPA. Tham khảo API chính thức: [JavaMail `javax.mail` package](https://javaee.github.io/javamail/docs/api/javax/mail/package-summary.html), [Jakarta Mail lịch sử phiên bản](https://jakartaee.github.io/mail-api/), [SMTP RFC 5321](https://www.rfc-editor.org/info/rfc5321/), [Oracle JDK 11 migration guide về `java.activation`](https://docs.oracle.com/en/java/javase/11/migrate/).
