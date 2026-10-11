@@ -35,10 +35,12 @@ public class DiagnosisAttempt implements Serializable {
         }
         DiagnosisOption cause = null;
         DiagnosisOption action = null;
+
         for (DiagnosisOption option : scenario.getOptions()) {
             if (option.getId() == causeId && option.isCause()) {
                 cause = option;
             }
+
             if (option.getId() == actionId && option.isAction()) {
                 action = option;
             }

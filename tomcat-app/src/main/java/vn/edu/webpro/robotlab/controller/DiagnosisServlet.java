@@ -49,11 +49,48 @@ public class DiagnosisServlet extends HttpServlet {
             if (user == null) {
                 return;
             }
+
             String action = TaskFormUtil.text(request, "action");
+
             if (action.isEmpty()) {
                 request.setAttribute("diagnosisScenarios", DiagnosisDB.selectScenarios(false));
                 request.setAttribute("diagnosisAttempts", DiagnosisDB.selectInProgress(user.getId()));
                 forward(request, response, "diagnosis-list");
+
+            } else if ("history".equals(action)) {
+                int page = 1;
+                int pageSize = 10;
+
+                String pageText = TaskFormUtil.text(request, "page");
+
+                if (!pageText.isEmpty()) {
+                    try {
+                        page = Integer.parseInt(pageText);
+                    } catch (NumberFormatException e) {
+                        page = 1;
+                    }
+                }
+
+                if (page < 1) {
+                    page = 1;
+                }
+
+                int totalItems = DiagnosisDB.countPracticeHistory(user.getId());
+                int totalPages = Math.max(1, (int) Math.ceil(totalItems / (double) pageSize));
+
+                if (page > totalPages) {
+                    page = totalPages;
+                }
+
+                request.setAttribute("diagnosisHistory",
+                        DiagnosisDB.selectPracticeHistory(user.getId(), page, pageSize));
+                request.setAttribute("historyPage", page);
+                request.setAttribute("historyPageSize", pageSize);
+                request.setAttribute("historyTotalItems", totalItems);
+                request.setAttribute("historyTotalPages", totalPages);
+
+                forward(request, response, "diagnosis-history");
+
             } else if ("play".equals(action) || "result".equals(action)) {
                 DiagnosisAttempt value = DiagnosisDB.selectAttempt(TaskFormUtil.number(request, "id"), user.getId());
                 if (value == null) {

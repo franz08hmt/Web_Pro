@@ -241,8 +241,10 @@ public class DiagnosisDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = connection.prepareStatement("SELECT id FROM diagnosis_attempts WHERE user_id = ? "
-                    + "AND state='IN_PROGRESS' ORDER BY id DESC");
+            ps = connection.prepareStatement(
+                    "SELECT id FROM diagnosis_attempts WHERE user_id = ? "
+                            + "AND mode='PRACTICE' "
+                            + "AND state='IN_PROGRESS' ORDER BY id DESC");
             ps.setLong(1, owner);
             rs = ps.executeQuery();
             List<Long> ids = new ArrayList<>();
@@ -576,6 +578,107 @@ public class DiagnosisDB {
                     pool.freeConnection(connection);
                 }
             }
+        }
+    }
+
+    /**
+     * Đếm số lượt PRACTICE đã nộp của chính người dùng.
+     */
+    public static int countPracticeHistory(long owner) throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+
+        try {
+            return (int) PracticeTaskDB.scalar(connection,
+                    "SELECT COUNT(*) FROM diagnosis_attempts "
+                            + "WHERE user_id=? AND mode='PRACTICE' AND state='SUBMITTED'",
+                    owner);
+        } finally {
+            pool.freeConnection(connection);
+        }
+    }
+
+    /**
+     * Lấy một trang lịch sử PRACTICE đã nộp, mới nhất trước.
+     */
+    public static List<DiagnosisHistoryItem> selectPracticeHistory(
+            long owner, int page, int pageSize) throws SQLException {
+
+        if (page < 1 || pageSize < 1 || pageSize > 100) {
+            throw new IllegalArgumentException("Thông số phân trang không hợp lệ.");
+        }
+
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            int offset = (page - 1) * pageSize;
+
+            String sql = "SELECT a.id, s.title AS scenario_title, r.name AS robot_name, "
+                    + "a.required_done, a.required_total, a.cause_correct, a.action_correct, "
+                    + "a.submitted_at "
+                    + "FROM diagnosis_attempts a "
+                    + "JOIN diagnosis_scenarios s ON s.id = a.scenario_id "
+                    + "JOIN robots r ON r.id = s.robot_id "
+                    + "WHERE a.user_id=? AND a.mode='PRACTICE' AND a.state='SUBMITTED' "
+                    + "ORDER BY a.submitted_at DESC, a.id DESC "
+                    + "LIMIT ? OFFSET ?";
+
+            ps = connection.prepareStatement(sql);
+            ps.setLong(1, owner);
+            ps.setInt(2, pageSize);
+            ps.setInt(3, offset);
+            rs = ps.executeQuery();
+
+            List<DiagnosisHistoryItem> list = new ArrayList<>();
+
+            while (rs.next()) {
+                DiagnosisHistoryItem item = new DiagnosisHistoryItem();
+                item.setId(rs.getLong("id"));
+                item.setScenarioTitle(rs.getString("scenario_title"));
+                item.setRobotName(rs.getString("robot_name"));
+                item.setSubmittedAt(PracticeTaskDB.date(rs, "submitted_at"));
+
+                int requiredDone = rs.getInt("required_done");
+                int requiredTotal = rs.getInt("required_total");
+                boolean causeCorrect = rs.getBoolean("cause_correct");
+                boolean actionCorrect = rs.getBoolean("action_correct");
+
+                java.math.BigDecimal score;
+
+                if (requiredTotal <= 0 || requiredDone < 0 || requiredDone > requiredTotal) {
+                    score = java.math.BigDecimal.ZERO;
+                } else {
+                    score = new java.math.BigDecimal(requiredDone)
+                            .multiply(new java.math.BigDecimal("4"))
+                            .divide(
+                                    new java.math.BigDecimal(requiredTotal),
+                                    24,
+                                    java.math.RoundingMode.HALF_UP
+                            );
+
+                    if (causeCorrect) {
+                        score = score.add(new java.math.BigDecimal("3"));
+                    }
+
+                    if (actionCorrect) {
+                        score = score.add(new java.math.BigDecimal("3"));
+                    }
+
+                    score = score.setScale(1, java.math.RoundingMode.HALF_UP);
+                }
+
+                item.setScore(score);
+                list.add(item);
+            }
+
+            return list;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
         }
     }
 

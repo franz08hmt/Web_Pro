@@ -37,13 +37,55 @@
             <c:forEach var="diagnosisCheck" items="${diagnosisAttempt.missingChecks}">
                 <p><c:out value="${diagnosisCheck.label}"/></p>
             </c:forEach>
+
             <h3>Nguyên nhân đã chọn</h3>
+            <c:choose>
+                <c:when test="${not empty diagnosisAttempt.chosenCause}">
+                    <p>
+                        <c:out value="${diagnosisAttempt.chosenCause.label}"/> —
+                        <c:choose>
+                            <c:when test="${diagnosisAttempt.causeCorrect}">
+                                Đúng (3/3)
+                            </c:when>
+                            <c:otherwise>Sai (0/3)</c:otherwise>
+                        </c:choose>
+                    </p>
+                    <p class="task-text">
+                        <c:out value="${diagnosisAttempt.chosenCause.feedbackText}"/>
+                    </p>
+                </c:when>
+                <c:otherwise>
+                    <p>Không tìm thấy dữ liệu nguyên nhân đã chọn.</p>
+                </c:otherwise>
+            </c:choose>
+
             <p><c:out value="${diagnosisAttempt.chosenCause.label}"/> —
             <c:choose><c:when test="${diagnosisAttempt.causeCorrect}">Đúng (3/3)</c:when>
                 <c:otherwise>Sai
                     (0/3)</c:otherwise></c:choose></p>
             <p class="task-text"><c:out value="${diagnosisAttempt.chosenCause.feedbackText}"/></p>
+
             <h3>Cách xử lý đã chọn</h3>
+            <c:choose>
+                <c:when test="${not empty diagnosisAttempt.chosenAction}">
+                    <p>
+                        <c:out value="${diagnosisAttempt.chosenAction.label}"/> —
+                        <c:choose>
+                            <c:when test="${diagnosisAttempt.actionCorrect}">
+                                Đúng (3/3)
+                            </c:when>
+                            <c:otherwise>Sai (0/3)</c:otherwise>
+                        </c:choose>
+                    </p>
+                    <p class="task-text">
+                        <c:out value="${diagnosisAttempt.chosenAction.feedbackText}"/>
+                    </p>
+                </c:when>
+                <c:otherwise>
+                    <p>Không tìm thấy dữ liệu cách xử lý đã chọn.</p>
+                </c:otherwise>
+            </c:choose>
+
             <p><c:out value="${diagnosisAttempt.chosenAction.label}"/> —
             <c:choose><c:when test="${diagnosisAttempt.actionCorrect}">Đúng (3/3)</c:when>
                 <c:otherwise>Sai
@@ -61,7 +103,17 @@
                 <p><a href="${pageContext.request.contextPath}/pages/tra-cuu-loi.html?robotId=<c:out
                 value="${diagnosisAttempt.scenario.robotId}"/>">Tra cứu hướng dẫn theo mẫu robot</a></p>
             </c:if>
-            <p><a href="${pageContext.request.contextPath}/tasks">Nhiệm vụ của tôi</a> · <a href="?">Danh sách luyện</a></p>
+
+            <p>
+                <a href="${pageContext.request.contextPath}/diagnosis?action=history">
+                    Lịch sử chẩn đoán
+                </a>
+                ·
+                <a href="?">Danh sách luyện</a>
+                ·
+                <a href="${pageContext.request.contextPath}/tasks">Nhiệm vụ của tôi</a>
+            </p>
+
         </main>
         <%@ include file="workspace-footer.jspf" %>
     </body>
