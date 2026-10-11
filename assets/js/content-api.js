@@ -44,8 +44,16 @@
     return assertList(await request(`/${kind}?limit=100`));
   }
 
+  async function listLibraryResources({ page = 1, limit = 6, robotId = "" } = {}) {
+    if (!enabled) return null;
+    const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+    if (robotId) params.set("robotId", robotId);
+    const payload = await request(`/library-resources?${params}`);
+    assertList(payload);
+    return payload;
+  }
+
   let componentsPromise;
-  let libraryPromise;
   let robotsPromise;
 
   function loadComponents() {
@@ -53,9 +61,12 @@
     return componentsPromise;
   }
 
-  function loadLibraryResources() {
-    libraryPromise ||= list("library-resources");
-    return libraryPromise;
+  function loadLibraryResources(options) {
+    return listLibraryResources(options);
+  }
+
+  function loadRobotOptions() {
+    return list("robots");
   }
 
   function loadRobots() {
@@ -98,6 +109,7 @@
     enabled,
     loadComponents,
     loadLibraryResources,
+    loadRobotOptions,
     loadRobots
   });
 })();
