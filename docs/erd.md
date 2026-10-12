@@ -1,5 +1,34 @@
 # ERD - Robot Lab
 
+## Lắp ráp có kiểm chứng — thiết kế trước migration 013
+
+Thiết kế ngày 12/10/2026, không chuyển đổi phiên GROUP cũ. Sáu bảng/cột:
+
+- `assembly_specs`: PK id; FK robot RESTRICT; UNIQUE(robot_id, version_no);
+  UNIQUE(id, robot_id); PUBLISHED/ARCHIVED. Spec công bố bất biến.
+- `assembly_slots`: PK id; UNIQUE(spec_id, slot_code), UNIQUE(id, spec_id);
+  FK spec RESTRICT, FK (parent_slot_id, spec_id) cùng spec; FK component;
+  CHECK tọa độ [-10,10], góc [-6.284,6.284], order [1,40].
+- `assembly_slot_orientations`: PK(slot_id, orientation_code), CHECK chỉ
+  Y0/Y90/Y180/Y270; FK slot RESTRICT. Góc là tương đối với pose slot gốc.
+- `assembly_sessions`: thêm mode GROUP mặc định/DETAILED, spec_id nullable,
+  layout_version >=1. FK(spec_id, robot_id) bảo đảm đúng robot;
+  UNIQUE(id, spec_id) để placements ràng buộc phiên và spec.
+- `assembly_instances`: PK id; UNIQUE(session_id, component_id, instance_no);
+  UNIQUE(id, session_id); FK session/component RESTRICT; instance_no [1,40].
+  Server tạo từ robot_components.quantity, không từ request.
+- `assembly_placements`: PK instance_id; UNIQUE(session_id, slot_id);
+  FK(instance_id,session_id), FK(session_id,spec_id), FK(slot_id,spec_id),
+  FK(slot_id,orientation_code). Các FK RESTRICT giữ lịch sử.
+
+Tải layout dùng số truy vấn cố định: phiên owner, spec, slots, orientations,
+instances, placements; không SELECT trong vòng mỗi vật thể. Thay đổi khóa
+assembly_sessions FOR UPDATE trước đọc dữ kiện, so expectedLayoutVersion;
+ghi placement và tăng version trong cùng transaction. Reset chỉ xóa placements
+của phiên đang sửa. Complete gọi luật bean từ layout vừa đọc trong khóa phiên.
+Không snapshot robots.wiring: kết quả tham chiếu spec công bố bất biến.
+Không thêm events vì không có chức năng dùng nhật ký này trong phạm vi bắt buộc.
+
 ## Chẩn đoán và mẫu B — migration 010
 
 ```mermaid

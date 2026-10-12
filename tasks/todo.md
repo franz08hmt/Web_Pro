@@ -268,3 +268,13 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] Runtime QA đã dọn, cổng8081 đóng; merge commit và fast-forward là bước bàn giao sau gate.
 - [ ] ADMIN live (credential không đăng nhập được), Firefox/Safari/cảm ứng vật lý.
 - [ ] Push merge lên GitHub: chưa có yêu cầu riêng trong lượt này.
+
+## Đợt 8 — Phòng lắp ráp có kiểm chứng
+
+- [x] M0: kiểm Git, baseline thực chạy và thiết kế ERD trước migration.
+- [ ] M1: prototype kéo/chọn/gắn và tách điều khiển camera.
+- [ ] M2: migration/seed và JavaBean có test từng luật.
+- [ ] M3: duyệt DDL, API/persistence owner/version/transaction.
+- [ ] M4: kit obstacle-avoider, khay, phản hồi và khôi phục.
+- [ ] M5: report/complete/khóa/phiếu JSP.
+- [ ] M6: QA thật/browser/concurrency/hồi quy/cleanup.

@@ -420,3 +420,9 @@ review hai nhánh → merge không commit ngay → test đỏ/sửa lỗi API/gu
 review độc lập → build + QA Tomcat riêng/SQL hash38bảng → tài liệu/cleanup →
 merge commit và fast-forward về integration/fullstack-v2. Không seed/migration,
 không stage file cá nhân; không tự push. Chi tiết ở TEAM_INTEGRATION_QA_20261012.md.
+
+## Đợt 8 — Phòng lắp ráp có kiểm chứng
+
+M0: baseline ad2a4fc; Node160/JUnit85 xanh Java17. Thiết kế ERD trước
+migration013, giữ GROUP cũ và bảy file người dùng. Các mốc M1–M6 và bằng chứng
+ở docs/PHASE8_ASSEMBLY_QA_REPORT.md. Chỉ commit local, không push.
