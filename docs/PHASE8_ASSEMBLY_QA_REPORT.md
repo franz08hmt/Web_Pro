@@ -41,3 +41,11 @@ Không nhật ký events: phản hồi lỗi theo request và báo cáo đọc l
 
 Chưa chạy migration/seed, chưa QA dữ liệu mới hoặc browser Đợt 8 tại M0.
 Các mốc chỉ ghi đạt sau khi có kết quả thực chạy.
+
+### M1 — Prototype
+
+Chrome headless với callback fixture (không server/DB): chọn bằng radio và
+bàn phím Space → Gắn; kéo vật thể → snap; kéo vật thể không xoay camera,
+kéo vùng trống vẫn xoay. Không pageerror. Bằng chứng ngoài Git:
+`D:/Web-Pro/qa-evidence/phase8/m1-results.json`, `m1-prototype.png`.
+Đây chỉ là kiểm tương tác M1, chưa phải bằng chứng API/persistence.
