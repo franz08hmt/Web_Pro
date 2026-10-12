@@ -1,4 +1,4 @@
-# Đợt 2 — Lái thử mô hình 3D
+﻿# Đợt 2 — Lái thử mô hình 3D
 
 ## Redesign JSP học tập — 06/10/2026
 
@@ -272,9 +272,10 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 ## Đợt 8 — Phòng lắp ráp có kiểm chứng
 
 - [x] M0: kiểm Git, baseline thực chạy và thiết kế ERD trước migration.
-- [ ] M1: prototype kéo/chọn/gắn và tách điều khiển camera.
-- [ ] M2: migration/seed và JavaBean có test từng luật.
+- [x] M1: prototype kéo/chọn/gắn và tách điều khiển camera.
+- [x] M2: migration/seed và JavaBean có test từng luật.
 - [ ] M3: duyệt DDL, API/persistence owner/version/transaction.
 - [ ] M4: kit obstacle-avoider, khay, phản hồi và khôi phục.
 - [ ] M5: report/complete/khóa/phiếu JSP.
 - [ ] M6: QA thật/browser/concurrency/hồi quy/cleanup.
+

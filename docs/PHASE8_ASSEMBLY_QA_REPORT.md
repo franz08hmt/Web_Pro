@@ -49,3 +49,15 @@ bàn phím Space → Gắn; kéo vật thể → snap; kéo vật thể không x
 kéo vùng trống vẫn xoay. Không pageerror. Bằng chứng ngoài Git:
 `D:/Web-Pro/qa-evidence/phase8/m1-results.json`, `m1-prototype.png`.
 Đây chỉ là kiểm tương tác M1, chưa phải bằng chứng API/persistence.
+
+### M2 — Dữ kiện và luật
+
+JUnit mới đỏ do chưa có bean, sau triển khai đạt 7/7; tổng 92/92.
+Node mới 5/5; tổng 165/165. Có kiểm guard trên bản sao chứa stream/dòng121.
+Migration013 chưa chạy. DB đọc thực xác nhận migration001–012, kit có8 nhóm,
+10 vật thể (2 động cơ,2 bánh). Seed10 slots theo config, hướng Y0 tương đối.
+Guard hồ sơ Đợt5 bổ sung đúng migration013 vào whitelist các chức năng khác,
+vẫn từ chối migration lạ; không nới bảo mật/luật hồ sơ.
+Build riêng Java17 ngoài repo tránh IDE tự ghi class69(Java25) vào target.
+M1 đã commit trước khi phát hiện guard whitelist đỏ; được sửa ở M2,
+không sửa lịch sử commit. Không tuyên bố baseline mới xanh ở lần đỏ đó.
