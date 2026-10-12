@@ -76,3 +76,13 @@ test("placement syntax guard detects prohibited syntax and excessive line length
   assert.throws(() => checkJava("items.stream();", "copy"));
   assert.throws(() => checkJava("x".repeat(121), "copy"));
 });
+test("detailed receipt uses escaped bean facts and core JSTL without unsupported view syntax", () => {
+  const view = fs.readFileSync(path.join(root,
+    "tomcat-app/src/main/webapp/WEB-INF/views/assembly-receipt.jsp"), "utf8");
+  assert.doesNotMatch(view, /<%(?!@)|<(?:fmt:|fn:|select\b|option\b)|fn:/i);
+  assert.match(view, /session\.detailed/);
+  assert.match(view, /c:out value="\$\{assemblyPlaced\.instanceLabel\}"/);
+  assert.match(view, /c:out value="\$\{assemblyPlaced\.slotLabel\}"/);
+  assert.match(view, /assemblyLayout\.spec\.versionNo/);
+  for (const line of view.split(/\r?\n/)) assert.ok(line.length <= 140);
+});

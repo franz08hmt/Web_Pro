@@ -14,6 +14,8 @@ import vn.edu.webpro.robotlab.business.Robot;
 import vn.edu.webpro.robotlab.business.RobotComponent;
 import vn.edu.webpro.robotlab.business.User;
 import vn.edu.webpro.robotlab.data.AssemblySessionDB;
+import vn.edu.webpro.robotlab.data.AssemblyPlacementDB;
+import vn.edu.webpro.robotlab.business.AssemblyLayout;
 import vn.edu.webpro.robotlab.data.ComponentDB;
 import vn.edu.webpro.robotlab.data.RobotDB;
 import vn.edu.webpro.robotlab.util.SessionUtil;
@@ -35,6 +37,7 @@ public class AssemblyReceiptPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.setHeader("Cache-Control", "no-store");
         User user;
         try {
             user = SessionUtil.getCurrentUser(request);
@@ -63,6 +66,12 @@ public class AssemblyReceiptPageServlet extends HttpServlet {
             Robot robot = RobotDB.selectRobot(session.getRobotId());
             List<RobotComponent> requiredComponents = RobotDB.selectRobotComponents(session.getRobotId());
             Map<String, String> componentNames = ComponentDB.selectComponentNames();
+            session.setRequiredComponentCount(requiredComponents.size());
+            if (session.isDetailed()) {
+                AssemblyLayout assemblyLayout = AssemblyPlacementDB.selectLayout(sessionId, user.getId());
+                request.setAttribute("assemblyLayout", assemblyLayout);
+                request.setAttribute("assemblyCheckReport", assemblyLayout.check());
+            }
 
             request.setAttribute("session", session);
             request.setAttribute("robot", robot);
@@ -73,13 +82,18 @@ public class AssemblyReceiptPageServlet extends HttpServlet {
             return;
         }
 
-        getServletContext()
-                .getRequestDispatcher("/WEB-INF/views/assembly-receipt.jsp")
-                .forward(request, response);
+        String url = "/WEB-INF/views/assembly-receipt.jsp";
+        getServletContext().getRequestDispatcher(url).forward(request, response);
     }
 
     private long parseSessionId(String raw) {
-        if (raw == null || !raw.matches("[1-9][0-9]{0,18}")) return -1;
-        return Long.parseLong(raw);
+        try {
+            if (raw != null && raw.matches("[1-9][0-9]{0,18}")) {
+                return Long.parseLong(raw);
+            }
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+        return -1;
     }
 }

@@ -92,3 +92,20 @@ Touch là mô phỏng Chrome, chưa thử màn hình cảm ứng thật. 23 ca C
 `browser-results.json`, `detailed-390/768/1440.png`, `completed-desktop/mobile.png`.
 Không đưa panel bước/checkbox bước vào3D; GROUP giữ cách tick nhóm.
 api.js cache-busting được tăng tại mọi HTML dùng chung, không đổi các luồng đó.
+
+### M5 — Hoàn tất và phiếu kết quả
+
+Check/complete chỉ dùng layout server trong khóa phiên. Hai complete đồng thời
+trả một transitioned:true và một unchanged:true, timestamp/version chỉ tăng một lần.
+Confetti chỉ khi transitioned; reload không ăn mừng lại. Phiếu JSP có phiên bản,
+10 vật thể/slot/hướng/ngày gắn và ba phần cơ khí/nối dây/chạy thử mô phỏng.
+Không xác nhận nối dây hoặc firmware thật. GET phiếu owner và no-store.
+Phiên GROUP cũ của builder vẫn mở được layout và phiếu; không chấm lại.
+Nhiệm vụ mới #23 `[QA] Phase8 detailed assembly evidence ...` được tạo/công bố
+qua form ADMIN, USER quiz→preview→confirm với session30. SQL xác nhận một
+bài nộp tham chiếu30, assembly_points40.0, không đổi rubric hoặc TaskServlet.
+Mẫu B được giữ bởi test hồi quy; chưa nộp bài B mới riêng trong QA này.
+Fixture UI chỉ đổi hai binding tương đương ở assembly-receipt:
+status != COMPLETED → getter completed; fn:length → count đã set từ danh sách.
+Không đổi bất kỳ control/form contract nào, bỏ fn khỏi JSP theo kiến thức môn học.
+JspExpressionContractTest đăng ký ba biến bean mới. Tổng167 Node/93 JUnit xanh.

@@ -1260,7 +1260,7 @@
     "controls": [],
     "bindings": [
       "pageContext.request.contextPath",
-      "session.status != 'COMPLETED'",
+      "not session.completed",
       "session.status",
       "session.robotId",
       "session.id",
@@ -1269,7 +1269,7 @@
       "robot.summary",
       "session.createdAt",
       "session.completedAt",
-      "fn:length(requiredComponents)",
+      "session.requiredComponentCount",
       "requiredComponents",
       "rc.componentId",
       "componentNames[rc.componentId]",

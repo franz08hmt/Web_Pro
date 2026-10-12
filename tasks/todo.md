@@ -276,6 +276,6 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] M2: migration/seed và JavaBean có test từng luật.
 - [x] M3: duyệt DDL, API/persistence owner/version/transaction.
 - [x] M4: kit obstacle-avoider, khay, phản hồi và khôi phục.
-- [ ] M5: report/complete/khóa/phiếu JSP.
+- [x] M5: report/complete/khóa/phiếu JSP.
 - [ ] M6: QA thật/browser/concurrency/hồi quy/cleanup.
 

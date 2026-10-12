@@ -8,6 +8,13 @@ import vn.edu.webpro.robotlab.util.JsonUtil;
 
 /** Dữ kiện và luật lắp ráp mô phỏng do server xác thực. */
 public class AssemblyPlacement implements Serializable {
+    /** Góc tương đối dễ đọc trên phiếu, giữ nguyên mã nguồn dữ kiện. */
+    public String getOrientationDisplay() {
+        if (orientationCode != null && orientationCode.matches("Y(0|90|180|270)")) {
+            return orientationCode.substring(1) + "°";
+        }
+        return "Chưa xác định";
+    }
     private long instanceId;
     private long sessionId;
     private long slotId;

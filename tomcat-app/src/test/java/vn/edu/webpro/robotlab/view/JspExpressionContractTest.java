@@ -18,6 +18,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import vn.edu.webpro.robotlab.business.AssemblySession;
+import vn.edu.webpro.robotlab.business.AssemblyLayout;
+import vn.edu.webpro.robotlab.business.AssemblyPlacement;
+import vn.edu.webpro.robotlab.business.AssemblyCheckReport;
 import vn.edu.webpro.robotlab.business.Component;
 import vn.edu.webpro.robotlab.business.LearningProfile;
 import vn.edu.webpro.robotlab.business.ProfileRobotEntry;
@@ -79,6 +82,9 @@ final class JspExpressionContractTest {
             Map.entry("robot", Robot.class),
             Map.entry("component", Component.class),
             Map.entry("session", AssemblySession.class),
+            Map.entry("assemblyLayout", AssemblyLayout.class),
+            Map.entry("assemblyPlaced", AssemblyPlacement.class),
+            Map.entry("assemblyCheckReport", AssemblyCheckReport.class),
             Map.entry("rc", RobotComponent.class),
             Map.entry("score", QuizRobotScore.class),
             Map.entry("popular", RobotPopularity.class),

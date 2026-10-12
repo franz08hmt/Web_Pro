@@ -1,6 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!doctype html>
 <html lang="vi">
     <head>
@@ -20,7 +19,7 @@
 
 
             <c:choose>
-                <c:when test="${session.status != 'COMPLETED'}">
+                <c:when test="${not session.completed}">
                     <p class="notice notice-error">
                     Phiên lắp ráp này chưa hoàn tất nên chưa có phiếu kết quả.
                     Trạng thái hiện tại: <c:set var="workspaceAssemblyState" value="${session.status}"/>
@@ -51,10 +50,65 @@
                     <dt>Mẫu robot</dt><dd><c:out value="${session.robotId}"/></dd>
                     <dt>Bắt đầu phiên</dt><dd><c:out value="${session.createdAt}"/></dd>
                     <dt>Hoàn tất lắp ráp</dt><dd><c:out value="${session.completedAt}"/></dd>
-                    <dt>Kết quả</dt><dd>Đã lắp đủ toàn bộ <c:out value="${fn:length(requiredComponents)}"/> nhóm linh kiện bắt buộc
-                    trong mô hình 3D.</dd>
+                    <dt>Kết quả</dt>
+                    <dd>
+                        <c:choose>
+                            <c:when test="${session.detailed}">
+                                Đã gắn đúng <c:out value="${assemblyCheckReport.correctCount}"/>/<c:out
+                                value="${assemblyCheckReport.requiredCount}"/> vật thể bắt buộc.
+                            </c:when>
+                            <c:otherwise>
+                                Đã lắp đủ toàn bộ <c:out value="${session.requiredComponentCount}"/> nhóm linh kiện bắt buộc
+                                trong mô hình 3D.
+                            </c:otherwise>
+                        </c:choose>
+                    </dd>
                     </dl>
 
+                    <c:if test="${session.detailed}">
+                        <section aria-labelledby="assembly-mechanical-result">
+                            <h2 id="assembly-mechanical-result">Kết quả lắp cơ khí mô phỏng</h2>
+                            <p>Phiên bản cấu hình: <c:out value="${assemblyLayout.spec.versionNo}"/>.
+                            Mỗi vật thể được kiểm tra riêng theo loại, hướng và bộ phận cha.</p>
+                            <div class="workspace-table" role="region" aria-label="Các vật thể đã gắn" tabindex="0">
+                                <table>
+                                    <caption>Vật thể và điểm gắn được server xác nhận</caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Vật thể</th>
+                                            <th scope="col">Điểm gắn</th>
+                                            <th scope="col">Hướng tương đối</th>
+                                            <th scope="col">Gắn lúc</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach var="assemblyPlaced" items="${assemblyLayout.placements}">
+                                            <tr>
+                                                <td><c:out value="${assemblyPlaced.instanceLabel}"/></td>
+                                                <td><c:out value="${assemblyPlaced.slotLabel}"/></td>
+                                                <td><c:out value="${assemblyPlaced.orientationDisplay}"/></td>
+                                                <td><c:out value="${assemblyPlaced.placedAt}"/></td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <c:forEach var="assemblyProblem" items="${assemblyCheckReport.errors}">
+                                <p class="notice notice-error"><c:out value="${assemblyProblem}"/></p>
+                            </c:forEach>
+                        </section>
+                        <section aria-labelledby="assembly-wiring-result">
+                            <h2 id="assembly-wiring-result">Kết quả nối dây</h2>
+                            <p>Phiếu này chưa xác nhận kết quả nối dây. Thực hiện và xem kết quả riêng tại phòng nối dây.</p>
+                            <p><a href="${pageContext.request.contextPath}/wiring">Sang phòng nối dây</a></p>
+                        </section>
+                        <section aria-labelledby="assembly-drive-result">
+                            <h2 id="assembly-drive-result">Chạy thử</h2>
+                            <p>Lái thử chỉ mô phỏng chuyển động trên website, không phải firmware hoặc vận hành robot thật.</p>
+                        </section>
+                    </c:if>
+
+                    <c:if test="${not session.detailed}">
                     <div class="workspace-table" role="region" aria-label="Bảng dữ liệu có thể cuộn ngang" tabindex="0">
                         <table>
                             <caption>Linh kiện bắt buộc của mẫu robot này (bảng <code>robot_components</code>)</caption>
@@ -78,6 +132,7 @@
                             </tbody>
                         </table>
                     </div>
+                    </c:if>
 
                     <p class="notice">
                     "Hoàn tất" ở đây có nghĩa là đã hoàn tất bài lắp ráp trong phạm vi mô phỏng
@@ -109,7 +164,8 @@
                 bằng <code>setAttribute</code> rồi <code>forward()</code> sang JSP này. Trạng thái
                 hoàn tất và <code>completed_at</code> chỉ được
                 <code>AssemblySessionDB.completeSession()</code> ghi sau khi đối chiếu tập hợp
-                linh kiện bắt buộc với dữ liệu thật trong <code>session_visual_parts</code> —
+                linh kiện bắt buộc với dữ liệu thật trong <code>session_visual_parts</code> (GROUP),
+                hoặc kiểm từng vật thể/hướng/phụ thuộc trong <code>assembly_placements</code> (DETAILED) —
                 trang này không tin số phần trăm do trình duyệt tự tính.
                 </p>
             </details>
