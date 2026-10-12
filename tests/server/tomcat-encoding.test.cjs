@@ -77,7 +77,9 @@ test("HTML pages cache-bust every local stylesheet", () => {
 
 test("Tomcat exploded frontend preserves the source bytes", (context) => {
   const sourcePath = path.join(projectRoot, "index.html");
-  const deployedPath = path.join(
+  const deployedPath = process.env.ROBOTLAB_EXPLODED_DIR
+    ? path.join(process.env.ROBOTLAB_EXPLODED_DIR, "index.html")
+    : path.join(
     projectRoot,
     "tomcat-app",
     "target",

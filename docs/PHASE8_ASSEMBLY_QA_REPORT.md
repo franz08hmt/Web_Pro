@@ -61,3 +61,21 @@ vẫn từ chối migration lạ; không nới bảo mật/luật hồ sơ.
 Build riêng Java17 ngoài repo tránh IDE tự ghi class69(Java25) vào target.
 M1 đã commit trước khi phát hiện guard whitelist đỏ; được sửa ở M2,
 không sửa lịch sử commit. Không tuyên bố baseline mới xanh ở lần đỏ đó.
+
+### M3 — API và lưu dữ liệu
+
+Người dùng đã duyệt migration013 và seed. Đã chạy đúng DB trong `.env`;
+10 slots/10 vật thể, chạy lại seed không đổi spec v1. Đối chiếu dữ liệu
+37 bảng cũ không thay đổi; schema_migrations chỉ thêm bản ghi013.
+82 kiểm tra Tomcat9/Java17/MySQL thật đã qua: ADMIN và hai USER đăng nhập,
+owner/CSRF, từng mã từ chối, version cũ, retry, reset giữ instances,
+reload, một bánh không tính hai, hai attach cùng version chỉ một ghi,
+hai complete chỉ một chuyển trạng thái; SQL xác nhận10 placements.
+Phiên QA mới #30 (builder), #31 (student); không tạo tài khoản mới.
+Chi tiết không bí mật: `D:/Web-Pro/qa-evidence/phase8/live-results.json`.
+JUnit bổ sung kiểm kit và complete/reset nằm trong bean: tổng93.
+Node hiện166/166. Kiểm byte exploded hỗ trợ `ROBOTLAB_EXPLODED_DIR`
+để đối chiếu bản build Java17 riêng; vẫn giữ assertion byte và UTF-8,
+mặc định dùng target cũ. Không sửa/dừng Tomcat8080 của người dùng.
+Assertion nguồn hoàn tất được cập nhật theo if/braces và nhánh GROUP;
+guard mới kiểm bean validateChange, không đặt luật hoàn tất trong XxxDB.

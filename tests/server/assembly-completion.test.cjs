@@ -28,12 +28,13 @@ const migration = fs.readFileSync(
 
 test("completing an assembly never trusts a client-submitted percentage or flag", () => {
   // Thân request PATCH chỉ đọc "status"; không có nhánh nào đọc phần trăm/cờ hoàn thành từ client.
-  assert.match(servlet, /JsonUtil\.stringField\(JsonUtil\.readBody\(request\.getReader\(\), MAX_BODY\), "status"\)/);
+  assert.match(servlet, /String body = JsonUtil\.readBody\(request\.getReader\(\), MAX_BODY\)/);
+  assert.match(servlet, /JsonUtil\.stringField\(body, "status"\)/);
   assert.doesNotMatch(servlet, /booleanField\([^)]*"isCompleted"/);
   assert.doesNotMatch(servlet, /stringField\([^)]*"progressPercent"/);
 
   // Chuyển sang COMPLETED phải đi qua completeAssembly(), không update trực tiếp như các trạng thái khác.
-  assert.match(servlet, /AssemblySession\.COMPLETED\.equals\(target\)\)\s*\{\s*if \(!completeAssembly\(session, response\)\) return;/);
+  assert.match(servlet, /AssemblySession\.COMPLETED\.equals\(target\)\)\s*\{\s*if \(!completeAssembly\(session, response\)\)\s*\{\s*return;/);
 });
 
 test("the fast pre-check asks the JavaBean, but the atomic database write is the real authority", () => {
@@ -43,11 +44,11 @@ test("the fast pre-check asks the JavaBean, but the atomic database write is the
 
   assert.match(
     session,
-    /canCompleteAssembly\(List<RobotComponent> requiredComponents\)\s*\{\s*if \(!isInProgress\(\) \|\| requiredComponents\.isEmpty\(\)\) return false;/
+    /canCompleteAssembly\(List<RobotComponent> requiredComponents\)\s*\{\s*if \(isDetailed\(\) \|\| !isInProgress\(\) \|\| requiredComponents\.isEmpty\(\)\)\s*\{\s*return false;/
   );
   // So theo tập hợp mã linh kiện (assembledPartIds chứa componentId), không so số lượng.
   assert.match(session, /Set<String> assembled = new HashSet<>\(assembledPartIds\);/);
-  assert.match(session, /if \(!assembled\.contains\(required\.getComponentId\(\)\)\) return false;/);
+  assert.match(session, /if \(!assembled\.contains\(required\.getComponentId\(\)\)\)\s*\{\s*return false;/);
 });
 
 test("completeSession() checks state and part-completeness inside one UPDATE so concurrent requests can't corrupt completed_at", () => {
@@ -66,7 +67,7 @@ test("completeSession() checks state and part-completeness inside one UPDATE so 
   // UPDATE không đổi dòng nào (double-click, retry) phải phân biệt được "đã xong" với "chưa đủ"/"sai trạng thái".
   assert.match(database, /public static final int COMPLETE_ALREADY_DONE = 1;/);
   assert.match(database, /public static final int COMPLETE_INCOMPLETE_PARTS = 2;/);
-  assert.match(database, /if \(AssemblySession\.COMPLETED\.equals\(status\)\) return COMPLETE_ALREADY_DONE;/);
+  assert.match(database, /if \(AssemblySession\.COMPLETED\.equals\(status\)\)\s*\{\s*return COMPLETE_ALREADY_DONE;/);
 });
 
 test("completed_at migration is additive — no DROP/TRUNCATE/DELETE that could destroy existing session data", () => {

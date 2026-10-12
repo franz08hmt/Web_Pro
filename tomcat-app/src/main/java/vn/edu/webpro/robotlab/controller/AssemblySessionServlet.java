@@ -16,6 +16,9 @@ import vn.edu.webpro.robotlab.data.AssemblySessionDB;
 import vn.edu.webpro.robotlab.data.AssemblyStepDB;
 import vn.edu.webpro.robotlab.data.RobotDB;
 import vn.edu.webpro.robotlab.util.JsonUtil;
+import vn.edu.webpro.robotlab.business.AssemblyLayout;
+import vn.edu.webpro.robotlab.data.AssemblyPlacementDB;
+import vn.edu.webpro.robotlab.util.AssemblyPlacementJson;
 import vn.edu.webpro.robotlab.util.ResponseUtil;
 import vn.edu.webpro.robotlab.util.SessionUtil;
 import vn.edu.webpro.robotlab.util.ValidationUtil;
@@ -55,9 +58,14 @@ public class AssemblySessionServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user = SessionUtil.requireUser(request, response);
-        if (user == null || !SessionUtil.hasValidCsrfToken(request, response)) return;
+        if (user == null || !SessionUtil.hasValidCsrfToken(request, response)) {
+            return;
+        }
 
         try {
+            if (handlePlacement(request, response, user)) {
+                return;
+            }
             String robotId = JsonUtil.stringField(JsonUtil.readBody(request.getReader(), MAX_BODY), "robotId");
             if (!ValidationUtil.isSlug(robotId) || !RobotDB.robotExists(robotId)) {
                 ResponseUtil.sendError(response, HTTP_UNPROCESSABLE_ENTITY,
@@ -82,9 +90,14 @@ public class AssemblySessionServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user = SessionUtil.requireUser(request, response);
-        if (user == null) return;
+        if (user == null) {
+            return;
+        }
 
         try {
+            if (handlePlacement(request, response, user)) {
+                return;
+            }
             String path = request.getPathInfo();
             if (path == null || "/".equals(path)) {
                 sendSessionList(response, user);
@@ -106,7 +119,9 @@ public class AssemblySessionServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user = SessionUtil.requireUser(request, response);
-        if (user == null || !SessionUtil.hasValidCsrfToken(request, response)) return;
+        if (user == null || !SessionUtil.hasValidCsrfToken(request, response)) {
+            return;
+        }
 
         String[] segments = request.getPathInfo() == null ? new String[0]
                 : request.getPathInfo().substring(1).split("/");
@@ -119,6 +134,14 @@ public class AssemblySessionServlet extends HttpServlet {
         String itemId = segments[2];
 
         try {
+            if ("visual-parts".equals(group)) {
+                AssemblySession candidate = findSession(segments[0], user);
+                if (candidate != null && candidate.isDetailed()) {
+                    ResponseUtil.sendError(response, 422, "DETAILED_MODE_REQUIRED",
+                            "Phiên chi tiết cần gắn từng vật thể qua điểm gắn, không tick nhóm linh kiện.");
+                    return;
+                }
+            }
             AssemblySession session = findSession(segments[0], user);
             if (session == null) {
                 sendSessionNotFound(response);
@@ -158,8 +181,21 @@ public class AssemblySessionServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user = SessionUtil.requireUser(request, response);
-        if (user == null || !SessionUtil.hasValidCsrfToken(request, response)) return;
+        if (user == null || !SessionUtil.hasValidCsrfToken(request, response)) {
+            return;
+        }
 
+        try {
+            if (handlePlacement(request, response, user)) {
+                return;
+            }
+        } catch (SQLException e) {
+            ResponseUtil.sendDatabaseUnavailable(response);
+            return;
+        } catch (IllegalArgumentException e) {
+            ResponseUtil.sendError(response, 422, "VALIDATION_ERROR", "ID hoặc phiên bản không hợp lệ.");
+            return;
+        }
         String path = request.getPathInfo();
         String[] segments = path == null ? new String[0] : path.substring(1).split("/");
         if (segments.length != 2 || !"progress".equals(segments[1])) {
@@ -193,7 +229,9 @@ public class AssemblySessionServlet extends HttpServlet {
 
     private void changeStatus(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user = SessionUtil.requireUser(request, response);
-        if (user == null || !SessionUtil.hasValidCsrfToken(request, response)) return;
+        if (user == null || !SessionUtil.hasValidCsrfToken(request, response)) {
+            return;
+        }
 
         try {
             String path = request.getPathInfo();
@@ -204,10 +242,17 @@ public class AssemblySessionServlet extends HttpServlet {
             }
             refresh(session);
 
-            String target = JsonUtil.stringField(JsonUtil.readBody(request.getReader(), MAX_BODY), "status");
+            String body = JsonUtil.readBody(request.getReader(), MAX_BODY);
+            String target = JsonUtil.stringField(body, "status");
+            if (session.isDetailed() && AssemblySession.COMPLETED.equals(target)) {
+                completePlacement(request, response, session.getId(), user.getId(), body);
+                return;
+            }
             if (!target.equals(session.getStatus())) {
                 if (AssemblySession.COMPLETED.equals(target)) {
-                    if (!completeAssembly(session, response)) return;
+                    if (!completeAssembly(session, response)) {
+                        return;
+                    }
                     session = AssemblySessionDB.selectSession(session.getId(), user.getId());
                 } else if (!session.canChangeStatusTo(target)) {
                     ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT,
@@ -247,25 +292,19 @@ public class AssemblySessionServlet extends HttpServlet {
         }
 
         int result = AssemblySessionDB.completeSession(session.getId(), session.getUserId());
-        switch (result) {
-            case AssemblySessionDB.COMPLETE_OK, AssemblySessionDB.COMPLETE_ALREADY_DONE -> {
-                return true;
-            }
-            case AssemblySessionDB.COMPLETE_INCOMPLETE_PARTS -> {
-                ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT,
-                        "ASSEMBLY_INCOMPLETE", "Chưa lắp đủ linh kiện bắt buộc trong mô hình 3D.");
-                return false;
-            }
-            case AssemblySessionDB.COMPLETE_NOT_FOUND -> {
-                sendSessionNotFound(response);
-                return false;
-            }
-            default -> {
-                ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT,
-                        "INVALID_STATE_TRANSITION", "Không thể chuyển sang trạng thái yêu cầu.");
-                return false;
-            }
+        if (result == AssemblySessionDB.COMPLETE_OK || result == AssemblySessionDB.COMPLETE_ALREADY_DONE) {
+            return true;
         }
+        if (result == AssemblySessionDB.COMPLETE_INCOMPLETE_PARTS) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT,
+                    "ASSEMBLY_INCOMPLETE", "Chưa lắp đủ linh kiện bắt buộc trong mô hình 3D.");
+        } else if (result == AssemblySessionDB.COMPLETE_NOT_FOUND) {
+            sendSessionNotFound(response);
+        } else {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT,
+                    "INVALID_STATE_TRANSITION", "Không thể chuyển sang trạng thái yêu cầu.");
+        }
+        return false;
     }
 
     /** Tick linh kiện: chỉ trong giai đoạn chuẩn bị và linh kiện phải thuộc robot này. */
@@ -327,15 +366,23 @@ public class AssemblySessionServlet extends HttpServlet {
 
     /** Đọc phiên theo ID trên đường dẫn; ID sai định dạng hoặc phiên của người khác trả về null. */
     private AssemblySession findSession(String rawId, User user) throws SQLException {
-        if (!rawId.matches("[1-9][0-9]{0,18}")) return null;
-        return AssemblySessionDB.selectSession(Long.parseLong(rawId), user.getId());
+        if (!rawId.matches("[1-9][0-9]{0,18}")) {
+            return null;
+        }
+        try {
+            return AssemblySessionDB.selectSession(Long.parseLong(rawId), user.getId());
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     private void sendSessionList(HttpServletResponse response, User user) throws SQLException, IOException {
         List<AssemblySession> sessions = AssemblySessionDB.selectSessions(user.getId());
         StringBuilder items = new StringBuilder();
         for (AssemblySession session : sessions) {
-            if (items.length() > 0) items.append(',');
+            if (items.length() > 0) {
+                items.append(',');
+            }
             items.append(refresh(session).toJson());
         }
         ResponseUtil.sendJson(response, HttpServletResponse.SC_OK,
@@ -351,5 +398,123 @@ public class AssemblySessionServlet extends HttpServlet {
     private void sendSessionNotFound(HttpServletResponse response) throws IOException {
         ResponseUtil.sendError(response, HttpServletResponse.SC_NOT_FOUND,
                 "NOT_FOUND", "Không tìm thấy phiên lắp ráp.");
+    }
+    /** Xử lý route layout/placements/check; trả false cho route GROUP hiện có. */
+    private boolean handlePlacement(HttpServletRequest request, HttpServletResponse response, User user)
+            throws IOException, SQLException {
+        String path = request.getPathInfo();
+        String[] segments = path == null ? new String[0] : path.substring(1).split("/");
+        if (segments.length < 2 || (!"layout".equals(segments[1]) && !"placements".equals(segments[1])
+                && !"check".equals(segments[1]) && !"progress".equals(segments[1]))) {
+            return false;
+        }
+        try {
+            if ("progress".equals(segments[1])) {
+                AssemblyLayout current = AssemblyPlacementDB.selectLayout(id(segments[0]), user.getId());
+                if (current == null || !"DETAILED".equals(current.getMode())) {
+                    return false;
+                }
+            }
+            String method = request.getMethod();
+            if (!"GET".equals(method) && !SessionUtil.hasValidCsrfToken(request, response)) {
+                return true;
+            }
+            long sessionId = id(segments[0]);
+            if ("GET".equals(method) && segments.length == 2 && "layout".equals(segments[1])) {
+                sendLayout(response, AssemblyPlacementDB.selectLayout(sessionId, user.getId()));
+            } else if ("POST".equals(method) && segments.length == 2 && "check".equals(segments[1])) {
+                AssemblyLayout layout = AssemblyPlacementDB.selectLayout(sessionId, user.getId());
+                if (layout == null) {
+                    throw new IllegalArgumentException("NOT_FOUND");
+                }
+                ResponseUtil.sendJson(response, 200, "{\"data\":" + AssemblyPlacementJson.report(layout.check()) + "}");
+            } else if ("POST".equals(method) && segments.length == 2 && "placements".equals(segments[1])) {
+                String body = JsonUtil.readBody(request.getReader(), 8192);
+                sendLayout(response, AssemblyPlacementDB.change(sessionId, user.getId(), "attach",
+                        positive(body, "instanceId"), positive(body, "slotId"),
+                        JsonUtil.stringField(body, "orientation"), version(body)));
+            } else if ("DELETE".equals(method) && segments.length == 3 && "placements".equals(segments[1])) {
+                sendLayout(response, AssemblyPlacementDB.change(sessionId, user.getId(), "detach",
+                        id(segments[2]), 0, "", queryVersion(request)));
+            } else if ("DELETE".equals(method) && segments.length == 2 && "progress".equals(segments[1])) {
+                sendLayout(response, AssemblyPlacementDB.change(sessionId, user.getId(), "reset",
+                        0, 0, "", queryVersion(request)));
+            } else {
+                throw new IllegalArgumentException("VALIDATION_ERROR");
+            }
+        } catch (IllegalArgumentException e) {
+            error(response, e.getMessage());
+        }
+        return true;
+    }
+
+    /** Hoàn tất chi tiết qua PATCH, không dùng công thức hoàn tất GROUP. */
+    private void completePlacement(HttpServletRequest request, HttpServletResponse response,
+            long sessionId, long userId, String body) throws IOException, SQLException {
+        try {
+            sendLayout(response, AssemblyPlacementDB.change(sessionId, userId, "complete", 0, 0, "", version(body)));
+        } catch (IllegalArgumentException e) {
+            error(response, e.getMessage());
+        }
+    }
+
+    private static long id(String text) {
+        try {
+            long value = Long.parseLong(text);
+            if (value > 0) {
+                return value;
+            }
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("VALIDATION_ERROR");
+        }
+        throw new IllegalArgumentException("VALIDATION_ERROR");
+    }
+
+    private static long positive(String body, String key) {
+        long value = JsonUtil.longField(body, key);
+        if (value <= 0) {
+            throw new IllegalArgumentException("VALIDATION_ERROR");
+        }
+        return value;
+    }
+
+    private static int version(String body) {
+        return idVersion(JsonUtil.longField(body, "expectedLayoutVersion"));
+    }
+
+    private static int idVersion(long value) {
+        if (value < 1 || value > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("VALIDATION_ERROR");
+        }
+        return (int) value;
+    }
+
+    private static int queryVersion(HttpServletRequest request) {
+        return idVersion(id(request.getParameter("expectedLayoutVersion")));
+    }
+
+    private static void sendLayout(HttpServletResponse response, AssemblyLayout layout) throws IOException {
+        if (layout == null) {
+            throw new IllegalArgumentException("NOT_FOUND");
+        }
+        ResponseUtil.sendJson(response, 200,
+                "{\"accepted\":true,\"data\":" + AssemblyPlacementJson.layout(layout) + "}");
+    }
+
+    private static void error(HttpServletResponse response, String code) throws IOException {
+        if (code == null || !code.matches("NOT_FOUND|LAYOUT_CONFLICT|WRONG_COMPONENT|SLOT_OCCUPIED|"
+                + "ORIENTATION_NOT_ALLOWED|PARENT_MISSING|ALREADY_PLACED|HAS_DEPENDENTS|"
+                + "SESSION_LOCKED|ASSEMBLY_INCOMPLETE|GROUP_MODE|VALIDATION_ERROR")) {
+            code = "VALIDATION_ERROR";
+        }
+        int status = "NOT_FOUND".equals(code) ? 404 : "LAYOUT_CONFLICT".equals(code) ? 409 : 422;
+        String message = new AssemblyLayout().messageFor(code);
+        if ("ASSEMBLY_INCOMPLETE".equals(code)) {
+            message = "Chưa gắn đủ vật thể bắt buộc. Nhấn Kiểm tra mô hình để xem các điểm còn thiếu.";
+        } else if ("VALIDATION_ERROR".equals(code)) {
+            message = "ID, hướng hoặc phiên bản không hợp lệ. Hãy tải lại mô hình.";
+        }
+        ResponseUtil.sendJson(response, status, "{\"accepted\":false,\"error\":{\"code\":"
+                + JsonUtil.quote(code) + ",\"message\":" + JsonUtil.quote(message) + "}}");
     }
 }

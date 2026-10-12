@@ -24,6 +24,27 @@ test("placement JavaBeans keep traditional course syntax and readable source", (
     assert.match(source, new RegExp(`public ${name}\\(\\)`));
   }
 });
+test("placement routes stay in Servlet with session CSRF and owner-scoped locked persistence", () => {
+  const servlet = fs.readFileSync(path.join(java, "controller/AssemblySessionServlet.java"), "utf8");
+  const db = fs.readFileSync(path.join(java, "data/AssemblyPlacementDB.java"), "utf8");
+  for (const name of ["placements", "layout", "check", "expectedLayoutVersion"]) assert.ok(servlet.includes(name));
+  assert.match(servlet, /requireUser\(request, response\)/);
+  assert.match(servlet, /hasValidCsrfToken\(request, response\)/);
+  assert.doesNotMatch(servlet, /getParameter\("userId"\)/);
+  assert.match(db, /WHERE id = \? AND user_id = \?/);
+  assert.match(db, /FOR UPDATE/);
+  assert.match(db, /layout\.validateAttach/);
+  assert.match(db, /layout\.validateDetach/);
+  assert.match(db, /layout\.validateChange\(action, expectedVersion\)/);
+  const layout = fs.readFileSync(path.join(java, "business/AssemblyLayout.java"), "utf8");
+  assert.match(layout, /check\(\)\.isComplete\(\)/);
+  assert.match(db, /connection\.commit\(\)/);
+  assert.match(db, /connection\.rollback\(\)/);
+  for (const file of ["data/AssemblyPlacementDB.java", "controller/AssemblySessionServlet.java",
+    "data/AssemblySessionDB.java", "business/AssemblySession.java", "util/AssemblyPlacementJson.java"]) {
+    checkJava(fs.readFileSync(path.join(java, file), "utf8"), file);
+  }
+});
 test("placement interaction sends intentions and separates object dragging from camera", () => {
   const js = fs.readFileSync(path.join(root, "assets/js/assembly-3d-placement.js"), "utf8");
   assert.match(js, /THREE\.Raycaster/);

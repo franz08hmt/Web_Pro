@@ -64,6 +64,23 @@ class AssemblyLayoutTest {
         assertEquals("LAYOUT_CONFLICT", l.validateDetach(1, 0));
     }
 
+    @Test void kitMismatchAndCompletionAreDecidedByTheBean() {
+        AssemblyLayout l = layout();
+        assertEquals("", l.validateKit());
+        assertEquals("ASSEMBLY_INCOMPLETE", l.validateChange("complete", 1));
+        assertEquals("LAYOUT_CONFLICT", l.validateChange("reset", 0));
+        assertEquals("", l.validateChange("reset", 1));
+        place(l, 1, 1);
+        place(l, 2, 2);
+        place(l, 3, 3);
+        assertEquals("", l.validateChange("complete", 1));
+        l.setStatus("COMPLETED");
+        assertEquals("UNCHANGED", l.validateChange("complete", 0));
+        assertEquals("SESSION_LOCKED", l.validateChange("reset", 1));
+        l.getInstances().remove(2);
+        assertEquals("KIT_SPEC_MISMATCH", l.validateKit());
+    }
+
     @Test void parentCannotBeRemovedUntilChildrenAreDetached() {
         AssemblyLayout l = layout();
         place(l, 1, 1);

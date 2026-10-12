@@ -19,7 +19,8 @@ import vn.edu.webpro.robotlab.business.SessionStep;
  * được phiên của tài khoản khác kể cả khi đoán đúng ID.
  */
 public class AssemblySessionDB {
-    private static final String FIELDS = "id, user_id, robot_id, status, completed_at, created_at, updated_at";
+    private static final String FIELDS = "id, user_id, robot_id, status, completed_at, created_at, updated_at"
+            + ", assembly_mode, spec_id, layout_version";
 
     /** completeSession() thành công, phiên vừa chuyển sang COMPLETED. */
     public static final int COMPLETE_OK = 0;
@@ -34,26 +35,7 @@ public class AssemblySessionDB {
 
     /** Tạo phiên mới ở trạng thái PREPARING và trả về ID MySQL vừa sinh. */
     public static long insert(long userId, String robotId) throws SQLException {
-        ConnectionPool pool = ConnectionPool.getInstance();
-        Connection connection = pool.getConnection();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        String query = "INSERT INTO assembly_sessions (user_id, robot_id, status) "
-                + "VALUES (?, ?, 'PREPARING')";
-        try {
-            ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            ps.setLong(1, userId);
-            ps.setString(2, robotId);
-            ps.executeUpdate();
-            rs = ps.getGeneratedKeys();
-            rs.next();
-            return rs.getLong(1);
-        } finally {
-            DBUtil.closeResultSet(rs);
-            DBUtil.closePreparedStatement(ps);
-            pool.freeConnection(connection);
-        }
+        return AssemblyPlacementDB.createSession(userId, robotId);
     }
 
     public static int updateStatus(long id, long userId, String status) throws SQLException {
@@ -61,7 +43,8 @@ public class AssemblySessionDB {
         Connection connection = pool.getConnection();
         PreparedStatement ps = null;
 
-        String query = "UPDATE assembly_sessions SET status = ? WHERE id = ? AND user_id = ?";
+        String query = "UPDATE assembly_sessions SET status = ? WHERE id = ? AND user_id = ? "
+                + "AND status NOT IN ('COMPLETED', 'ABANDONED')";
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, status);
@@ -93,6 +76,7 @@ public class AssemblySessionDB {
                     "UPDATE assembly_sessions s "
                     + "SET s.status = 'COMPLETED', s.completed_at = CURRENT_TIMESTAMP "
                     + "WHERE s.id = ? AND s.user_id = ? AND s.status = 'IN_PROGRESS' "
+                    + "AND s.assembly_mode = 'GROUP' "
                     + "AND EXISTS (SELECT 1 FROM robot_components rc WHERE rc.robot_id = s.robot_id) "
                     + "AND NOT EXISTS ("
                     + "    SELECT 1 FROM robot_components rc"
@@ -105,7 +89,9 @@ public class AssemblySessionDB {
             ps = connection.prepareStatement(query);
             ps.setLong(1, id);
             ps.setLong(2, userId);
-            if (ps.executeUpdate() > 0) return COMPLETE_OK;
+            if (ps.executeUpdate() > 0) {
+                return COMPLETE_OK;
+            }
             return diagnoseIncompleteCompletion(connection, id, userId);
         } finally {
             DBUtil.closePreparedStatement(ps);
@@ -126,11 +112,17 @@ public class AssemblySessionDB {
             ps.setLong(1, id);
             ps.setLong(2, userId);
             rs = ps.executeQuery();
-            if (!rs.next()) return COMPLETE_NOT_FOUND;
+            if (!rs.next()) {
+                return COMPLETE_NOT_FOUND;
+            }
 
             String status = rs.getString("status");
-            if (AssemblySession.COMPLETED.equals(status)) return COMPLETE_ALREADY_DONE;
-            if (!AssemblySession.IN_PROGRESS.equals(status)) return COMPLETE_INVALID_STATE;
+            if (AssemblySession.COMPLETED.equals(status)) {
+                return COMPLETE_ALREADY_DONE;
+            }
+            if (!AssemblySession.IN_PROGRESS.equals(status)) {
+                return COMPLETE_INVALID_STATE;
+            }
             return COMPLETE_INCOMPLETE_PARTS;
         } finally {
             DBUtil.closeResultSet(rs);
@@ -257,13 +249,14 @@ public class AssemblySessionDB {
         PreparedStatement ps = null;
 
         String query = "INSERT INTO session_visual_parts (session_id, robot_id, component_id) "
-                + "VALUES (?, ?, ?) "
+                + "SELECT id, robot_id, ? FROM assembly_sessions WHERE id = ? AND user_id = ? "
+                + "AND assembly_mode = 'GROUP' AND status = 'IN_PROGRESS' "
                 + "ON DUPLICATE KEY UPDATE component_id = VALUES(component_id)";
         try {
             ps = connection.prepareStatement(query);
-            ps.setLong(1, session.getId());
-            ps.setString(2, session.getRobotId());
-            ps.setString(3, componentId);
+            ps.setString(1, componentId);
+            ps.setLong(2, session.getId());
+            ps.setLong(3, session.getUserId());
             int count = ps.executeUpdate();
             touch(connection, session.getId());
             return count;
@@ -279,11 +272,14 @@ public class AssemblySessionDB {
         Connection connection = pool.getConnection();
         PreparedStatement ps = null;
 
-        String query = "DELETE FROM session_visual_parts WHERE session_id = ? AND component_id = ?";
+        String query = "DELETE p FROM session_visual_parts p JOIN assembly_sessions s ON s.id = p.session_id "
+                + "WHERE p.session_id = ? AND p.component_id = ? AND s.user_id = ? "
+                + "AND s.assembly_mode = 'GROUP' AND s.status = 'IN_PROGRESS'";
         try {
             ps = connection.prepareStatement(query);
             ps.setLong(1, session.getId());
             ps.setString(2, componentId);
+            ps.setLong(3, session.getUserId());
             int count = ps.executeUpdate();
             touch(connection, session.getId());
             return count;
@@ -408,16 +404,25 @@ public class AssemblySessionDB {
     }
 
     /** Ghép một dòng assembly_sessions với ba bảng tiến độ thành JavaBean đầy đủ. */
+    private static String isoDate(Timestamp value) {
+        java.text.SimpleDateFormat date = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        date.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+        return date.format(value);
+    }
+
     private static AssemblySession readSession(Connection connection, ResultSet row) throws SQLException {
         AssemblySession session = new AssemblySession();
         session.setId(row.getLong("id"));
         session.setUserId(row.getLong("user_id"));
         session.setRobotId(row.getString("robot_id"));
         session.setStatus(row.getString("status"));
-        session.setCreatedAt(row.getTimestamp("created_at").toInstant().toString());
-        session.setUpdatedAt(row.getTimestamp("updated_at").toInstant().toString());
+        session.setAssemblyMode(row.getString("assembly_mode"));
+        session.setSpecId(row.getLong("spec_id"));
+        session.setLayoutVersion(row.getInt("layout_version"));
+        session.setCreatedAt(isoDate(row.getTimestamp("created_at")));
+        session.setUpdatedAt(isoDate(row.getTimestamp("updated_at")));
         Timestamp completedAt = row.getTimestamp("completed_at");
-        session.setCompletedAt(completedAt == null ? null : completedAt.toInstant().toString());
+        session.setCompletedAt(completedAt == null ? null : isoDate(completedAt));
         session.setComponents(selectComponents(connection, session.getId()));
         session.setSteps(selectSteps(connection, session.getId()));
         session.setAssembledPartIds(selectVisualParts(connection, session.getId()));

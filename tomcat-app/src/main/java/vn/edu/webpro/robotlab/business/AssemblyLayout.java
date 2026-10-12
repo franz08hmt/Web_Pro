@@ -4,10 +4,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashSet;
-import vn.edu.webpro.robotlab.util.JsonUtil;
 
 /** Dữ kiện và luật lắp ráp mô phỏng do server xác thực. */
 public class AssemblyLayout implements Serializable {
+    private boolean unchanged;
+    private boolean transitioned;
     private long sessionId;
     private String mode = "DETAILED";
     private String status = "PREPARING";
@@ -18,6 +19,26 @@ public class AssemblyLayout implements Serializable {
 
     /** Tạo bean rỗng theo quy ước môn học. */
     public AssemblyLayout() {
+    }
+
+    /** Retry đã có dữ liệu nên không ghi lại. */
+    public boolean isUnchanged() {
+        return unchanged;
+    }
+
+    /** Ghi dấu retry cho response, không dùng làm căn cứ xác thực. */
+    public void setUnchanged(boolean unchanged) {
+        this.unchanged = unchanged;
+    }
+
+    /** Chỉ true khi transaction này vừa hoàn tất phiên. */
+    public boolean isTransitioned() {
+        return transitioned;
+    }
+
+    /** Ghi kết quả transaction cho giao diện ăn mừng. */
+    public void setTransitioned(boolean transitioned) {
+        this.transitioned = transitioned;
     }
 
     /** Đọc dữ kiện sessionId. */
@@ -110,6 +131,45 @@ public class AssemblyLayout implements Serializable {
                 instances.add(instance);
             }
         }
+    }
+
+    /** Kit và cấu hình phải có cùng số vật thể cho từng loại linh kiện. */
+    public String validateKit() {
+        for (AssemblySlot slot : spec.getSlots()) {
+            int slotCount = 0;
+            int itemCount = 0;
+            for (AssemblySlot other : spec.getSlots()) {
+                if (other.getComponentId().equals(slot.getComponentId())) {
+                    slotCount++;
+                }
+            }
+            for (AssemblyInstance item : instances) {
+                if (item.getComponentId().equals(slot.getComponentId())) {
+                    itemCount++;
+                }
+            }
+            if (slotCount != itemCount) {
+                return "KIT_SPEC_MISMATCH";
+            }
+        }
+        return instances.size() == spec.getSlots().size() ? "" : "KIT_SPEC_MISMATCH";
+    }
+
+    /** Hoàn tất chỉ một lần; reset và hoàn tất đều kiểm trạng thái/version ở server. */
+    public String validateChange(String action, int expectedVersion) {
+        if ("complete".equals(action) && "COMPLETED".equals(status)) {
+            return "UNCHANGED";
+        }
+        if (!isCanEdit()) {
+            return "SESSION_LOCKED";
+        }
+        if (layoutVersion != expectedVersion) {
+            return "LAYOUT_CONFLICT";
+        }
+        if ("complete".equals(action)) {
+            return check().isComplete() ? "" : "ASSEMBLY_INCOMPLETE";
+        }
+        return "reset".equals(action) ? "" : "VALIDATION_ERROR";
     }
 
     /** Tra vật thể của chính layout này. */

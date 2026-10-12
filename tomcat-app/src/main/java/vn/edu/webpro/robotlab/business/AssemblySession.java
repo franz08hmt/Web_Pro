@@ -24,6 +24,9 @@ public class AssemblySession implements Serializable {
     public static final String COMPLETED = "COMPLETED";
     public static final String ABANDONED = "ABANDONED";
 
+    private String assemblyMode = "GROUP";
+    private long specId;
+    private int layoutVersion = 1;
     private long id;
     private long userId;
     private String robotId;
@@ -45,6 +48,46 @@ public class AssemblySession implements Serializable {
         components = new ArrayList<>();
         steps = new ArrayList<>();
         assembledPartIds = new ArrayList<>();
+    }
+
+    /** Đọc assemblyMode được server lưu khi tạo phiên. */
+    public String getAssemblyMode() {
+        return assemblyMode;
+    }
+
+    /** Ghi dữ kiện assemblyMode từ database. */
+    public void setAssemblyMode(String assemblyMode) {
+        this.assemblyMode = assemblyMode;
+    }
+
+    /** Đọc specId được server lưu khi tạo phiên. */
+    public long getSpecId() {
+        return specId;
+    }
+
+    /** Ghi dữ kiện specId từ database. */
+    public void setSpecId(long specId) {
+        this.specId = specId;
+    }
+
+    /** Đọc layoutVersion được server lưu khi tạo phiên. */
+    public int getLayoutVersion() {
+        return layoutVersion;
+    }
+
+    /** Ghi dữ kiện layoutVersion từ database. */
+    public void setLayoutVersion(int layoutVersion) {
+        this.layoutVersion = layoutVersion;
+    }
+
+    /** Chỉ phiên mới có spec mới dùng vật thể chi tiết. */
+    public boolean isDetailed() {
+        return "DETAILED".equals(assemblyMode);
+    }
+
+    /** Trạng thái phiếu kết quả dùng getter thay enum ở JSP. */
+    public boolean isCompleted() {
+        return COMPLETED.equals(status);
     }
 
     public long getId() {
@@ -147,10 +190,15 @@ public class AssemblySession implements Serializable {
         this.completedAt = completedAt;
     }
 
+    /** Đếm bước hoàn tất bằng vòng lặp theo kiến thức môn học. */
     public long countCompletedSteps() {
-        return steps.stream()
-                .filter(step -> SessionStep.COMPLETED.equals(step.getStatus()))
-                .count();
+        int count = 0;
+        for (SessionStep step : steps) {
+            if (SessionStep.COMPLETED.equals(step.getStatus())) {
+                count++;
+            }
+        }
+        return count;
     }
 
     /** Giai đoạn chuẩn bị linh kiện: chỉ lúc này mới được tick/bỏ tick linh kiện. */
@@ -185,10 +233,14 @@ public class AssemblySession implements Serializable {
      * thời nằm ở AssemblySessionDB.completeSession().
      */
     public boolean canCompleteAssembly(List<RobotComponent> requiredComponents) {
-        if (!isInProgress() || requiredComponents.isEmpty()) return false;
+        if (isDetailed() || !isInProgress() || requiredComponents.isEmpty()) {
+            return false;
+        }
         Set<String> assembled = new HashSet<>(assembledPartIds);
         for (RobotComponent required : requiredComponents) {
-            if (!assembled.contains(required.getComponentId())) return false;
+            if (!assembled.contains(required.getComponentId())) {
+                return false;
+            }
         }
         return true;
     }
@@ -196,11 +248,13 @@ public class AssemblySession implements Serializable {
     /* Đếm theo mã linh kiện riêng biệt để một linh kiện lỡ có hai dòng cũng chỉ
        được tính một lần. */
     public long countPreparedComponents() {
-        return components.stream()
-                .filter(SessionComponent::isPrepared)
-                .map(SessionComponent::getComponentId)
-                .distinct()
-                .count();
+        HashSet<String> prepared = new HashSet<>();
+        for (SessionComponent component : components) {
+            if (component.isPrepared()) {
+                prepared.add(component.getComponentId());
+            }
+        }
+        return prepared.size();
     }
 
     /**
@@ -215,26 +269,34 @@ public class AssemblySession implements Serializable {
     }
 
     public int getProgressPercent() {
-        if (requiredComponentCount == 0) return 0;
+        if (requiredComponentCount == 0) {
+            return 0;
+        }
         return (int) (countPreparedComponents() * 100 / requiredComponentCount);
     }
 
     public String toJson() {
         StringBuilder componentJson = new StringBuilder();
         for (SessionComponent component : components) {
-            if (componentJson.length() > 0) componentJson.append(',');
+            if (componentJson.length() > 0) {
+                componentJson.append(',');
+            }
             componentJson.append(component.toJson());
         }
 
         StringBuilder stepJson = new StringBuilder();
         for (SessionStep step : steps) {
-            if (stepJson.length() > 0) stepJson.append(',');
+            if (stepJson.length() > 0) {
+                stepJson.append(',');
+            }
             stepJson.append(step.toJson());
         }
 
         StringBuilder assembledJson = new StringBuilder();
         for (String partId : assembledPartIds) {
-            if (assembledJson.length() > 0) assembledJson.append(',');
+            if (assembledJson.length() > 0) {
+                assembledJson.append(',');
+            }
             assembledJson.append(JsonUtil.quote(partId));
         }
 
@@ -242,6 +304,8 @@ public class AssemblySession implements Serializable {
                 + ",\"userId\":" + JsonUtil.quote(Long.toString(userId))
                 + ",\"robotId\":" + JsonUtil.quote(robotId)
                 + ",\"status\":" + JsonUtil.quote(status)
+                + ",\"assemblyMode\":" + JsonUtil.quote(assemblyMode)
+                + ",\"layoutVersion\":" + layoutVersion
                 + ",\"progressPercent\":" + getProgressPercent()
                 + ",\"completedStepCount\":" + countCompletedSteps()
                 + ",\"totalStepCount\":" + totalStepCount
