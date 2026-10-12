@@ -11,6 +11,8 @@
     <properties>
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- QA có thể build riêng để không đụng target đang được IntelliJ/Tomcat sử dụng. -->
+        <robotlab.buildDirectory>${project.basedir}/target</robotlab.buildDirectory>
     </properties>
 
     <dependencies>
@@ -42,6 +44,7 @@
     </dependencies>
 
     <build>
+        <directory>${robotlab.buildDirectory}</directory>
         <finalName>robot-assembly-lab</finalName>
         <plugins>
             <plugin>

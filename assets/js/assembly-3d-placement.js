@@ -3,6 +3,7 @@
 // Chỉ hiển thị pose và gửi ý định; mọi luật gắn/tháo nằm ở JavaBean trên server.
 window.createAssemblyPlacementView = function (options) {
   const { THREE, camera, root, canvas, panel, onAttach, onDetach, onChange } = options;
+  canvas.classList.add("assembly-placement-canvas");
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -0.9);
@@ -66,7 +67,8 @@ window.createAssemblyPlacementView = function (options) {
 
   function highlight(slotId, color) {
     for (const [id, marker] of markers) {
-      marker.material.color.setHex(id === String(slotId) ? color : 0xa9b6b4);
+      const saved = layout?.placements.some(placed => String(placed.slotId) === id);
+      marker.material.color.setHex(id === String(slotId) ? color : saved ? 0x4ade80 : 0xa9b6b4);
     }
   }
 
@@ -74,6 +76,7 @@ window.createAssemblyPlacementView = function (options) {
     selectedInstance = null;
     selectedSlot = null;
     selectedObject = null;
+    orientation = "Y0";
     highlight(null, 0xa9b6b4);
     if (layout) sync(layout);
     message("Đã hủy chọn; mô hình trở về dữ liệu server đã lưu.", "neutral");
@@ -208,7 +211,10 @@ window.createAssemblyPlacementView = function (options) {
     }
     for (const slot of next.spec.slots) {
       const marker = new THREE.Mesh(new THREE.SphereGeometry(.13, 12, 8),
-        new THREE.MeshBasicMaterial({ color: 0xa9b6b4, depthTest: false, transparent: true, opacity: .85 }));
+        new THREE.MeshBasicMaterial({
+          color: next.placements.some(placed => String(placed.slotId) === String(slot.id)) ? 0x4ade80 : 0xa9b6b4,
+          depthTest: false, transparent: true, opacity: .85
+        }));
       marker.position.set(slot.x, slot.y + .23, slot.z);
       marker.userData.slotId = String(slot.id);
       markers.set(String(slot.id), marker);
@@ -223,7 +229,10 @@ window.createAssemblyPlacementView = function (options) {
     }
     for (const code of ["Y0", "Y90", "Y180", "Y270"]) {
       radio(directions, "assembly-orientation", code, code.slice(1) + "°", orientation === code,
-        () => { rotate((Number(code.slice(1)) - Number(orientation.slice(1))) / 90); });
+        () => {
+          if (selectedInstance) rotate((Number(code.slice(1)) - Number(orientation.slice(1))) / 90);
+          else orientation = code;
+        });
     }
     if (!trayIndex) tray.append(document.createTextNode("Khay không còn vật thể."));
     if (!next.placements.length) installed.append(document.createTextNode("Chưa có vật thể được gắn."));
@@ -302,13 +311,14 @@ window.createAssemblyPlacementView = function (options) {
       }
     }
     markerGroup.visible = !exploded;
+    options.onExplodedChange?.(exploded);
     message(exploded ? "Đang tách hình để quan sát; không thay đổi dữ liệu. Ghép lại trước khi kéo." : "Đã ghép hình.", "neutral");
   }
 
   function keydown(event) {
     if (!selectedInstance || busy || !layout?.canEdit) return;
     if (event.key === "Escape") { drag = null; clearSelection(); }
-    else if (/INPUT|TEXTAREA/.test(event.target.tagName)) return;
+    else if (event.target.matches("textarea, input:not([type='radio']):not([type='checkbox'])")) return;
     else if (event.key.toLowerCase() === "q") rotate(-1);
     else if (event.key.toLowerCase() === "e") rotate(1);
     else return;

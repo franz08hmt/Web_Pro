@@ -829,6 +829,11 @@
         onAttach: (instanceId, slotId, orientation, version) =>
           sessionApi.attach(activeSession.id, instanceId, slotId, orientation, version),
         onDetach: (instanceId, version) => sessionApi.detach(activeSession.id, instanceId, version),
+        onExplodedChange: value => {
+          explodedView = value;
+          explodeButton?.setAttribute("aria-pressed", String(value));
+          if (explodeButton) explodeButton.textContent = value ? "Ghép về vị trí" : "Tách linh kiện";
+        },
         onReload: async () => {
           try {
             placementView.restore(await sessionApi.layout(activeSession.id));
@@ -846,6 +851,7 @@
           if (checkButton) { checkButton.hidden = false; checkButton.disabled = busy; }
           setSyncStatus(unsynced ? "Chưa đồng bộ; hãy thử lại hoặc tải lại." : "Mô hình đọc từ dữ liệu server.",
             unsynced ? "loading" : "saved");
+          if (next.status === "COMPLETED") showCompletionResult(false);
           updateCompleteAvailability();
         }
       });

@@ -62,6 +62,9 @@ class AssemblyLayoutTest {
         place(l, 1, 1);
         assertEquals("UNCHANGED", l.validateAttach(1, 1, "Y0", 0));
         assertEquals("LAYOUT_CONFLICT", l.validateDetach(1, 0));
+        l.setStatus("COMPLETED");
+        assertEquals("UNCHANGED", l.validateAttach(1, 1, "Y0", 0));
+        assertEquals("SESSION_LOCKED", l.validateAttach(1, 1, "Y90", 1));
     }
 
     @Test void kitMismatchAndCompletionAreDecidedByTheBean() {
@@ -70,6 +73,10 @@ class AssemblyLayoutTest {
         assertEquals("ASSEMBLY_INCOMPLETE", l.validateChange("complete", 1));
         assertEquals("LAYOUT_CONFLICT", l.validateChange("reset", 0));
         assertEquals("", l.validateChange("reset", 1));
+        l.setStatus("READY");
+        assertEquals("", l.validateChange("reset", 1));
+        assertEquals("SESSION_LOCKED", l.validateChange("complete", 1));
+        l.setStatus("IN_PROGRESS");
         place(l, 1, 1);
         place(l, 2, 2);
         place(l, 3, 3);

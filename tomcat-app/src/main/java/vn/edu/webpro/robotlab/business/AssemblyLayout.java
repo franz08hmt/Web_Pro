@@ -116,6 +116,12 @@ public class AssemblyLayout implements Serializable {
         return "DETAILED".equals(mode) && "IN_PROGRESS".equals(status);
     }
 
+    /** Reset trước hoàn tất giữ bộ kit, kể cả lúc chưa bắt đầu gắn vật thể. */
+    public boolean isCanReset() {
+        return "DETAILED".equals(mode) && ("PREPARING".equals(status)
+                || "READY".equals(status) || "IN_PROGRESS".equals(status));
+    }
+
     /** Tạo vật thể đúng số lượng từ bộ kit server, không dùng quantity client. */
     public void createInstances(List<RobotComponent> kit) {
         instances = new ArrayList<>();
@@ -160,7 +166,7 @@ public class AssemblyLayout implements Serializable {
         if ("complete".equals(action) && "COMPLETED".equals(status)) {
             return "UNCHANGED";
         }
-        if (!isCanEdit()) {
+        if ("reset".equals(action) ? !isCanReset() : !isCanEdit()) {
             return "SESSION_LOCKED";
         }
         if (layoutVersion != expectedVersion) {
@@ -209,12 +215,12 @@ public class AssemblyLayout implements Serializable {
         if (instance == null || slot == null) {
             return "NOT_FOUND";
         }
-        if (!isCanEdit()) {
-            return "SESSION_LOCKED";
-        }
         AssemblyPlacement old = findPlacement(instanceId);
         if (old != null && old.getSlotId() == slotId && old.getOrientationCode().equals(orientation)) {
             return "UNCHANGED";
+        }
+        if (!isCanEdit()) {
+            return "SESSION_LOCKED";
         }
         if (expectedVersion != layoutVersion) {
             return "LAYOUT_CONFLICT";
@@ -262,20 +268,24 @@ public class AssemblyLayout implements Serializable {
     }
 
     private boolean validAt(long slotId, HashSet<Long> visited) {
-        if (!visited.add(slotId)) {
-            return false;
+        long current = slotId;
+        while (current > 0) {
+            if (!visited.add(current)) {
+                return false;
+            }
+            AssemblySlot slot = spec.findSlot(current);
+            AssemblyPlacement placed = atSlot(current);
+            if (slot == null || placed == null) {
+                return false;
+            }
+            AssemblyInstance instance = findInstance(placed.getInstanceId());
+            if (instance == null || !instance.getComponentId().equals(slot.getComponentId())
+                    || !slot.acceptsOrientation(placed.getOrientationCode())) {
+                return false;
+            }
+            current = slot.getParentSlotId();
         }
-        AssemblySlot slot = spec.findSlot(slotId);
-        AssemblyPlacement placed = atSlot(slotId);
-        if (slot == null || placed == null) {
-            return false;
-        }
-        AssemblyInstance instance = findInstance(placed.getInstanceId());
-        if (instance == null || !instance.getComponentId().equals(slot.getComponentId())
-                || !slot.acceptsOrientation(placed.getOrientationCode())) {
-            return false;
-        }
-        return slot.getParentSlotId() == 0 || validAt(slot.getParentSlotId(), visited);
+        return true;
     }
 
     /** Đếm X/N điểm bắt buộc và giải thích thiếu/sai/phụ thuộc từ layout thật. */

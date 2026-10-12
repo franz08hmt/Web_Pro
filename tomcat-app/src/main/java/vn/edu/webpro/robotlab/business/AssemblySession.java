@@ -40,6 +40,7 @@ public class AssemblySession implements Serializable {
     private String updatedAt;
     private String completedAt;
 
+    /** Tạo phiên rỗng để Servlet và JDBC gán dữ kiện. */
     public AssemblySession() {
         robotId = "";
         status = PREPARING;
@@ -90,58 +91,72 @@ public class AssemblySession implements Serializable {
         return COMPLETED.equals(status);
     }
 
+    /** Đọc dữ kiện của phiên theo quy ước JavaBean. */
     public long getId() {
         return id;
     }
 
+    /** Ghi dữ kiện phiên; luật được kiểm trước thao tác lưu. */
     public void setId(long id) {
         this.id = id;
     }
 
+    /** Đọc dữ kiện của phiên theo quy ước JavaBean. */
     public long getUserId() {
         return userId;
     }
 
+    /** Ghi dữ kiện phiên; luật được kiểm trước thao tác lưu. */
     public void setUserId(long userId) {
         this.userId = userId;
     }
 
+    /** Đọc dữ kiện của phiên theo quy ước JavaBean. */
     public String getRobotId() {
         return robotId;
     }
 
+    /** Ghi dữ kiện phiên; luật được kiểm trước thao tác lưu. */
     public void setRobotId(String robotId) {
         this.robotId = robotId;
     }
 
+    /** Đọc dữ kiện của phiên theo quy ước JavaBean. */
     public String getStatus() {
         return status;
     }
 
+    /** Ghi dữ kiện phiên; luật được kiểm trước thao tác lưu. */
     public void setStatus(String status) {
         this.status = status;
     }
 
+    /** Đọc dữ kiện của phiên theo quy ước JavaBean. */
     public List<SessionComponent> getComponents() {
         return components;
     }
 
+    /** Ghi dữ kiện phiên; luật được kiểm trước thao tác lưu. */
     public void setComponents(List<SessionComponent> components) {
         this.components = components;
     }
 
+    /** Đọc dữ kiện của phiên theo quy ước JavaBean. */
     public List<SessionStep> getSteps() {
         return steps;
     }
 
+    /** Ghi dữ kiện phiên; luật được kiểm trước thao tác lưu. */
     public void setSteps(List<SessionStep> steps) {
         this.steps = steps;
     }
 
+    /** Đọc dữ kiện của phiên theo quy ước JavaBean. */
     public List<String> getAssembledPartIds() {
         return assembledPartIds;
     }
 
+    /** Ghi dữ kiện phiên; luật được kiểm trước thao tác lưu. */
     public void setAssembledPartIds(List<String> assembledPartIds) {
         this.assembledPartIds = assembledPartIds;
     }
@@ -151,6 +166,7 @@ public class AssemblySession implements Serializable {
         return requiredComponentCount;
     }
 
+    /** Ghi dữ kiện phiên; luật được kiểm trước thao tác lưu. */
     public void setRequiredComponentCount(int requiredComponentCount) {
         this.requiredComponentCount = requiredComponentCount;
     }
@@ -160,6 +176,7 @@ public class AssemblySession implements Serializable {
         return totalStepCount;
     }
 
+    /** Ghi dữ kiện phiên; luật được kiểm trước thao tác lưu. */
     public void setTotalStepCount(int totalStepCount) {
         this.totalStepCount = totalStepCount;
     }
@@ -169,14 +186,17 @@ public class AssemblySession implements Serializable {
         return createdAt;
     }
 
+    /** Ghi dữ kiện phiên; luật được kiểm trước thao tác lưu. */
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
+    /** Đọc dữ kiện của phiên theo quy ước JavaBean. */
     public String getUpdatedAt() {
         return updatedAt;
     }
 
+    /** Ghi dữ kiện phiên; luật được kiểm trước thao tác lưu. */
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
@@ -186,6 +206,7 @@ public class AssemblySession implements Serializable {
         return completedAt;
     }
 
+    /** Ghi dữ kiện phiên; luật được kiểm trước thao tác lưu. */
     public void setCompletedAt(String completedAt) {
         this.completedAt = completedAt;
     }
@@ -268,6 +289,7 @@ public class AssemblySession implements Serializable {
         return complete ? READY : PREPARING;
     }
 
+    /** Đọc dữ kiện của phiên theo quy ước JavaBean. */
     public int getProgressPercent() {
         if (requiredComponentCount == 0) {
             return 0;
@@ -275,6 +297,7 @@ public class AssemblySession implements Serializable {
         return (int) (countPreparedComponents() * 100 / requiredComponentCount);
     }
 
+    /** Chuyển dữ kiện đã kiểm thành JSON cho client. */
     public String toJson() {
         StringBuilder componentJson = new StringBuilder();
         for (SessionComponent component : components) {

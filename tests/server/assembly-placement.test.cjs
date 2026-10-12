@@ -41,7 +41,8 @@ test("placement routes stay in Servlet with session CSRF and owner-scoped locked
   assert.match(db, /connection\.commit\(\)/);
   assert.match(db, /connection\.rollback\(\)/);
   for (const file of ["data/AssemblyPlacementDB.java", "controller/AssemblySessionServlet.java",
-    "data/AssemblySessionDB.java", "business/AssemblySession.java", "util/AssemblyPlacementJson.java"]) {
+    "data/AssemblySessionDB.java", "business/AssemblySession.java", "util/AssemblyPlacementJson.java",
+    "controller/AssemblyReceiptPageServlet.java"]) {
     checkJava(fs.readFileSync(path.join(java, file), "utf8"), file);
   }
 });
@@ -85,4 +86,11 @@ test("detailed receipt uses escaped bean facts and core JSTL without unsupported
   assert.match(view, /c:out value="\$\{assemblyPlaced\.slotLabel\}"/);
   assert.match(view, /assemblyLayout\.spec\.versionNo/);
   for (const line of view.split(/\r?\n/)) assert.ok(line.length <= 140);
+});
+test("preparation reset keeps GROUP behavior and sends version for DETAILED", () => {
+  const main = fs.readFileSync(path.join(root, "assets/js/main.js"), "utf8");
+  assert.match(main, /activeSession\?\.assemblyMode === "DETAILED"/);
+  assert.match(main, /sessionApi\.resetLayout\(activeSession\.id, activeSession\.layoutVersion\)/);
+  assert.match(main, /sessionApi\.resetProgress\(activeSession\.id\)/);
+  assert.match(main, /window\.confirm/);
 });

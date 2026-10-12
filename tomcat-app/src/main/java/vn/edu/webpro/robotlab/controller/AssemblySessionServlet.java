@@ -408,6 +408,8 @@ public class AssemblySessionServlet extends HttpServlet {
                 && !"check".equals(segments[1]) && !"progress".equals(segments[1]))) {
             return false;
         }
+        long intentInstanceId = 0;
+        long intentSlotId = 0;
         try {
             if ("progress".equals(segments[1])) {
                 AssemblyLayout current = AssemblyPlacementDB.selectLayout(id(segments[0]), user.getId());
@@ -430,9 +432,11 @@ public class AssemblySessionServlet extends HttpServlet {
                 ResponseUtil.sendJson(response, 200, "{\"data\":" + AssemblyPlacementJson.report(layout.check()) + "}");
             } else if ("POST".equals(method) && segments.length == 2 && "placements".equals(segments[1])) {
                 String body = JsonUtil.readBody(request.getReader(), 8192);
+                intentInstanceId = positive(body, "instanceId");
+                intentSlotId = positive(body, "slotId");
                 sendLayout(response, AssemblyPlacementDB.change(sessionId, user.getId(), "attach",
-                        positive(body, "instanceId"), positive(body, "slotId"),
-                        JsonUtil.stringField(body, "orientation"), version(body)));
+                        intentInstanceId, intentSlotId,
+                        orientation(body), version(body)));
             } else if ("DELETE".equals(method) && segments.length == 3 && "placements".equals(segments[1])) {
                 sendLayout(response, AssemblyPlacementDB.change(sessionId, user.getId(), "detach",
                         id(segments[2]), 0, "", queryVersion(request)));
@@ -443,7 +447,7 @@ public class AssemblySessionServlet extends HttpServlet {
                 throw new IllegalArgumentException("VALIDATION_ERROR");
             }
         } catch (IllegalArgumentException e) {
-            error(response, e.getMessage());
+            error(response, e.getMessage(), intentInstanceId, intentSlotId);
         }
         return true;
     }
@@ -482,6 +486,19 @@ public class AssemblySessionServlet extends HttpServlet {
         return idVersion(JsonUtil.longField(body, "expectedLayoutVersion"));
     }
 
+    private static String orientation(String body) {
+        int key = body.indexOf("\"orientation\"");
+        int colon = key < 0 ? -1 : body.indexOf(':', key + 13);
+        int start = colon + 1;
+        while (start > 0 && start < body.length() && Character.isWhitespace(body.charAt(start))) {
+            start++;
+        }
+        if (colon < 0 || start >= body.length() || body.charAt(start) != '"') {
+            throw new IllegalArgumentException("VALIDATION_ERROR");
+        }
+        return JsonUtil.stringField(body, "orientation");
+    }
+
     private static int idVersion(long value) {
         if (value < 1 || value > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("VALIDATION_ERROR");
@@ -502,6 +519,11 @@ public class AssemblySessionServlet extends HttpServlet {
     }
 
     private static void error(HttpServletResponse response, String code) throws IOException {
+        error(response, code, 0, 0);
+    }
+
+    private static void error(HttpServletResponse response, String code, long instanceId, long slotId)
+            throws IOException {
         if (code == null || !code.matches("NOT_FOUND|LAYOUT_CONFLICT|WRONG_COMPONENT|SLOT_OCCUPIED|"
                 + "ORIENTATION_NOT_ALLOWED|PARENT_MISSING|ALREADY_PLACED|HAS_DEPENDENTS|"
                 + "SESSION_LOCKED|ASSEMBLY_INCOMPLETE|GROUP_MODE|VALIDATION_ERROR")) {
@@ -514,7 +536,9 @@ public class AssemblySessionServlet extends HttpServlet {
         } else if ("VALIDATION_ERROR".equals(code)) {
             message = "ID, hướng hoặc phiên bản không hợp lệ. Hãy tải lại mô hình.";
         }
-        ResponseUtil.sendJson(response, status, "{\"accepted\":false,\"error\":{\"code\":"
+        ResponseUtil.sendJson(response, status, "{\"accepted\":false,\"code\":" + JsonUtil.quote(code)
+                + ",\"message\":" + JsonUtil.quote(message) + ",\"instanceId\":" + instanceId
+                + ",\"slotId\":" + slotId + ",\"error\":{\"code\":"
                 + JsonUtil.quote(code) + ",\"message\":" + JsonUtil.quote(message) + "}}");
     }
 }

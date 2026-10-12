@@ -1,4 +1,7 @@
 /* Chỉ phòng chi tiết: không thay đổi giao diện GROUP hoặc trang bên ngoài. */
+.assembly-placement-canvas {
+  touch-action: none;
+}
 .assembly-placement {
   overflow-wrap: anywhere;
 }

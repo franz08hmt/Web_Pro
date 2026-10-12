@@ -20,11 +20,14 @@ public class AssemblyPlacementDB {
     public static long createSession(long userId, String robotId) throws SQLException {
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection connection = pool.getConnection();
-        boolean original = connection.getAutoCommit();
+        boolean original = true;
+        boolean started = false;
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
+            original = connection.getAutoCommit();
             connection.setAutoCommit(false);
+            started = true;
             ps = connection.prepareStatement("SELECT id FROM assembly_specs WHERE robot_id = ? "
                     + "AND state = 'PUBLISHED' ORDER BY version_no DESC LIMIT 1 FOR UPDATE");
             ps.setString(1, robotId);
@@ -74,13 +77,21 @@ public class AssemblyPlacementDB {
             connection.commit();
             return id;
         } catch (SQLException | IllegalArgumentException e) {
-            connection.rollback();
+            if (started) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackError) {
+                    e.addSuppressed(rollbackError);
+                }
+            }
             throw e;
         } finally {
             DBUtil.closeResultSet(rs);
             DBUtil.closePreparedStatement(ps);
             try {
-                connection.setAutoCommit(original);
+                if (started) {
+                    connection.setAutoCommit(original);
+                }
             } finally {
                 pool.freeConnection(connection);
             }
@@ -91,18 +102,29 @@ public class AssemblyPlacementDB {
     public static AssemblyLayout selectLayout(long id, long userId) throws SQLException {
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection connection = pool.getConnection();
-        boolean original = connection.getAutoCommit();
+        boolean original = true;
+        boolean started = false;
         try {
+            original = connection.getAutoCommit();
             connection.setAutoCommit(false);
+            started = true;
             AssemblyLayout layout = load(connection, id, userId, false);
             connection.commit();
             return layout;
         } catch (SQLException e) {
-            connection.rollback();
+            if (started) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackError) {
+                    e.addSuppressed(rollbackError);
+                }
+            }
             throw e;
         } finally {
             try {
-                connection.setAutoCommit(original);
+                if (started) {
+                    connection.setAutoCommit(original);
+                }
             } finally {
                 pool.freeConnection(connection);
             }
@@ -114,10 +136,13 @@ public class AssemblyPlacementDB {
             long slotId, String orientation, int expectedVersion) throws SQLException {
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection connection = pool.getConnection();
-        boolean original = connection.getAutoCommit();
+        boolean original = true;
+        boolean started = false;
         PreparedStatement ps = null;
         try {
+            original = connection.getAutoCommit();
             connection.setAutoCommit(false);
+            started = true;
             AssemblyLayout layout = load(connection, id, userId, true);
             if (layout == null) {
                 throw new IllegalArgumentException("NOT_FOUND");
@@ -170,7 +195,13 @@ public class AssemblyPlacementDB {
             if ("complete".equals(action)) {
                 update += ", status = 'COMPLETED', completed_at = CURRENT_TIMESTAMP";
             }
-            update += " WHERE id = ? AND user_id = ? AND status = 'IN_PROGRESS' AND layout_version = ?";
+            update += " WHERE id = ? AND user_id = ?";
+            if ("reset".equals(action)) {
+                update += " AND status IN ('PREPARING','READY','IN_PROGRESS')";
+            } else {
+                update += " AND status = 'IN_PROGRESS'";
+            }
+            update += " AND layout_version = ?";
             ps = connection.prepareStatement(update);
             ps.setLong(1, id);
             ps.setLong(2, userId);
@@ -183,12 +214,20 @@ public class AssemblyPlacementDB {
             connection.commit();
             return updated;
         } catch (SQLException | IllegalArgumentException e) {
-            connection.rollback();
+            if (started) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackError) {
+                    e.addSuppressed(rollbackError);
+                }
+            }
             throw e;
         } finally {
             DBUtil.closePreparedStatement(ps);
             try {
-                connection.setAutoCommit(original);
+                if (started) {
+                    connection.setAutoCommit(original);
+                }
             } finally {
                 pool.freeConnection(connection);
             }

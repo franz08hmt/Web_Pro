@@ -311,6 +311,10 @@ async function setupAssembly() {
 
   function applySession(session, notice) {
     activeSession = session;
+    if (resetButton) {
+      const label = [...resetButton.childNodes].find(node => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+      if (label) label.textContent = session.assemblyMode === "DETAILED" ? "Tháo vật thể đã gắn" : "Đặt lại tiến độ";
+    }
     const prepared = new Set(
       (session.components || []).filter((item) => item.isPrepared).map((item) => item.componentId)
     );
@@ -413,6 +417,19 @@ async function setupAssembly() {
 
     if (resetButton) {
       resetButton.addEventListener("click", async () => {
+        if (activeSession?.assemblyMode === "DETAILED" && sessionApi) {
+          if (!window.confirm("Tháo toàn bộ vật thể đã gắn? Bộ kit đã chuẩn bị vẫn được giữ.")) return;
+          resetButton.disabled = true;
+          try {
+            await sessionApi.resetLayout(activeSession.id, activeSession.layoutVersion);
+            applySession(await sessionApi.get(activeSession.id), "Đã tháo vật thể; bộ kit đã chuẩn bị vẫn được giữ.");
+          } catch (error) {
+            updateProgress(false, `Không thể tháo vật thể. ${error.message}`);
+          } finally {
+            resetButton.disabled = !["PREPARING", "READY", "IN_PROGRESS"].includes(activeSession.status);
+          }
+          return;
+        }
         storage.remove(partsKey());
         const inputs = [...checklist.querySelectorAll("input[data-component-id]")];
         const previouslyPrepared = new Set(

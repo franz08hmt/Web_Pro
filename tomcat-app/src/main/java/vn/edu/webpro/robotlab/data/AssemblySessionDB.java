@@ -38,6 +38,7 @@ public class AssemblySessionDB {
         return AssemblyPlacementDB.createSession(userId, robotId);
     }
 
+    /** Xử lý dữ kiện phiên theo luật và phạm vi người dùng. */
     public static int updateStatus(long id, long userId, String status) throws SQLException {
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection connection = pool.getConnection();

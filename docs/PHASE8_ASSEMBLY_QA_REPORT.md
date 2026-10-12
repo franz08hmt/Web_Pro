@@ -109,3 +109,59 @@ Fixture UI chỉ đổi hai binding tương đương ở assembly-receipt:
 status != COMPLETED → getter completed; fn:length → count đã set từ danh sách.
 Không đổi bất kỳ control/form contract nào, bỏ fn khỏi JSP theo kiến thức môn học.
 JspExpressionContractTest đăng ký ba biến bean mới. Tổng167 Node/93 JUnit xanh.
+
+### M6 — Findings đã xử lý và kiểm chứng cuối
+
+- Trang chuẩn bị còn dùng reset GROUP thiếu version: nhánh DETAILED giờ xác nhận,
+  gửi version và giữ kit; reset PREPARING/READY/IN_PROGRESS có luật bean và test.
+  main.js chỉ thêm nhánh này; GROUP giữ request và quy trình bên ngoài3D.
+- Touch bị cuộn trang làm hủy pointer: touch-action:none chỉ canvas DETAILED.
+  Chạy lại CDP touchStart/move/end tại390px đã gắn và lưu khung thật (#32).
+- Escape khi focus radio và hướng xem trước: hủy/reset về0°; Q/E và nút xoay
+  được kiểm. Chọn hướng trước vật thể không để control và ý định lệch nhau.
+- Connection có lỗi getAutoCommit vẫn trả pool; rollback giữ exception gốc.
+  Response từ chối có code/message/instanceId/slotId, giữ error envelope API cũ.
+- Gắn khi đang tách hình tự ghép về vị trí: đồng bộ trạng thái/nút và aria-pressed,
+  tránh nút vẫn báo ghép dù mô hình đã ghép. Đã kiểm gắn rồi tháo trên phiên QA32.
+
+38 kiểm bổ sung: reset lúc chuẩn bị và sẵn sàng, kit giữ nguyên, ID sai/số lớn,
+field sai, thiếu/sai CSRF trên mọi route mới, version không đổi khi request sai,
+xoay/preview không lưu, kéo cảm ứng mô phỏng và hash dữ liệu cũ. 12 smoke browser
+cuối: Q/E tại radio, Escape, thoát fullscreen bằng nút app, reset hoàn tất khóa,
+lái thử làm mô hình thật đổi trên canvas, phiếu3 phần/mobile, GROUP17 còn8 checkbox.
+Thêm ba smoke: orientation không phải chuỗi bị từ chối; attach retry giống hệt
+sau COMPLETED trả unchanged và không ghi (mọi thay đổi khác vẫn bị khóa).
+Ca còn lại kiểm nút tách/ghép đồng bộ sau khi gắn vật thể.
+82 API/SQL/JSP +23 Chrome +38 bổ sung +12 smoke =155 assertion thực chạy,
+ngoài luồng nhiệm vụ mới23: chọn bằng chứng30 → preview → confirm → SQL40.0.
+
+Baseline160 Node/85 JUnit → cuối168 Node/93 JUnit, không skip/fail/error.
+`mvn -f tomcat-app/pom.xml test` và `clean package` chạy JDK17 với override
+robotlab.buildDirectory ra ngoài repo:93/93, BUILD SUCCESS. POM cho phép override
+directory, mặc định target giữ nguyên. Không clean target đang bị IDE ghi classJava25.
+Node dùng ROBOTLAB_EXPLODED_DIR của WAR Java17 vừa build; guard vẫn so byte nguồn.
+WAR cuối được deploy lại Tomcat9 riêng8081 và smoke12 ca trên đúng WAR đó.
+
+Đối chiếu SHA256 các cột cũ của những dòng đã có trước migration (prefix theo
+khóa tăng dần; QA chỉ INSERT ID mới) giữ nguyên trong cả38 bảng, kể cả users,
+robot/kit, phiên GROUP, quiz/nhiệm vụ cũ và dữ liệu Nhi/Tuấn Anh.
+Hồi quy runtime: GET các trang quiz/shop/thư viện/các catalog, nhiệm vụ/chẩn đoán,
+nối dây/hỗ trợ/tổng kết/hồ sơ/đơn hàng/Admin; source/unit cũ đều còn và xanh.
+Không thực hiện mua hàng hay nộp/chấm mẫuB mới trong vòng QA này.
+
+Review do agent chính rà code cùng guard/SQL/concurrency/browser, không có reviewer
+độc lập. Các findings trên đã sửa và chạy lại; không còn lỗi bắt buộc đã biết.
+Chưa kiểm Firefox/Safari, màn hình cảm ứng thật, screen reader; spec archived
+kiểm bằng bean/source (không UPDATE seed chính thức để dựng ca runtime).
+Không làm mẫu thứ hai/cụm giá đỡ/hình tham khảo tùy chọn, không thêm tính năng ngoài phạm vi.
+
+Dữ liệu QA giữ để người dùng quản lý: phiên30 và31 COMPLETED10/10; phiên32
+IN_PROGRESS với khung đã gắn; nhiệm vụ23 mẫuA `[QA] Phase8 detailed assembly evidence …`,
+một quiz vòng và một bài nộp tham chiếu30. Không có tài khoản mới.
+Bằng chứng không bí mật ngoài Git ở `D:/Web-Pro/qa-evidence/phase8/`:
+maven-test/package.txt, node-final.txt, migration/live/browser/extra/final-browser-results.json,
+ảnh desktop/mobile, receipt-final-desktop/mobile.png. Không commit token/cookie/ảnh.
+
+Đã dừng đúng process QA, kiểm cổng8081 không còn LISTEN và xóa CATALINA_BASE,
+cấu hình/log tạm. Context trình duyệt đã đóng, không lưu cookie/mật khẩu ra file.
+Log runtime QA cuối không có exception ứng dụng. Không dừng Tomcat8080 của người dùng.
