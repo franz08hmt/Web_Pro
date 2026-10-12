@@ -426,3 +426,11 @@ không stage file cá nhân; không tự push. Chi tiết ở TEAM_INTEGRATION_Q
 M0: baseline ad2a4fc; Node160/JUnit85 xanh Java17. Thiết kế ERD trước
 migration013, giữ GROUP cũ và bảy file người dùng. Các mốc M1–M6 và bằng chứng
 ở docs/PHASE8_ASSEMBLY_QA_REPORT.md. Chỉ commit local, không push.
+
+M1–M6 đã triển khai obstacle-avoider chi tiết, migration013/seed được duyệt và chạy.
+Kết quả thực:168 Node/93 JUnit, Maven test/clean package Java17 xanh;155 kiểm tra
+API/SQL/JSP/Chrome, kéo chuột/cảm ứng mô phỏng/bàn phím,390/768/1440 và concurrency.
+Phiên DETAILED COMPLETED được nộp làm bằng chứng nhiệm vụ mẫuA; GROUP cũ giữ nguyên.
+Review chính có các findings reset/version/touch/tách hình đã sửa và chạy lại.
+QA8081 đã dọn; còn giới hạn Firefox/Safari, cảm ứng thật, screen reader, nộp mẫuB mới
+và spec archived trên server thật. Không thực hiện các phần mở rộng tùy chọn.

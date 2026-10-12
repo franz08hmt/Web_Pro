@@ -6,7 +6,8 @@ Thiết kế ngày 12/10/2026, không chuyển đổi phiên GROUP cũ. Sáu b�
 
 - `assembly_specs`: PK id; FK robot RESTRICT; UNIQUE(robot_id, version_no);
   UNIQUE(id, robot_id); PUBLISHED/ARCHIVED. Spec công bố bất biến.
-- `assembly_slots`: PK id; UNIQUE(spec_id, slot_code), UNIQUE(id, spec_id);
+- `assembly_slots`: PK id; UNIQUE(spec_id, slot_code), UNIQUE(id, spec_id),
+  UNIQUE(id, spec_id, component_id);
   FK spec RESTRICT, FK (parent_slot_id, spec_id) cùng spec; FK component;
   CHECK tọa độ [-10,10], góc [-6.284,6.284], order [1,40].
 - `assembly_slot_orientations`: PK(slot_id, orientation_code), CHECK chỉ
@@ -15,10 +16,12 @@ Thiết kế ngày 12/10/2026, không chuyển đổi phiên GROUP cũ. Sáu b�
   layout_version >=1. FK(spec_id, robot_id) bảo đảm đúng robot;
   UNIQUE(id, spec_id) để placements ràng buộc phiên và spec.
 - `assembly_instances`: PK id; UNIQUE(session_id, component_id, instance_no);
-  UNIQUE(id, session_id); FK session/component RESTRICT; instance_no [1,40].
+  UNIQUE(id, session_id), UNIQUE(id, session_id, component_id);
+  FK session/component RESTRICT; instance_no [1,40].
   Server tạo từ robot_components.quantity, không từ request.
 - `assembly_placements`: PK instance_id; UNIQUE(session_id, slot_id);
-  FK(instance_id,session_id), FK(session_id,spec_id), FK(slot_id,spec_id),
+  FK(instance_id,session_id,component_id), FK(session_id,spec_id),
+  FK(slot_id,spec_id,component_id),
   FK(slot_id,orientation_code). Các FK RESTRICT giữ lịch sử.
 
 Tải layout dùng số truy vấn cố định: phiên owner, spec, slots, orientations,
@@ -28,6 +31,11 @@ ghi placement và tăng version trong cùng transaction. Reset chỉ xóa placem
 của phiên đang sửa. Complete gọi luật bean từ layout vừa đọc trong khóa phiên.
 Không snapshot robots.wiring: kết quả tham chiếu spec công bố bất biến.
 Không thêm events vì không có chức năng dùng nhật ký này trong phạm vi bắt buộc.
+Kit v1 có10 vật thể: khung, Arduino, L298N, hộp pin, bánh tự do, HC-SR04,
+hai động cơ và hai bánh riêng. Spec, slots, orientations không có API chỉnh sửa.
+Seed chỉ INSERT một phiên bản mới; chạy lại không thay bản đã công bố.
+Chu trình cha được bean kiểm; không dùng CHECK tham chiếu cột AUTO_INCREMENT
+do giới hạn MySQL. FK ghép vẫn bắt buộc cha cùng spec và placement đúng loại.
 
 ## Chẩn đoán và mẫu B — migration 010
 

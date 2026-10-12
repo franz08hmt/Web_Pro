@@ -363,3 +363,23 @@ Sau migration 011, chạy `database/migrations/012_wiring_support.sql` trên đ�
 Migration chỉ thêm hai bảng, chạy lại không xóa/ghi đè lịch sử. Route USER:
 `/wiring-support`; ADMIN: `/admin-wiring-support`. Lối vào theo vai trò ở trang tài khoản
 và từ lượt nối dây. Báo cáo: [QA hỗ trợ](docs/PHASE7_WIRING_SUPPORT_QA_REPORT.md).
+
+### Lắp ráp từng vật thể có kiểm chứng (Đợt 8)
+
+Sau migration012, chạy `database/migrations/013_assembly_placement.sql`, rồi
+`database/seed-assembly-spec-obstacle-avoider.sql` trên đúng DB đã được duyệt.
+Cần quyền CREATE/ALTER; không tăng quyền tài khoản ứng dụng để ép chạy.
+013 thêm năm bảng và mode/spec/version của phiên; không chuyển đổi phiên cũ.
+Seed thêm spec v1 của obstacle-avoider với10 điểm gắn; chạy lại không sửa bản cũ.
+Không tạo tài khoản hay đổi components/robot/quiz/nhiệm vụ bằng seed này.
+
+Phiên mới của robot có spec dùng khay từng vật thể, kéo hoặc chọn-gắn, xoay90°,
+server xác thực và lưu. Phiên GROUP cũ và robot chưa có spec dùng luồng cũ.
+Hoàn tất chỉ khi JavaBean kiểm đủ10/10; không mô phỏng vật lý/điện/firmware.
+Xem [QA Đợt8](docs/PHASE8_ASSEMBLY_QA_REPORT.md).
+
+Khi IntelliJ/Tomcat đang dùng target, có thể build riêng bằng JDK17:
+`mvn -f tomcat-app/pom.xml -Drobotlab.buildDirectory=D:/Web-Pro/qa-evidence/phase8/final-build clean package`.
+Tham số tùy chọn; build thông thường vẫn dùng `tomcat-app/target`.
+Để guard UTF-8 đối chiếu bản build riêng, đặt `ROBOTLAB_EXPLODED_DIR` tới
+thư mục `robot-assembly-lab` được giải nén bởi Maven trong build directory đó.

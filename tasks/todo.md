@@ -277,5 +277,5 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] M3: duyệt DDL, API/persistence owner/version/transaction.
 - [x] M4: kit obstacle-avoider, khay, phản hồi và khôi phục.
 - [x] M5: report/complete/khóa/phiếu JSP.
-- [ ] M6: QA thật/browser/concurrency/hồi quy/cleanup.
+- [x] M6: QA thật/browser/concurrency/hồi quy/cleanup (giới hạn ghi trong báo cáo Đợt8).
 

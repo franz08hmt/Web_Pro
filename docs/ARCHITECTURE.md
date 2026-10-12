@@ -236,8 +236,29 @@ Node và JUnit chỉ là công cụ kiểm tra khi phát triển, không phải 
 
 | Package | Số file | Ghi chú |
 | --- | --- | --- |
-| `business/` | 45 | JavaBean + luật nghiệp vụ |
+| `business/` | 53 | JavaBean + luật nghiệp vụ |
 | `controller/` | 37 | `@WebServlet`; 18 forward sang JSP, 19 trả JSON |
-| `data/` | 22 | `ConnectionPool`, `DBUtil`, `DatabaseLifecycleListener` và các `XxxDB` |
-| `util/` | 8 | `SessionUtil`, `PasswordUtil`, `JsonUtil`, `ResponseUtil`, `ValidationUtil`, các `...FormUtil` |
+| `data/` | 23 | `ConnectionPool`, `DBUtil`, `DatabaseLifecycleListener` và các `XxxDB` |
+| `util/` | 9 | `SessionUtil`, `PasswordUtil`, `JsonUtil`, `ResponseUtil`, `ValidationUtil`, các `...FormUtil` |
 | `filter/` | 1 | `RequestContextFilter` (ngoài slide) |
+
+## 15. Phòng lắp ráp từng vật thể có kiểm chứng
+
+Luồng: kéo/chọn vật thể → fetch JSON → AssemblySessionServlet kiểm session,
+owner, CSRF và kiểu dữ liệu → AssemblyPlacementDB khóa phiên FOR UPDATE,
+đọc layout → AssemblyLayout kiểm loại/hướng/cha/version → JDBC lưu placement
+và tăng version → commit → response → JS dựng lại mô hình từ layout server.
+Check/complete dùng cùng luật JavaBean, không có công thức ở Servlet/JS/SQL.
+Phiếu: AssemblyReceiptPageServlet đọc layout owner, setAttribute rồi forward
+assembly-receipt.jsp; EL/JSTL core và c:out trình bày dữ kiện đã lưu.
+
+JSON phù hợp trang3D HTML/JS tĩnh và thao tác pointer, không thay form JSP thành SPA.
+JS chỉ giữ ý định/pose xem trước; xanh sau response chấp nhận, lỗi mạng vàng chưa
+đồng bộ. Kéo vật thể tách khỏi xoay camera; touch-action chỉ scope canvas DETAILED.
+Vật thể từ robot_components.quantity, spec FK ghép cùng robot; placements FK cùng
+instance/phiên/spec/loại/hướng. Mọi mutation khóa phiên trước đọc/ghi; finally đóng
+tài nguyên, phục hồi autoCommit và trả connection. SQLException không giả thành rỗng.
+
+GROUP cũ không đổi mode, không chấm lại; DETAILED không đi đường visual-parts cũ.
+Không thêm thang điểm. COMPLETED vẫn là bằng chứng nhiệm vụ A/B theo luật cũ.
+Năm bảng mới, sáu bean mới; không thêm DAO/Service/ORM hoặc dependency frontend.

@@ -384,3 +384,31 @@ nhận JSON/dây/điểm của client. ADMIN không gửi bản chụp nguồn m
 `close` đóng theo version yêu cầu. Nội dung USER 20–2000, ADMIN 10–2000 ký tự sau trim.
 OPEN → Admin phản hồi ANSWERED; USER gửi tiếp → OPEN; USER giải quyết/Admin đóng → CLOSED.
 CLOSED không nhận thêm tin, có thể tạo yêu cầu mới. Một lượt chỉ có một OPEN/ANSWERED.
+
+## Lắp ráp từng vật thể — Đợt 8
+
+Giữ `/api/assembly-sessions/*`, danh tính từ HttpSession và no-store.
+Mutation dùng JSON, header X-CSRF-Token; không đổi CSRF của form JSP/API cũ.
+
+| Method/path dưới `/api/assembly-sessions/{id}` | Nội dung |
+| --- | --- |
+| GET `/layout` | mode, spec/slots/hướng, instances, placements, layoutVersion, status, canEdit, report |
+| POST `/placements` | instanceId, slotId, orientation, expectedLayoutVersion |
+| DELETE `/placements/{instanceId}?expectedLayoutVersion=…` | Tháo vật thể, từ chối khi còn con |
+| POST `/check` | Báo cáo X/N, khay, vị trí thiếu/lỗi; không ghi dữ liệu |
+| PATCH phiên | status=COMPLETED và expectedLayoutVersion; server kiểm lại trong khóa phiên |
+| DELETE `/progress?expectedLayoutVersion=…` | Reset DETAILED trước hoàn tất; giữ instances và kit chuẩn bị |
+
+Phiên cũ GROUP tiếp tục route hoàn tất/reset/visual-parts cũ. DETAILED từ chối
+PUT visual-parts; không dùng component_id hoặc phần trăm client để hoàn tất.
+Robot có spec PUBLISHED dùng DETAILED khi tạo mới; mode/spec cố định sau đó.
+Spec archived không dùng để tạo phiên mới; phiên đã tham chiếu vẫn đọc/lắp tiếp.
+
+200 accepted:true có data layout và unchanged/transitioned. Retry đúng vị trí/hướng
+trả unchanged:true, không tăng version; hai complete chỉ một transitioned:true.
+422 accepted:false có code/message/instanceId/slotId và error theo API cũ.
+Mã: WRONG_COMPONENT, SLOT_OCCUPIED, ORIENTATION_NOT_ALLOWED, PARENT_MISSING,
+ALREADY_PLACED, HAS_DEPENDENTS, SESSION_LOCKED, ASSEMBLY_INCOMPLETE, VALIDATION_ERROR.
+409 LAYOUT_CONFLICT yêu cầu tải lại; 404 NOT_FOUND cho phiên/vật thể/slot khác quyền;
+403 CSRF_REQUIRED, khách401 theo API; JDBC503 không lộ SQL/stack trace.
+Không nhận owner, điểm, percent, isCorrect hay pose client làm căn cứ xác thực.

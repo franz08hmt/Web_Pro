@@ -876,3 +876,48 @@ Mở bản đồ đầu tài liệu và mục 2 để đi thẳng tới file:dò
 - [ ] Mỗi người tự vẽ lại ba luồng ở mục 3 không nhìn tài liệu.
 - [ ] Mỗi người trả lời được các câu của mình ở mục 7 và 43+ câu ở mục 8.
 - [ ] Không mang `.env`, `.idea/workspace.xml` (chứa mật khẩu DB) khi nộp file nén.
+
+## Phòng lắp ráp có kiểm chứng — chỉ code theo luồng trình bày
+
+**Cách nói:** “Người học chọn hoặc kéo một vật thể. Trình duyệt gửi ý định qua HTTP.
+Servlet xác định người đăng nhập và kiểm token. JavaBean kiểm loại, hướng, bộ phận cha
+và version. JDBC lưu trong transaction. Client nhận response rồi dựng lại mô hình.
+Hoàn tất được server kiểm lại; phiếu kết quả là JSP đọc dữ kiện đã lưu.”
+
+Mở code theo thứ tự (dòng đối chiếu ngày12/10/2026; tìm thêm bằng tên method):
+
+1. `assets/js/assembly-3d.js:829`, callback onAttach: thấy client gọi API bằng ID vật thể,
+   điểm, hướng và version. Không gửi chủ phiên hoặc phần trăm làm căn cứ chấm.
+2. `assets/js/api.js`, method attach: fetch POST JSON, credentials same-origin và
+   X-CSRF-Token. Phân biệt ý định client với kết quả server; bắt lỗi mạng riêng.
+3. `controller/AssemblySessionServlet.java:403`, handlePlacement: đọc method/path/body,
+   lấy user từ session, kiểm CSRF/kiểu ID/version, gọi XxxDB và trả JSON response.
+   Các doGet/doPost/doDelete dẫn vào đây; PATCH đi qua service/changeStatus.
+4. `data/AssemblyPlacementDB.java:135`, change: setAutoCommit(false), SELECT phiên
+   WHERE id/user_id FOR UPDATE, đọc layout cùng connection, gọi luật bean.
+5. `business/AssemblyLayout.java:212`, validateAttach: sai loại, chiếm chỗ, hướng sai,
+   thiếu cha, vật thể đã gắn, session khóa, retry và version. validateDetach tại248
+   từ chối tháo cha còn con. validateChange tại165 và check quyết định hoàn tất.
+6. Quay lại XxxDB.change: PreparedStatement có dấu ?, INSERT/DELETE placement,
+   UPDATE version/status, commit; lỗi rollback; finally đóng/trả connection.
+7. `util/AssemblyPlacementJson.java`: chuyển bean thành JSON, escape chuỗi;
+   không chấm. `assets/js/assembly-3d-placement.js`, mutate/sync: nhận response,
+   dựng lại vị trí, chỉ báo xanh sau lưu; lỗi mạng vàng chưa đồng bộ.
+8. `controller/AssemblyReceiptPageServlet.java`, doGet: đọc phiên đúng owner,
+   setAttribute assemblyLayout/assemblyCheckReport, String url và forward JSP.
+   `WEB-INF/views/assembly-receipt.jsp`: EL gọi getter, c:forEach/c:out trình bày
+   vật thể→điểm→hướng, tách rõ cơ khí/nối dây/chạy thử mô phỏng.
+
+Đường dẫn Java ở trên đều dưới `tomcat-app/src/main/java/vn/edu/webpro/robotlab/`.
+DB gồm specs, slots, slot_orientations, instances, placements và metadata của sessions.
+FK ghép giữ cùng phiên/spec/loại, UNIQUE giữ một vật thể/slot, version chống hai tab.
+
+**Câu cô có thể hỏi:**
+
+- “Server biết người nào?” → user của HttpSession, không đọc userId client.
+- “Kéo sai thì ai quyết định?” → validateAttach của bean; JS chỉ hiển thị lý do.
+- “Lắp một bánh đã đủ hai chưa?” → hai instance ID; check vẫn thấy slot bánh kia trống.
+- “Tải lại lấy gì?” → GET layout từ JDBC, gồm placements đã commit.
+- “Hai request hoàn tất?” → khóa phiên; lần đầu transitioned, lần sau unchanged.
+- “JSP nhận dữ liệu ở đâu?” → setAttribute rồi forward; EL/getter và c:out.
+- “Có kiểm điện thật không?” → không, chỉ cấu hình cơ khí mô phỏng theo bài mẫu.

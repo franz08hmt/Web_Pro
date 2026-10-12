@@ -744,3 +744,44 @@ Cột sinh là ràng buộc MySQL hỗ trợ tính toàn vẹn; không chứa lu
 
 **Đã giải quyết hỗ trợ có đồng nghĩa đạt bài không?** Không. Hỗ trợ và chấm là hai trạng
 thái riêng. ADMIN không sửa dây/điểm và không nộp thay. Không có phòng nhóm, không đổi Mẫu A/B.
+
+## Đợt 8 — Demo lắp ráp có kiểm chứng (Tài, 4–5 phút)
+
+1. USER chọn Robot tránh vật cản, chuẩn bị kit và vào3D. Phiên mới có spec
+   gồm10 vật thể, trong đó hai động cơ và hai bánh là bốn ID riêng.
+2. Chọn bánh → điểm mạch Arduino → Gắn: server từ chối, đỏ và giải thích sai loại.
+3. Gắn khung, động cơ rồi bánh đúng điểm/hướng: xanh chỉ sau response đã lưu.
+4. Gắn một bánh: bánh thứ hai vẫn ở khay, tiến độ chưa đủ10/10.
+5. Reload: vị trí/hướng được dựng từ dữ liệu server, không từ localStorage.
+6. Hoàn tất khi còn thiếu: server từ chối; Kiểm tra mô hình liệt kê điểm còn trống.
+7. Gắn đủ → Hoàn tất → ăn mừng → Xem kết quả JSP: vật thể/điểm/hướng và phiên bản.
+8. Mở code: assembly-3d.js → api.js → AssemblySessionServlet → AssemblyLayout
+   và AssemblyPlacementDB → response → dựng3D → AssemblyReceiptPageServlet/JSP.
+
+Nếu khó kéo, chọn vật thể/điểm/hướng bằng radio và nút Gắn; Space/Enter,
+Q/E hoặc nút xoay90°, Escape hủy. Cảm ứng dùng cùng ý định, không chấm ở JS.
+Tách linh kiện chỉ quan sát; lái thử chỉ sau COMPLETED và không phải firmware.
+Nối dây là phòng riêng, không có dây3D hoặc mô phỏng điện trong đợt này.
+
+| Chức năng | Kiến thức áp dụng | Servlet | Bean/XxxDB | View | Bảng |
+| --- | --- | --- | --- | --- | --- |
+| Tải kit/điểm gắn | GET, HttpSession, JDBC | AssemblySessionServlet | AssemblyLayout/AssemblyPlacementDB | lap-rap-3d.html | specs, slots, orientations, instances, placements |
+| Gắn/tháo | JSON request, CSRF, transaction | AssemblySessionServlet | validateAttach/validateDetach, AssemblyPlacementDB | assembly-3d-placement.js | placements, sessions.layout_version |
+| Kiểm/hoàn tất | JavaBean, FOR UPDATE, idempotency | AssemblySessionServlet | check/validateChange, AssemblyPlacementDB |3D + phiếu | placements, sessions.status/completed_at |
+| Phiếu | setAttribute, forward, EL/JSTL, c:out | AssemblyReceiptPageServlet | AssemblyLayout/AssemblyCheckReport | assembly-receipt.jsp | dữ kiện đã lưu của phiên |
+
+**Vì sao xanh mới là đã lưu?** JS chỉ gửi ý định; Servlet kiểm truy cập, bean kiểm luật,
+JDBC commit rồi response mới cho phép UI báo xanh. Lỗi mạng giữ vàng và nút thử lại/tải lại.
+
+**Khác tick nhóm cũ thế nào?** GROUP chỉ lưu một component_id cho cả nhóm.
+DETAILED lưu instance_no và ID cho từng động cơ/bánh, gắn vào slot có cha/hướng.
+Không lấy một bánh để tính đủ hai; không chuyển đổi hoặc chấm lại phiên GROUP cũ.
+
+**Vì sao không mô phỏng vật lý?** Chỉ kiểm vị trí rời rạc theo bài mẫu; không kiểm
+va chạm, lực, điện hoặc firmware. Phiếu không xác nhận robot thật vận hành an toàn.
+
+**Có thay điểm nhiệm vụ không?** Không. COMPLETED vẫn là bằng chứng lắp ráp;
+Mẫu A40/40/20 và B30/25/25/20 giữ nguyên. Không có thang điểm cơ khí mới.
+
+**Hai tab thì sao?** Khóa phiên, kiểm expectedLayoutVersion, rồi ghi và tăng version
+trong một transaction. Tab cũ nhận409 tải lại; complete retry không ghi timestamp lần nữa.
