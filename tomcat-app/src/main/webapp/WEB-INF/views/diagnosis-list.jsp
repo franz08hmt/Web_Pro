@@ -16,8 +16,21 @@
         <%@ include file="workspace-header.jspf" %>
         <main class="workspace-content" id="workspace-main" tabindex="-1">
 
-            <p><a href="${pageContext.request.contextPath}/pages/tai-khoan.html">← Tài khoản</a></p>
+
+            <p>
+                <a href="${pageContext.request.contextPath}/pages/tai-khoan.html">
+                    ← Tài khoản
+                </a>
+            </p>
+
             <h1>Luyện chẩn đoán</h1>
+
+            <p>
+                <a href="${pageContext.request.contextPath}/diagnosis?action=history">
+                    Xem lịch sử chẩn đoán →
+                </a>
+            </p>
+
             <p>Chọn phép kiểm tra để thu thập quan sát mô phỏng, rồi kết luận nguyên nhân và cách xử lý.</p>
             <p>Lượt luyện không tính vào nhiệm vụ. Muốn làm bài được giao, hãy bắt đầu từ trang nhiệm vụ.</p>
             <h2>Đang làm dở</h2>

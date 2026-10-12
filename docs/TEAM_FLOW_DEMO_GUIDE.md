@@ -1,5 +1,27 @@
 # Luồng demo và câu hỏi giảng viên
 
+## Luồng phụ của Nhi và Tuấn Anh — 12/10/2026
+
+1. **Nhi:** mở Thư viện, chọn mẫu robot và số tài nguyên/trang; demo chuyển
+   trang nếu dữ liệu có đủ. Chỉ file seed bổ sung không làm dữ liệu xuất hiện
+   trên máy mới: cần chạy seed tùy chọn sau khi kiểm đúng database.
+2. **Tuấn Anh:** USER mở Luyện chẩn đoán → Lịch sử chẩn đoán, xem mã lượt,
+   điểm và thời gian, rồi mở lại kết quả. Người chưa luyện thấy trạng thái rỗng.
+3. Chỉ ra luồng thư viện: `library-api.js` → `LibraryResourceServlet` →
+   `LibraryResourceDB`/PreparedStatement → `library_resources` → JSON → DOM.
+4. Chỉ ra luồng lịch sử: `DiagnosisServlet` lấy user từ HttpSession →
+   `DiagnosisDB` đọc lượt PRACTICE đã nộp → `DiagnosisHistoryItem` dùng luật
+   điểm của `DiagnosisAttempt`, `DiagnosisHistoryPage` giới hạn trang →
+   `setAttribute`/`forward` → `diagnosis-history.jsp` với `c:out`/`c:forEach`.
+
+**Sao điểm lịch sử không tính bằng SQL hoặc JSP?** Luật chấm chỉ ở JavaBean,
+hai trang dùng cùng getter; lớp DB chỉ đọc các dữ kiện đã lưu. Lịch sử không
+thay đổi điểm hay bằng chứng TASK. Các ngày dùng Date/SimpleDateFormat theo slide.
+
+**Sao merge không tự chạy seed?** Code/seed đi theo Git nhưng dữ liệu MySQL
+thuộc từng máy. Tích hợp không tự sửa dữ liệu đang có; seed chỉ thêm tài nguyên
+qua INSERT IGNORE khi chủ database quyết định chạy.
+
 ## Chẩn đoán và Mẫu B bám slide nào? (Đợt 6, chặng 2)
 
 Node/JUnit là công cụ kiểm chứng lúc phát triển, không thay kiến trúc môn học.

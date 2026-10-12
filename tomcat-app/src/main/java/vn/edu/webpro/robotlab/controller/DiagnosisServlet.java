@@ -49,11 +49,25 @@ public class DiagnosisServlet extends HttpServlet {
             if (user == null) {
                 return;
             }
+
             String action = TaskFormUtil.text(request, "action");
+
             if (action.isEmpty()) {
                 request.setAttribute("diagnosisScenarios", DiagnosisDB.selectScenarios(false));
                 request.setAttribute("diagnosisAttempts", DiagnosisDB.selectInProgress(user.getId()));
                 forward(request, response, "diagnosis-list");
+
+            } else if ("history".equals(action)) {
+                DiagnosisHistoryPage pagination = new DiagnosisHistoryPage();
+                pagination.setRequestedPage(ValidationUtil.parsePositiveInt(
+                        request.getParameter("page"), 1, ValidationUtil.MAX_PAGE));
+                pagination.setTotalItems(DiagnosisDB.countPracticeHistory(user.getId()));
+                request.setAttribute("diagnosisHistory",
+                        DiagnosisDB.selectPracticeHistory(user.getId(), pagination.getPage(),
+                                pagination.getPageSize()));
+                request.setAttribute("historyPagination", pagination);
+                forward(request, response, "diagnosis-history");
+
             } else if ("play".equals(action) || "result".equals(action)) {
                 DiagnosisAttempt value = DiagnosisDB.selectAttempt(TaskFormUtil.number(request, "id"), user.getId());
                 if (value == null) {

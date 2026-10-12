@@ -6,6 +6,7 @@
   <title>Thư viện kỹ thuật | Robot Assembly Lab</title><link rel="stylesheet" href="../assets/css/style.css?v=20260923.3">
   <meta name="theme-color" content="#0e1215">
   <link rel="stylesheet" href="../assets/css/explore.css?v=20260921.2">
+  <link rel="stylesheet" href="../assets/css/library.css?v=20261012.1">
   <link rel="icon" href="../assets/icons/cpu-chip.svg" type="image/svg+xml">
   <script src="../assets/js/ui.js?v=20260921.1"></script>
   <script src="../assets/js/tooltip.js?v=20260921.1" defer></script>
@@ -80,9 +81,13 @@
     <p class="section-label">Tài nguyên kỹ thuật</p><h1>Thư viện hình ảnh và tài liệu</h1>
     <p class="page-intro">Tổng hợp hình ảnh mô hình, linh kiện và tài liệu tham khảo phục vụ quá trình chuẩn bị, đối chiếu và lắp ráp robot.</p>
 
-    <p id="library-data-status" class="muted-text" role="status" aria-live="polite">Đang kiểm tra dữ liệu Content API…</p>
+    <section class="library-controls" aria-label="Lọc và phân trang thư viện">
+      <div class="library-control"><label for="library-robot-filter">Lọc theo mẫu robot</label><select id="library-robot-filter" name="robotId" disabled><option value="">Tất cả mẫu robot</option></select></div>
+      <div class="library-control"><label for="library-page-size">Số tài nguyên mỗi trang</label><select id="library-page-size" name="limit" disabled><option value="6">6</option><option value="12">12</option><option value="24">24</option></select></div>
+    </section>
+    <p id="library-data-status" class="muted-text" role="status" aria-live="polite">Đang tải tài nguyên thư viện…</p>
 
-    <div id="library-catalog" class="card-grid" aria-live="polite">
+    <div id="library-catalog" class="card-grid" aria-live="polite" aria-busy="false">
       <article class="card">
         <figure class="card-image"><img src="../assets/images/robots/robot-do-line.png" alt="Robot dò đường" width="1024" height="1024" loading="lazy" decoding="async"></figure>
         <p class="card-kicker">Mẫu robot</p><h2>Robot dò đường</h2>
@@ -119,6 +124,7 @@
         <p>Cảm biến siêu âm dùng để đo khoảng cách từ robot đến vật cản.</p>
       </article>
     </div>
+    <nav id="library-pagination" class="library-pagination" aria-label="Phân trang thư viện" hidden><button id="library-prev" class="library-page-button" type="button" disabled>← Trang trước</button><span id="library-page-summary" aria-live="polite"></span><button id="library-next" class="library-page-button" type="button" disabled>Trang sau →</button></nav>
 
 
     <section aria-labelledby="credit-heading">
@@ -208,8 +214,8 @@
     <div class="footer-bottom"><p>© 2026 Robot Assembly Lab</p><p>Thiết kế để học. Xây dựng để hiểu.</p></div>
   </footer>
   <script src="../assets/js/main.js?v=20260921.1"></script>
-  <script src="../assets/js/content-api.js?v=20260921.1"></script>
-  <script src="../assets/js/library-api.js?v=20260921.1"></script>
+  <script src="../assets/js/content-api.js?v=20261012.1"></script>
+  <script src="../assets/js/library-api.js?v=20261012.1"></script>
   <script src="../assets/js/explore-data.js?v=20260921.1"></script>
   <script src="../assets/js/explore.js?v=20260921.1"></script>
   <script src="../assets/js/api.js?v=20260921.1"></script>

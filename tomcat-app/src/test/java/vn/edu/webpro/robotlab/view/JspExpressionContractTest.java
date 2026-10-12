@@ -55,6 +55,8 @@ final class JspExpressionContractTest {
             Map.entry("diagnosisCheck", DiagnosisCheck.class),
             Map.entry("diagnosisOption", DiagnosisOption.class),
             Map.entry("diagnosisAttempt", DiagnosisAttempt.class),
+            Map.entry("historyItem", DiagnosisHistoryItem.class),
+            Map.entry("historyPagination", DiagnosisHistoryPage.class),
             Map.entry("diagnosisGuide", TroubleshootingGuide.class),
             Map.entry("taskDiagnosis", TaskSubmission.class),
             Map.entry("taskSubmission", TaskSubmission.class),

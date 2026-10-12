@@ -241,8 +241,10 @@ public class DiagnosisDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = connection.prepareStatement("SELECT id FROM diagnosis_attempts WHERE user_id = ? "
-                    + "AND state='IN_PROGRESS' ORDER BY id DESC");
+            ps = connection.prepareStatement(
+                    "SELECT id FROM diagnosis_attempts WHERE user_id = ? "
+                            + "AND mode='PRACTICE' "
+                            + "AND state='IN_PROGRESS' ORDER BY id DESC");
             ps.setLong(1, owner);
             rs = ps.executeQuery();
             List<Long> ids = new ArrayList<>();
@@ -576,6 +578,87 @@ public class DiagnosisDB {
                     pool.freeConnection(connection);
                 }
             }
+        }
+    }
+
+    /**
+     * Đếm số lượt PRACTICE đã nộp của chính người dùng.
+     */
+    public static int countPracticeHistory(long owner) throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement("SELECT COUNT(*) AS total FROM diagnosis_attempts "
+                    + "WHERE user_id=? AND mode='PRACTICE' AND state='SUBMITTED'");
+            ps.setLong(1, owner);
+            rs = ps.executeQuery();
+            rs.next();
+            return rs.getInt("total");
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
+
+    /**
+     * Lấy một trang lịch sử PRACTICE đã nộp, mới nhất trước.
+     */
+    public static List<DiagnosisHistoryItem> selectPracticeHistory(
+            long owner, int page, int pageSize) throws SQLException {
+
+        if (page < 1 || page > 100000 || pageSize < 1 || pageSize > 100) {
+            throw new IllegalArgumentException("Thông số phân trang không hợp lệ.");
+        }
+
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            int offset = (page - 1) * pageSize;
+
+            String sql = "SELECT a.id, s.title AS scenario_title, r.name AS robot_name, "
+                    + "a.required_done, a.required_total, a.cause_correct, a.action_correct, "
+                    + "a.submitted_at "
+                    + "FROM diagnosis_attempts a "
+                    + "JOIN diagnosis_scenarios s ON s.id = a.scenario_id "
+                    + "JOIN robots r ON r.id = s.robot_id "
+                    + "WHERE a.user_id=? AND a.mode='PRACTICE' AND a.state='SUBMITTED' "
+                    + "ORDER BY a.submitted_at DESC, a.id DESC "
+                    + "LIMIT ? OFFSET ?";
+
+            ps = connection.prepareStatement(sql);
+            ps.setLong(1, owner);
+            ps.setInt(2, pageSize);
+            ps.setInt(3, offset);
+            rs = ps.executeQuery();
+
+            List<DiagnosisHistoryItem> list = new ArrayList<>();
+
+            while (rs.next()) {
+                DiagnosisHistoryItem item = new DiagnosisHistoryItem();
+                item.setScenarioTitle(rs.getString("scenario_title"));
+                item.setRobotName(rs.getString("robot_name"));
+                DiagnosisAttempt attempt = new DiagnosisAttempt();
+                attempt.setId(rs.getLong("id"));
+                attempt.setSubmittedAt(PracticeTaskDB.date(rs, "submitted_at"));
+                attempt.setRequiredDone(rs.getInt("required_done"));
+                attempt.setRequiredTotal(rs.getInt("required_total"));
+                attempt.setCauseCorrect(rs.getBoolean("cause_correct"));
+                attempt.setActionCorrect(rs.getBoolean("action_correct"));
+                item.useAttempt(attempt);
+                list.add(item);
+            }
+
+            return list;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
         }
     }
 

@@ -1,0 +1,53 @@
+/* Library-only controls; colors and typography inherit the project theme. */
+@layer pages {
+  .library-page .library-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    margin: 1.5rem 0 1rem;
+  }
+  .library-page .library-control { display: grid; gap: .5rem; min-width: 0; }
+  .library-page .library-control label { color: var(--muted); font-size: .875rem; }
+  .library-page .library-control select,
+  .library-page .library-page-button {
+    min-height: 44px;
+    padding: .5rem .75rem;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+  }
+  .library-page .library-control select { width: 100%; min-width: 0; }
+  .library-page .library-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .75rem;
+    margin: 1.5rem 0;
+  }
+  .library-page .library-pagination .library-page-button {
+    flex: 1;
+    min-width: 0;
+  }
+  .library-page #library-page-summary { flex-basis: 100%; text-align: center; color: var(--muted); }
+  .library-page #library-prev { order: 1; }
+  .library-page #library-next { order: 2; }
+  .library-page .library-page-button:hover:enabled { border-color: var(--accent); background: var(--surface-2); }
+  .library-page .library-control select:disabled,
+  .library-page .library-page-button:disabled { opacity: .6; cursor: not-allowed; }
+  .library-page .library-control select:focus-visible,
+  .library-page .library-page-button:focus-visible { outline: 3px solid var(--accent-strong); outline-offset: 4px; }
+  .library-page #library-data-status { margin-bottom: 1rem; overflow-wrap: anywhere; }
+  .library-page #library-catalog[aria-busy="true"] { opacity: .7; }
+}
+
+@layer responsive {
+  @media (min-width: 768px) {
+    .library-page .library-controls { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+    .library-page #library-page-summary { flex: 1; }
+    .library-page #library-prev,
+    .library-page #library-next { order: 0; }
+    .library-page .library-pagination .library-page-button { flex: 0 1 auto; }
+  }
+}

@@ -44,6 +44,16 @@
     return assertList(await request(`/${kind}?limit=100`));
   }
 
+  // Paged callers need the full { data, meta } response, independently of the legacy cache.
+  async function loadLibraryResourcesPage({ page = 1, limit = 6, robotId = "" } = {}) {
+    if (!enabled) return null;
+    const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+    if (robotId) params.set("robotId", robotId);
+    const payload = await request(`/library-resources?${params}`);
+    assertList(payload);
+    return payload;
+  }
+
   let componentsPromise;
   let libraryPromise;
   let robotsPromise;
@@ -56,6 +66,10 @@
   function loadLibraryResources() {
     libraryPromise ||= list("library-resources");
     return libraryPromise;
+  }
+
+  function loadRobotOptions() {
+    return list("robots");
   }
 
   function loadRobots() {
@@ -98,6 +112,8 @@
     enabled,
     loadComponents,
     loadLibraryResources,
+    loadLibraryResourcesPage,
+    loadRobotOptions,
     loadRobots
   });
 })();

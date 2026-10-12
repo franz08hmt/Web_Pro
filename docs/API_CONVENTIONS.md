@@ -1,5 +1,21 @@
 # Quy ước Servlet API
 
+## Luồng phụ tích hợp ngày 12/10/2026
+
+- `GET /diagnosis?action=history&page=1`: trang JSP USER, chỉ đọc, lấy owner
+  từ HttpSession và giữ `Cache-Control: no-store`. Chỉ `mode=PRACTICE` và
+  `state=SUBMITTED`; sắp `submitted_at DESC, id DESC`, 10 lượt/trang. Trang
+  thiếu dùng 1; sai định dạng, âm, 0 hoặc >100000 trả 422; trang hợp lệ vượt
+  dữ liệu được bean giới hạn về trang cuối. Khách redirect đăng nhập, ADMIN
+  403; tham số userId/user/email không đổi được chủ sở hữu.
+- `GET /diagnosis?action=result&id=...` vẫn dùng kiểm owner hiện có. Lịch sử
+  dùng cùng `DiagnosisAttempt.getScoreExact()` và định dạng giờ Việt Nam của
+  trang kết quả; không chấm lại quan sát hoặc sửa điểm trong DB/JSP.
+- Thư viện dùng API hiện có `/api/library-resources?page=&limit=&robotId=`;
+  không thay payload server. Client cũ `loadLibraryResources()` giữ mảng và
+  cache; client mới `loadLibraryResourcesPage(options)` trả `{data, meta}`.
+- Không thêm POST/migration/schema hoặc thay luật TASK/rubric A/B.
+
 ## Chẩn đoán tương tác và mẫu B (Đợt 6, chặng 2)
 
 Các route sau là trang Servlet → JSP/form, không phải JSON API. Mọi trang có

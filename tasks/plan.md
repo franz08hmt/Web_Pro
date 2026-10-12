@@ -412,3 +412,11 @@ Khảo sát 34 view + fragment → golden GET/token/form/SQL → Chrome từng v
 menu/badges/copy/CSS và PDF → contract/GET hồi quy → báo cáo cùng inventory chuỗi →
 cleanup runtime → commit local, không push. Kết quả và giới hạn từng view ở
 docs/UI_REDESIGN_QA_REPORT.md mục UI-2. Hai trạng thái chỉ dựng HTML tạm vì cấm POST.
+
+## Tích hợp luồng phụ Nhi/Tuấn Anh — 12/10/2026
+
+Fetch → backup/bảo vệ sửa dở → checkout riêng từ fb07191 → baseline JDK17 →
+review hai nhánh → merge không commit ngay → test đỏ/sửa lỗi API/guard/bean →
+review độc lập → build + QA Tomcat riêng/SQL hash38bảng → tài liệu/cleanup →
+merge commit và fast-forward về integration/fullstack-v2. Không seed/migration,
+không stage file cá nhân; không tự push. Chi tiết ở TEAM_INTEGRATION_QA_20261012.md.

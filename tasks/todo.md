@@ -254,3 +254,17 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [ ] Sửa dữ liệu bài nối dây cũ lỗi dấu ? / getter ngày ISO: cần phạm vi riêng, chưa làm.
 
 - [x] Dừng đúng runtime QA, xác nhận 8081 đóng; xóa CATALINA_BASE/log/cookie tạm, giữ evidence ngoài Git.
+
+## Tích hợp Nhi/Tuấn Anh — 12/10/2026
+
+- [x] Fetch đúng hai nhánh, backup fb07191 và giữ riêng mọi sửa dở của người dùng.
+- [x] Baseline sạch JDK17; review source trước merge, tái hiện lỗi guard raw merge.
+- [x] Sửa tương thích client/paging/fallback/race/CSS scope cho thư viện.
+- [x] Lịch sử PRACTICE owner-scoped, điểm/giờ/phân trang trong JavaBean; JSP core/shell.
+- [x] Bỏ feedback lặp; giữ form POST, rubric và toàn bộ source lắp ráp/shop.
+- [x] Node160/160, JUnit85/85, clean package JDK17; review độc lập không còn blocker.
+- [x] Live79 + extra17 kiểm đạt; hash38/38bảng không đổi, không chạy seed/migration.
+- [x] Cập nhật README/API/demo/report; bằng chứng QA ngoài Git.
+- [x] Runtime QA đã dọn, cổng8081 đóng; merge commit và fast-forward là bước bàn giao sau gate.
+- [ ] ADMIN live (credential không đăng nhập được), Firefox/Safari/cảm ứng vật lý.
+- [ ] Push merge lên GitHub: chưa có yêu cầu riêng trong lượt này.

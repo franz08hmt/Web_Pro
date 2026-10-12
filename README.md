@@ -1,5 +1,18 @@
 # Robot Assembly Lab
 
+## Tích hợp luồng phụ của Nhi và Tuấn Anh — 12/10/2026
+
+- **Thư viện:** lọc theo mẫu robot, chọn số tài nguyên mỗi trang, phân trang và
+  thông báo tải/lỗi/dữ liệu rỗng. Content API cũ vẫn trả mảng; hàm phân trang
+  riêng trả `{data, meta}`, không đổi các trang robot/linh kiện/lắp ráp.
+- **Lịch sử chẩn đoán:** USER mở `/diagnosis?action=history` để xem lại lượt
+  PRACTICE đã nộp của mình; không đưa lượt TASK vào lịch sử luyện. Điểm và ngày
+  dùng luật JavaBean hiện có, giờ Việt Nam; JSP chỉ trình bày bằng EL/JSTL core.
+- Không thêm migration. `database/seed-library-resources-phase3.sql` là seed
+  bổ sung tùy chọn (INSERT IGNORE), chạy sau seed robot Đợt 3 nếu muốn thêm
+  10 tài nguyên. **Lần tích hợp này không chạy seed hoặc thay dữ liệu MySQL.**
+- Chi tiết review, kiểm thử và giới hạn: [báo cáo tích hợp](docs/TEAM_INTEGRATION_QA_20261012.md).
+
 ## Chẩn đoán tương tác và nhiệm vụ mẫu B (Đợt 6, chặng 2)
 
 USER chọn phép kiểm tra bằng form để mở từng quan sát mô phỏng, rồi chọn nguyên
