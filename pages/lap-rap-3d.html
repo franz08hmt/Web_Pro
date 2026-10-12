@@ -17,6 +17,7 @@
     >
 
     <script src="../assets/js/tooltip.js?v=20260921.1" defer></script>
+<link rel="stylesheet" href="../assets/css/assembly-placement.css?v=20261012.1">
 </head>
 
 <body class="assembly-3d-page">
@@ -111,6 +112,7 @@
         </div>
 
         <div class="assembly-3d-complete">
+            <button id="assembly-3d-check" type="button" hidden>Kiểm tra mô hình</button>
             <button id="assembly-3d-complete" type="button" disabled
                     data-tooltip="Xác nhận đã lắp đủ mọi linh kiện bắt buộc. Máy chủ kiểm tra lại dữ liệu thật trước khi ghi kết quả, không tin tiến độ do trình duyệt tự tính.">
                 Hoàn tất lắp ráp
@@ -166,8 +168,8 @@
 <script src="../assets/js/data.js?v=20260928.2"></script>
 
 <!-- Dữ liệu Content API và phiên lắp ráp của tài khoản -->
-<script src="../assets/js/content-api.js?v=20260921.1"></script>
-<script src="../assets/js/api.js?v=20260921.1"></script>
+<script src="../assets/js/content-api.js?v=20261012.1"></script>
+<script src="../assets/js/api.js?v=20261012.1"></script>
 
 
 <!-- Cấu hình vị trí 3D -->
@@ -182,8 +184,11 @@
 <!-- Bộ điều khiển bàn phím cho mô hình 3D sau khi phiên được hoàn tất. -->
 <script src="../assets/js/assembly-3d-drive.js?v=20260928.1"></script>
 
+<!-- Tương tác vật thể chi tiết: server quyết định hợp lệ. -->
+<script src="../assets/js/assembly-3d-placement.js?v=20261012.1"></script>
+
 <!-- Logic lắp ráp 3D -->
-<script src="../assets/js/assembly-3d.js?v=20261007.1"></script>
+<script src="../assets/js/assembly-3d.js?v=20261012.1"></script>
 
 </body>
 

@@ -137,6 +137,31 @@
         body: { isAssembled }
       })).data;
     },
+    async layout(sessionId) {
+      return (await request(`/assembly-sessions/${segment(sessionId)}/layout`)).data;
+    },
+    async attach(sessionId, instanceId, slotId, orientation, expectedLayoutVersion) {
+      return (await request(`/assembly-sessions/${segment(sessionId)}/placements`, {
+        method: "POST", csrf: true,
+        body: { instanceId: Number(instanceId), slotId: Number(slotId), orientation, expectedLayoutVersion }
+      })).data;
+    },
+    async detach(sessionId, instanceId, expectedLayoutVersion) {
+      return (await request(`/assembly-sessions/${segment(sessionId)}/placements/${segment(instanceId)}`
+        + `?expectedLayoutVersion=${segment(expectedLayoutVersion)}`, { method: "DELETE", csrf: true })).data;
+    },
+    async checkLayout(sessionId) {
+      return (await request(`/assembly-sessions/${segment(sessionId)}/check`, { method: "POST", csrf: true })).data;
+    },
+    async completeLayout(sessionId, expectedLayoutVersion) {
+      return (await request(`/assembly-sessions/${segment(sessionId)}`, {
+        method: "PATCH", csrf: true, body: { status: "COMPLETED", expectedLayoutVersion }
+      })).data;
+    },
+    async resetLayout(sessionId, expectedLayoutVersion) {
+      return (await request(`/assembly-sessions/${segment(sessionId)}/progress`
+        + `?expectedLayoutVersion=${segment(expectedLayoutVersion)}`, { method: "DELETE", csrf: true })).data;
+    },
     async resetProgress(sessionId) {
       return (await request(`/assembly-sessions/${segment(sessionId)}/progress`, {
         method: "DELETE",

@@ -79,3 +79,16 @@ Node hiện166/166. Kiểm byte exploded hỗ trợ `ROBOTLAB_EXPLODED_DIR`
 mặc định dùng target cũ. Không sửa/dừng Tomcat8080 của người dùng.
 Assertion nguồn hoàn tất được cập nhật theo if/braces và nhánh GROUP;
 guard mới kiểm bean validateChange, không đặt luật hoàn tất trong XxxDB.
+
+### M4 — Giao diện toàn bộ kit
+
+Chrome headless server thật: kéo động cơ được lưu, Space/Enter chọn-gắn,
+Escape hủy cả khi focus radio, reload khôi phục, lỗi mạng giữ chưa đồng bộ
+và khóa Hoàn tất, tải lại xóa trạng thái chưa đồng bộ. Có nút xoay90° và Q/E;
+hướng/loại vẫn do JavaBean xác thực. Viewport390/768/1440 không tràn toàn trang.
+Prototype kiểm kéo vật thể không xoay camera, kéo vùng trống vẫn xoay.
+Touch là mô phỏng Chrome, chưa thử màn hình cảm ứng thật. 23 ca Chrome thật
+(gồm complete và drive của M5) xanh, không pageerror/asset404. Bằng chứng:
+`browser-results.json`, `detailed-390/768/1440.png`, `completed-desktop/mobile.png`.
+Không đưa panel bước/checkbox bước vào3D; GROUP giữ cách tick nhóm.
+api.js cache-busting được tăng tại mọi HTML dùng chung, không đổi các luồng đó.

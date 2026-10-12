@@ -274,8 +274,8 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] M0: kiểm Git, baseline thực chạy và thiết kế ERD trước migration.
 - [x] M1: prototype kéo/chọn/gắn và tách điều khiển camera.
 - [x] M2: migration/seed và JavaBean có test từng luật.
-- [ ] M3: duyệt DDL, API/persistence owner/version/transaction.
-- [ ] M4: kit obstacle-avoider, khay, phản hồi và khôi phục.
+- [x] M3: duyệt DDL, API/persistence owner/version/transaction.
+- [x] M4: kit obstacle-avoider, khay, phản hồi và khôi phục.
 - [ ] M5: report/complete/khóa/phiếu JSP.
 - [ ] M6: QA thật/browser/concurrency/hồi quy/cleanup.
 

@@ -1,0 +1,52 @@
+/* Chỉ phòng chi tiết: không thay đổi giao diện GROUP hoặc trang bên ngoài. */
+.assembly-placement {
+  overflow-wrap: anywhere;
+}
+.assembly-placement fieldset {
+  min-width: 0;
+  margin: 12px 0;
+  padding: 12px;
+  border: 1px solid #2c363b;
+  border-radius: 10px;
+}
+.assembly-placement legend {
+  color: #eef3f2;
+  padding: 0 4px;
+  font-weight: 600;
+}
+.assembly-placement label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 6px;
+  cursor: pointer;
+}
+.assembly-placement input {
+  flex-shrink: 0;
+  accent-color: #ff8b4b;
+}
+.assembly-placement button, .assembly-placement-status + button {
+  min-height: 44px;
+  max-width: 100%;
+  margin: 4px;
+  padding: 8px 12px;
+  border: 1px solid #586665;
+  border-radius: 8px;
+  background: #232c31;
+  color: #eef3f2;
+  cursor: pointer;
+}
+.assembly-placement button:disabled {
+  opacity: .55;
+  cursor: default;
+}
+.assembly-placement :focus-visible {
+  outline: 3px solid #ffa871;
+  outline-offset: 3px;
+}
+.assembly-placement [data-state="preview"] { color: #fbbf24; }
+.assembly-placement [data-state="saved"] { color: #4ade80; }
+.assembly-placement [data-state="error"] { color: #ffaaaa; }
+.assembly-placement [hidden] { display: none; }
+.assembly-placement p { line-height: 1.65; }

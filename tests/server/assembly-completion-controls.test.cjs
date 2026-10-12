@@ -24,6 +24,7 @@ function loadCompletionControls(updateStatus) {
   const inputs = [{ disabled: false }, { disabled: false }];
   let celebrations = 0;
   const context = {
+    placementLayout: null,
     activeSession: { id: "42", status: "IN_PROGRESS" },
     sessionApi: { updateStatus },
     partsContainer: { querySelectorAll: () => inputs },

@@ -47,7 +47,16 @@ window.createAssemblyPlacementView = function (options) {
   retry.type = "button";
   retry.textContent = "Thử lại thao tác chưa đồng bộ";
   retry.hidden = true;
-  panel.replaceChildren(heading, help, live, tray, slots, directions, attach, cancel, retry, reload, installed);
+  const rotateLeft = document.createElement("button");
+  rotateLeft.type = "button";
+  rotateLeft.textContent = "Xoay trái 90°";
+  rotateLeft.addEventListener("click", () => rotate(-1));
+  const rotateRight = document.createElement("button");
+  rotateRight.type = "button";
+  rotateRight.textContent = "Xoay phải 90°";
+  rotateRight.addEventListener("click", () => rotate(1));
+  panel.replaceChildren(heading, help, live, tray, slots, directions,
+    rotateLeft, rotateRight, attach, cancel, retry, reload, installed);
   panel.classList.add("assembly-placement");
 
   function message(text, state) {
@@ -77,6 +86,7 @@ window.createAssemblyPlacementView = function (options) {
   }
 
   function rotate(delta) {
+    if (!selectedInstance || busy || !layout?.canEdit) return;
     const codes = ["Y0", "Y90", "Y180", "Y270"];
     orientation = codes[(codes.indexOf(orientation) + delta + 4) % 4];
     if (selectedObject) selectedObject.rotation.y += delta * Math.PI / 2;
@@ -121,6 +131,8 @@ window.createAssemblyPlacementView = function (options) {
     attach.disabled = disabled;
     cancel.disabled = busy;
     retry.disabled = disabled;
+    rotateLeft.disabled = disabled;
+    rotateRight.disabled = disabled;
     installed.querySelectorAll("button").forEach(button => { button.disabled = disabled; });
     onChange?.(layout, busy, unsynced);
   }
@@ -211,7 +223,7 @@ window.createAssemblyPlacementView = function (options) {
     }
     for (const code of ["Y0", "Y90", "Y180", "Y270"]) {
       radio(directions, "assembly-orientation", code, code.slice(1) + "°", orientation === code,
-        () => { orientation = code; });
+        () => { rotate((Number(code.slice(1)) - Number(orientation.slice(1))) / 90); });
     }
     if (!trayIndex) tray.append(document.createTextNode("Khay không còn vật thể."));
     if (!next.placements.length) installed.append(document.createTextNode("Chưa có vật thể được gắn."));
@@ -294,8 +306,9 @@ window.createAssemblyPlacementView = function (options) {
   }
 
   function keydown(event) {
-    if (!selectedInstance || busy || !layout?.canEdit || /INPUT|TEXTAREA/.test(event.target.tagName)) return;
+    if (!selectedInstance || busy || !layout?.canEdit) return;
     if (event.key === "Escape") { drag = null; clearSelection(); }
+    else if (/INPUT|TEXTAREA/.test(event.target.tagName)) return;
     else if (event.key.toLowerCase() === "q") rotate(-1);
     else if (event.key.toLowerCase() === "e") rotate(1);
     else return;
@@ -304,7 +317,13 @@ window.createAssemblyPlacementView = function (options) {
   window.addEventListener("keydown", keydown);
   attach.addEventListener("click", () => mutate("attach"));
   cancel.addEventListener("click", clearSelection);
-  return { sync, pointerDown, pointerMove, pointerUp, setExploded,
+  function restore(next) {
+    unsynced = false;
+    retry.hidden = true;
+    sync(next);
+    message("Đã tải lại mô hình từ server.", "saved");
+  }
+  return { sync, restore, pointerDown, pointerMove, pointerUp, setExploded,
     isBusy: () => busy, isUnsynced: () => unsynced,
     cancelDrag: () => { drag = null; if (layout) sync(layout); },
     dispose: () => window.removeEventListener("keydown", keydown) };

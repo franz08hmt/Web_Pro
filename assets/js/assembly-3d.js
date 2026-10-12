@@ -47,6 +47,10 @@
   const sessionApi = window.RobotAssemblyApi?.assemblySessions;
   const requestedSessionId = params.get("session");
   let activeSession = null;
+  let placementView = null;
+  let placementLayout = null;
+  let detailedRequested = false;
+  const checkButton = document.querySelector("#assembly-3d-check");
   let driveController = null;
 
   if (!container || !model) {
@@ -118,6 +122,11 @@
      nút này (lệch dữ liệu tạm thời) không thể tạo ra kết quả sai. */
   function updateCompleteAvailability() {
     syncDriveAvailability();
+    if (placementLayout) {
+      completeButton.disabled = !placementLayout.canEdit || placementView?.isBusy() || placementView?.isUnsynced();
+      if (resetButton) resetButton.disabled = completeButton.disabled;
+      return;
+    }
     if (!completeButton) return;
     const ready = Boolean(activeSession)
       && activeSession.status === "IN_PROGRESS"
@@ -160,6 +169,19 @@
     if (!activeSession || !sessionApi || !completeButton) return;
 
     completeButton.disabled = true;
+    if (placementLayout) {
+      setCompleteStatus("Server đang kiểm tra từng vật thể…", "loading");
+      try {
+        const result = await sessionApi.completeLayout(activeSession.id, placementLayout.layoutVersion);
+        placementView.sync(result);
+        if (result.status === "COMPLETED") showCompletionResult(result.transitioned);
+      } catch (error) {
+        setCompleteStatus(error.message, "error");
+      } finally {
+        updateCompleteAvailability();
+      }
+      return;
+    }
     setCompleteStatus("Đang xác nhận hoàn tất…", "loading");
     try {
       activeSession = await sessionApi.updateStatus(activeSession.id, "COMPLETED");
@@ -207,6 +229,12 @@
       }
 
       activeSession = session;
+      detailedRequested = session.assemblyMode === "DETAILED";
+      if (detailedRequested) {
+        await restoreDetailed();
+        if (session.status === "COMPLETED") showCompletionResult(false);
+        return;
+      }
       if (window.THREE && window.createAssemblyPart) {
         restoreVisualAssembly(new Set(session.assembledPartIds || []));
       }
@@ -227,7 +255,7 @@
       }
     } catch (error) {
       activeSession = null;
-      const canUseLocal = !requestedSessionId;
+      const canUseLocal = !requestedSessionId && !detailedRequested;
       setPartInputsDisabled(canUseLocal ? false : true);
       if (canUseLocal && window.THREE && window.createAssemblyPart) {
         restoreVisualAssembly(readStoredIds(visualStorageKey));
@@ -472,6 +500,13 @@
   }
 
   function setExplodedView(nextValue) {
+    if (placementView) {
+      explodedView = Boolean(nextValue);
+      placementView.setExploded(explodedView);
+      explodeButton?.setAttribute("aria-pressed", String(explodedView));
+      if (explodeButton) explodeButton.textContent = explodedView ? "Ghép về vị trí" : "Tách linh kiện";
+      return;
+    }
     explodedView = Boolean(nextValue) && assembledParts.size > 0;
 
     // Gom sẵn điểm đầu và điểm cuối rồi chạy một tween duy nhất: các nhóm linh
@@ -645,6 +680,17 @@
   }
 
   async function resetAssembly() {
+    if (placementLayout) {
+      if (!window.confirm("Tháo toàn bộ vật thể đã gắn? Phiên và bộ kit vẫn được giữ.")) return;
+      try {
+        placementView.sync(await sessionApi.resetLayout(activeSession.id, placementLayout.layoutVersion));
+        setExplodedView(false);
+        setSyncStatus("Đã tháo toàn bộ vật thể; server vẫn giữ bộ kit của phiên.", "saved");
+      } catch (error) {
+        setSyncStatus(error.message, "error");
+      }
+      return;
+    }
     const previousIds = [...assembledParts.keys()];
     restoreVisualAssembly(new Set());
     setExplodedView(false);
@@ -699,12 +745,14 @@
     let previousX = 0;
     let previousY = 0;
     renderer.domElement.addEventListener("pointerdown", (event) => {
+      if (placementView?.pointerDown(event)) { dragging = false; return; }
       dragging = true;
       previousX = event.clientX;
       previousY = event.clientY;
       renderer.domElement.setPointerCapture(event.pointerId);
     });
     renderer.domElement.addEventListener("pointermove", (event) => {
+      if (placementView?.pointerMove(event)) return;
       if (!dragging) return;
       cameraState.azimuth -= (event.clientX - previousX) * 0.008;
       cameraState.polar = THREE.MathUtils.clamp(
@@ -716,7 +764,14 @@
       previousY = event.clientY;
       updateCamera();
     });
-    renderer.domElement.addEventListener("pointerup", () => { dragging = false; });
+    renderer.domElement.addEventListener("pointerup", event => {
+      placementView?.pointerUp(event);
+      dragging = false;
+    });
+    renderer.domElement.addEventListener("pointercancel", () => {
+      placementView?.cancelDrag();
+      dragging = false;
+    });
     renderer.domElement.addEventListener("wheel", (event) => {
       event.preventDefault();
       cameraState.radius = THREE.MathUtils.clamp(cameraState.radius + event.deltaY * 0.006, 3.4, 10);
@@ -763,13 +818,67 @@
     }
   }
 
+
+  async function restoreDetailed() {
+    const layout = await sessionApi.layout(activeSession.id);
+    if (!window.createAssemblyPlacementView) throw new Error("Không thể tải công cụ gắn vật thể.");
+    restoreVisualAssembly(new Set());
+    if (!placementView) {
+      placementView = window.createAssemblyPlacementView({
+        THREE, camera, root: robotGroup, canvas: renderer.domElement, panel: partsContainer,
+        onAttach: (instanceId, slotId, orientation, version) =>
+          sessionApi.attach(activeSession.id, instanceId, slotId, orientation, version),
+        onDetach: (instanceId, version) => sessionApi.detach(activeSession.id, instanceId, version),
+        onReload: async () => {
+          try {
+            placementView.restore(await sessionApi.layout(activeSession.id));
+            setSyncStatus("Đã khôi phục mô hình từ server.", "saved");
+          } catch (error) { setSyncStatus(error.message, "error"); }
+        },
+        onChange: (next, busy, unsynced) => {
+          if (!next) return;
+          placementLayout = next;
+          activeSession.status = next.status;
+          progressElement.value = next.report.percent;
+          progressValue.textContent = `${next.report.percent}%`;
+          progressCounter.textContent = `${next.report.correctCount}/${next.report.requiredCount} vật thể`;
+          statusElement.textContent = "Tiến độ do server kiểm tra từng vật thể, hướng và bộ phận cha.";
+          if (checkButton) { checkButton.hidden = false; checkButton.disabled = busy; }
+          setSyncStatus(unsynced ? "Chưa đồng bộ; hãy thử lại hoặc tải lại." : "Mô hình đọc từ dữ liệu server.",
+            unsynced ? "loading" : "saved");
+          updateCompleteAvailability();
+        }
+      });
+    }
+    placementView.sync(layout);
+    setCompleteStatus(layout.status === "COMPLETED" ? "Phiên đã hoàn tất, chỉ xem mô hình đã lưu."
+      : "Nhấn Kiểm tra mô hình để xem các vật thể còn thiếu trước khi hoàn tất.");
+    cameraState.target.set(0, .8, 1.5);
+    cameraState.radius = 10;
+    updateCamera();
+  }
+
+  checkButton?.addEventListener("click", async () => {
+    if (!placementLayout || !activeSession) return;
+    try {
+      const report = await sessionApi.checkLayout(activeSession.id);
+      const details = [...report.missingSlots, ...report.errors];
+      setCompleteStatus(`Đã gắn đúng ${report.correctCount}/${report.requiredCount} vật thể bắt buộc.`
+        + (details.length ? ` Còn thiếu hoặc cần sửa: ${details.join("; ")}.` : " Có thể hoàn tất mô hình."),
+        report.complete ? "saved" : "error");
+    } catch (error) { setCompleteStatus(error.message, "error"); }
+  });
+
   renderPartsPanel();
   updateProgress();
   focusRobot();
   enablePointerControls();
   resetButton?.addEventListener("click", resetAssembly);
   completeButton?.addEventListener("click", () => void completeAssembly());
-  window.addEventListener("pagehide", () => setDriveMode(false));
+  window.addEventListener("pagehide", () => {
+    setDriveMode(false);
+    placementView?.dispose();
+  });
   driveToggleButton?.addEventListener("click", () => {
     if (activeSession?.status !== "COMPLETED") return;
     setDriveMode(driveToggleButton.getAttribute("aria-pressed") !== "true");
