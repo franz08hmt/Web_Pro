@@ -412,3 +412,26 @@ ALREADY_PLACED, HAS_DEPENDENTS, SESSION_LOCKED, ASSEMBLY_INCOMPLETE, VALIDATION_
 409 LAYOUT_CONFLICT yêu cầu tải lại; 404 NOT_FOUND cho phiên/vật thể/slot khác quyền;
 403 CSRF_REQUIRED, khách401 theo API; JDBC503 không lộ SQL/stack trace.
 Không nhận owner, điểm, percent, isCorrect hay pose client làm căn cứ xác thực.
+
+### Đợt 8b — hướng có gợi ý và lời giải thích
+
+GET layout trả cho mỗi slot loại linh kiện và danh sách hướng chấp nhận.
+Đây là luyện tập có gợi ý; radio/nút xoay chỉ gửi ý định, JavaBean vẫn quyết định.
+Spec v2 chỉ áp dụng phiên mới; phiên chi tiết cũ giữ spec_id v1. Không có migration mới.
+JSON phiên thêm placedSlotCount/requiredSlotCount; progressPercent cũ giữ nguyên.
+Client DETAILED dùng X/N điểm gắn, GROUP dùng phần trăm chuẩn bị linh kiện.
+
+| Mã từ chối | Câu cho người học (tên lấy trong layout của transaction) |
+| --- | --- |
+| WRONG_COMPONENT | Không thể gắn {vật thể} vào {điểm gắn}: điểm này dành cho loại bộ phận khác. |
+| SLOT_OCCUPIED | {điểm gắn} đã có {vật thể đang gắn}. Hãy tháo vật thể đó trước. |
+| ORIENTATION_NOT_ALLOWED | {vật thể} chưa đúng hướng tại {điểm gắn}. Hãy xoay rồi thử lại. |
+| PARENT_MISSING | Cần gắn {điểm gắn cha} trước khi gắn {vật thể}. |
+| ALREADY_PLACED | {vật thể} đang ở {điểm gắn cũ}. Hãy tháo trước khi chuyển. |
+| HAS_DEPENDENTS | Cần tháo {vật thể con} trước khi tháo {vật thể}. |
+
+NOT_FOUND/404, LAYOUT_CONFLICT/409, SESSION_LOCKED/422 và GROUP_MODE/422 giữ câu chung,
+không nêu tên. Thiếu nhãn dùng câu dự phòng. JSON quote, giao diện textContent, không HTML.
+Phiên đã khóa trả SESSION_LOCKED khi sửa/đổi hướng/tháo/reset, kể cả field sai định dạng;
+phiên còn sửa được trả VALIDATION_ERROR cho hướng ngoài Y0/Y90/Y180/Y270 hoặc thiếu field.
+Request lặp đúng hệt placement đã lưu vẫn trả unchanged, không sửa dữ liệu đã hoàn tất.

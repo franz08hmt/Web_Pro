@@ -162,11 +162,11 @@
                 theo <code>(id, user_id)</code> qua <code>AssemblySessionDB.selectSession()</code>
                 nên chỉ chủ phiên mới xem được, đặt robot và danh sách linh kiện vào request
                 bằng <code>setAttribute</code> rồi <code>forward()</code> sang JSP này. Trạng thái
-                hoàn tất và <code>completed_at</code> chỉ được
+                hoàn tất và thời điểm hoàn tất chỉ được
                 <code>AssemblySessionDB.completeSession()</code> ghi sau khi đối chiếu tập hợp
-                linh kiện bắt buộc với dữ liệu thật trong <code>session_visual_parts</code> (GROUP),
-                hoặc kiểm từng vật thể/hướng/phụ thuộc trong <code>assembly_placements</code> (DETAILED) —
-                trang này không tin số phần trăm do trình duyệt tự tính.
+                linh kiện bắt buộc ở phiên lắp theo nhóm. Với phiên lắp chi tiết, server kiểm
+                từng vật thể: đúng loại, đúng hướng và đã có bộ phận cha.
+                Phiếu này không tin số phần trăm do trình duyệt tự tính.
                 </p>
             </details>
         </main>

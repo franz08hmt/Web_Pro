@@ -921,3 +921,17 @@ FK ghép giữ cùng phiên/spec/loại, UNIQUE giữ một vật thể/slot, ve
 - “Hai request hoàn tất?” → khóa phiên; lần đầu transitioned, lần sau unchanged.
 - “JSP nhận dữ liệu ở đâu?” → setAttribute rồi forward; EL/getter và c:out.
 - “Có kiểm điện thật không?” → không, chỉ cấu hình cơ khí mô phỏng theo bài mẫu.
+
+### Đợt 8b — câu hỏi về hướng và phiên bản
+
+- **Vì sao không sửa cấu hình cũ?** Phiên giữ spec_id, nên sửa v1 sẽ thay căn cứ
+  của kết quả cũ. Seed chỉ thêm v2 khi chưa có: [seed v2:4](../database/seed-assembly-spec-obstacle-avoider-v2.sql#L4).
+- **Phiên mới biết chọn v2 thế nào?** JDBC chọn PUBLISHED có version_no cao nhất
+  rồi lưu vào phiên: [AssemblyPlacementDB.java:31](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L31).
+- **Vì sao kiểm hướng ở server?** Client có thể gửi hướng bất kỳ; bean đối chiếu
+  danh sách của slot: [AssemblyLayout.java:239](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L239),
+  [AssemblySlot.java:182](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblySlot.java#L182).
+- **DB bảo vệ hướng bằng gì?** Placement tham chiếu cặp slot_id/orientation_code
+  đã khai báo: [migration013:87](../database/migrations/013_assembly_placement.sql#L87).
+- **Xoay có chấm ở JS không?** Không. JS hiển thị góc nền cộng góc chọn, rồi gửi
+  orientation; bean chấp nhận mới lưu: [assembly-3d-placement.js:94](../assets/js/assembly-3d-placement.js#L94).

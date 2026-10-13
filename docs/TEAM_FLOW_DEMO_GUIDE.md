@@ -785,3 +785,23 @@ Mẫu A40/40/20 và B30/25/25/20 giữ nguyên. Không có thang điểm cơ kh�
 
 **Hai tab thì sao?** Khóa phiên, kiểm expectedLayoutVersion, rồi ghi và tăng version
 trong một transaction. Tab cũ nhận409 tải lại; complete retry không ghi timestamp lần nữa.
+
+### Đợt 8b — demo xoay trước khi gắn
+
+Chạy seed v2 sau v1. Chỉ phiên mới dùng v2; không dùng phiên30/31 để demo sửa.
+Gắn khung0° → chọn động cơ trái/điểm động cơ trái0° → bị từ chối có tên.
+Dùng E hoặc nút Xoay phải90° → Gắn → server lưu, xanh. Cảm biến cần180°.
+Reload thấy hướng đã lưu; gắn đủ10/10 → hoàn tất và xem phiếu.
+Tư thế đúng đầu tiên trùng v1 vì ry nền đã bù góc; hướng khác được hỗ trợ
+không có nghĩa mô phỏng điện hoặc xác nhận robot thật an toàn.
+
+| Điểm gắn | Hướng chấp nhận | Căn cứ bài mẫu |
+| --- | --- | --- |
+| Khung | 0° | Nền cố định |
+| Động cơ trái / phải | 90° / 270° | Mã hướng hai bên đối xứng, bù tư thế gốc v1 |
+| Hai bánh | 0°,180° | Bánh đối xứng |
+| Arduino | 0° | Giữ tư thế cổng USB của v1 |
+| L298N | 0°,180° | Hàng ốc có thể quay hai phía |
+| Hộp pin | 90°,270° | Nằm ngang ở đuôi xe |
+| Bánh tự do | 0°,90°,180°,270° | Xoay mọi hướng |
+| Cảm biến | 180° | Hai mắt giữ hướng trước của v1 |

@@ -239,7 +239,7 @@ Node và JUnit chỉ là công cụ kiểm tra khi phát triển, không phải 
 | `business/` | 53 | JavaBean + luật nghiệp vụ |
 | `controller/` | 37 | `@WebServlet`; 18 forward sang JSP, 19 trả JSON |
 | `data/` | 23 | `ConnectionPool`, `DBUtil`, `DatabaseLifecycleListener` và các `XxxDB` |
-| `util/` | 9 | `SessionUtil`, `PasswordUtil`, `JsonUtil`, `ResponseUtil`, `ValidationUtil`, các `...FormUtil` |
+| `util/` | 10 | Tiện ích request/JSON/form và exception giữ layout đã bị từ chối |
 | `filter/` | 1 | `RequestContextFilter` (ngoài slide) |
 
 ## 15. Phòng lắp ráp từng vật thể có kiểm chứng
@@ -262,3 +262,10 @@ tài nguyên, phục hồi autoCommit và trả connection. SQLException không 
 GROUP cũ không đổi mode, không chấm lại; DETAILED không đi đường visual-parts cũ.
 Không thêm thang điểm. COMPLETED vẫn là bằng chứng nhiệm vụ A/B theo luật cũ.
 Năm bảng mới, sáu bean mới; không thêm DAO/Service/ORM hoặc dependency frontend.
+
+Đợt8b: spec v2 thêm hướng lắp rời rạc, không sửa v1/schema. JS đặt góc tuyệt đối
+slot.ry + góc hướng cho preview và kết quả, không cộng góc hai lần. Sai hướng vẫn
+bị JavaBean từ chối dù vị trí đúng; FK slot/hướng bảo vệ dữ liệu đã lưu.
+AssemblyPlacementException chỉ giữ layout vừa được kiểm trong transaction để Servlet
+gọi messageFor(code, instanceId, slotId); không truy vấn lại hoặc chứa luật nghiệp vụ.
+Tiến độ DETAILED đọc hai COUNT trong truy vấn phiên owner; GROUP giữ dữ kiện chuẩn bị.

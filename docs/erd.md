@@ -37,6 +37,13 @@ Seed chỉ INSERT một phiên bản mới; chạy lại không thay bản đã 
 Chu trình cha được bean kiểm; không dùng CHECK tham chiếu cột AUTO_INCREMENT
 do giới hạn MySQL. FK ghép vẫn bắt buộc cha cùng spec và placement đúng loại.
 
+Đợt8b thêm seed spec v2, không có migration hoặc thay đổi schema. Cùng10 slot/toạ độ,
+góc ry nền bù hướng đầu tiên để tư thế đúng trùng v1. Orientation vẫn là từng dòng
+trong assembly_slot_orientations; FK tổ hợp giữ đúng slot/hướng của spec phiên.
+V1 và placements cũ bất biến; phiên mới chọn version_no cao nhất còn PUBLISHED.
+Danh sách/chi tiết phiên đọc COUNT placement và COUNT slot bắt buộc cùng spec qua
+truy vấn gốc có user_id; không thêm truy vấn Java riêng cho từng hàng để lấy hai số này.
+
 ## Chẩn đoán và mẫu B — migration 010
 
 ```mermaid
