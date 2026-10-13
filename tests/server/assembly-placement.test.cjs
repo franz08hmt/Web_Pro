@@ -56,6 +56,15 @@ test("rejection copy uses the checked transaction layout and escapes response an
   assert.match(servlet, /JsonUtil\.quote\(message\)/);
   checkJava(fs.readFileSync(path.join(java, "util/AssemblyPlacementException.java"), "utf8"), "placement error");
 });
+
+test("locked layouts normalize parse failures without masking ownership or editable validation", () => {
+  const source = fs.readFileSync(path.join(java, "controller/AssemblySessionServlet.java"), "utf8");
+  assert.match(source, /current != null && !\(e instanceof AssemblyPlacementException\)/);
+  assert.match(source, /current\.isCanReset\(\)/);
+  assert.match(source, /current\.isCanEdit\(\)/);
+  assert.match(source, /error\(response, "SESSION_LOCKED"/);
+  assert.match(source, /direction\.matches\("Y0\|Y90\|Y180\|Y270"\)/);
+});
 test("placement interaction sends intentions and separates object dragging from camera", () => {
   const js = fs.readFileSync(path.join(root, "assets/js/assembly-3d-placement.js"), "utf8");
   assert.match(js, /THREE\.Raycaster/);

@@ -19,6 +19,7 @@ import vn.edu.webpro.robotlab.util.JsonUtil;
 import vn.edu.webpro.robotlab.business.AssemblyLayout;
 import vn.edu.webpro.robotlab.data.AssemblyPlacementDB;
 import vn.edu.webpro.robotlab.util.AssemblyPlacementJson;
+import vn.edu.webpro.robotlab.util.AssemblyPlacementException;
 import vn.edu.webpro.robotlab.util.ResponseUtil;
 import vn.edu.webpro.robotlab.util.SessionUtil;
 import vn.edu.webpro.robotlab.util.ValidationUtil;
@@ -410,9 +411,10 @@ public class AssemblySessionServlet extends HttpServlet {
         }
         long intentInstanceId = 0;
         long intentSlotId = 0;
+        AssemblyLayout current = null;
         try {
             if ("progress".equals(segments[1])) {
-                AssemblyLayout current = AssemblyPlacementDB.selectLayout(id(segments[0]), user.getId());
+                current = AssemblyPlacementDB.selectLayout(id(segments[0]), user.getId());
                 if (current == null || !"DETAILED".equals(current.getMode())) {
                     return false;
                 }
@@ -422,6 +424,13 @@ public class AssemblySessionServlet extends HttpServlet {
                 return true;
             }
             long sessionId = id(segments[0]);
+            if (("POST".equals(method) && "placements".equals(segments[1]))
+                    || ("DELETE".equals(method) && "placements".equals(segments[1]))) {
+                current = AssemblyPlacementDB.selectLayout(sessionId, user.getId());
+                if (current == null) {
+                    throw new IllegalArgumentException("NOT_FOUND");
+                }
+            }
             if ("GET".equals(method) && segments.length == 2 && "layout".equals(segments[1])) {
                 sendLayout(response, AssemblyPlacementDB.selectLayout(sessionId, user.getId()));
             } else if ("POST".equals(method) && segments.length == 2 && "check".equals(segments[1])) {
@@ -448,9 +457,16 @@ public class AssemblySessionServlet extends HttpServlet {
                 throw new IllegalArgumentException("VALIDATION_ERROR");
             }
         } catch (IllegalArgumentException e) {
+            // Lỗi định dạng không che thông báo khóa; lỗi quyền vẫn giữ 404.
+            if (current != null && !(e instanceof AssemblyPlacementException)
+                    && !"NOT_FOUND".equals(e.getMessage())
+                    && !("progress".equals(segments[1]) ? current.isCanReset() : current.isCanEdit())) {
+                error(response, "SESSION_LOCKED", intentInstanceId, intentSlotId);
+                return true;
+            }
             AssemblyLayout rejected = new AssemblyLayout();
-            if (e instanceof vn.edu.webpro.robotlab.util.AssemblyPlacementException) {
-                rejected = ((vn.edu.webpro.robotlab.util.AssemblyPlacementException) e).getLayout();
+            if (e instanceof AssemblyPlacementException) {
+                rejected = ((AssemblyPlacementException) e).getLayout();
             }
             error(response, e.getMessage(), intentInstanceId, intentSlotId, rejected);
         }
@@ -501,7 +517,11 @@ public class AssemblySessionServlet extends HttpServlet {
         if (colon < 0 || start >= body.length() || body.charAt(start) != '"') {
             throw new IllegalArgumentException("VALIDATION_ERROR");
         }
-        return JsonUtil.stringField(body, "orientation");
+        String direction = JsonUtil.stringField(body, "orientation");
+        if (!direction.matches("Y0|Y90|Y180|Y270")) {
+            throw new IllegalArgumentException("VALIDATION_ERROR");
+        }
+        return direction;
     }
 
     private static int idVersion(long value) {
