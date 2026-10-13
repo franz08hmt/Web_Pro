@@ -434,3 +434,13 @@ Phiên DETAILED COMPLETED được nộp làm bằng chứng nhiệm vụ mẫuA
 Review chính có các findings reset/version/touch/tách hình đã sửa và chạy lại.
 QA8081 đã dọn; còn giới hạn Firefox/Safari, cảm ứng thật, screen reader, nộp mẫuB mới
 và spec archived trên server thật. Không thực hiện các phần mở rộng tùy chọn.
+
+## Đợt 8b — sửa hướng, thông báo và tiến độ
+
+M1–M5 đã commit local: seed v2 additive (không migration), preview góc tuyệt đối,
+lời giải thích từ layout transaction, SESSION_LOCKED nhất quán, X/N chi tiết và chữ phiếu.
+Baseline168/93 →172Node/97JUnit; clean package JDK17 xanh. QA phiên mới33 hoàn tất10/10,
+Chrome Q/E/nút/radio/390, owner/CSRF/version/complete đồng thời và hash43 bảng cũ giữ nguyên.
+M6 đã chốt theo quyết định người dùng: giữ tư thế v1, v2 không đổi, không tạo v3;
+Y90/Y270 là quy ước trái/phải của mô hình giản lược, hình khối không mô phỏng chính xác
+chiều trục động cơ. Bằng chứng/giới hạn ở PHASE8_ASSEMBLY_QA_REPORT.md mục8b.

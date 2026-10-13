@@ -1,5 +1,7 @@
 -- Spec v2 độc lập; chạy lại không sửa v1, bản đã công bố hoặc phiên cũ.
 -- Góc nền bù hướng đầu tiên để tư thế đúng trùng v1; CHECK cho phép [-6.284, 6.284].
+-- Y90/Y270 là quy ước hướng lắp đối xứng trái/phải của mô hình 3D giản lược;
+-- hình khối động cơ không mô phỏng chính xác chiều trục.
 START TRANSACTION;
 SELECT id FROM robots WHERE id = 'obstacle-avoider' FOR UPDATE;
 SET @create_assembly_spec_v2 = NOT EXISTS (

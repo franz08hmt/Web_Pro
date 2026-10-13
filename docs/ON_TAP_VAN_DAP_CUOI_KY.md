@@ -924,8 +924,12 @@ FK ghép giữ cùng phiên/spec/loại, UNIQUE giữ một vật thể/slot, ve
 
 ### Đợt 8b — câu hỏi về hướng và phiên bản
 
+Khi trình bày: “Y90/Y270 là quy ước hướng lắp đối xứng trái/phải của mô hình 3D giản lược;
+hình khối động cơ không mô phỏng chính xác chiều trục.” Vì vậy, chỉ nói server kiểm
+đúng quy ước hướng trong cấu hình; không dùng hình khối để xác nhận chiều trục thật.
+
 - **Vì sao không sửa cấu hình cũ?** Phiên giữ spec_id, nên sửa v1 sẽ thay căn cứ
-  của kết quả cũ. Seed chỉ thêm v2 khi chưa có: [seed v2:4](../database/seed-assembly-spec-obstacle-avoider-v2.sql#L4).
+  của kết quả cũ. Seed chỉ thêm v2 khi chưa có: [seed v2:6](../database/seed-assembly-spec-obstacle-avoider-v2.sql#L6).
 - **Phiên mới biết chọn v2 thế nào?** JDBC chọn PUBLISHED có version_no cao nhất
   rồi lưu vào phiên: [AssemblyPlacementDB.java:31](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L31).
 - **Vì sao kiểm hướng ở server?** Client có thể gửi hướng bất kỳ; bean đối chiếu

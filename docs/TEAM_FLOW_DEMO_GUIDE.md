@@ -794,11 +794,14 @@ Dùng E hoặc nút Xoay phải90° → Gắn → server lưu, xanh. Cảm biế
 Reload thấy hướng đã lưu; gắn đủ10/10 → hoàn tất và xem phiếu.
 Tư thế đúng đầu tiên trùng v1 vì ry nền đã bù góc; hướng khác được hỗ trợ
 không có nghĩa mô phỏng điện hoặc xác nhận robot thật an toàn.
+Y90/Y270 là quy ước hướng lắp đối xứng trái/phải của mô hình 3D giản lược;
+hình khối động cơ không mô phỏng chính xác chiều trục. Khi demo, giải thích
+đây là kiểm quy ước hướng của bài mẫu, không phải kiểm chiều trục động cơ thật.
 
 | Điểm gắn | Hướng chấp nhận | Căn cứ bài mẫu |
 | --- | --- | --- |
 | Khung | 0° | Nền cố định |
-| Động cơ trái / phải | 90° / 270° | Mã hướng hai bên đối xứng, bù tư thế gốc v1 |
+| Động cơ trái / phải | 90° / 270° | Quy ước trái/phải của mô hình giản lược, bù tư thế v1 |
 | Hai bánh | 0°,180° | Bánh đối xứng |
 | Arduino | 0° | Giữ tư thế cổng USB của v1 |
 | L298N | 0°,180° | Hàng ốc có thể quay hai phía |

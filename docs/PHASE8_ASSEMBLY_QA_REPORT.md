@@ -165,3 +165,125 @@ maven-test/package.txt, node-final.txt, migration/live/browser/extra/final-brows
 Đã dừng đúng process QA, kiểm cổng8081 không còn LISTEN và xóa CATALINA_BASE,
 cấu hình/log tạm. Context trình duyệt đã đóng, không lưu cookie/mật khẩu ra file.
 Log runtime QA cuối không có exception ứng dụng. Không dừng Tomcat8080 của người dùng.
+
+## Đợt 8b — sửa nhỏ sau review, 13/10/2026
+
+Baseline HEAD6d8a152, nhánh integration/fullstack-v2 ahead8. Đã kiểm account.js
+không có diff nội dung trước khi sửa theo quyền riêng trong prompt. Bảo vệ bằng
+SHA256 sáu file WIP còn lại và bốn file untracked; không sửa/stage chúng.
+
+### Quyết định dữ liệu và tư thế
+
+Không có migration mới, không sửa schema/migration013 hoặc seed v1. Seed v2 thêm
+version_no2 PUBLISHED trong transaction, khóa robot, NOT EXISTS và cờ tạo mới.
+Chạy hai lần trên DB local:10 slot,17 hàng hướng, lần hai hash toàn DB không đổi.
+Các slot giữ code/label/parent/component/order/xyz/rx/rz của v1, chỉ bù ry theo
+hướng đầu tiên. CHECK góc [-6.284,6.284] cho phép ry âm; không cần cộng2π.
+
+| Slot | Hướng cuối cùng | Lý do/giới hạn |
+| --- | --- | --- |
+| chassis | Y0 | Nền cố định |
+| motor-left | Y90 | Mã hướng trái; ry bù90° để giữ tư thế v1 |
+| motor-right | Y270 | Mã hướng phải; ry bù270° để giữ tư thế v1 |
+| wheel-left, wheel-right | Y0,Y180 | Bánh đối xứng |
+| uno | Y0 | Giữ tư thế USB của v1 |
+| driver | Y0,Y180 | Hai phía hàng ốc |
+| battery | Y90,Y270 | Hộp pin ngang đuôi xe |
+| caster | Y0,Y90,Y180,Y270 | Bánh tự do |
+| sensor | Y180 | Giữ hai mắt cảm biến theo tư thế trước v1 |
+
+Góc lưu DECIMAL(8,4) theo schema013, nên tư thế bù có sai số lượng tử dưới0,00005
+radian so với v1; preview/snap/reload khớp chính xác slot.ry + góc đã chọn.
+Không tăng độ chính xác schema hoặc sửa bản công bố để loại sai số không nhìn thấy.
+
+### Giới hạn mô hình
+
+Y90/Y270 là quy ước hướng lắp đối xứng trái/phải của mô hình 3D giản lược;
+hình khối động cơ không mô phỏng chính xác chiều trục. Trong hình khối v1/v2,
+hai trục đều gần−X theo phép kiểm vector trong Chrome. Không dùng hình này
+để xác nhận chiều lắp động cơ thật hoặc kết luận robot thật vận hành an toàn.
+
+Người dùng đã chốt giữ tư thế hình ảnh giống v1, không sửa dữ liệu v2 đã PUBLISHED
+và không tạo v3. Chỉ sửa comment/lời giải thích cho đúng giới hạn. Ảnh đối chiếu:
+`qa-evidence/phase8b/v2-completed-pose.png` (đường dẫn thực ngoài repo:
+`D:/Web-Pro/qa-evidence/phase8b/v2-completed-pose.png`); số liệu ở pose-results.json.
+Thư mục qa-evidence không được stage hoặc commit. Finding đã được chốt theo
+quyết định sản phẩm này; M6 được tiếp tục, không thay đổi tư thế hoặc luật chấm.
+Sau quyết định, chạy lại Node172/172 và JUnit97/97 JDK17, không fail/skip.
+Đối chiếu seed sau khi bỏ comment: SQL giữ nguyên; không chạy lại ghi DB.
+Hash kiểm lại dữ liệu cũ43 bảng và10 file được bảo vệ đều giữ nguyên.
+
+### Lỗi và cách sửa
+
+- M1: Y0 mặc định không còn đúng cho mọi slot; preview dùng góc tuyệt đối, không xoay cộng dồn.
+- M2: messageFor có tên vật thể/điểm/cha/con từ chính layout kiểm trong transaction.
+  Exception nhỏ ở util mang dữ kiện bị từ chối; Servlet quote, JS textContent.
+  NOT_FOUND/version/khóa/GROUP giữ câu chung; thiếu label dùng câu dự phòng.
+- M3: tái hiện WAR cũ: đổi hướng với ID số trả422 SESSION_LOCKED, ID chuỗi trả422
+  VALIDATION_ERROR vì parser chạy trước luật khóa. Đã chuẩn hóa lỗi parse khi layout
+  khóa; phiên còn sửa được vẫn kiểm định dạng. Retry đúng hệt vẫn unchanged và không ghi.
+- M4: COUNT placement/slot bắt buộc trong SELECT phiên đã lọc user_id; thêm getter/setter
+  và hai field JSON. DETAILED hiện X/N, GROUP giữ phần trăm chuẩn bị. Ẩn dòng bước cũ
+  riêng ở DETAILED; cache-busting cập nhật mọi nơi nạp account/personalization.
+- M5: phiếu bỏ tên bảng/enum, giữ giải thích server và giới hạn mô phỏng; tài liệu
+  API/ERD/kiến trúc/demo/vấn đáp cập nhật. Không đổi field/form/route hay rubric.
+
+### Bằng chứng thực chạy
+
+| Ca | Kết quả | HTTP |
+| --- | --- | --- |
+| Tạo phiên mới33, spec v2,0/10 | Đạt | 201/200 |
+| Khung Y0, chi tiết/danh sách1/10 | Đạt | 200 |
+| Động cơ trái Y0, thông báo có tên | Đạt, ORIENTATION_NOT_ALLOWED | 422 |
+| Động cơ trái Y90 bằng E/nút | Đạt, preview và snap cùng góc | 200 |
+| Bánh tại Arduino, thông báo nêu hai tên | Đạt, WRONG_COMPONENT | 422 |
+| Cảm biến Y0/Y180 | Từ chối/được lưu qua radio | 422/200 |
+| Thiếu cha, chiếm chỗ, đã gắn, tháo cha | Đạt, lời giải thích có tên | 422 |
+| Mọi hướng trong slot nhiều hướng | Được lưu trên phiên QA chưa hoàn tất | 200 |
+| Hướng Y45/null trên phiên đang sửa | VALIDATION_ERROR | 422 |
+| CSRF thiếu, USER khác GET/POST, version cũ | Đạt | 403/404/409 |
+| Kiểm10/10 rồi hai complete đồng thời | Một transitioned, một unchanged | 200 |
+| Đổi hướng/tháo/reset sau hoàn tất, kể cả field lỗi | SESSION_LOCKED | 422 |
+| Retry placement đúng hệt sau hoàn tất | Không đổi version/dữ liệu | 200 |
+| Phiếu33:10/10, hướng90/180/270°, chữ mới | Đạt, no-store | 200 |
+| Phiếu30/31 và layout v1:10/10 | Đạt, không chấm lại | 200 |
+| Account/index:1/10; GROUP tài khoản practice giữ% | Đạt trên Chrome thật | 200 |
+| GET tasks/account/learning-profile/wiring/diagnosis/robots | Đạt | 200 |
+
+Baseline168 Node/93 JUnit →172 Node/97 JUnit,0 fail/error/skip.
+JUnit mới có hướng đơn/nhiều, sáu mã lỗi có tên, không lộ label cho lỗi chung,
+hai count JSON và phần trăm GROUP không đổi. Node test-first đã đỏ ở M1/M3/M4;
+JUnit M2 đỏ do chưa có overload. Guard Java120/JSP140/course/CSRF/owner giữ nguyên.
+Maven test và clean package JDK17 xanh, dùng robotlab.buildDirectory ngoài repo
+để không clean target mà IntelliJ đang dùng. Quiet test cuối97/97 qua surefire XML.
+Lệnh node --test tests/server trên Node24.13.0/Windows báo MODULE_NOT_FOUND cho thư mục;
+đã chạy đủ test bằng glob chuẩn của npm: node --test tests/server/**/*.test.cjs,
+172/172, không skip hay nới guard. Lỗi CLI được giữ riêng trong evidence.
+
+Chrome headless thật18 kiểm tra: Q/E/nút/radio, từ chối/snap/reload, đo góc từ scene,
+account/index/GROUP,390px không tràn, không pageerror/asset404. API/SQL vòng đầu
+24 ca và vòng cuối68 ca ghi riêng từng ca: tổng110 kiểm tra HTTP/SQL/Chrome đã qua.
+Script QA từng nhầm vị trí mã CSRF ở envelope,
+và thử stale trên request idempotent. Đã sửa script để kiểm đúng envelope và
+stale trên ý định khác; không sửa ứng dụng hoặc nới test để khớp các nhầm lẫn đó.
+Không tính assertion version complete viết quá rộng ở bản script đầu thành bằng chứng.
+Sau QA, hash các dòng đã có trước seed trong43 bảng giữ nguyên; spec v1 và toàn bộ
+phiên/placements30/31 có hash riêng giữ nguyên. Sáu WIP+bốn untracked giữ nguyên byte.
+
+Dữ liệu mới: spec v2,10 slot/18 hướng chính thức; phiên QA33 của demo student COMPLETED10/10.
+Không tạo tài khoản, nhiệm vụ, quiz hay đơn hàng. Không sửa phiên32 hoặc dữ liệu cũ.
+Runtime QA8081 đã dừng đúng PID, cổng không LISTEN, CATALINA_BASE/config/log tạm đã xóa;
+context trình duyệt đóng, không lưu cookie/mật khẩu. Log không có exception ứng dụng.
+Evidence ngoài Git: D:/Web-Pro/qa-evidence/phase8b/ gồm log test, JSON hash/HTTP,
+account-1-of-10.png, v2-desktop/390.png, receipt-v2-desktop/390.png và ảnh tư thế.
+Chưa kiểm Firefox/Safari, cảm ứng vật lý/screen reader; hồi quy cũ chỉ GET và test,
+không tạo bài nộp mới hay mua hàng. Giới hạn tư thế động cơ đã được người dùng chốt ở trên.
+
+| Mốc | Commit |
+| --- | --- |
+| M1 | 7047f1a fix(assembly): add immutable v2 spec with meaningful orientations |
+| M2 | d3f88a3 fix(assembly): explain rejected placements with local part labels |
+| M3 | 13e4e9b fix(assembly): report locked layout mutations consistently |
+| M4 | 2a80c82 fix(assembly): show verified slot counts in session overviews |
+| M5 | c1e65d9 fix(assembly): clarify receipt copy and document v2 orientation flow |
+| M6 | Hoàn tất; fix(assembly): finalize v2 QA and model limits (hash xem git log) |

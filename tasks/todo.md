@@ -279,3 +279,14 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] M5: report/complete/khóa/phiếu JSP.
 - [x] M6: QA thật/browser/concurrency/hồi quy/cleanup (giới hạn ghi trong báo cáo Đợt8).
 
+## Đợt 8b — vòng sửa nhỏ sau review
+
+- [x] M1: spec v2 có hướng, preview/snap dùng góc tuyệt đối, README và test.
+- [x] M2: lời giải thích nêu tên từ layout, câu chung không lộ tên, quote/textContent.
+- [x] M3: tìm nguyên nhân parse trước khóa và chuẩn hóa SESSION_LOCKED, giữ retry.
+- [x] M4: count owner/spec trong SELECT, JSON và DETAILED X/N, GROUP%, cache-busting.
+- [x] M5: dọn chữ phiếu, API/ERD/kiến trúc/demo/vấn đáp theo code.
+- [x] M6 kiểm chứng:172 Node/97 JUnit/package, HTTP/SQL/Chrome, hash và cleanup8081.
+- [x] M6 chốt: người dùng chọn giữ tư thế v1/v2, không tạo v3; ghi rõ giới hạn hình khối động cơ.
+- [x] M6 bàn giao: test xanh, file WIP giữ nguyên; commit local đúng phạm vi, không push.
+

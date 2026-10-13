@@ -418,6 +418,9 @@ Không nhận owner, điểm, percent, isCorrect hay pose client làm căn cứ 
 GET layout trả cho mỗi slot loại linh kiện và danh sách hướng chấp nhận.
 Đây là luyện tập có gợi ý; radio/nút xoay chỉ gửi ý định, JavaBean vẫn quyết định.
 Spec v2 chỉ áp dụng phiên mới; phiên chi tiết cũ giữ spec_id v1. Không có migration mới.
+Y90/Y270 là quy ước hướng lắp đối xứng trái/phải của mô hình 3D giản lược;
+hình khối động cơ không mô phỏng chính xác chiều trục. Giữ tư thế hình ảnh v1,
+không sửa dữ liệu v2 đã công bố và không tạo v3 trong đợt này.
 JSON phiên thêm placedSlotCount/requiredSlotCount; progressPercent cũ giữ nguyên.
 Client DETAILED dùng X/N điểm gắn, GROUP dùng phần trăm chuẩn bị linh kiện.
 
