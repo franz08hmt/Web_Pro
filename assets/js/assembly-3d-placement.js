@@ -85,14 +85,22 @@ window.createAssemblyPlacementView = function (options) {
   function choose(instanceId) {
     selectedInstance = String(instanceId);
     selectedObject = objects.get(selectedInstance);
+    previewOrientation();
     message("Đã chọn vật thể. Chọn điểm gắn và hướng rồi nhấn Gắn.", "preview");
+  }
+
+  function previewOrientation() {
+    if (!selectedObject) return;
+    const slot = layout?.spec.slots.find(item => String(item.id) === selectedSlot);
+    const angle = Number(orientation.slice(1)) * Math.PI / 180;
+    selectedObject.rotation.set(slot?.rx || 0, (slot?.ry || 0) + angle, slot?.rz || 0);
   }
 
   function rotate(delta) {
     if (!selectedInstance || busy || !layout?.canEdit) return;
     const codes = ["Y0", "Y90", "Y180", "Y270"];
     orientation = codes[(codes.indexOf(orientation) + delta + 4) % 4];
-    if (selectedObject) selectedObject.rotation.y += delta * Math.PI / 2;
+    previewOrientation();
     message(`Hướng xem trước: ${orientation.slice(1)}°. Chưa đồng bộ.`, "preview");
     directions.querySelectorAll("input").forEach(input => { input.checked = input.value === orientation; });
   }
@@ -223,6 +231,7 @@ window.createAssemblyPlacementView = function (options) {
         `${slot.label} · hướng ${slot.orientations.map(code => code.slice(1) + "°").join(", ")}`,
         selectedSlot === String(slot.id), () => {
           selectedSlot = String(slot.id);
+          previewOrientation();
           highlight(slot.id, 0xfbbf24);
           message("Điểm gắn xem trước; server chưa xác nhận.", "preview");
         });
@@ -253,6 +262,7 @@ window.createAssemblyPlacementView = function (options) {
     const markerHit = raycaster.intersectObjects([...markers.values()], false)[0];
     if (markerHit && selectedInstance) {
       selectedSlot = markerHit.object.userData.slotId;
+      previewOrientation();
       highlight(selectedSlot, 0xfbbf24);
       message("Đã chọn điểm gắn. Nhấn Gắn để gửi server.", "preview");
       return true;
@@ -282,6 +292,7 @@ window.createAssemblyPlacementView = function (options) {
         if (d < distance) { distance = d; nearest = slot; }
       }
       selectedSlot = nearest ? String(nearest.id) : null;
+      previewOrientation();
       highlight(selectedSlot, 0xfbbf24);
       message(nearest ? `Xem trước: ${nearest.label}. Chưa đồng bộ.` : "Kéo gần một điểm gắn hoặc hủy chọn.", "preview");
     }

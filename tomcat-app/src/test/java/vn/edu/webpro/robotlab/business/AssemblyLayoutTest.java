@@ -145,4 +145,22 @@ class AssemblyLayoutTest {
         assertEquals(1, l.getInstances().get(0).getInstanceNo());
         assertEquals(2, l.getInstances().get(1).getInstanceNo());
     }
+
+    @Test void v2OrientationsRequireRotationAndAcceptEveryDeclaredAlternative() {
+        AssemblyLayout l = layout();
+        place(l, 1, 1);
+        AssemblySlot slot = l.getSpec().findSlot(2);
+        slot.getOrientations().clear();
+        slot.getOrientations().add("Y90");
+        assertEquals("ORIENTATION_NOT_ALLOWED", l.validateAttach(2, 2, "Y0", 1));
+        assertEquals("", l.validateAttach(2, 2, "Y90", 1));
+        slot.getOrientations().add("Y270");
+        assertEquals("", l.validateAttach(2, 2, "Y270", 1));
+        assertEquals("ORIENTATION_NOT_ALLOWED", l.validateAttach(2, 2, "Y180", 1));
+        slot.getOrientations().add("Y0");
+        slot.getOrientations().add("Y180");
+        for (String direction : slot.getOrientations()) {
+            assertEquals("", l.validateAttach(2, 2, direction, 1));
+        }
+    }
 }

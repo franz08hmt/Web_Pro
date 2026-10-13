@@ -94,3 +94,28 @@ test("preparation reset keeps GROUP behavior and sends version for DETAILED", ()
   assert.match(main, /sessionApi\.resetProgress\(activeSession\.id\)/);
   assert.match(main, /window\.confirm/);
 });
+
+test("spec v2 is additive idempotent and requires real discrete rotation", () => {
+  const seed = fs.readFileSync(path.join(root,
+    "database/seed-assembly-spec-obstacle-avoider-v2.sql"), "utf8");
+  assert.match(seed, /START TRANSACTION/);
+  assert.match(seed, /FOR UPDATE/);
+  assert.match(seed, /version_no = 2/);
+  assert.match(seed, /@create_assembly_spec_v2/);
+  assert.match(seed, /NOT EXISTS/);
+  assert.doesNotMatch(seed, /^\s*(?:UPDATE|DELETE|REPLACE|DROP|TRUNCATE)\b/im);
+  assert.match(seed, /'motor-left'[\s\S]*'Y90'/);
+  assert.match(seed, /'motor-right'[\s\S]*'Y270'/);
+  assert.match(seed, /'sensor'[\s\S]*'Y180'/);
+  assert.match(seed, /COMMIT/);
+  const v1 = fs.readFileSync(path.join(root, "database/seed-assembly-spec-obstacle-avoider.sql"), "utf8");
+  const angles = { chassis: 0, "motor-left": 90, "motor-right": 270, "wheel-left": 0,
+    "wheel-right": 0, uno: 0, driver: 0, battery: 90, caster: 0, sensor: 180 };
+  for (const [code, degrees] of Object.entries(angles)) {
+    const row = new RegExp(`'${code}',[^;]*?TRUE,\\s*([-\\d.,\\s]+?)\\s*(?:WHERE|FROM)`);
+    const oldPose = v1.match(row)[1].split(",").map(Number);
+    const newPose = seed.match(row)[1].split(",").map(Number);
+    for (const index of [0, 1, 2, 3, 5, 6]) assert.equal(newPose[index], oldPose[index], code);
+    assert.ok(Math.abs(newPose[4] + degrees * Math.PI / 180 - oldPose[4]) < 1e-9, code);
+  }
+});

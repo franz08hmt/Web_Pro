@@ -213,6 +213,10 @@ SOURCE D:/duong-dan/robot-engine-website/database/seed.sql;
 
 ### Bước 4. Kiểm tra bằng `/api/health`
 
+Sau các seed robot, chạy seed cấu hình lắp ráp theo thứ tự:
+`seed-assembly-spec-obstacle-avoider.sql` rồi `seed-assembly-spec-obstacle-avoider-v2.sql`.
+Chạy lại không sửa cấu hình đã công bố hoặc các phiên cũ.
+
 Chạy Tomcat rồi mở `http://localhost:8080/api/health`:
 
 | Kết quả | Nguyên nhân thường gặp | Cách xử lý |
@@ -371,6 +375,8 @@ Sau migration012, chạy `database/migrations/013_assembly_placement.sql`, rồi
 Cần quyền CREATE/ALTER; không tăng quyền tài khoản ứng dụng để ép chạy.
 013 thêm năm bảng và mode/spec/version của phiên; không chuyển đổi phiên cũ.
 Seed thêm spec v1 của obstacle-avoider với10 điểm gắn; chạy lại không sửa bản cũ.
+Sau seed v1, chạy `database/seed-assembly-spec-obstacle-avoider-v2.sql`.
+Phiên lắp chi tiết cũ giữ v1; phiên mới chọn spec v2 có kiểm hướng. Không có migration mới.
 Không tạo tài khoản hay đổi components/robot/quiz/nhiệm vụ bằng seed này.
 
 Phiên mới của robot có spec dùng khay từng vật thể, kéo hoặc chọn-gắn, xoay90°,
