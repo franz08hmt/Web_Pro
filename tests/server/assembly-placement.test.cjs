@@ -46,6 +46,16 @@ test("placement routes stay in Servlet with session CSRF and owner-scoped locked
     checkJava(fs.readFileSync(path.join(java, file), "utf8"), file);
   }
 });
+
+test("rejection copy uses the checked transaction layout and escapes response and browser text", () => {
+  const servlet = fs.readFileSync(path.join(java, "controller/AssemblySessionServlet.java"), "utf8");
+  const db = fs.readFileSync(path.join(java, "data/AssemblyPlacementDB.java"), "utf8");
+  assert.match(db, /AssemblyPlacementException\(reason, layout\)/);
+  assert.match(servlet, /getLayout\(\)/);
+  assert.match(servlet, /layout\.messageFor\(code, instanceId, slotId\)/);
+  assert.match(servlet, /JsonUtil\.quote\(message\)/);
+  checkJava(fs.readFileSync(path.join(java, "util/AssemblyPlacementException.java"), "utf8"), "placement error");
+});
 test("placement interaction sends intentions and separates object dragging from camera", () => {
   const js = fs.readFileSync(path.join(root, "assets/js/assembly-3d-placement.js"), "utf8");
   assert.match(js, /THREE\.Raycaster/);

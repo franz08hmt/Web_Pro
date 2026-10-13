@@ -314,6 +314,69 @@ public class AssemblyLayout implements Serializable {
     }
 
     /** Lý do cụ thể cho người học; không suy ra nguy cơ điện. */
+    public String messageFor(String code, long instanceId, long slotId) {
+        if (!"WRONG_COMPONENT".equals(code) && !"SLOT_OCCUPIED".equals(code)
+                && !"ORIENTATION_NOT_ALLOWED".equals(code) && !"PARENT_MISSING".equals(code)
+                && !"ALREADY_PLACED".equals(code) && !"HAS_DEPENDENTS".equals(code)) {
+            return messageFor(code);
+        }
+        AssemblyInstance item = findInstance(instanceId);
+        AssemblySlot slot = spec.findSlot(slotId);
+        if (item == null || !hasLabel(item.getLabel())) {
+            return messageFor(code);
+        }
+        String name = item.getLabel();
+        if ("HAS_DEPENDENTS".equals(code)) {
+            AssemblyPlacement placed = findPlacement(instanceId);
+            if (placed != null) {
+                for (AssemblySlot child : spec.getSlots()) {
+                    AssemblyPlacement childPlaced = atSlot(child.getId());
+                    if (child.getParentSlotId() == placed.getSlotId() && childPlaced != null) {
+                        AssemblyInstance dependent = findInstance(childPlaced.getInstanceId());
+                        if (dependent != null && hasLabel(dependent.getLabel())) {
+                            return "Cần tháo " + dependent.getLabel() + " trước khi tháo " + name + ".";
+                        }
+                    }
+                }
+            }
+            return messageFor(code);
+        }
+        if (slot == null || !hasLabel(slot.getLabel())) {
+            return messageFor(code);
+        }
+        String target = slot.getLabel();
+        if ("WRONG_COMPONENT".equals(code)) {
+            return "Không thể gắn " + name + " vào " + target + ": điểm này dành cho loại bộ phận khác.";
+        }
+        if ("ORIENTATION_NOT_ALLOWED".equals(code)) {
+            return name + " chưa đúng hướng tại " + target + ". Hãy xoay rồi thử lại.";
+        }
+        if ("SLOT_OCCUPIED".equals(code)) {
+            AssemblyPlacement placed = atSlot(slotId);
+            AssemblyInstance occupant = placed == null ? null : findInstance(placed.getInstanceId());
+            if (occupant != null && hasLabel(occupant.getLabel())) {
+                return target + " đã có " + occupant.getLabel() + ". Hãy tháo vật thể đó trước.";
+            }
+        } else if ("PARENT_MISSING".equals(code)) {
+            AssemblySlot parent = spec.findSlot(slot.getParentSlotId());
+            if (parent != null && hasLabel(parent.getLabel())) {
+                return "Cần gắn " + parent.getLabel() + " trước khi gắn " + name + ".";
+            }
+        } else if ("ALREADY_PLACED".equals(code)) {
+            AssemblyPlacement placed = findPlacement(instanceId);
+            AssemblySlot old = placed == null ? null : spec.findSlot(placed.getSlotId());
+            if (old != null && hasLabel(old.getLabel())) {
+                return name + " đang ở " + old.getLabel() + ". Hãy tháo trước khi chuyển.";
+            }
+        }
+        return messageFor(code);
+    }
+
+    private boolean hasLabel(String label) {
+        return label != null && !label.trim().isEmpty();
+    }
+
+    /** Câu dự phòng không tiết lộ tên cho lỗi quyền hoặc trạng thái. */
     public String messageFor(String code) {
         if ("WRONG_COMPONENT".equals(code)) {
             return "Linh kiện không phù hợp với điểm gắn đã chọn. Hãy chọn đúng loại bộ phận.";
@@ -338,6 +401,9 @@ public class AssemblyLayout implements Serializable {
         }
         if ("SESSION_LOCKED".equals(code)) {
             return "Phiên hiện không sửa được. Nếu đã hoàn tất, tạo lượt mới để lắp lại.";
+        }
+        if ("GROUP_MODE".equals(code)) {
+            return "Phiên này dùng cách lắp theo nhóm linh kiện, không dùng điểm gắn riêng.";
         }
         return "Không tìm thấy vật thể hoặc điểm gắn trong phiên này.";
     }

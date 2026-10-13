@@ -5,6 +5,38 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 
 class AssemblyLayoutTest {
+    @Test void rejectionMessagesNameOnlyPartsFromTheLoadedLayout() {
+        AssemblyLayout l = layout();
+        l.findInstance(1).setLabel("Khung xe");
+        l.findInstance(2).setLabel("Bánh xe trái");
+        l.findInstance(3).setLabel("Bánh xe phải");
+        l.getSpec().findSlot(1).setLabel("Khung nền");
+        l.getSpec().findSlot(2).setLabel("Trục trái");
+        l.getSpec().findSlot(3).setLabel("Trục phải");
+        assertEquals("Không thể gắn Bánh xe trái vào Khung nền: điểm này dành cho loại bộ phận khác.",
+                l.messageFor("WRONG_COMPONENT", 2, 1));
+        assertEquals("Bánh xe trái chưa đúng hướng tại Trục trái. Hãy xoay rồi thử lại.",
+                l.messageFor("ORIENTATION_NOT_ALLOWED", 2, 2));
+        assertEquals("Cần gắn Khung nền trước khi gắn Bánh xe trái.", l.messageFor("PARENT_MISSING", 2, 2));
+        place(l, 1, 1);
+        place(l, 2, 2);
+        assertEquals("Trục trái đã có Bánh xe trái. Hãy tháo vật thể đó trước.",
+                l.messageFor("SLOT_OCCUPIED", 3, 2));
+        assertEquals("Bánh xe trái đang ở Trục trái. Hãy tháo trước khi chuyển.",
+                l.messageFor("ALREADY_PLACED", 2, 3));
+        assertEquals("Cần tháo Bánh xe trái trước khi tháo Khung xe.", l.messageFor("HAS_DEPENDENTS", 1, 0));
+        l.findInstance(2).setLabel(null);
+        assertEquals(l.messageFor("WRONG_COMPONENT"), l.messageFor("WRONG_COMPONENT", 2, 1));
+    }
+
+    @Test void anonymousRejectionsNeverRevealPartLabels() {
+        AssemblyLayout l = layout();
+        l.findInstance(1).setLabel("Tên riêng không được lộ");
+        for (String code : new String[] {"NOT_FOUND", "LAYOUT_CONFLICT", "SESSION_LOCKED", "GROUP_MODE"}) {
+            assertEquals(l.messageFor(code), l.messageFor(code, 1, 1));
+            assertFalse(l.messageFor(code, 1, 1).contains("Tên riêng"));
+        }
+    }
     private AssemblyLayout layout() {
         AssemblyLayout layout = new AssemblyLayout();
         layout.setStatus("IN_PROGRESS");

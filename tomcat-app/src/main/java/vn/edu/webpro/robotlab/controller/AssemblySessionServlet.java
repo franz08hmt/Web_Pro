@@ -438,8 +438,9 @@ public class AssemblySessionServlet extends HttpServlet {
                         intentInstanceId, intentSlotId,
                         orientation(body), version(body)));
             } else if ("DELETE".equals(method) && segments.length == 3 && "placements".equals(segments[1])) {
+                intentInstanceId = id(segments[2]);
                 sendLayout(response, AssemblyPlacementDB.change(sessionId, user.getId(), "detach",
-                        id(segments[2]), 0, "", queryVersion(request)));
+                        intentInstanceId, 0, "", queryVersion(request)));
             } else if ("DELETE".equals(method) && segments.length == 2 && "progress".equals(segments[1])) {
                 sendLayout(response, AssemblyPlacementDB.change(sessionId, user.getId(), "reset",
                         0, 0, "", queryVersion(request)));
@@ -447,7 +448,11 @@ public class AssemblySessionServlet extends HttpServlet {
                 throw new IllegalArgumentException("VALIDATION_ERROR");
             }
         } catch (IllegalArgumentException e) {
-            error(response, e.getMessage(), intentInstanceId, intentSlotId);
+            AssemblyLayout rejected = new AssemblyLayout();
+            if (e instanceof vn.edu.webpro.robotlab.util.AssemblyPlacementException) {
+                rejected = ((vn.edu.webpro.robotlab.util.AssemblyPlacementException) e).getLayout();
+            }
+            error(response, e.getMessage(), intentInstanceId, intentSlotId, rejected);
         }
         return true;
     }
@@ -524,17 +529,22 @@ public class AssemblySessionServlet extends HttpServlet {
 
     private static void error(HttpServletResponse response, String code, long instanceId, long slotId)
             throws IOException {
+        error(response, code, instanceId, slotId, new AssemblyLayout());
+    }
+
+    private static void error(HttpServletResponse response, String code, long instanceId, long slotId,
+            AssemblyLayout layout) throws IOException {
         if (code == null || !code.matches("NOT_FOUND|LAYOUT_CONFLICT|WRONG_COMPONENT|SLOT_OCCUPIED|"
                 + "ORIENTATION_NOT_ALLOWED|PARENT_MISSING|ALREADY_PLACED|HAS_DEPENDENTS|"
                 + "SESSION_LOCKED|ASSEMBLY_INCOMPLETE|GROUP_MODE|VALIDATION_ERROR")) {
             code = "VALIDATION_ERROR";
         }
         int status = "NOT_FOUND".equals(code) ? 404 : "LAYOUT_CONFLICT".equals(code) ? 409 : 422;
-        String message = new AssemblyLayout().messageFor(code);
+        String message = layout.messageFor(code, instanceId, slotId);
         if ("ASSEMBLY_INCOMPLETE".equals(code)) {
             message = "Chưa gắn đủ vật thể bắt buộc. Nhấn Kiểm tra mô hình để xem các điểm còn thiếu.";
         } else if ("VALIDATION_ERROR".equals(code)) {
-            message = "ID, hướng hoặc phiên bản không hợp lệ. Hãy tải lại mô hình.";
+            message = "Dữ liệu thao tác không hợp lệ. Hãy tải lại mô hình rồi thử lại.";
         }
         ResponseUtil.sendJson(response, status, "{\"accepted\":false,\"code\":" + JsonUtil.quote(code)
                 + ",\"message\":" + JsonUtil.quote(message) + ",\"instanceId\":" + instanceId

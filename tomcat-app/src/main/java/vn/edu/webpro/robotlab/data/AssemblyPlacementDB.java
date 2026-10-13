@@ -164,7 +164,7 @@ public class AssemblyPlacementDB {
                 return layout;
             }
             if (!reason.isEmpty()) {
-                throw new IllegalArgumentException(reason);
+                throw new vn.edu.webpro.robotlab.util.AssemblyPlacementException(reason, layout);
             }
             if ("attach".equals(action)) {
                 ps = connection.prepareStatement("INSERT INTO assembly_placements "
