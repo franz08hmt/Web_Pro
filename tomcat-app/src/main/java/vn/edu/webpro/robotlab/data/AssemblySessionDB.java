@@ -20,7 +20,12 @@ import vn.edu.webpro.robotlab.business.SessionStep;
  */
 public class AssemblySessionDB {
     private static final String FIELDS = "id, user_id, robot_id, status, completed_at, created_at, updated_at"
-            + ", assembly_mode, spec_id, layout_version";
+            + ", assembly_mode, spec_id, layout_version"
+            + ", (SELECT COUNT(*) FROM assembly_placements ap "
+            + "WHERE ap.session_id = assembly_sessions.id AND ap.spec_id = assembly_sessions.spec_id) "
+            + "AS placed_slot_count"
+            + ", (SELECT COUNT(*) FROM assembly_slots sl "
+            + "WHERE sl.spec_id = assembly_sessions.spec_id AND sl.required = TRUE) AS required_slot_count";
 
     /** completeSession() thành công, phiên vừa chuyển sang COMPLETED. */
     public static final int COMPLETE_OK = 0;
@@ -420,6 +425,8 @@ public class AssemblySessionDB {
         session.setAssemblyMode(row.getString("assembly_mode"));
         session.setSpecId(row.getLong("spec_id"));
         session.setLayoutVersion(row.getInt("layout_version"));
+        session.setPlacedSlotCount(row.getInt("placed_slot_count"));
+        session.setRequiredSlotCount(row.getInt("required_slot_count"));
         session.setCreatedAt(isoDate(row.getTimestamp("created_at")));
         session.setUpdatedAt(isoDate(row.getTimestamp("updated_at")));
         Timestamp completedAt = row.getTimestamp("completed_at");

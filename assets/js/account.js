@@ -99,13 +99,17 @@
     const updated = new Date(session.updatedAt);
     date.textContent = Number.isNaN(updated.getTime()) ? "" : `Cập nhật ${updated.toLocaleDateString("vi-VN")}`;
     const preparation = document.createElement("span");
-    preparation.textContent = `Chuẩn bị linh kiện: ${session.progressPercent}%`;
+    const detailed = session.assemblyMode === "DETAILED";
+    preparation.textContent = detailed
+      ? `Lắp chi tiết: ${session.placedSlotCount}/${session.requiredSlotCount} điểm gắn`
+      : `Chuẩn bị linh kiện: ${session.progressPercent}%`;
     const progress = document.createElement("progress");
-    progress.max = 100;
-    progress.value = session.progressPercent;
-    progress.setAttribute("aria-label", `Tiến độ chuẩn bị ${name.textContent}`);
+    progress.max = detailed ? session.requiredSlotCount || 1 : 100;
+    progress.value = detailed ? session.placedSlotCount : session.progressPercent;
+    progress.setAttribute("aria-label", `${detailed ? "Tiến độ lắp chi tiết" : "Tiến độ chuẩn bị"} ${name.textContent}`);
     const steps = document.createElement("span");
     steps.textContent = `Bước lắp ráp: ${session.completedStepCount}/${session.totalStepCount}`;
+    steps.hidden = detailed;
     item.append(name, state, date, preparation, progress, steps);
     if (session.status === "COMPLETED") {
       const link = document.createElement("a");

@@ -42,12 +42,16 @@
 
     kicker.textContent = "Phiên thực hành gần nhất";
     title.textContent = modelName;
-    summary.textContent = `Chuẩn bị linh kiện: ${session.progressPercent}%`;
+    const detailed = session.assemblyMode === "DETAILED";
+    summary.textContent = detailed
+      ? `Lắp chi tiết: ${session.placedSlotCount}/${session.requiredSlotCount} điểm gắn`
+      : `Chuẩn bị linh kiện: ${session.progressPercent}%`;
     steps.textContent = `Bước lắp ráp: ${session.completedStepCount}/${session.totalStepCount} bước`;
-    steps.hidden = false;
-    meter.value = session.progressPercent;
+    steps.hidden = detailed;
+    meter.max = detailed ? session.requiredSlotCount || 1 : 100;
+    meter.value = detailed ? session.placedSlotCount : session.progressPercent;
     meter.hidden = false;
-    meter.setAttribute("aria-label", `Tiến độ chuẩn bị linh kiện của ${modelName}`);
+    meter.setAttribute("aria-label", `${detailed ? "Tiến độ lắp chi tiết" : "Tiến độ chuẩn bị linh kiện"} của ${modelName}`);
     action.href = session.status === "ABANDONED"
       ? "pages/tai-khoan.html"
       : `pages/${page}?${params}`;

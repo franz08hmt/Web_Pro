@@ -65,6 +65,22 @@ test("locked layouts normalize parse failures without masking ownership or edita
   assert.match(source, /error\(response, "SESSION_LOCKED"/);
   assert.match(source, /direction\.matches\("Y0\|Y90\|Y180\|Y270"\)/);
 });
+
+test("session overview distinguishes detailed placement facts from GROUP preparation", () => {
+  const db = fs.readFileSync(path.join(java, "data/AssemblySessionDB.java"), "utf8");
+  assert.match(db, /COUNT\(\*\) FROM assembly_placements/);
+  assert.match(db, /COUNT\(\*\) FROM assembly_slots/);
+  assert.match(db, /required = TRUE/);
+  assert.match(db, /WHERE user_id = \?/);
+  for (const file of ["account.js", "personalization.js"]) {
+    const source = fs.readFileSync(path.join(root, "assets/js", file), "utf8");
+    assert.match(source, /session\.assemblyMode === "DETAILED"/);
+    assert.match(source, /Lắp chi tiết: \$\{session\.placedSlotCount\}\/\$\{session\.requiredSlotCount\} điểm gắn/);
+    assert.match(source, /Chuẩn bị linh kiện: \$\{session\.progressPercent\}%/);
+    assert.match(source, /(?:progress|meter)\.max = detailed \? session\.requiredSlotCount \|\| 1 : 100/);
+    assert.match(source, /(?:progress|meter)\.value = detailed \? session\.placedSlotCount : session\.progressPercent/);
+  }
+});
 test("placement interaction sends intentions and separates object dragging from camera", () => {
   const js = fs.readFileSync(path.join(root, "assets/js/assembly-3d-placement.js"), "utf8");
   assert.match(js, /THREE\.Raycaster/);

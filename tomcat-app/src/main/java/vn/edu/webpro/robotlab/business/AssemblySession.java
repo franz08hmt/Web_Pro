@@ -27,6 +27,8 @@ public class AssemblySession implements Serializable {
     private String assemblyMode = "GROUP";
     private long specId;
     private int layoutVersion = 1;
+    private int placedSlotCount;
+    private int requiredSlotCount;
     private long id;
     private long userId;
     private String robotId;
@@ -79,6 +81,26 @@ public class AssemblySession implements Serializable {
     /** Ghi dữ kiện layoutVersion từ database. */
     public void setLayoutVersion(int layoutVersion) {
         this.layoutVersion = layoutVersion;
+    }
+
+    /** Đọc số điểm đã gắn hợp lệ từ dữ liệu server. */
+    public int getPlacedSlotCount() {
+        return placedSlotCount;
+    }
+
+    /** Ghi số điểm đã gắn từ truy vấn của chính phiên. */
+    public void setPlacedSlotCount(int placedSlotCount) {
+        this.placedSlotCount = placedSlotCount;
+    }
+
+    /** Đọc số điểm bắt buộc thuộc cấu hình cố định của phiên. */
+    public int getRequiredSlotCount() {
+        return requiredSlotCount;
+    }
+
+    /** Ghi mẫu số từ cấu hình phiên, không nhận từ client. */
+    public void setRequiredSlotCount(int requiredSlotCount) {
+        this.requiredSlotCount = requiredSlotCount;
     }
 
     /** Chỉ phiên mới có spec mới dùng vật thể chi tiết. */
@@ -329,6 +351,8 @@ public class AssemblySession implements Serializable {
                 + ",\"status\":" + JsonUtil.quote(status)
                 + ",\"assemblyMode\":" + JsonUtil.quote(assemblyMode)
                 + ",\"layoutVersion\":" + layoutVersion
+                + ",\"placedSlotCount\":" + placedSlotCount
+                + ",\"requiredSlotCount\":" + requiredSlotCount
                 + ",\"progressPercent\":" + getProgressPercent()
                 + ",\"completedStepCount\":" + countCompletedSteps()
                 + ",\"totalStepCount\":" + totalStepCount

@@ -5,6 +5,20 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 
 class AssemblyLayoutTest {
+    @Test void detailedCountsAreFactsAndLegacyPreparationPercentIsUnchanged() {
+        AssemblySession s = new AssemblySession();
+        s.setAssemblyMode("DETAILED");
+        s.setPlacedSlotCount(1);
+        s.setRequiredSlotCount(10);
+        assertEquals(1, s.getPlacedSlotCount());
+        assertEquals(10, s.getRequiredSlotCount());
+        assertTrue(s.toJson().contains("\"placedSlotCount\":1"));
+        assertTrue(s.toJson().contains("\"requiredSlotCount\":10"));
+        s.setAssemblyMode("GROUP");
+        s.setRequiredComponentCount(2);
+        s.getComponents().add(new SessionComponent("wheel", true));
+        assertEquals(50, s.getProgressPercent());
+    }
     @Test void rejectionMessagesNameOnlyPartsFromTheLoadedLayout() {
         AssemblyLayout l = layout();
         l.findInstance(1).setLabel("Khung xe");
