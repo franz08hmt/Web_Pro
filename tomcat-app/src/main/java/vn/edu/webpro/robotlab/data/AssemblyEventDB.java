@@ -129,9 +129,6 @@ public class AssemblyEventDB {
                 AssemblyEvent event = read(rs);
                 String name = rs.getString("component_name");
                 if (name != null) {
-                    if ("dc-motor".equals(rs.getString("component_id"))) {
-                        name = "Động cơ DC TT";
-                    }
                     event.setInstanceLabel(name + " " + rs.getInt("instance_no") + "/"
                             + rs.getInt("instance_count"));
                 }

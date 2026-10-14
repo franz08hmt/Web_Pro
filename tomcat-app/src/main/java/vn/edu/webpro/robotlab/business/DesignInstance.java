@@ -77,8 +77,7 @@ public class DesignInstance implements Serializable {
 
     /** Phân biệt từng vật thể cùng loại, không dùng ID số làm tên. */
     public String getLabel() {
-        String label = "dc-motor".equals(componentId) ? "Động cơ DC TT" : name;
-        return label + " " + instanceNo + "/" + quantity;
+        return name + " " + instanceNo + "/" + quantity;
     }
 
 }

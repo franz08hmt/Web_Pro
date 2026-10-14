@@ -397,7 +397,7 @@ public class AssemblyPlacementDB {
                 item.setSessionId(layout.getSessionId());
                 item.setComponentId(rs.getString("component_id"));
                 item.setInstanceNo(rs.getInt("instance_no"));
-                String name = "dc-motor".equals(item.getComponentId()) ? "Động cơ DC TT" : rs.getString("name");
+                String name = rs.getString("name");
                 item.setLabel(name + " " + item.getInstanceNo() + "/" + rs.getInt("quantity"));
                 layout.getInstances().add(item);
             }

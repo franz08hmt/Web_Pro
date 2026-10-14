@@ -1069,3 +1069,12 @@ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 INSERT INTO schema_migrations (version) VALUES ('015_robot_design');
+
+-- Đợt10b: tên catalog, không sửa spec hay snapshot đơn hàng.
+-- Tên catalog là nguồn nhãn; không đổi tên admin đã sửa hoặc nhãn spec đã công bố.
+SET NAMES utf8mb4;
+START TRANSACTION;
+UPDATE components SET name = 'Động cơ DC TT (hộp số)'
+WHERE id = 'dc-motor' AND name = 'Động cơ DC TT & Bánh xe';
+INSERT IGNORE INTO schema_migrations (version) VALUES ('016_component_name_fix');
+COMMIT;

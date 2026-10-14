@@ -120,7 +120,7 @@ window.COMPONENTS_DATA = [
   },
   {
     id: "dc-motor",
-    name: "Động cơ DC TT & Bánh xe",
+    name: "Động cơ DC TT (hộp số)",
     category: "Động cơ",
     image: "../assets/images/components/motor-dc.png",
     description: "Động cơ giảm tốc cung cấp lực truyền động quay bánh xe robot.",
