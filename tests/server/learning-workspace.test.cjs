@@ -34,7 +34,7 @@ test("redesign preserves every existing form contract and business binding", () 
 
 test("all independent learning views use the scoped shell with private indexing rules", () => {
   const pages = fs.readdirSync(path.join(root, folder)).filter(n => n.endsWith(".jsp") && n !== "wiring-diagram.jsp");
-  assert.equal(pages.length, 36); // Phase9 adds the completed assembly review page.
+  assert.equal(pages.length, 37); // Phase10 adds the private kit page.
   for (const name of pages) {
     const s = read(folder + name);
     assert.match(s, /learning-workspace\.css\?v=/, name);

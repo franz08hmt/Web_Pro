@@ -32,13 +32,23 @@ test("every servlet redirect points at a page that exists", () => {
   const pattern = /sendRedirect\(\s*request\.getContextPath\(\)\s*\+\s*"([^"]+)"/g;
   const checked = [];
 
+  // PRG có thể tới Servlet/JSP; vẫn kiểm file HTML và chặn đường dẫn không tồn tại.
+  const routes = new Set();
+  for (const name of fs.readdirSync(controllers)) {
+    const source = fs.readFileSync(path.join(controllers, name), "utf8");
+    const annotation = source.match(/@WebServlet\(([\s\S]*?)\)/);
+    if (annotation) {
+      for (const literal of annotation[1].matchAll(/"([^"]+)"/g)) routes.add(literal[1]);
+    }
+  }
+
   for (const name of fs.readdirSync(controllers)) {
     const source = fs.readFileSync(path.join(controllers, name), "utf8");
     for (const match of source.matchAll(pattern)) {
-      const target = match[1].replace(/^\//, "");
+      const target = match[1].split(/[?#]/)[0].replace(/^\//, "");
       checked.push(`${name} -> ${match[1]}`);
       assert.ok(
-        fs.existsSync(path.join(root, target)),
+        fs.existsSync(path.join(root, target)) || routes.has("/" + target),
         `${name} chuyển hướng tới ${match[1]} nhưng file đó không tồn tại.`
       );
     }

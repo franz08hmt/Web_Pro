@@ -1,0 +1,18 @@
+.design-workspace .kit-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.design-workspace .kit-grid fieldset { min-width: 0; margin: 0; }
+.design-workspace .kit-grid img { object-fit: contain; max-width: 100%; border-radius: 8px; }
+.design-workspace label { display: block; overflow-wrap: anywhere; }
+.design-workspace input[type=number] { max-width: 140px; }
+.design-workspace .design-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.design-workspace .design-actions form { margin: 0; }
+.design-workspace .workspace-table-scroll { overflow: auto; max-width: 100%; }
+@media (max-width: 900px) { .design-workspace .kit-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .design-workspace .kit-grid { grid-template-columns: 1fr; } }
+@media print {
+  .design-workspace .no-print { display: none; }
+  .design-workspace .workspace-table-scroll { overflow: visible; }
+  .design-workspace table { min-width: 0; border-collapse: collapse; }
+  .design-workspace th, .design-workspace td { border: 1px solid black; color: black; }
+  .design-workspace thead { display: table-header-group; }
+  .design-workspace tr { break-inside: avoid; }
+}

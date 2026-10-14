@@ -58,7 +58,7 @@
       const quantity = cartItem?.quantity || 0;
       const outOfStock = Number(product.stockQuantity) < 1;
       const stockText = outOfStock ? "Tạm hết hàng" : `Còn ${Number(product.stockQuantity)} sản phẩm demo`;
-      return `<article class="shop-product-card">
+      return `<article class="shop-product-card" id="shop-product-${escapeHtml(product.id)}">
         ${src ? `<img src="${escapeHtml(src)}" alt="" loading="lazy" width="480" height="360">` : ""}
         <p class="shop-category">${escapeHtml(product.category)} · mã ${escapeHtml(product.componentId)}</p>
         <h3>${escapeHtml(product.name)}</h3>

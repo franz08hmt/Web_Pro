@@ -50,3 +50,21 @@ test("design Java and JSP use classic readable course syntax", () => {
     for (const line of source.split(/\r?\n/)) assert.ok(line.length <= 140, name);
   }
 });
+
+test("kit forms use session owner CSRF PRG and imports confirmed purchases without adding twice", () => {
+  const base = "tomcat-app/src/main/java/vn/edu/webpro/robotlab/";
+  const servlet = read(base + "controller/MyKitServlet.java");
+  assert.match(servlet, /hasValidFormCsrfToken/);
+  assert.match(servlet, /user\.getId\(\)/);
+  assert.match(servlet, /sendRedirect/);
+  assert.match(servlet, /getRequestDispatcher\(url\)\.forward/);
+  const db = read(base + "data/UserKitDB.java");
+  assert.match(db, /GREATEST\(quantity, \?\)/);
+  assert.match(db, /o\.user_id = \?/);
+  assert.match(db, /o\.status = 'CONFIRMED'/);
+  assert.match(db, /FOR UPDATE/);
+  const view = read("tomcat-app/src/main/webapp/WEB-INF/views/my-kit.jsp");
+  assert.match(view, /name="csrfToken"/);
+  assert.match(view, /type="number"/);
+  assert.match(view, /c:out/);
+});
