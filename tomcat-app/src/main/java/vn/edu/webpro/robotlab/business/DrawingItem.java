@@ -13,6 +13,8 @@ public class DrawingItem implements Serializable {
     private double svgY;
     private double svgWidth;
     private double svgHeight;
+    private double labelX;
+    private double labelY;
 
     /** Tạo JavaBean rỗng theo quy ước môn học. */
     public DrawingItem() {
@@ -106,6 +108,36 @@ public class DrawingItem implements Serializable {
     /** Ghi dữ kiện svgHeight. */
     public void setSvgHeight(double svgHeight) {
         this.svgHeight = svgHeight;
+    }
+
+    /** Hoành độ nhãn do bean bố trí, không tính trong JSP. */
+    public double getLabelX() {
+        return labelX;
+    }
+
+    /** Ghi hoành độ nhãn. */
+    public void setLabelX(double labelX) {
+        this.labelX = labelX;
+    }
+
+    /** Tung độ nhãn do bean bố trí. */
+    public double getLabelY() {
+        return labelY;
+    }
+
+    /** Ghi tung độ nhãn. */
+    public void setLabelY(double labelY) {
+        this.labelY = labelY;
+    }
+
+    /** Chỉ vẽ đường dẫn khi nhãn đã dời khỏi tâm. */
+    public boolean isLabelMoved() {
+        return Math.hypot(labelX - getCenterX(), labelY - getCenterY()) > .01;
+    }
+
+    /** Vùng nền đủ cho số thứ tự hai chữ số. */
+    public double getLabelRadius() {
+        return 16;
     }
 
     /** Chọn thẻ SVG bằng getter, không ghép markup từ dữ liệu. */

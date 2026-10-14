@@ -190,7 +190,7 @@ public class AssemblyReview implements Serializable {
             if (event.isActiveStep()) {
                 activeEvents.add(event);
             }
-            if (!event.isAccepted()) {
+            if ("REJECTED".equals(event.getOutcome()) && isLearningError(event.getReasonCode())) {
                 AssemblyEvent summary = grouped.get(event.getReasonCode());
                 if (summary == null) {
                     summary = new AssemblyEvent();
@@ -201,6 +201,13 @@ public class AssemblyReview implements Serializable {
                 summary.setRepeatCount(summary.getRepeatCount() + 1);
             }
         }
+    }
+
+    /** Chỉ lỗi gắn/tháo của người học; lỗi tab, trạng thái và request chỉ dùng truy vết. */
+    public boolean isLearningError(String code) {
+        return "WRONG_COMPONENT".equals(code) || "SLOT_OCCUPIED".equals(code)
+                || "ORIENTATION_NOT_ALLOWED".equals(code) || "PARENT_MISSING".equals(code)
+                || "ALREADY_PLACED".equals(code) || "HAS_DEPENDENTS".equals(code);
     }
 
     /** So kết quả bằng tỷ lệ câu đúng, giữ giá trị điểm đã lưu để hiển thị. */

@@ -4,7 +4,11 @@
     <section aria-labelledby="drawing-top-title">
         <h3 id="drawing-top-title">Nhìn từ trên</h3>
         <svg viewBox="0 0 ${assemblyDrawing.width} ${assemblyDrawing.height}" role="img" aria-labelledby="drawing-top-title">
-            <c:forEach var="drawingItem" items="${assemblyDrawing.topItems}">
+            <c:if test="${assemblyDrawing.frontKnown}">
+                <text class="drawing-front" x="${assemblyDrawing.frontLabelX}" y="${assemblyDrawing.frontLabelY}">
+                    ▲ Phía trước</text>
+            </c:if>
+            <c:forEach var="drawingItem" items="${assemblyDrawing.topShapes}">
                 <g class="drawing-item">
                     <title><c:out value="${drawingItem.instanceLabel}" /> — <c:out value="${drawingItem.slotLabel}" /></title>
                     <c:choose>
@@ -16,15 +20,31 @@
                                   width="${drawingItem.svgWidth}" height="${drawingItem.svgHeight}" rx="6" />
                         </c:otherwise>
                     </c:choose>
-                    <text x="${drawingItem.centerX}" y="${drawingItem.centerY}"><c:out value="${drawingItem.number}" /></text>
+                </g>
+            </c:forEach>
+            <c:forEach var="drawingItem" items="${assemblyDrawing.topItems}">
+                <c:if test="${drawingItem.labelMoved}">
+                    <line class="drawing-leader" x1="${drawingItem.centerX}" y1="${drawingItem.centerY}"
+                          x2="${drawingItem.labelX}" y2="${drawingItem.labelY}" />
+                </c:if>
+            </c:forEach>
+            <c:forEach var="drawingItem" items="${assemblyDrawing.topItems}">
+                <g class="drawing-label" aria-hidden="true">
+                    <circle cx="${drawingItem.labelX}" cy="${drawingItem.labelY}" r="${drawingItem.labelRadius}" />
+                    <text x="${drawingItem.labelX}" y="${drawingItem.labelY}"><c:out value="${drawingItem.number}" /></text>
                 </g>
             </c:forEach>
         </svg>
+        <p class="drawing-note"><c:out value="${assemblyDrawing.topFrontNote}" /></p>
     </section>
     <section aria-labelledby="drawing-side-title">
         <h3 id="drawing-side-title">Nhìn ngang</h3>
         <svg viewBox="0 0 ${assemblyDrawing.width} ${assemblyDrawing.height}" role="img" aria-labelledby="drawing-side-title">
-            <c:forEach var="drawingItem" items="${assemblyDrawing.sideItems}">
+            <c:if test="${assemblyDrawing.frontKnown}">
+                <text class="drawing-front" x="${assemblyDrawing.frontLabelX}" y="${assemblyDrawing.frontLabelY}">
+                    ▲ Phía trước →</text>
+            </c:if>
+            <c:forEach var="drawingItem" items="${assemblyDrawing.sideShapes}">
                 <g class="drawing-item">
                     <title><c:out value="${drawingItem.instanceLabel}" /> — <c:out value="${drawingItem.slotLabel}" /></title>
                     <c:choose>
@@ -36,10 +56,22 @@
                                   width="${drawingItem.svgWidth}" height="${drawingItem.svgHeight}" rx="6" />
                         </c:otherwise>
                     </c:choose>
-                    <text x="${drawingItem.centerX}" y="${drawingItem.centerY}"><c:out value="${drawingItem.number}" /></text>
+                </g>
+            </c:forEach>
+            <c:forEach var="drawingItem" items="${assemblyDrawing.sideItems}">
+                <c:if test="${drawingItem.labelMoved}">
+                    <line class="drawing-leader" x1="${drawingItem.centerX}" y1="${drawingItem.centerY}"
+                          x2="${drawingItem.labelX}" y2="${drawingItem.labelY}" />
+                </c:if>
+            </c:forEach>
+            <c:forEach var="drawingItem" items="${assemblyDrawing.sideItems}">
+                <g class="drawing-label" aria-hidden="true">
+                    <circle cx="${drawingItem.labelX}" cy="${drawingItem.labelY}" r="${drawingItem.labelRadius}" />
+                    <text x="${drawingItem.labelX}" y="${drawingItem.labelY}"><c:out value="${drawingItem.number}" /></text>
                 </g>
             </c:forEach>
         </svg>
+        <p class="drawing-note"><c:out value="${assemblyDrawing.sideFrontNote}" /></p>
     </section>
 </div>
 <div class="workspace-table-scroll" role="region" aria-label="Chú giải bản vẽ" tabindex="0">

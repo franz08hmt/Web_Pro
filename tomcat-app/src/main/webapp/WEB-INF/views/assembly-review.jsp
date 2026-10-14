@@ -9,7 +9,7 @@
         <title>Hoàn thiện mẫu robot | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/assembly-review.css?v=20261014.3">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/assembly-review.css?v=20261014.4">
     </head>
     <body class="learning-workspace assembly-review">
         <%@ include file="workspace-header.jspf" %>

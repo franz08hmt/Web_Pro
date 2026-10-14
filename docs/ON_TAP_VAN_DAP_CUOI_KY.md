@@ -981,11 +981,20 @@ Phân biệt **forward** giữ request để JSP đọc attribute với **redire
 
 ### 4. Vẽ SVG trong JSP có cần Java scriptlet không?
 
-Không. Bean tính phép chiếu x,z và x,y, scale và kích thước minh họa trước:
-[AssemblyDrawing.java:64](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyDrawing.java#L64).
+Không. Bean tính phép chiếu x,z và z,y, scale và kích thước minh họa trước:
+[AssemblyDrawing.java:117](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyDrawing.java#L117).
 JSP dùng c:forEach + c:choose tạo rect/circle; tọa độ chỉ từ getter số, nhãn qua
 c:out: [assembly-drawing.jspf:6](../tomcat-app/src/main/webapp/WEB-INF/views/assembly-drawing.jspf#L6).
 Đây là bản vẽ giản lược, không theo tỉ lệ kỹ thuật; không ghép SVG tùy ý từ chuỗi DB.
+Đợt9b lấy phía trước từ z của cảm biến so với nền: ở trên trong hình nhìn từ trên,
+ở bên phải trong hình nhìn ngang. Bean vẽ hình lớn trước và dời nhãn có tâm cách
+nhãn khác dưới44 đơn vị SVG ra ngoài, có đường nối về vật thể. JSP chỉ đọc getter:
+[AssemblyDrawing.java:220](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyDrawing.java#L220).
+
+**Thống kê “Những lần cần sửa” có tính lỗi tab hoặc hoàn tác trống không?** Không.
+Nhật ký vẫn giữ để truy vết; bean chỉ tổng hợp sáu mã lỗi gắn/tháo của người học.
+Danh sách ở một hàm instance, không lọc ở JSP hoặc xóa DB:
+[AssemblyReview.java:207](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyReview.java#L207).
 
 ### 5. Vì sao phát lại không gọi API ghi?
 

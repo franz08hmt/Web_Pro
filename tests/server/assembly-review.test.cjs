@@ -123,3 +123,14 @@ test("undo is owner scoped versioned CSRF protected and shares existing bean val
   assert.match(front, /contenteditable/);
   assert.match(front, /options\.onUndo\(layout\.layoutVersion\)/);
 });
+
+test("review drawings render Java-positioned labels and front notes without client calculations", () => {
+  const source = read("tomcat-app/src/main/webapp/WEB-INF/views/assembly-drawing.jspf");
+  for (const name of ["topShapes", "sideShapes", "topFrontNote", "sideFrontNote", "labelX", "labelY", "labelMoved"]) {
+    assert.ok(source.includes("." + name + "}"), name);
+  }
+  assert.match(source, /▲ Phía trước/);
+  assert.match(source, /class="drawing-leader"/);
+  assert.match(source, /class="drawing-label"/);
+  assert.doesNotMatch(source, /<script|<%(?!@)|fmt:|fn:/);
+});

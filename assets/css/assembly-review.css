@@ -9,7 +9,11 @@
 .assembly-review .assembly-drawing-grid section { margin: 0; }
 .assembly-review .assembly-drawing-grid svg { display: block; width: 100%; height: auto; background: #151b1f; border: 1px solid #2c363b; }
 .assembly-review .drawing-item rect, .assembly-review .drawing-item circle { fill: #2dd4bf22; stroke: #ffa871; stroke-width: 2; }
-.assembly-review .drawing-item text { fill: #eef3f2; font: 700 20px sans-serif; text-anchor: middle; dominant-baseline: middle; }
+.assembly-review .drawing-label text { fill: #eef3f2; font: 700 22px sans-serif; text-anchor: middle; dominant-baseline: middle; }
+.assembly-review .drawing-label circle { fill: #151b1f; stroke: #eef3f2; stroke-width: 1; }
+.assembly-review .drawing-leader { stroke: #a9b6b4; stroke-width: 1.5; }
+.assembly-review .drawing-front { fill: #eef3f2; font: 600 22px sans-serif; text-anchor: middle; }
+.assembly-review .drawing-note { font-size: 14px; line-height: 1.6; }
 .assembly-review .workspace-table-scroll { overflow: auto; max-width: 100%; }
 .assembly-review table { min-width: 540px; width: 100%; }
 .assembly-review th, .assembly-review td { overflow-wrap: anywhere; }
@@ -32,7 +36,9 @@
   .assembly-review .assembly-drawing-grid { grid-template-columns: 1fr 1fr; }
   .assembly-review .assembly-drawing-grid svg { background: white; border-color: black; }
   .assembly-review .drawing-item rect, .assembly-review .drawing-item circle { fill: none; stroke: black; }
-  .assembly-review .drawing-item text { fill: black; }
+  .assembly-review .drawing-label text, .assembly-review .drawing-front { fill: black; }
+  .assembly-review .drawing-label circle { fill: white; stroke: black; }
+  .assembly-review .drawing-leader { stroke: black; }
   .assembly-review .workspace-table-scroll { overflow: visible; }
   .assembly-review table { min-width: 0; border-collapse: collapse; }
   .learning-workspace.assembly-review .workspace-content caption { color: black; break-after: avoid; }

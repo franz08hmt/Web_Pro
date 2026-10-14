@@ -5,6 +5,35 @@ import org.junit.jupiter.api.Test;
 
 class AssemblyReviewTest {
     @Test
+    void technicalRejectionsAreTraceableButNotLearnerMistakes() {
+        AssemblyReview review = new AssemblyReview();
+        String[] codes = {"LAYOUT_CONFLICT", "NOTHING_TO_UNDO", "SESSION_LOCKED", "GROUP_MODE", "VALIDATION_ERROR",
+            "ORIENTATION_NOT_ALLOWED", "ORIENTATION_NOT_ALLOWED"};
+        for (String code : codes) {
+            AssemblyEvent event = new AssemblyEvent();
+            event.setOutcome("REJECTED");
+            event.setReasonCode(code);
+            review.getEvents().add(event);
+        }
+        review.summarizeEvents();
+        assertEquals(7, review.getEvents().size());
+        assertEquals(1, review.getRejectionSummary().size());
+        assertEquals("ORIENTATION_NOT_ALLOWED", review.getRejectionSummary().get(0).getReasonCode());
+        assertEquals(2, review.getRejectionSummary().get(0).getRepeatCount());
+        review.getEvents().remove(6);
+        review.getEvents().remove(5);
+        review.summarizeEvents();
+        assertTrue(review.getRejectionSummary().isEmpty());
+        String[] learningCodes = {"WRONG_COMPONENT", "SLOT_OCCUPIED", "ORIENTATION_NOT_ALLOWED",
+            "PARENT_MISSING", "ALREADY_PLACED", "HAS_DEPENDENTS"};
+        for (String code : learningCodes) {
+            assertTrue(review.isLearningError(code));
+        }
+        assertFalse(review.isLearningError(null));
+        assertFalse(review.isLearningError("UNKNOWN_CODE"));
+    }
+
+    @Test
     void summaryKeepsOnlyActiveAcceptedStepsAndCountsRejections() {
         AssemblyReview r = new AssemblyReview();
         AssemblyEvent a = new AssemblyEvent();

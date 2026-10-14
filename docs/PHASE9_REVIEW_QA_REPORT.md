@@ -187,3 +187,64 @@ Script QA sai owner đã được sửa theo dữ liệu SQL; ứng dụng404 đ
 dừng8080 của người dùng. Log runtime không có exception ứng dụng. Browser contexts
 đã đóng; không lưu cookie/password. Build/evidence không bí mật giữ ngoài repo.
 Commit local từng M0–M6, không push; xem git log để lấy hash bàn giao cuối.
+
+## Đợt 9b — Thống kê lỗi học tập và nhãn bản vẽ, 14/10/2026
+
+Baseline thực182Node/106JUnit; sau sửa183Node/109JUnit,0fail/0skip. Đã chạy
+Maven test và clean package JDK17 trong build riêng; npm test dùng exploded WAR
+cùng build. Test mới đã đỏ: summary nhận6 loại thay vì1 loại lỗi học tập; sau sửa xanh.
+Ba JUnit mới kiểm lọc lỗi kỹ thuật/đếm sai hướng,40 nhãn chồng vị trí và hướng/lớp hình;
+Node mới kiểm JSP dùng tọa độ/ghi chú/lớp nhãn từ getter Java, không tính ở client.
+JspExpressionContractTest/JavaBeanRulesTest và guard Java120/JSP140 vẫn xanh.
+
+`AssemblyReview.isLearningError(code)` là nguồn duy nhất của sáu mã thống kê:
+WRONG_COMPONENT, SLOT_OCCUPIED, ORIENTATION_NOT_ALLOWED, PARENT_MISSING,
+ALREADY_PLACED, HAS_DEPENDENTS. Không xóa hay sửa nhật ký, không thay DB/API/quyền.
+LAYOUT_CONFLICT/NOTHING_TO_UNDO/SESSION_LOCKED/GROUP_MODE/VALIDATION_ERROR không
+bị quy thành lỗi học tập. JUnit còn kiểm null/mã lạ không được nhận và summary rỗng
+khi chỉ có lỗi kỹ thuật; toàn bộ sự kiện đầu vào vẫn giữ nguyên.
+
+Bản vẽ: phía trước suy từ z của slot HC-SR04 so với khung trong spec, không hardcode
+chiều âm. Spec v2 hiện có cảm biến ở z âm: hình trên đặt trước ở trên; hình ngang
+đổi phép chiếu x,y cũ thành z,y để phía trước nằm bên phải. Có “▲ Phía trước”/mũi
+tên phải và ghi chú ngay dưới hình; thiếu căn cứ cảm biến thì không bịa hướng.
+Tọa độ vật thể vẫn lấy từ placement/spec đã lưu. Đây vẫn là hình minh họa giản lược.
+
+Hình lớn vẽ trước theo diện tích hộp, hình nhỏ sau; STT và thứ tự bảng chú giải
+giữ nguyên. Vẽ nhãn ở lớp riêng sau hình: tâm cách nhau tối thiểu44 đơn vị SVG;
+nếu gần hơn, Java chọn vị trí ngoài hộp gần nhất trên lưới44 và nối về tâm vật thể.
+Khung720×360 có vùng trống cho hướng/nhãn. JUnit kiểm40 vật thể đồng vị trí cả hai
+phép chiếu (kể cả40 khung cùng loại), khoảng cách nhãn và bounds; test hình rỗng,
+một vật thể, GROUP và bounds hình cũ giữ nguyên. CSS chỉ namespace assembly-review,
+có nền số/đường nối và màu in; cache-busting tăng20261014.4.
+
+### Kiểm thật trước/sau
+
+| Ca | Kết quả |
+| --- | --- |
+| Phiên QA mới37 của demo student, v2 |201; chuẩn bị/lắp/hoàn tất10/10 bằng API hiện có |
+| Hoàn tác khi trống |422 NOTHING_TO_UNDO, vẫn có REJECTED trong nhật ký |
+| Hai tab cùng version, gắn hai bộ phận khác nhau | Một200, một409 LAYOUT_CONFLICT; vẫn ghi lý do truy vết |
+| Hai lần gắn động cơ sai hướng |422 ORIENTATION_NOT_ALLOWED cả hai |
+| Trang trước sửa | GET200, summary hiện cả lỗi tab/hoàn tác trống và sai hướng |
+| Trang sau sửa | GET200, “Những lần cần sửa” chỉ còn “Sai hướng: 2 lần” |
+| Hash nhật ký37 trước/sau sửa | Giống hệt, không cập nhật dữ liệu phiên đã COMPLETED |
+| Hai SVG thật |20 nhãn, khoảng cách≥44, tọa độ trong khung, có đường nối và hai dấu trước |
+| Chrome1440px/390px | Không tràn ngang, đã chụp/xem ảnh trước/sau;0pageerror/asset404 |
+| PDF Chrome A4 |4 trang, render/xem mọi trang, ghi chú/nhãn/bảng và thống kê đúng |
+| Bảo toàn |44 tập hàng có trước QA giữ nguyên hash;10 file được bảo vệ nguyên byte |
+
+Bằng chứng ngoài Git: D:/Web-Pro/qa-evidence/phase9b, before-results.json và after-results.json
+(10 kiểm dựng ca trước,12 kiểm sau), before/after-1440.png, before/after-390.png,
+before/after-drawing-*.png, after.pdf, print-*.png, baseline/red/test/package logs,
+protected-before.json và database-before.json (hash, không dữ liệu thô/bí mật).
+
+Không tạo tài khoản hoặc chạy migration/seed; chỉ thêm phiên QA37 và dữ kiện của
+chính phiên này qua luồng hiện có. Giữ spec v1/v2, phiên cũ và mọi dữ liệu của người
+dùng khác. Không sửa Servlet/XxxDB, không đổi điểm, CSRF, version hay HTTP status.
+File ôn tập cập nhật phép chiếu/dòng code và câu hỏi phân biệt lỗi học tập với lỗi kỹ thuật.
+Chưa kiểm Firefox/Safari, cảm ứng vật lý hoặc screen reader trong9b.
+
+Đã dừng đúng process QA, xóa CATALINA_BASE/config/log tạm,8081 đóng; không đụng8080.
+Runtime không có exception ứng dụng; không lưu cookie/password. Một commit local
+`fix(assembly): count only learning errors and clarify drawing labels`, không push.

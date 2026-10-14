@@ -4,6 +4,62 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 class AssemblyDrawingTest {
+    @Test
+    void overlappingModelsHaveSeparatedLabelsInBothViews() {
+        AssemblyLayout model = layout(40);
+        for (AssemblySlot slot : model.getSpec().getSlots()) {
+            slot.setX(0);
+            slot.setY(0);
+            slot.setZ(0);
+        }
+        AssemblyDrawing drawing = new AssemblyDrawing();
+        drawing.build(model);
+        assertLabels(drawing, drawing.getTopItems());
+        assertLabels(drawing, drawing.getSideItems());
+        for (AssemblySlot slot : model.getSpec().getSlots()) {
+            slot.setComponentId("chassis-2wd");
+        }
+        drawing.build(model);
+        assertLabels(drawing, drawing.getTopItems());
+        assertLabels(drawing, drawing.getSideItems());
+    }
+
+    private void assertLabels(AssemblyDrawing drawing, java.util.List<DrawingItem> items) {
+        for (int n = 0; n < items.size(); n++) {
+            DrawingItem item = items.get(n);
+            assertTrue(item.getLabelX() >= 16 && item.getLabelX() <= drawing.getWidth() - 16);
+            assertTrue(item.getLabelY() >= 16 && item.getLabelY() <= drawing.getHeight() - 16);
+            for (int k = 0; k < n; k++) {
+                DrawingItem other = items.get(k);
+                double distance = Math.hypot(item.getLabelX() - other.getLabelX(),
+                        item.getLabelY() - other.getLabelY());
+                assertTrue(distance + .00001 >= drawing.getLabelSeparation());
+            }
+        }
+    }
+
+    @Test
+    void sensorZDefinesTheFrontAndSmallShapesAreDrawnLast() {
+        AssemblyLayout model = layout(3);
+        AssemblySlot sensor = model.getSpec().getSlots().get(2);
+        sensor.setComponentId("hc-sr04");
+        sensor.setZ(-2);
+        AssemblyDrawing drawing = new AssemblyDrawing();
+        drawing.build(model);
+        assertTrue(drawing.isFrontKnown());
+        assertEquals(-1, drawing.getFrontZSign());
+        assertTrue(drawing.getTopFrontNote().contains("ở trên"));
+        assertTrue(drawing.getSideFrontNote().contains("bên phải"));
+        java.util.List<DrawingItem> shapes = drawing.getTopShapes();
+        for (int n = 1; n < shapes.size(); n++) {
+            double previous = shapes.get(n - 1).getSvgWidth() * shapes.get(n - 1).getSvgHeight();
+            assertTrue(previous >= shapes.get(n).getSvgWidth() * shapes.get(n).getSvgHeight());
+        }
+        sensor.setZ(2);
+        drawing.build(model);
+        assertEquals(1, drawing.getFrontZSign());
+    }
+
     private AssemblyLayout layout(int count) {
         AssemblyLayout l = new AssemblyLayout();
         for (int n = 1; n <= count; n++) {
