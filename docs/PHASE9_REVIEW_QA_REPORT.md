@@ -1,0 +1,24 @@
+# Đợt 9 — Sau khi hoàn tất: báo cáo kiểm chứng
+
+## M0 — Khảo sát và nợ kiểm chứng, 14/10/2026
+
+HEAD8da8b15 đồng bộ origin. Baseline173Node/97JUnit, JDK17 clean package xanh.
+Sau sửa M0:174Node/97JUnit xanh; guard byte dùng WAR riêng ngoài target của IDE.
+Giữ góc khay từ clone trước preview; khi chưa chọn slot, chỉ cộng góc hướng.
+Test nguồn đã đỏ trước sửa. Chrome kiểm góc gốc bằng fixture scene tạm, không lưu.
+Trên scene thật: kéo vật thể có di chuyển, camera không đổi; kéo vùng trống có
+xoay camera;390px không tràn, nút Gắn thấy được, không pageerror.
+Script ban đầu chọn vùng trống trùng lớp nhãn trên canvas; đã sửa cách chọn
+bằng elementFromPoint, không sửa ứng dụng để ép kết quả kiểm tra.
+
+ADMIN QA mới qua đăng ký: qa-phase9-admin-20261014@robotlab.test, id22;
+chỉ tài khoản mới này được nâng admin và tăng session_version theo README.
+Không ghi mật khẩu vào báo cáo/file. GET /api/admin/robots, /api/admin/steps,
+/admin-stats đều200. Phiên QA mới35 của demo student, v2 IN_PROGRESS, kit đã chuẩn bị;
+không sửa các phiên cũ30/31/33/34 hoặc spec đã công bố.
+Bằng chứng ngoài Git: D:/Web-Pro/qa-evidence/phase9/m0-results.json, m0-390.png,
+baseline/m0 test logs, protected-before.json và database-before.json (hash, không dữ liệu thô).
+Không bịa số chương/slide: slide pptx có Word nhúng; tài liệu đợt9 ghi tên chủ đề
+Servlet/request/response/JavaBean/EL/JSTL/JDBC/session/transaction khi chưa trích xác minh.
+
+M1–M6 chưa hoàn tất; không coi M0 là nghiệm thu toàn đợt.

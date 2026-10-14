@@ -444,3 +444,17 @@ Chrome Q/E/nút/radio/390, owner/CSRF/version/complete đồng thời và hash43
 M6 đã chốt theo quyết định người dùng: giữ tư thế v1, v2 không đổi, không tạo v3;
 Y90/Y270 là quy ước trái/phải của mô hình giản lược, hình khối không mô phỏng chính xác
 chiều trục động cơ. Bằng chứng/giới hạn ở PHASE8_ASSEMBLY_QA_REPORT.md mục8b.
+
+## Đợt 9 — Sau khi hoàn tất
+
+Baseline8da8b15 đã đồng bộ origin;173Node/97JUnit JDK17. Có ảnh robots.image,
+assembly_steps theo thứ tự, phiếu JSP và quiz theo model. Thiếu nhật ký/bản vẽ theo
+phiên/trang hoàn thiện/replay/undo. Giữ sáu WIP và bốn file untracked nguyên byte.
+M0 sửa góc khay, kiểm camera/mobile và ADMIN QA mới qua đăng ký/nâng quyền riêng.
+M1 ERD trước migration014: assembly_events cùng transaction, không backfill phiên cũ.
+M2 bean bản vẽ hai góc nhìn; M3 Servlet/JSP bốn phần, điều hướng và in;
+M4 events API/replay chỉ đọc; M5 undo có khóa/version/bean, không Redo;
+M6 test/HTTP/Chrome/PDF/hồi quy/tài liệu. Commit từng mốc, không push.
+Tái sử dụng AssemblySessionServlet/AssemblyPlacementDB, RobotDB/AssemblyStepDB,
+quiz aggregates và shell JSP. JavaScript chỉ tương tác; không đổi rubric hoặc panel3D.
+Chỉ ghi tên chủ đề môn học khi chưa xác minh nội dung Word nhúng trong slide.

@@ -290,3 +290,13 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] M6 chốt: người dùng chọn giữ tư thế v1/v2, không tạo v3; ghi rõ giới hạn hình khối động cơ.
 - [x] M6 bàn giao: test xanh, file WIP giữ nguyên; commit local đúng phạm vi, không push.
 
+## Đợt 9 — Sau khi hoàn tất
+
+- [x] M0: baseline, kế hoạch, ADMIN QA riêng, camera/mobile và góc khay; build/test xanh.
+- [ ] M1: nhật ký cùng transaction, ERD/migration014, bean/DB/test.
+- [ ] M2: bản vẽ SVG theo dữ liệu phiên và test tỉ lệ.
+- [ ] M3: trang hoàn thiện Servlet/JSP bốn phần, điều hướng/in/quiz.
+- [ ] M4: events API owner và replay chỉ đọc.
+- [ ] M5: undo có bean/version/khóa, không Redo.
+- [ ] M6: HTTP/SQL/Chrome/PDF/hồi quy, tài liệu và cleanup; không push.
+

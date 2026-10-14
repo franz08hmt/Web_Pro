@@ -92,8 +92,10 @@ window.createAssemblyPlacementView = function (options) {
   function previewOrientation() {
     if (!selectedObject) return;
     const slot = layout?.spec.slots.find(item => String(item.id) === selectedSlot);
+    const base = slot || selectedObject.userData.trayRotation;
     const angle = Number(orientation.slice(1)) * Math.PI / 180;
-    selectedObject.rotation.set(slot?.rx || 0, (slot?.ry || 0) + angle, slot?.rz || 0);
+    selectedObject.rotation.set(slot ? base.rx : base.x, (slot ? base.ry : base.y) + angle,
+      slot ? base.rz : base.z);
   }
 
   function rotate(delta) {
@@ -194,6 +196,7 @@ window.createAssemblyPlacementView = function (options) {
       let object = window.createAssemblyPart(THREE, item.componentId);
       if (!object) object = new THREE.Mesh(new THREE.BoxGeometry(.3, .3, .3), new THREE.MeshStandardMaterial());
       object.userData.instanceId = String(item.id);
+      object.userData.trayRotation = object.rotation.clone();
       const slot = placed && next.spec.slots.find(s => String(s.id) === String(placed.slotId));
       if (slot) {
         object.position.set(slot.x, slot.y, slot.z);
