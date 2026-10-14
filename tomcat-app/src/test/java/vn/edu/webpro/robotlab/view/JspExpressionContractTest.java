@@ -83,6 +83,8 @@ final class JspExpressionContractTest {
             Map.entry("component", Component.class),
             Map.entry("session", AssemblySession.class),
             Map.entry("assemblyLayout", AssemblyLayout.class),
+            Map.entry("assemblyDrawing", AssemblyDrawing.class),
+            Map.entry("drawingItem", DrawingItem.class),
             Map.entry("assemblyPlaced", AssemblyPlacement.class),
             Map.entry("assemblyCheckReport", AssemblyCheckReport.class),
             Map.entry("rc", RobotComponent.class),

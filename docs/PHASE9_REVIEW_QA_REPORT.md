@@ -33,4 +33,11 @@ Node mới đã đỏ trước implementation; cuối177Node/100JUnit, package J
 Guard hồ sơ chỉ thêm014 vào danh sách migration của chức năng khác, vẫn chặn migration lạ.
 Live phiên35: ATTACH ACCEPTED → ATTACH REJECTED sai hướng → DETACH ACCEPTED → ATTACH ACCEPTED.
 Retry và NOT_FOUND không thêm dòng; từ chối giữ layout_version. Evidence m1-results.json.
-M2–M6 chưa hoàn tất; không coi M1 là nghiệm thu toàn đợt.
+## M2 — Bản vẽ theo phiên
+
+AssemblyDrawing/DrawingItem dựng hai phép chiếu x,z và x,y, khối gợi hình theo loại.
+JUnit đã đỏ do thiếu bean, sau đó103/103; Node177/177 xanh. Test10 mục/cả hai góc,
+bounds SVG, khung rỗng/một vật thể không chia0, GROUP không đoán tọa độ.
+Fragment core JSTL/c:out, tọa độ SVG chỉ từ getter số; có chú giải và giới hạn tỉ lệ.
+BEANS map đăng ký hai bean; Jasper/render fragment sẽ kiểm trên trang thật ở M3.
+M3–M6 chưa hoàn tất; không coi M2 là nghiệm thu toàn đợt.

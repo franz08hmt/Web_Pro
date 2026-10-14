@@ -1,0 +1,66 @@
+<p>Bản vẽ giản lược theo mô phỏng, không theo tỉ lệ kỹ thuật.</p>
+<div class="assembly-drawing-grid">
+    <section aria-labelledby="drawing-top-title">
+        <h3 id="drawing-top-title">Nhìn từ trên</h3>
+        <svg viewBox="0 0 ${assemblyDrawing.width} ${assemblyDrawing.height}" role="img" aria-labelledby="drawing-top-title">
+            <c:forEach var="drawingItem" items="${assemblyDrawing.topItems}">
+                <g class="drawing-item">
+                    <title><c:out value="${drawingItem.instanceLabel}" /> — <c:out value="${drawingItem.slotLabel}" /></title>
+                    <c:choose>
+                        <c:when test="${drawingItem.circle}">
+                            <circle cx="${drawingItem.centerX}" cy="${drawingItem.centerY}" r="${drawingItem.radius}" />
+                        </c:when>
+                        <c:otherwise>
+                            <rect x="${drawingItem.svgX}" y="${drawingItem.svgY}"
+                                  width="${drawingItem.svgWidth}" height="${drawingItem.svgHeight}" rx="6" />
+                        </c:otherwise>
+                    </c:choose>
+                    <text x="${drawingItem.centerX}" y="${drawingItem.centerY}"><c:out value="${drawingItem.number}" /></text>
+                </g>
+            </c:forEach>
+        </svg>
+    </section>
+    <section aria-labelledby="drawing-side-title">
+        <h3 id="drawing-side-title">Nhìn ngang</h3>
+        <svg viewBox="0 0 ${assemblyDrawing.width} ${assemblyDrawing.height}" role="img" aria-labelledby="drawing-side-title">
+            <c:forEach var="drawingItem" items="${assemblyDrawing.sideItems}">
+                <g class="drawing-item">
+                    <title><c:out value="${drawingItem.instanceLabel}" /> — <c:out value="${drawingItem.slotLabel}" /></title>
+                    <c:choose>
+                        <c:when test="${drawingItem.circle}">
+                            <circle cx="${drawingItem.centerX}" cy="${drawingItem.centerY}" r="${drawingItem.radius}" />
+                        </c:when>
+                        <c:otherwise>
+                            <rect x="${drawingItem.svgX}" y="${drawingItem.svgY}"
+                                  width="${drawingItem.svgWidth}" height="${drawingItem.svgHeight}" rx="6" />
+                        </c:otherwise>
+                    </c:choose>
+                    <text x="${drawingItem.centerX}" y="${drawingItem.centerY}"><c:out value="${drawingItem.number}" /></text>
+                </g>
+            </c:forEach>
+        </svg>
+    </section>
+</div>
+<div class="workspace-table-scroll" role="region" aria-label="Chú giải bản vẽ" tabindex="0">
+    <table>
+        <caption>Chú giải vật thể đã lắp</caption>
+        <thead>
+            <tr>
+                <th scope="col">STT</th>
+                <th scope="col">Vật thể</th>
+                <th scope="col">Điểm gắn</th>
+                <th scope="col">Hướng</th>
+            </tr>
+        </thead>
+        <tbody>
+            <c:forEach var="drawingItem" items="${assemblyDrawing.topItems}">
+                <tr>
+                    <th scope="row"><c:out value="${drawingItem.number}" /></th>
+                    <td><c:out value="${drawingItem.instanceLabel}" /></td>
+                    <td><c:out value="${drawingItem.slotLabel}" /></td>
+                    <td><c:out value="${drawingItem.orientationLabel}" /></td>
+                </tr>
+            </c:forEach>
+        </tbody>
+    </table>
+</div>

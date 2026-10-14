@@ -294,7 +294,7 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 
 - [x] M0: baseline, kế hoạch, ADMIN QA riêng, camera/mobile và góc khay; build/test xanh.
 - [x] M1: nhật ký cùng transaction, ERD/migration014, bean/DB/test và HTTP thứ tự.
-- [ ] M2: bản vẽ SVG theo dữ liệu phiên và test tỉ lệ.
+- [x] M2: bản vẽ SVG theo dữ liệu phiên và test tỉ lệ; render thật nối ở M3.
 - [ ] M3: trang hoàn thiện Servlet/JSP bốn phần, điều hướng/in/quiz.
 - [ ] M4: events API owner và replay chỉ đọc.
 - [ ] M5: undo có bean/version/khóa, không Redo.
