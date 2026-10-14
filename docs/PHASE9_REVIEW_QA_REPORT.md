@@ -21,4 +21,16 @@ baseline/m0 test logs, protected-before.json và database-before.json (hash, kh�
 Không bịa số chương/slide: slide pptx có Word nhúng; tài liệu đợt9 ghi tên chủ đề
 Servlet/request/response/JavaBean/EL/JSTL/JDBC/session/transaction khi chưa trích xác minh.
 
-M1–M6 chưa hoàn tất; không coi M0 là nghiệm thu toàn đợt.
+## M1 — Nhật ký transaction
+
+ERD viết trước migration014, thêm một bảng và spec_id phục vụ FK cùng phiên/spec.
+DDL014 đã chạy đúng DB local, schema_migrations có014, tổng44 bảng. Không backfill
+hoặc sửa spec/session hoàn tất cũ. ACCEPTED và placement/version cùng commit;
+REJECTED commit riêng dữ kiện từ chối trong cùng khóa phiên, không đổi mô hình/version.
+Không ghi NOT_FOUND/UNCHANGED hoặc thao tác trên phiên COMPLETED đã khóa; cap300 từ chối.
+Bean sự kiện giữ hướng trước, nhãn tiếng Việt và Date/formatter giờ Việt Nam.
+Node mới đã đỏ trước implementation; cuối177Node/100JUnit, package JDK17 xanh.
+Guard hồ sơ chỉ thêm014 vào danh sách migration của chức năng khác, vẫn chặn migration lạ.
+Live phiên35: ATTACH ACCEPTED → ATTACH REJECTED sai hướng → DETACH ACCEPTED → ATTACH ACCEPTED.
+Retry và NOT_FOUND không thêm dòng; từ chối giữ layout_version. Evidence m1-results.json.
+M2–M6 chưa hoàn tất; không coi M1 là nghiệm thu toàn đợt.

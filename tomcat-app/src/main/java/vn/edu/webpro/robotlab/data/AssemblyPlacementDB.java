@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import vn.edu.webpro.robotlab.business.AssemblyLayout;
+import vn.edu.webpro.robotlab.business.AssemblyEvent;
 import vn.edu.webpro.robotlab.business.AssemblySpec;
 import vn.edu.webpro.robotlab.business.AssemblySlot;
 import vn.edu.webpro.robotlab.business.AssemblyInstance;
@@ -139,6 +140,7 @@ public class AssemblyPlacementDB {
         Connection connection = pool.getConnection();
         boolean original = true;
         boolean started = false;
+        boolean committed = false;
         PreparedStatement ps = null;
         try {
             original = connection.getAutoCommit();
@@ -165,8 +167,20 @@ public class AssemblyPlacementDB {
                 return layout;
             }
             if (!reason.isEmpty()) {
+                if (!"NOT_FOUND".equals(reason) && !"COMPLETED".equals(layout.getStatus())
+                        && AssemblyEventDB.countRejected(connection, id, userId) < 300) {
+                    AssemblyEvent event = new AssemblyEvent();
+                    event.capture(action, layout, instanceId, slotId, orientation);
+                    event.setOutcome("REJECTED");
+                    event.setReasonCode(reason);
+                    AssemblyEventDB.insert(connection, event, userId);
+                    connection.commit();
+                    committed = true;
+                }
                 throw new AssemblyPlacementException(reason, layout);
             }
+            AssemblyEvent event = new AssemblyEvent();
+            event.capture(action, layout, instanceId, slotId, orientation);
             if ("attach".equals(action)) {
                 ps = connection.prepareStatement("INSERT INTO assembly_placements "
                         + "(instance_id, session_id, spec_id, slot_id, component_id, orientation_code) "
@@ -212,10 +226,13 @@ public class AssemblyPlacementDB {
             }
             AssemblyLayout updated = load(connection, id, userId, false);
             updated.setTransitioned("complete".equals(action));
+            event.setLayoutVersionAfter(updated.getLayoutVersion());
+            AssemblyEventDB.insert(connection, event, userId);
             connection.commit();
+            committed = true;
             return updated;
         } catch (SQLException | IllegalArgumentException e) {
-            if (started) {
+            if (started && !committed) {
                 try {
                     connection.rollback();
                 } catch (SQLException rollbackError) {

@@ -183,7 +183,8 @@ test("the learning profile adds no schema migration", () => {
   const migrationDir = path.join(root, "database", "migrations");
   // Các đợt nhiệm vụ/nối dây/lắp ráp có migration riêng; hồ sơ vẫn không thêm bảng.
   const otherFeatureMigrations = ["009_practice_tasks.sql", "010_diagnosis_practice.sql",
-    "011_wiring_practice.sql", "012_wiring_support.sql", "013_assembly_placement.sql"];
+    "011_wiring_practice.sql", "012_wiring_support.sql", "013_assembly_placement.sql",
+    "014_assembly_events.sql"];
   const phaseFiveMigrations = fs.readdirSync(migrationDir).filter(name =>
     (/^00[9-9]|^0[1-9]\d/.test(name)) && !otherFeatureMigrations.includes(name));
   assert.deepEqual(phaseFiveMigrations, [], "Đợt 5 dùng dữ liệu đang có, không thêm migration");

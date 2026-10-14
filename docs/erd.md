@@ -1,5 +1,25 @@
 # ERD - Robot Lab
 
+## Nhật ký lắp ráp — thiết kế trước migration 014, 14/10/2026
+
+assembly_events: PK id BIGINT UNSIGNED, session_id FK RESTRICT; action ATTACH/DETACH/
+RESET/COMPLETE/UNDO, outcome ACCEPTED/REJECTED và reason_code nullable. Có spec_id
+nullable để FK(session_id,spec_id) cùng cấu hình phiên; FK(instance_id,session_id)
+và FK(slot_id,spec_id) chặn tham chiếu vật thể/điểm của phiên/cấu hình khác.
+Orientation và prev_orientation là dữ kiện thao tác (không FK tới hướng chấp nhận,
+vì nhật ký phải ghi được hướng bị từ chối), CHECK bốn mã hướng hoặc NULL.
+UNDO dùng undo_of_event_id UNIQUE và FK(undo_of_event_id,session_id) cùng phiên;
+UNIQUE(id,session_id) phục vụ FK này. Chỉ UNDO ACCEPTED mới có tham chiếu undo.
+layout_version_after ghi phiên bản sau thao tác; created_at DATETIME server.
+INDEX(session_id,id) cho đọc thứ tự/undo; các FK ON DELETE RESTRICT giữ lịch sử.
+
+Không backfill hoặc sửa phiên/spec đã hoàn tất. ACCEPTED cùng transaction placement;
+REJECTED tối đa300/phiên, không tăng version/đổi mô hình. Không ghi quyền/NOT_FOUND,
+UNCHANGED hoặc thao tác trên phiên COMPLETED đã khóa (giữ lịch sử hoàn tất bất biến).
+Reset là rào undo, không phục hồi các thao tác trước RESET. UNDO kiểm lại luật bean,
+khóa phiên trước đọc sự kiện gần nhất; UNIQUE chặn cùng sự kiện bị undo hai lần.
+Phiên GROUP không có dữ kiện tọa độ, không tạo nhật ký placement; kết quả cũ vẫn đọc.
+
 ## Lắp ráp có kiểm chứng — thiết kế trước migration 013
 
 Thiết kế ngày 12/10/2026, không chuyển đổi phiên GROUP cũ. Sáu bảng/cột:
