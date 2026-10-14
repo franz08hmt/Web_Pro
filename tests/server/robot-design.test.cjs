@@ -111,3 +111,16 @@ test("design check is calculated under owner version lock and mutations invalida
   assert.match(check, /"UNSUPPORTED"/);
   assert.match(check, /"SERVO_HORN"/);
 });
+
+test("design sheet forwards owner scoped snapshot and reuses drawing and shared learning error classification", () => {
+  const base = "tomcat-app/src/main/java/vn/edu/webpro/robotlab/";
+  const servlet = read(base + "controller/DesignSheetServlet.java");
+  assert.match(servlet, /user\.getId\(\)/);
+  assert.match(servlet, /setAttribute/);
+  assert.match(servlet, /getRequestDispatcher\(url\)\.forward/);
+  assert.match(servlet, /"no-store"/);
+  assert.match(read(base + "business/DesignSheet.java"), /rule\.isLearningError\(event\.getReasonCode\(\)\)/);
+  const drawing = read(base + "business/AssemblyDrawing.java");
+  assert.doesNotMatch(drawing, /throw new IllegalArgumentException/);
+  assert.match(read("tomcat-app/src/main/webapp/WEB-INF/views/design-sheet.jsp"), /assembly-drawing\.jspf/);
+});

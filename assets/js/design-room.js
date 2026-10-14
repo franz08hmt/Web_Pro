@@ -55,6 +55,8 @@
   cameraUpdate();
   function sync(layout) {
     latest = layout;
+    const sheet = document.getElementById("design-sheet-link");
+    sheet.href = "../design-sheet?id=" + encodeURIComponent(layout.designId); sheet.hidden = false;
     document.getElementById("design-name").textContent = layout.name;
     status.textContent = `${layout.statusLabel} · ${layout.goalLabel} · luật phiên bản ${layout.ruleVersion}.`;
     view.sync(layout);

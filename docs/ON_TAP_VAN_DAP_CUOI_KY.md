@@ -989,6 +989,8 @@ c:out: [assembly-drawing.jspf:6](../tomcat-app/src/main/webapp/WEB-INF/views/ass
 Đợt9b lấy phía trước từ z của cảm biến so với nền: ở trên trong hình nhìn từ trên,
 ở bên phải trong hình nhìn ngang. Bean vẽ hình lớn trước và dời nhãn có tâm cách
 nhãn khác dưới44 đơn vị SVG ra ngoài, có đường nối về vật thể. JSP chỉ đọc getter:
+Nếu khung quá chật không tìm được chỗ trống, giữ nhãn tại tâm và đọc bảng chú giải
+đầy đủ; không ném lỗi làm trang 500. Nhãn có thể gần nhau trong trường hợp dự phòng.
 [AssemblyDrawing.java:220](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyDrawing.java#L220).
 
 **Thống kê “Những lần cần sửa” có tính lỗi tab hoặc hoàn tác trống không?** Không.

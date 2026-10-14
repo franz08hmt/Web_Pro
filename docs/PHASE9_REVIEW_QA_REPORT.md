@@ -248,3 +248,17 @@ Chưa kiểm Firefox/Safari, cảm ứng vật lý hoặc screen reader trong9b.
 Đã dừng đúng process QA, xóa CATALINA_BASE/config/log tạm,8081 đóng; không đụng8080.
 Runtime không có exception ứng dụng; không lưu cookie/password. Một commit local
 `fix(assembly): count only learning errors and clarify drawing labels`, không push.
+
+### Bổ sung M6 Đợt 10 — tái sử dụng an toàn
+
+`AssemblyDrawing.placeLabels` hết chỗ sẽ giữ nhãn tại tâm, không ném lỗi làm trang 500;
+bảng chú giải vẫn đủ mọi vật thể. JUnit dựng 30 vật thể trong khung 160×160 xác nhận
+hai hình có đủ 30 mục, tọa độ hình/nhãn nằm trong khung. Test cũ 40 vật thể tách nhãn
+trong khung mặc định vẫn giữ nguyên và đạt. Khi khung quá chật, không cam kết nhãn
+đều cách nhau 44 đơn vị; bảng chú giải là phương án đọc đầy đủ.
+
+`AssemblyReview.isLearningError` dùng chung cho Xưởng, thêm MOUNT_INCOMPATIBLE,
+MOUNT_OCCUPIED, HOST_MISSING, NOT_SUPPORTED. Test và hồ sơ HTTP thật xác nhận lỗi tab,
+hoàn tác trống, khóa phiên và request sai không được tính là lỗi lắp ghép.
+Không sửa dữ liệu phiên lắp mẫu. Bộ test tại M6:191 Node/124 JUnit, package Java17 đạt.
+PDF hồ sơ Xưởng 3 trang đã render/xem, bằng chứng ngoài Git:qa-evidence/phase10.

@@ -35,6 +35,7 @@
                         <p><c:out value="${designRecord.lastCheckSummary}" /></p>
                     </c:if>
                     <p class="design-actions">
+                        <a href="${pageContext.request.contextPath}/design-sheet?id=${designRecord.id}">Hồ sơ thiết kế</a>
                         <a href="${pageContext.request.contextPath}/pages/xuong-thiet-ke.html?design=${designRecord.id}">
                             Mở phòng lắp thiết kế</a>
                         <a href="${pageContext.request.contextPath}/designs?action=rename&amp;id=${designRecord.id}">Đổi tên</a>

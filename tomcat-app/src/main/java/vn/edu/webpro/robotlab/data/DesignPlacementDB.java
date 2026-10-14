@@ -10,11 +10,51 @@ import vn.edu.webpro.robotlab.business.DesignPlacement;
 import vn.edu.webpro.robotlab.business.DesignSlot;
 import vn.edu.webpro.robotlab.business.DesignEvent;
 import vn.edu.webpro.robotlab.business.DesignCheck;
+import vn.edu.webpro.robotlab.business.DesignSheet;
 import vn.edu.webpro.robotlab.business.RobotDesign;
 import vn.edu.webpro.robotlab.util.DesignException;
 
 /** JDBC bố cục riêng, khóa owner/design trước khi gọi luật JavaBean và ghi nhật ký. */
 public class DesignPlacementDB {
+    /** Hồ sơ owner-scoped từ cùng snapshot luật/bố cục/kit/nhật ký, GET không ghi kết quả. */
+    public static DesignSheet selectSheet(long id, long userId) throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        boolean original = true;
+        boolean started = false;
+        try {
+            original = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            started = true;
+            DesignLayout layout = load(connection, id, userId, false);
+            DesignSheet sheet = null;
+            if (layout != null) {
+                sheet = new DesignSheet();
+                sheet.build(layout, UserKitDB.readItems(connection, userId, layout.getRules()),
+                        DesignEventDB.readEvents(connection, id, userId));
+            }
+            connection.commit();
+            return sheet;
+        } catch (SQLException e) {
+            if (started) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollback) {
+                    e.addSuppressed(rollback);
+                }
+            }
+            throw e;
+        } finally {
+            try {
+                if (started) {
+                    connection.setAutoCommit(original);
+                }
+            } finally {
+                pool.freeConnection(connection);
+            }
+        }
+    }
+
     /** Kiểm lại và lưu kết luận dưới cùng khóa phiên bản; không nhận điểm/kết luận client. */
     public static DesignLayout check(long id, long userId, int version) throws SQLException {
         ConnectionPool pool = ConnectionPool.getInstance();

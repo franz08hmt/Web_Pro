@@ -207,7 +207,9 @@ public class AssemblyReview implements Serializable {
     public boolean isLearningError(String code) {
         return "WRONG_COMPONENT".equals(code) || "SLOT_OCCUPIED".equals(code)
                 || "ORIENTATION_NOT_ALLOWED".equals(code) || "PARENT_MISSING".equals(code)
-                || "ALREADY_PLACED".equals(code) || "HAS_DEPENDENTS".equals(code);
+                || "ALREADY_PLACED".equals(code) || "HAS_DEPENDENTS".equals(code)
+                || "MOUNT_INCOMPATIBLE".equals(code) || "MOUNT_OCCUPIED".equals(code)
+                || "HOST_MISSING".equals(code) || "NOT_SUPPORTED".equals(code);
     }
 
     /** So kết quả bằng tỷ lệ câu đúng, giữ giá trị điểm đã lưu để hiển thị. */

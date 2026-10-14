@@ -5,6 +5,32 @@ import org.junit.jupiter.api.Test;
 
 class AssemblyDrawingTest {
     @Test
+    void thirtyItemsInACrowdedFrameKeepAllLegendEntriesWithoutThrowing() {
+        AssemblyDrawing drawing = new AssemblyDrawing();
+        drawing.setWidth(160);
+        drawing.setHeight(160);
+        AssemblyLayout layout = layout(30);
+        for (AssemblySlot slot : layout.getSpec().getSlots()) {
+            slot.setX(0);
+            slot.setY(0);
+            slot.setZ(0);
+        }
+        drawing.build(layout);
+        assertEquals(30, drawing.getTopItems().size());
+        assertEquals(30, drawing.getSideItems().size());
+        java.util.List<DrawingItem> all = new java.util.ArrayList<>();
+        all.addAll(drawing.getTopItems());
+        all.addAll(drawing.getSideItems());
+        for (DrawingItem item : all) {
+            assertTrue(item.getSvgX() >= 0 && item.getSvgY() >= 0);
+            assertTrue(item.getSvgX() + item.getSvgWidth() <= drawing.getWidth());
+            assertTrue(item.getSvgY() + item.getSvgHeight() <= drawing.getHeight());
+            assertTrue(item.getLabelX() >= 0 && item.getLabelX() <= drawing.getWidth());
+            assertTrue(item.getLabelY() >= 0 && item.getLabelY() <= drawing.getHeight());
+        }
+    }
+
+    @Test
     void overlappingModelsHaveSeparatedLabelsInBothViews() {
         AssemblyLayout model = layout(40);
         for (AssemblySlot slot : model.getSpec().getSlots()) {

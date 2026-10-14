@@ -3058,5 +3058,352 @@
       "reviewQuizUrl",
       "reviewRetryUrl"
     ]
+  },
+  "my-kit.jsp": {
+    "controls": [
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/my-kit"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": ""
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "save"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "componentId",
+          "value": ""
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "number",
+          "name": "quantity_",
+          "min": "0",
+          "max": "10",
+          "required": true,
+          "value": ""
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "submit"
+        }
+      },
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/my-kit"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": ""
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "import"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "submit"
+        }
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "not empty designError",
+      "designError",
+      "param.saved eq '1'",
+      "sessionScope.csrfToken",
+      "kitItems",
+      "kitItem.name",
+      "not empty kitItem.imagePath",
+      "kitItem.imagePath",
+      "kitItem.category",
+      "kitItem.supportLabel",
+      "kitItem.componentId",
+      "kitItem.inputValue",
+      "not empty kitItem.shopPath",
+      "kitItem.shopPath"
+    ]
+  },
+  "design-list.jsp": {
+    "controls": [],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "not empty designError",
+      "designError",
+      "param.saved eq '1'",
+      "empty designRecords",
+      "designRecords",
+      "designRecord.name",
+      "designRecord.goalName",
+      "designRecord.sourceLabel",
+      "designRecord.statusLabel",
+      "designRecord.updatedAtLabel",
+      "designRecord.checked",
+      "designRecord.lastCheckSummary",
+      "designRecord.id"
+    ]
+  },
+  "design-form.jsp": {
+    "controls": [
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/designs"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": ""
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": ""
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "id",
+          "value": ""
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "expectedLayoutVersion",
+          "value": ""
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "name",
+          "required": true,
+          "maxlength": "80",
+          "value": ""
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "submit"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "checkbox",
+          "name": "confirmDelete",
+          "value": "yes",
+          "required": true
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "submit"
+        }
+      },
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${pageContext.request.contextPath}/designs"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": ""
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "action",
+          "value": "create"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "name": "name",
+          "required": true,
+          "maxlength": "80",
+          "value": ""
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "goalCode",
+          "value": "",
+          "required": true,
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "source",
+          "value": "KIT",
+          "required": true,
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "source",
+          "value": "LIBRARY",
+          "required": true,
+          "checked": true
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "componentId",
+          "value": ""
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "number",
+          "name": "quantity_",
+          "min": "0",
+          "max": "10",
+          "required": true,
+          "value": ""
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "submit"
+        }
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "not empty designError",
+      "designError",
+      "not empty metadataAction",
+      "designDraft.name",
+      "sessionScope.csrfToken",
+      "metadataAction",
+      "designDraft.id",
+      "designDraft.layoutVersion",
+      "metadataAction eq 'rename'",
+      "designGoals",
+      "designGoal.code",
+      "designGoal.code eq designDraft.goalCode",
+      "designGoal.name",
+      "designDraft.fromKit",
+      "not designDraft.fromKit",
+      "kitItems",
+      "kitItem.name",
+      "kitItem.supportLabel",
+      "kitItem.quantity",
+      "kitItem.componentId",
+      "kitItem.inputValue"
+    ]
+  },
+  "design-sheet.jsp": {
+    "controls": [
+      {
+        "tag": "button",
+        "attributes": {
+          "id": "assembly-review-print",
+          "type": "button"
+        }
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "not empty designError",
+      "designError",
+      "not empty designSheet",
+      "sheetDesign.name",
+      "sheetDesign.goalName",
+      "sheetDesign.sourceLabel",
+      "sheetDesign.updatedAtLabel",
+      "designSheet.layout.rules.versionNo",
+      "sheetDesign.id",
+      "assemblyDrawing.available",
+      "designSheet.bomItems",
+      "designBom.name",
+      "designBom.needed",
+      "designBom.owned",
+      "designBom.missing",
+      "not empty designBom.shopPath",
+      "designBom.shopPath",
+      "empty designSheet.steps",
+      "designSheet.steps",
+      "designStep.number",
+      "designStep.description",
+      "designSheet.hasReport",
+      "sheetDesign.lastCheckSummary",
+      "sheetDesign.lastCheckedAtLabel",
+      "sheetCheck.items",
+      "sheetCheckItem.layer",
+      "sheetCheckItem.resultLabel",
+      "sheetCheckItem.message",
+      "empty designSheet.learningErrors",
+      "designSheet.learningErrors",
+      "designErrorCount.label",
+      "designErrorCount.count"
+    ]
   }
 }

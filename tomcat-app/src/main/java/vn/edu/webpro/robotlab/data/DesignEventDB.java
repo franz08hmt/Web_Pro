@@ -84,6 +84,15 @@ public class DesignEventDB {
     public static List<DesignEvent> selectEvents(long id, long userId) throws SQLException {
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection connection = pool.getConnection();
+        try {
+            return readEvents(connection, id, userId);
+        } finally {
+            pool.freeConnection(connection);
+        }
+    }
+
+    /** Dùng snapshot hồ sơ cùng connection, không mở thêm truy vấn từng vật thể. */
+    public static List<DesignEvent> readEvents(Connection connection, long id, long userId) throws SQLException {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
@@ -108,7 +117,6 @@ public class DesignEventDB {
         } finally {
             DBUtil.closeResultSet(rs);
             DBUtil.closePreparedStatement(ps);
-            pool.freeConnection(connection);
         }
     }
 

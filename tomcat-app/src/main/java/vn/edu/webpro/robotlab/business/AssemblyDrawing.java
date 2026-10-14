@@ -237,7 +237,9 @@ public class AssemblyDrawing implements Serializable {
                     }
                 }
                 if (!Double.isFinite(best)) {
-                    throw new IllegalArgumentException("Khung bản vẽ không đủ chỗ cho các nhãn.");
+                    // Khung đông vật thể vẫn đọc được toàn bộ chú giải, không làm trang lỗi 500.
+                    item.setLabelX(x);
+                    item.setLabelY(y);
                 }
             } else {
                 item.setLabelX(x);
