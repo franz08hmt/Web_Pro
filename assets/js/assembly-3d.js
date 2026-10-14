@@ -2,6 +2,8 @@
 
 (async () => {
   const params = new URLSearchParams(window.location.search);
+  const replayMode = params.get("replay") === "1";
+  let replayController = null;
   const modelId = params.get("model") || "line-follower";
   let robotModels = window.ROBOT_MODELS || [];
   let contentWarning = "";
@@ -111,7 +113,7 @@
   }
 
   function syncDriveAvailability() {
-    const available = Boolean(activeSession?.status === "COMPLETED" && driveController);
+    const available = Boolean(!replayMode && activeSession?.status === "COMPLETED" && driveController);
     if (drivePanel) drivePanel.hidden = !available;
     if (!available) setDriveMode(false);
   }
@@ -169,6 +171,7 @@
     if (!activeSession || !sessionApi || !completeButton) return;
 
     completeButton.disabled = true;
+    if (replayMode) return;
     if (placementLayout) {
       setCompleteStatus("Server đang kiểm tra từng vật thể…", "loading");
       try {
@@ -201,6 +204,10 @@
   /* Mở/tiếp tục phiên lắp ráp của tài khoản: quản lý trạng thái phiên và
      danh sách linh kiện. Không còn danh sách bước lắp ráp trong phòng 3D. */
   async function restoreSession() {
+    if (replayMode) {
+      await restoreReplay();
+      return;
+    }
     if (!sessionApi) {
       if (requestedSessionId) {
         setPartInputsDisabled(true);
@@ -680,6 +687,7 @@
   }
 
   async function resetAssembly() {
+    if (replayMode) return;
     if (placementLayout) {
       if (!window.confirm("Tháo toàn bộ vật thể đã gắn? Phiên và bộ kit vẫn được giữ.")) return;
       try {
@@ -819,6 +827,38 @@
   }
 
 
+  async function restoreReplay() {
+    partsContainer.replaceChildren();
+    for (const node of [resetButton, completeButton, checkButton, drivePanel, explodeButton, completeResult]) {
+      if (node) node.hidden = true;
+    }
+    if (!sessionApi || !requestedSessionId || !window.THREE || !window.createAssemblyReplay) {
+      setSyncStatus("Không thể mở chế độ xem lại. Hãy quay về trang hoàn thiện.", "error");
+      return;
+    }
+    try {
+      const layout = await sessionApi.layout(requestedSessionId);
+      if (layout.mode !== "DETAILED" || layout.status !== "COMPLETED") {
+        setSyncStatus("Chỉ xem lại quá trình của phiên lắp chi tiết đã hoàn tất.", "waiting");
+        return;
+      }
+      activeSession = await sessionApi.get(requestedSessionId);
+      if (activeSession.robotId !== model.id) throw new Error("Phiên này không thuộc mẫu robot đã chọn.");
+      const events = await sessionApi.events(requestedSessionId);
+      restoreVisualAssembly(new Set());
+      placementView = window.createAssemblyPlacementView({THREE, camera, root: robotGroup,
+        canvas: renderer.domElement, panel: partsContainer, readOnly: true});
+      replayController = window.createAssemblyReplay({layout, events, view: placementView, panel: partsContainer});
+      cameraState.target.set(0, .8, 1.5);
+      cameraState.radius = 10;
+      updateCamera();
+      setSyncStatus("Đang xem lại dữ liệu đã lưu; không thay đổi phiên.", "saved");
+      if (progressElement) progressElement.hidden = true;
+      if (progressValue) progressValue.hidden = true;
+      if (progressCounter) progressCounter.hidden = true;
+    } catch (error) { setSyncStatus(error.message, "error"); }
+  }
+
   async function restoreDetailed() {
     const layout = await sessionApi.layout(activeSession.id);
     if (!window.createAssemblyPlacementView) throw new Error("Không thể tải công cụ gắn vật thể.");
@@ -865,7 +905,7 @@
   }
 
   checkButton?.addEventListener("click", async () => {
-    if (!placementLayout || !activeSession) return;
+    if (replayMode || !placementLayout || !activeSession) return;
     try {
       const report = await sessionApi.checkLayout(activeSession.id);
       const details = [...report.missingSlots, ...report.errors];
@@ -884,6 +924,7 @@
   window.addEventListener("pagehide", () => {
     setDriveMode(false);
     placementView?.dispose();
+    replayController?.dispose();
   });
   driveToggleButton?.addEventListener("click", () => {
     if (activeSession?.status !== "COMPLETED") return;

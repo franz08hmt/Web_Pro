@@ -59,6 +59,10 @@ window.createAssemblyPlacementView = function (options) {
   panel.replaceChildren(heading, help, live, tray, slots, directions,
     rotateLeft, rotateRight, attach, cancel, retry, reload, installed);
   panel.classList.add("assembly-placement");
+  if (options.readOnly) {
+    for (const node of [heading, help, live, tray, slots, directions, rotateLeft, rotateRight,
+      attach, cancel, retry, reload]) node.hidden = true;
+  }
 
   function message(text, state) {
     live.textContent = text;
@@ -206,6 +210,7 @@ window.createAssemblyPlacementView = function (options) {
         const remove = document.createElement("button");
         remove.type = "button";
         remove.textContent = "Tháo";
+        remove.hidden = Boolean(options.readOnly);
         remove.setAttribute("aria-label", `Tháo ${item.label}`);
         remove.addEventListener("click", () => mutate("detach", String(item.id)));
         row.append(remove);

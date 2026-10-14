@@ -140,6 +140,9 @@
     async layout(sessionId) {
       return (await request(`/assembly-sessions/${segment(sessionId)}/layout`)).data;
     },
+    async events(sessionId) {
+      return (await request(`/assembly-sessions/${segment(sessionId)}/events`)).data;
+    },
     async attach(sessionId, instanceId, slotId, orientation, expectedLayoutVersion) {
       return (await request(`/assembly-sessions/${segment(sessionId)}/placements`, {
         method: "POST", csrf: true,

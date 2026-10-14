@@ -58,4 +58,14 @@ và xem mọi trang. Runtime/PDF phát hiện fragment thiếu pageEncoding bị
 sai dấu; đã thêm UTF-8 riêng, test đỏ→xanh và kiểm lại HTML thật đúng chữ.
 Print áp box-sizing trong namespace riêng; không mang header/menu/theme tối vào PDF.
 Evidence m3-results.json, review-old-desktop/390.png, review-old.pdf và review-print-*.png.
-M4–M6 chưa hoàn tất; replay phiên mới có nhật ký sẽ kiểm sau M5 hoàn tất.
+## M4 — Events API và replay chỉ đọc
+
+GET events kiểm owner, chỉ trả ACCEPTED theo id, kèm undone. Replay giữ dòng đã
+undo để tái hiện quá trình thật rồi áp UNDO; RESET về trống. Không tự chấm hoặc gọi
+API ghi. Restore replay rẽ nhánh trước create/resume/autostart, ẩn controls ghi,
+timer được dọn pagehide; reduced-motion chỉ bấm từng bước. GROUP/pending không replay.
+181Node/105JUnit/package xanh; Node test frames và source-only network/read ownership.
+HTTP/Chrome9 ca: events35 chỉ3 ACCEPTED, other404; replay33 cũ báo không có nhật ký,
+controls ghi ẩn,390 không tràn; pending35 chỉ thông báo; không network write/pageerror.
+Replay đầy đủ trên phiên mới hoàn tất sẽ kiểm ở M5/M6, không lấy ca không nhật ký
+làm bằng chứng đã phát lại đủ10 vật thể. Các VM test completion vẫn kiểm normal mode.

@@ -6,10 +6,38 @@ import vn.edu.webpro.robotlab.business.AssemblySlot;
 import vn.edu.webpro.robotlab.business.AssemblyInstance;
 import vn.edu.webpro.robotlab.business.AssemblyPlacement;
 import vn.edu.webpro.robotlab.business.AssemblyCheckReport;
+import vn.edu.webpro.robotlab.business.AssemblyEvent;
 
 /** Chuyển dữ kiện bean thành JSON; không chứa công thức hoặc quyết định gắn. */
 public final class AssemblyPlacementJson {
     private AssemblyPlacementJson() {
+    }
+
+    /** Chỉ phát lại các thay đổi được lưu, kể cả dấu hoàn tác của từng sự kiện. */
+    public static String events(List<AssemblyEvent> events) {
+        StringBuilder json = new StringBuilder("[");
+        for (AssemblyEvent event : events) {
+            if (!event.isAccepted()) {
+                continue;
+            }
+            if (json.length() > 1) {
+                json.append(',');
+            }
+            json.append("{\"id\":").append(JsonUtil.quote(Long.toString(event.getId())))
+                    .append(",\"action\":").append(JsonUtil.quote(event.getAction()))
+                    .append(",\"actionLabel\":").append(JsonUtil.quote(event.getActionLabel()))
+                    .append(",\"instanceId\":").append(JsonUtil.quote(Long.toString(event.getInstanceId())))
+                    .append(",\"slotId\":").append(JsonUtil.quote(Long.toString(event.getSlotId())))
+                    .append(",\"orientation\":").append(JsonUtil.quote(event.getOrientationCode()))
+                    .append(",\"prevOrientation\":").append(JsonUtil.quote(event.getPrevOrientationCode()))
+                    .append(",\"instanceLabel\":").append(JsonUtil.quote(event.getInstanceLabel()))
+                    .append(",\"slotLabel\":").append(JsonUtil.quote(event.getSlotLabel()))
+                    .append(",\"orientationLabel\":").append(JsonUtil.quote(event.getOrientationLabel()))
+                    .append(",\"createdAtLabel\":").append(JsonUtil.quote(event.getCreatedAtLabel()))
+                    .append(",\"undoOfEventId\":").append(event.getUndoOfEventId())
+                    .append(",\"undone\":").append(event.isUndone()).append('}');
+        }
+        return json.append(']').toString();
     }
 
     private static String strings(List<String> values) {

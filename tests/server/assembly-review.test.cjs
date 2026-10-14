@@ -3,6 +3,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const assert = require("node:assert/strict");
 const test = require("node:test");
+const vm = require("node:vm");
 const root = path.resolve(__dirname, "../..");
 function read(file) { return fs.readFileSync(path.join(root, file), "utf8"); }
 
@@ -78,4 +79,32 @@ test("completed review uses owner scoped Servlet attributes core JSP and real mo
 
 test("drawing fragment declares UTF-8 explicitly for Jasper static inclusion", () => {
   assert.match(read("tomcat-app/src/main/webapp/WEB-INF/views/assembly-drawing.jspf"), /pageEncoding="UTF-8"/);
+});
+
+test("replay derives read-only frames from accepted events including undo and reset", () => {
+  const source = read("assets/js/assembly-3d-replay.js");
+  assert.doesNotMatch(source, /fetch\(|sessionApi|onAttach|onDetach|innerHTML/);
+  assert.match(source, /clearInterval/);
+  assert.match(source, /prefers-reduced-motion/);
+  const context = {window: {}};
+  vm.runInNewContext(source, context);
+  const frames = context.window.assemblyReplayFrames({spec: {}, placements: []}, [
+    {action: "ATTACH", instanceId: "1", slotId: "2", orientation: "Y90"},
+    {action: "UNDO", instanceId: "1", slotId: "2", orientation: null},
+    {action: "ATTACH", instanceId: "1", slotId: "2", orientation: "Y180"},
+    {action: "RESET"}
+  ]);
+  assert.equal(frames.length, 5);
+  assert.equal(frames[1].placements[0].orientation, "Y90");
+  assert.equal(frames[2].placements.length, 0);
+  assert.equal(frames[4].placements.length, 0);
+  assert.ok(frames.every(frame => frame.canEdit === false));
+});
+
+test("events endpoint verifies owner and replay bypasses automatic session mutations", () => {
+  const source = read("tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblySessionServlet.java");
+  assert.match(source, /AssemblyEventDB\.selectBySession\(sessionId, user\.getId\(\)\)/);
+  const front = read("assets/js/assembly-3d.js");
+  assert.match(front, /if \(replayMode\) \{[\s\S]*?restoreReplay\(\);[\s\S]*?return;/);
+  assert.match(front, /replayController\?\.dispose\(\)/);
 });

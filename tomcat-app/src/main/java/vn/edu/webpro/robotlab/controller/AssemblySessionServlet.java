@@ -18,6 +18,7 @@ import vn.edu.webpro.robotlab.data.RobotDB;
 import vn.edu.webpro.robotlab.util.JsonUtil;
 import vn.edu.webpro.robotlab.business.AssemblyLayout;
 import vn.edu.webpro.robotlab.data.AssemblyPlacementDB;
+import vn.edu.webpro.robotlab.data.AssemblyEventDB;
 import vn.edu.webpro.robotlab.util.AssemblyPlacementJson;
 import vn.edu.webpro.robotlab.util.AssemblyPlacementException;
 import vn.edu.webpro.robotlab.util.ResponseUtil;
@@ -406,7 +407,7 @@ public class AssemblySessionServlet extends HttpServlet {
         String path = request.getPathInfo();
         String[] segments = path == null ? new String[0] : path.substring(1).split("/");
         if (segments.length < 2 || (!"layout".equals(segments[1]) && !"placements".equals(segments[1])
-                && !"check".equals(segments[1]) && !"progress".equals(segments[1]))) {
+                && !"check".equals(segments[1]) && !"progress".equals(segments[1]) && !"events".equals(segments[1]))) {
             return false;
         }
         long intentInstanceId = 0;
@@ -434,7 +435,13 @@ public class AssemblySessionServlet extends HttpServlet {
                     throw new IllegalArgumentException("GROUP_MODE");
                 }
             }
-            if ("GET".equals(method) && segments.length == 2 && "layout".equals(segments[1])) {
+            if ("GET".equals(method) && segments.length == 2 && "events".equals(segments[1])) {
+                if (AssemblyPlacementDB.selectLayout(sessionId, user.getId()) == null) {
+                    throw new IllegalArgumentException("NOT_FOUND");
+                }
+                ResponseUtil.sendJson(response, 200, "{\"data\":"
+                        + AssemblyPlacementJson.events(AssemblyEventDB.selectBySession(sessionId, user.getId())) + "}");
+            } else if ("GET".equals(method) && segments.length == 2 && "layout".equals(segments[1])) {
                 sendLayout(response, AssemblyPlacementDB.selectLayout(sessionId, user.getId()));
             } else if ("POST".equals(method) && segments.length == 2 && "check".equals(segments[1])) {
                 AssemblyLayout layout = AssemblyPlacementDB.selectLayout(sessionId, user.getId());
