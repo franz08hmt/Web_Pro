@@ -298,5 +298,5 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] M3: trang hoàn thiện Servlet/JSP bốn phần, điều hướng/in/quiz;51 ca runtime, PDF3 trang.
 - [x] M4: events API owner và replay chỉ đọc; playback đầy đủ kiểm sau M5 hoàn tất.
 - [x] M5: undo có bean/version/khóa, không Redo; HTTP/concurrency/Ctrl+Z và replay đầy đủ đã kiểm.
-- [ ] M6: HTTP/SQL/Chrome/PDF/hồi quy, tài liệu và cleanup; không push.
+- [x] M6: HTTP/SQL/Chrome/PDF/hồi quy, tài liệu/vấn đáp và cleanup8081; không push.
 

@@ -438,3 +438,34 @@ không nêu tên. Thiếu nhãn dùng câu dự phòng. JSON quote, giao diện 
 Phiên đã khóa trả SESSION_LOCKED khi sửa/đổi hướng/tháo/reset, kể cả field sai định dạng;
 phiên còn sửa được trả VALIDATION_ERROR cho hướng ngoài Y0/Y90/Y180/Y270 hoặc thiếu field.
 Request lặp đúng hệt placement đã lưu vẫn trả unchanged, không sửa dữ liệu đã hoàn tất.
+
+## Đợt 9 — xem lại, nhật ký và hoàn tác
+
+| Route | Request | Kết quả |
+| --- | --- | --- |
+| GET `/assembly-review?session=…` | HttpSession, id phiên | Servlet setAttribute/forward JSP; chỉ chủ phiên; không ghi |
+| GET `/api/assembly-sessions/{id}/events` | HttpSession | `{data:[…]}` ACCEPTED theo id, gồm action/nhãn/vật thể/slot/hướng/hướng trước/undoOfEventId/undone/thời điểm |
+| POST `/api/assembly-sessions/{id}/undo` | JSON `{expectedLayoutVersion}`, header X-CSRF-Token | Layout đã lưu, version mới; không có Redo |
+
+Trang tổng kết và các API có `Cache-Control: no-store`. Khách vào trang tổng kết
+redirect tài khoản; API giữ401. Khác chủ/không tồn tại404; CSRF403; JDBC503 không
+lộ SQL. Phiên chưa hoàn tất vẫn200 nhưng chỉ có thông báo và link tiếp tục.
+GET tổng kết đọc quiz theo owner và robot, không tạo lượt quiz hoặc tính điểm mới.
+
+Nhật ký ghi ACCEPTED cùng transaction placement/version. Từ chối do luật bean
+ghi REJECTED (tối đa300/phiên), commit nhật ký nhưng không đổi placement/version.
+Không ghi retry unchanged, lỗi quyền/NOT_FOUND hoặc thao tác trên phiên COMPLETED.
+JSON events chỉ trả ACCEPTED; REJECTED được tổng hợp thành nhãn lỗi trên JSP.
+UNDO giữ lịch sử gốc, dùng UNIQUE undo_of_event_id và FK cùng phiên.
+
+Undo khóa phiên FOR UPDATE, kiểm version, lấy ATTACH/DETACH gần nhất chưa undo
+sau RESET cuối rồi gọi lại luật gắn/tháo. Hướng cũ lưu trong prev_orientation_code.
+Không còn thao tác:422 `NOTHING_TO_UNDO`, câu “Không còn thao tác để hoàn tác sau
+lần đặt lại gần nhất.” GROUP422 `GROUP_MODE`, đã khóa422 `SESSION_LOCKED`,
+version cũ409 `LAYOUT_CONFLICT`; các mã/HTTP cũ khác giữ nguyên.
+
+`pages/lap-rap-3d.html?model=…&session=…&replay=1` chỉ xem phiên DETAILED COMPLETED.
+Client gọi GET layout/phiên/events, dựng từ trống rồi áp ATTACH/DETACH/RESET/UNDO.
+Cả thao tác gốc đã undo vẫn được phát lại trước sự kiện đảo; không gọi API ghi.
+Không có nhật ký thì báo thiếu dữ liệu, không bịa lịch sử. Phát/Tạm dừng/Bước
+trước/Bước sau là tương tác trình bày; reduced-motion chỉ bấm từng bước.

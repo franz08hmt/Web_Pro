@@ -216,6 +216,9 @@ SOURCE D:/duong-dan/robot-engine-website/database/seed.sql;
 Sau các seed robot, chạy seed cấu hình lắp ráp theo thứ tự:
 `seed-assembly-spec-obstacle-avoider.sql` rồi `seed-assembly-spec-obstacle-avoider-v2.sql`.
 Chạy lại không sửa cấu hình đã công bố hoặc các phiên cũ.
+Database cũ có013: kiểm `schema_migrations` rồi chạy
+`database/migrations/014_assembly_events.sql` nếu chưa có014. Database mới nhận
+bảng nhật ký từ `schema.sql`, không chạy lại migration. Không có seed nhật ký.
 
 Chạy Tomcat rồi mở `http://localhost:8080/api/health`:
 
@@ -389,3 +392,20 @@ Khi IntelliJ/Tomcat đang dùng target, có thể build riêng bằng JDK17:
 Tham số tùy chọn; build thông thường vẫn dùng `tomcat-app/target`.
 Để guard UTF-8 đối chiếu bản build riêng, đặt `ROBOTLAB_EXPLODED_DIR` tới
 thư mục `robot-assembly-lab` được giải nén bởi Maven trong build directory đó.
+
+### Sau khi hoàn tất mẫu robot (Đợt 9)
+
+Nút **Xem kết quả** và lịch sử phiên hoàn tất mở `/assembly-review?session=…`:
+ảnh mẫu hoàn chỉnh; hai bản vẽ giản lược của phiên chi tiết; bước chuẩn và trình
+tự đã làm; phiếu kết quả/in; kết quả quiz của chính người học và nút kiểm tra đúng mẫu.
+Phiếu `/assembly-receipt?session=…` vẫn mở được. Phiên GROUP chỉ có ảnh mẫu,
+bước chuẩn, phiếu và quiz; không suy đoán bản vẽ hoặc nhật ký còn thiếu.
+
+Trong phòng chi tiết đang lắp, **Hoàn tác**/Ctrl+Z đảo thao tác gắn, tháo hoặc đổi hướng
+gần nhất sau lần đặt lại. Server kiểm luật và version trước khi lưu; không có Redo.
+Phát lại3D là chế độ chỉ đọc, không sửa phiên đã hoàn tất. Phiên cũ không được tạo
+nhật ký hồi tố. Đây là mô hình giản lược, không phải bản vẽ kỹ thuật hay robot thật.
+
+Sau013, chạy014 bằng tài khoản có quyền CREATE/REFERENCES trên đúng DB.
+Migration thêm `assembly_events`, giữ spec v1/v2 và mọi dữ liệu cũ; không cần seed mới.
+Xem [bằng chứng và giới hạn Đợt9](docs/PHASE9_REVIEW_QA_REPORT.md).

@@ -87,3 +87,103 @@ lấy owner từ SQL, không sửa quyền ứng dụng. Evidence m5-results, m5
 final-mutations-results và final-live-results (49 kiểm đọc/replay/hồi quy).
 PDF phiên mới4 trang đã render/xem mọi trang; thêm giữ caption với bảng và không bẻ chữ Hướng.
 Replay bỏ lời hướng dẫn gắn/progress cũ gây hiểu nhầm; chỉ đổi chữ/ẩn vùng thuộc chế độ xem lại.
+
+## M6 — Kết quả cuối và bàn giao
+
+Baseline thực173Node/97JUnit → cuối182Node/106JUnit, đều0fail/0skip. Đã chạy
+`mvn -q -f tomcat-app/pom.xml test`, `npm test`, `mvn … clean package` bằng JDK17.
+Build riêng ngoài target của IDE; Maven property phải được quote trong PowerShell.
+Một lệnh ban đầu thiếu quote làm PowerShell tách tham số, Maven chưa build; đã sửa
+lệnh rồi clean package thành công, không đổi pom/test để che lỗi. Node chạy glob
+hiện có trong npm script, không thay backend thành Node.
+
+### Ma trận HTTP/SQL trên Tomcat9 + DB local thật
+
+| Ca kiểm | Kết quả thực |
+| --- | --- |
+| ADMIN QA mới đọc robot/bước/thống kê | GET200 cả ba; đăng ký/nâng role chỉ tài khoản mới22 |
+| Gắn/tháo đúng, nhật ký cùng commit |200; ACCEPTED và layout_version_after đúng thứ tự |
+| Sai hướng động cơ |422 ORIENTATION_NOT_ALLOWED; REJECTED, placement/version giữ nguyên |
+| Gửi lại đúng placement / tài nguyên không thuộc quyền |200 unchanged /404; không thêm nhật ký |
+| Undo gắn mới |200; vật thể trở lại khay |
+| Undo đổi hướng L298N180° |200; hướng trước0° được phục hồi |
+| Undo tháo |200; đúng instance/slot/hướng được gắn lại |
+| Reset rồi undo khi không còn thao tác |422 NOTHING_TO_UNDO; không vượt rào RESET |
+| Hai request undo cùng version | Một200, một409 LAYOUT_CONFLICT; version tăng đúng một |
+| UNIQUE undo_of_event_id | SQL không có tham chiếu undo trùng |
+| GROUP17 / COMPLETED33,35 undo |422 GROUP_MODE /422 SESSION_LOCKED |
+| USER khác undo / thiếu CSRF |404 /403; không ghi placement hoặc lịch sử |
+| Flood305 lần sai loại |422; REJECTED dừng ở300, version không đổi |
+| Hoàn tất khi còn thiếu |422 ASSEMBLY_INCOMPLETE |
+| Gắn đủ phiên35 v2 | Report/SQL10/10, mười placement với hướng hợp lệ |
+| Hai request hoàn tất đồng thời | Cả hai200; một transitioned, một unchanged; chỉ một COMPLETE |
+| Review35 / phiếu35 |200 no-store; bốn phần,5 bước chuẩn,10 hàng chú giải, quiz model đúng |
+| Review/events của người khác |404; khách review302 tài khoản, khách events401 |
+| Review lúc35 chưa hoàn tất (M3) |200; chỉ thông báo/tiếp tục, không lộ phần hoàn thiện |
+| GROUP16 đã hoàn tất | Review/phiếu200; ảnh/bước/quiz, không SVG/replay giả |
+| Phiên30/31/33/34 trước Đợt9 | Review/phiếu200 theo đúng owner;10/10 và thông báo trước nhật ký |
+| GET replay35 |27 ACCEPTED được phát lại; trạng thái cuối đúng SQL10/10,0 request ghi |
+| Hash dữ liệu cũ |43/43 tập hàng có sẵn không đổi, gồm spec v1/v2 và phiên đã COMPLETED |
+
+M1 có4 sự kiện đầu của phiên35. Cuối phiên35 có327 sự kiện:27ACCEPTED/300REJECTED.
+Con số từ chối lớn do kiểm cap, không đại diện quá trình học bình thường; thống kê
+trang chỉ đếm dòng đã ghi, không hứa đếm mọi request sau khi chạm giới hạn.
+
+### Trình duyệt và bản in
+
+Chrome headless với phiên đăng nhập thật: M0 kéo vật thể có di chuyển nhưng camera
+không xoay, kéo vùng trống xoay camera;390px không tràn/nút gắn không bị che.
+M5 kiểm nút Hoàn tác/Ctrl+Z và không can thiệp Ctrl+Z khi gõ. Review/replay tại
+390/768/1440px đều scrollWidth≤innerWidth. Tiêu đề160 ký tự liền và chuỗi HTML
+dùng DOM tạm, không lưu; không gây tràn hoặc chạy mã. Đây là fixture trình bày,
+không phải phép thử ghi chuỗi độc hại vào DB. Escape thật được guard JSP/c:out kiểm.
+
+Phát/Tạm dừng/Bước trước/Bước sau hoạt động, khung đầu trống và khung cuối đúng
+mười vật thể/hướng. Network không POST/PUT/PATCH/DELETE; SQL hash phiên35/placements/
+events trước-sau bằng nhau. Reduced-motion vô hiệu Phát tự động, vẫn bước thủ công.
+Không pageerror hoặc asset404 trên các trang review/replay đã quan sát.
+Replay bỏ hướng dẫn gắn và thanh tiến độ giả từ giao diện GROUP; không có panel bước.
+
+PDF A4 Chrome: phiên33 cũ3 trang, phiên35 mới4 trang; đã render/xem mọi trang.
+Ảnh/SVG/bảng/bước/lịch sử/phiếu/quiz giữ đủ, nền trắng chữ đen; menu/toolbars ẩn,
+thead lặp, hàng ngắn không bị cắt. Caption đi cùng bảng, chữ Hướng không bẻ lẻ.
+Không cam kết số trang hoặc phân trang giống nhau giữa trình duyệt.
+
+Hồi quy GET200: /tasks, /account, /learning-profile, /wiring, /diagnosis, /robots,
+quiz đúng model, cửa hàng và giỏ hàng. Browser xác nhận link phiên35 từ tài khoản
+tới review, quiz đúng Robot tránh vật cản, cửa hàng render; Admin robot/bước/stats200.
+Không chạy lại POST nộp nhiệm vụ/quiz/đơn hàng trong Đợt9; guard/rubric và dữ liệu
+cũ giữ nguyên. Fixture giao diện chỉ thêm trang mới, không đổi hợp đồng form cũ.
+
+### Findings và giới hạn
+
+Đã sửa: góc khay mất khi xoay chưa chọn slot; UTF-8 fragment include do Jasper;
+print box-sizing/caption/chữ Hướng; hướng dẫn/progress ghi dữ liệu cũ trong replay.
+Rà nguồn transaction/owner/CSRF/escape/version, guard môn học và kiểm hành vi thật;
+không dùng review độc lập/subagent trong đợt này. Không còn lỗi được tái hiện chưa sửa.
+
+Chưa kiểm Firefox/Safari, cảm ứng vật lý, screen reader, toàn bộ zoom200%; không
+tuyên bố chứng nhận accessibility. Không kiểm mọi form ghi của các chức năng cũ.
+Không có tọa độ server cho GROUP nên chỉ ảnh/bước/phiếu/quiz; phiên cũ không được
+bịa trình tự. Bản vẽ và hình khối giản lược không theo tỉ lệ kỹ thuật, không mô
+phỏng điện/firmware/chiều trục động cơ thật. Không sửa spec v1/v2 hoặc rubric A/B.
+Không ghi số slide chưa xác minh từ đối tượng Word nhúng trong pptx.
+
+### Dữ liệu, runtime và Git
+
+Giữ dữ liệu QA để người dùng quản lý: ADMIN mới22
+`qa-phase9-admin-20261014@robotlab.test`; phiên35 của demo student, spec v2,
+COMPLETED10/10;327 events. Chỉ thêm migration014/bảng assembly_events, không seed
+nhật ký, không backfill hay UPDATE hàng cũ. Không ghi mật khẩu/cookie/DB config.
+
+10/10 hash file được bảo vệ giữ nguyên (sáu WIP, AGENT_HANDOFF và ba file TAI).
+AGENT_HANDOFF không được cập nhật vì prompt Đợt9 yêu cầu không đụng. Bằng chứng
+không bí mật ở D:/Web-Pro/qa-evidence/phase9, ngoài Git: m0/m1/m3/m4/m5-results,
+m5-browser-results, final-mutations-results, final-live-results49ca,
+audit-results10ca+hash, final-smoke-results5ca, ảnh/PDF và test logs.
+Script QA sai owner đã được sửa theo dữ liệu SQL; ứng dụng404 đúng, không nới quyền.
+
+Đã dừng đúng process QA riêng, xóa CATALINA_BASE/config/log tạm;8081 đóng, không
+dừng8080 của người dùng. Log runtime không có exception ứng dụng. Browser contexts
+đã đóng; không lưu cookie/password. Build/evidence không bí mật giữ ngoài repo.
+Commit local từng M0–M6, không push; xem git log để lấy hash bàn giao cuối.

@@ -808,3 +808,44 @@ hình khối động cơ không mô phỏng chính xác chiều trục. Khi demo
 | Hộp pin | 90°,270° | Nằm ngang ở đuôi xe |
 | Bánh tự do | 0°,90°,180°,270° | Xoay mọi hướng |
 | Cảm biến | 180° | Hai mắt giữ hướng trước của v1 |
+
+## Đợt 9 — demo sau khi hoàn tất (Tài)
+
+1. USER chọn Robot tránh vật cản, chuẩn bị kit rồi vào phiên chi tiết mới v2.
+2. Gắn khung0°. Gắn động cơ trái0° bị từ chối; xoay90° rồi gắn đúng.
+3. Bấm **Hoàn tác** hoặc Ctrl+Z: tháo lần gắn vừa được chấp nhận. Gắn lại; có thể
+   demo đổi hướng L298N0°→180°→undo về0°. Không dùng Ctrl+Z khi đang gõ nội dung.
+4. Lắp đủ10/10, kiểm tra rồi hoàn tất. Ăn mừng chỉ sau server ghi hoàn tất thật.
+5. **Xem kết quả** mở trang hoàn thiện: ảnh chính thức và hai bản vẽ giản lược;
+   bước chuẩn và trình tự đã làm/số lần cần sửa; phiếu/in; kiểm tra kiến thức.
+6. Mở **Xem lại quá trình3D**, bấm Phát/Tạm dừng hoặc từng bước. Quan sát động cơ
+   được gắn rồi hoàn tác và gắn lại. Mở Network: chỉ GET, phiên đã lưu không đổi.
+7. Quay lại trang hoàn thiện, **Làm bài kiểm tra** mở quiz đúng mẫu. Kết quả quiz
+   tốt nhất/gần nhất đọc từ bài đã nộp của mình; không cộng thêm điểm nhiệm vụ.
+8. **Thực hành lại** đi qua luồng tạo phiên cũ, giữ mọi kết quả cũ. GROUP/phiên cũ
+   vẫn có ảnh/bước/phiếu/quiz, thông báo rõ khi chưa có nhật ký hoặc bản vẽ chi tiết.
+
+| Chức năng | Kiến thức thể hiện | Servlet | Bean / JDBC | View | Bảng |
+| --- | --- | --- | --- | --- | --- |
+| Trang hoàn thiện | doGet, HttpSession, setAttribute, forward, EL/JSTL | AssemblyReviewPageServlet | AssemblyReview, AssemblyDrawing, XxxDB đọc owner | assembly-review.jsp, assembly-drawing.jspf | robots, assembly_steps, sessions, placements, events, quiz_attempts |
+| Nhật ký | PreparedStatement, cùng Connection, commit/rollback | AssemblySessionServlet | AssemblyEvent / AssemblyEventDB / AssemblyPlacementDB | Trình tự và thống kê lỗi | assembly_events |
+| Hoàn tác | POST JSON, CSRF, version, khóa phiên, luật instance method | AssemblySessionServlet | AssemblyLayout.validateUndo, AssemblyEventDB.selectUndoTarget | Nút Hoàn tác / Ctrl+Z | events + placements + sessions.layout_version |
+| Phát lại | GET response JSON, view chỉ đọc, dọn timer | AssemblySessionServlet | AssemblyEventDB owner-scoped | assembly-3d-replay.js | events ACCEPTED |
+| Kiểm tra kiến thức | Đọc tham số model, kết quả theo owner | QuizServlet hiện có | QuizAttemptDB, luật quiz cũ | kiem-tra.html / quiz.js | quiz_questions, quiz_attempts |
+
+**Vì sao nhật ký cùng transaction?** Không thể báo đã gắn mà thiếu lịch sử hoặc có
+lịch sử gắn dù placement rollback. Một commit ghi cả thao tác, version và sự kiện.
+
+**Hoàn tác có giống xóa nhật ký không?** Không. Ghi thêm UNDO tham chiếu sự kiện gốc;
+server kiểm lại luật. RESET tạo rào, không undo thao tác trước lần đặt lại.
+
+**Vì sao dùng JSP cho tổng kết?** Đây là màn hình đọc: Servlet lấy dữ kiện từ DB,
+đặt request attribute và forward; EL/getter/JSTL hiển thị, không chấm ở trình duyệt.
+
+**Bản vẽ/phát lại có chứng minh robot thật hoạt động?** Không. Hai phép chiếu và hình
+khối chỉ minh họa; không mô phỏng điện, firmware, lực hay chính xác chiều trục động cơ.
+Y90/Y270 vẫn là quy ước trái/phải của mô hình3D giản lược đã chốt ở Đợt8b.
+
+Đối chiếu kiến thức ở bảng bằng tên chủ đề; không ghi số slide khi chưa trích/xác minh
+được nội dung Word nhúng trong pptx. Phòng3D không có panel bước/checkbox; các bước
+chuẩn nằm ở trang ngoài và trang hoàn thiện. MẫuA/B, nối dây, hỗ trợ, shop không đổi luật.

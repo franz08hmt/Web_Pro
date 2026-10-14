@@ -20,6 +20,33 @@ Reset là rào undo, không phục hồi các thao tác trước RESET. UNDO ki�
 khóa phiên trước đọc sự kiện gần nhất; UNIQUE chặn cùng sự kiện bị undo hai lần.
 Phiên GROUP không có dữ kiện tọa độ, không tạo nhật ký placement; kết quả cũ vẫn đọc.
 
+```mermaid
+erDiagram
+    assembly_sessions ||--o{ assembly_events : owner_scoped_history
+    assembly_instances o|--o{ assembly_events : referenced_instance
+    assembly_slots o|--o{ assembly_events : referenced_slot
+    assembly_events o|--o| assembly_events : uniquely_undone
+    assembly_events {
+        BIGINT id PK
+        BIGINT session_id FK
+        BIGINT spec_id FK
+        VARCHAR action
+        VARCHAR outcome
+        VARCHAR reason_code
+        BIGINT instance_id FK
+        BIGINT slot_id FK
+        VARCHAR orientation_code
+        VARCHAR prev_orientation_code
+        BIGINT undo_of_event_id FK,UK
+        INT layout_version_after
+        DATETIME created_at
+    }
+```
+
+Schema mới đã fold014. Không seed nhật ký. Khi đọc dùng JOIN owner/vật thể/slot/undo
+trong một truy vấn, không truy vấn Java cho từng dòng. Trang quy trình lọc ACCEPTED
+chưa bị undo; replay giữ mọi ACCEPTED rồi áp UNDO để tái hiện đầy đủ quá trình.
+
 ## Lắp ráp có kiểm chứng — thiết kế trước migration 013
 
 Thiết kế ngày 12/10/2026, không chuyển đổi phiên GROUP cũ. Sáu bảng/cột:
@@ -50,7 +77,7 @@ assembly_sessions FOR UPDATE trước đọc dữ kiện, so expectedLayoutVersi
 ghi placement và tăng version trong cùng transaction. Reset chỉ xóa placements
 của phiên đang sửa. Complete gọi luật bean từ layout vừa đọc trong khóa phiên.
 Không snapshot robots.wiring: kết quả tham chiếu spec công bố bất biến.
-Không thêm events vì không có chức năng dùng nhật ký này trong phạm vi bắt buộc.
+Đợt8 chưa thêm events vì chưa có chức năng dùng nhật ký; Đợt9 bổ sung bằng014 ở trên.
 Kit v1 có10 vật thể: khung, Arduino, L298N, hộp pin, bánh tự do, HC-SR04,
 hai động cơ và hai bánh riêng. Spec, slots, orientations không có API chỉnh sửa.
 Seed chỉ INSERT một phiên bản mới; chạy lại không thay bản đã công bố.

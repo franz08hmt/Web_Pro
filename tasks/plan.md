@@ -458,3 +458,10 @@ M6 test/HTTP/Chrome/PDF/hồi quy/tài liệu. Commit từng mốc, không push.
 Tái sử dụng AssemblySessionServlet/AssemblyPlacementDB, RobotDB/AssemblyStepDB,
 quiz aggregates và shell JSP. JavaScript chỉ tương tác; không đổi rubric hoặc panel3D.
 Chỉ ghi tên chủ đề môn học khi chưa xác minh nội dung Word nhúng trong slide.
+
+Đã triển khai M0–M5 và kiểm thật với phiên QA35, ADMIN QA22. Migration014 additive
+đã chạy, không có seed mới; 43 tập hàng cũ và10 file WIP/untracked giữ nguyên hash.
+M6 chốt tài liệu/demo/vấn đáp,182Node/106JUnit, clean package JDK17; kiểm HTTP,
+Chrome390/768/1440, replay không ghi và PDF thật (phiên cũ3 trang, phiên mới4 trang).
+Các giới hạn/ca chưa kiểm ghi trong PHASE9_REVIEW_QA_REPORT.md, không tuyên bố đã
+kiểm Firefox/Safari/cảm ứng vật lý/screen reader. Giữ các dữ liệu QA để người dùng quản lý.

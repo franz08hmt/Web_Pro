@@ -939,3 +939,91 @@ hình khối động cơ không mô phỏng chính xác chiều trục.” Vì v
   đã khai báo: [migration013:87](../database/migrations/013_assembly_placement.sql#L87).
 - **Xoay có chấm ở JS không?** Không. JS hiển thị góc nền cộng góc chọn, rồi gửi
   orientation; bean chấp nhận mới lưu: [assembly-3d-placement.js:94](../assets/js/assembly-3d-placement.js#L94).
+
+## Đợt 9 — Sau khi hoàn tất: đọc code để vấn đáp
+
+**Lời mở đầu:** “Sau khi hoàn tất, người học xem ảnh mẫu và bản vẽ mô hình đã lắp,
+xem bước chuẩn và trình tự mình đã làm, xem phiếu, rồi kiểm tra kiến thức đúng mẫu.
+Trang này là Servlet đọc dữ kiện theo người đăng nhập, đặt vào request và forward
+JSP. Phát lại là giao diện chỉ đọc; hoàn tác là POST được server kiểm và lưu thật.”
+
+Dòng đối chiếu14/10/2026; nếu source đổi, tìm thêm bằng tên hàm ngay dưới đây.
+Các liên kết đều mở source, không cần tìm trong slide hoặc tài liệu khác.
+
+### 1. Vì sao nhật ký phải ghi trong cùng transaction?
+
+Gắn vật thể, tăng version và ghi ACCEPTED phải cùng thành công hoặc cùng rollback.
+Nếu mở một connection khác để ghi nhật ký, có thể có lịch sử nhưng vật thể chưa
+được lưu. Chỉ ra `AssemblyEventDB.insert(connection, event, userId)` ngay trước
+commit: [AssemblyPlacementDB.java:245](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L245).
+Hàm insert nhận Connection từ caller, dùng PreparedStatement và finally đóng
+statement, không tự commit: [AssemblyEventDB.java:16](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyEventDB.java#L16).
+REJECTED ghi lý do nhưng không đổi mô hình/version; cap300, không ghi lỗi quyền.
+
+### 2. Request từ client đến trang tổng kết như thế nào?
+
+Client bấm link → GET `/assembly-review?session=…` → `doGet` nhận HttpServletRequest
+và HttpServletResponse. Servlet lấy user từ HttpSession, đọc phiên bằng id và
+user_id, không tin owner từ URL. Khác chủ404; chưa hoàn tất chỉ hướng dẫn tiếp tục.
+Mở [AssemblyReviewPageServlet.java:29](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L29).
+Đây là request đọc, không tạo dữ liệu; response có no-store.
+
+### 3. Dữ liệu từ server ra client nằm ở đâu?
+
+Servlet gọi `request.setAttribute("assemblyReview", review)` và đặt robot/session/
+bản vẽ/bước chuẩn. `String url` + RequestDispatcher.forward chuyển cùng request sang
+JSP. JSP đọc `${assemblyReview.completedAtLabel}` bằng getter của bean và c:out,
+Tomcat sinh HTML trong HTTP response cho trình duyệt.
+Chỉ [Servlet:49](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L49)
+và [Servlet:58](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L58),
+rồi mở [assembly-review.jsp:43](../tomcat-app/src/main/webapp/WEB-INF/views/assembly-review.jsp#L43).
+Phân biệt **forward** giữ request để JSP đọc attribute với **redirect** tạo GET mới.
+
+### 4. Vẽ SVG trong JSP có cần Java scriptlet không?
+
+Không. Bean tính phép chiếu x,z và x,y, scale và kích thước minh họa trước:
+[AssemblyDrawing.java:64](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyDrawing.java#L64).
+JSP dùng c:forEach + c:choose tạo rect/circle; tọa độ chỉ từ getter số, nhãn qua
+c:out: [assembly-drawing.jspf:6](../tomcat-app/src/main/webapp/WEB-INF/views/assembly-drawing.jspf#L6).
+Đây là bản vẽ giản lược, không theo tỉ lệ kỹ thuật; không ghép SVG tùy ý từ chuỗi DB.
+
+### 5. Vì sao phát lại không gọi API ghi?
+
+Phát lại xem kết quả đã hoàn tất, không sửa dữ liệu. GET events kiểm đúng owner;
+client bắt đầu từ trống, áp ATTACH/DETACH/RESET/UNDO để dựng từng khung hình.
+Mở [assembly-3d-replay.js:4](../assets/js/assembly-3d-replay.js#L4): chỉ dựng frames;
+[dòng21](../assets/js/assembly-3d-replay.js#L21): nút/timer gọi view.sync, không fetch POST.
+Timer dọn khi rời trang; reduced-motion chỉ bấm từng bước. Kiểm Network thật phải
+không có POST/PUT/PATCH/DELETE, không chỉ dựa vào việc nút ghi bị ẩn.
+
+### 6. Hoàn tác do client hay server quyết định?
+
+Client gửi POST với expectedLayoutVersion và CSRF, không tự sửa DB. XxxDB khóa
+phiên, lấy sự kiện gần nhất chưa undo sau RESET rồi gọi bean. Bean đảo gắn→tháo,
+đổi hướng→hướng cũ, tháo→gắn lại bằng chính luật validateAttach/validateDetach.
+Chỉ [AssemblyEventDB.java:151](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyEventDB.java#L151),
+[AssemblyLayout.java:212](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L212),
+[AssemblyPlacementDB.java:161](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L161).
+Không còn thao tác trả422; tab cũ409; phiên hoàn tất khóa sửa. Không có Redo.
+
+### 7. UNIQUE undo_of_event_id bảo vệ điều gì?
+
+Một sự kiện gốc chỉ có một UNDO. Khóa phiên và version chặn xử lý đồng thời;
+UNIQUE là ràng buộc DB bổ sung, FK tổ hợp đảm bảo UNDO trỏ sự kiện cùng phiên.
+Không xóa lịch sử gốc: [migration014:17](../database/migrations/014_assembly_events.sql#L17).
+Sự kiện gốc được đánh dấu undone khi đọc; trang trình tự bỏ nó, replay vẫn phát nó
+rồi áp sự kiện UNDO để thấy quá trình thật.
+
+| Kiến thức môn học | Code để mở | Cần chỉ ra |
+| --- | --- | --- |
+| Client/server, GET request và HTML response | AssemblyReviewPageServlet.doGet | request.getParameter, HttpSession, response/no-store |
+| Request scope, forward | AssemblyReviewPageServlet:49,58 | setAttribute và cùng request sang JSP |
+| JavaBean, EL/getter, JSTL/escape | AssemblyReview.java; assembly-review.jsp; assembly-drawing.jspf | private/get/set, instance method, c:forEach/c:out |
+| JDBC/PreparedStatement, pool/finally | AssemblyEventDB.insert/selectBySession | Connection truyền vào, dấu ?, owner, đóng tài nguyên |
+| Transaction và concurrency | AssemblyPlacementDB.change; AssemblyLayout.validateUndo | FOR UPDATE, version, commit/rollback, luật server |
+| Toàn vẹn dữ liệu | 014_assembly_events.sql:17,23 | UNIQUE undo, FK cùng phiên, CHECK |
+| JSON response và tương tác view | AssemblyPlacementJson.events; assembly-3d-replay.js | quote nhãn, dựng lại scene, không chấm/không ghi |
+
+Chỉ ghi tên chủ đề: chưa xác minh được số slide từ Word nhúng trong pptx nên không
+gán số chương/slide. Y90/Y270 vẫn là quy ước mô hình giản lược; không xác nhận chiều
+trục động cơ thật, điện hay firmware. Điểm quiz và rubric A/B giữ nguyên.

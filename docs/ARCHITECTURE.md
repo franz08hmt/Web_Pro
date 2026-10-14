@@ -218,7 +218,7 @@ wiring.js (nhấn hai chân / kéo thả / bàn phím)  chỉ tạo danh sách c
 
 ## 12. Khung giao diện dùng chung
 
-Mọi JSP trong `WEB-INF/views` (34 trang) gắn `workspace-header.jspf` và `workspace-footer.jspf`
+Mọi trang JSP trong `WEB-INF/views` (36 trang sau Đợt9) gắn `workspace-header.jspf` và `workspace-footer.jspf`
 bằng include directive; kiểu dáng ở `assets/css/learning-workspace.css` (nền charcoal, nhấn cam,
 Poppins, Heroicons cục bộ). Header chỉ hiện liên kết theo vai trò bằng `c:choose` trên
 `sessionScope.user.admin`. Trang hồ sơ học tập vẫn in A4 nền trắng bằng `@media print`.
@@ -236,9 +236,9 @@ Node và JUnit chỉ là công cụ kiểm tra khi phát triển, không phải 
 
 | Package | Số file | Ghi chú |
 | --- | --- | --- |
-| `business/` | 53 | JavaBean + luật nghiệp vụ |
-| `controller/` | 37 | `@WebServlet`; 18 forward sang JSP, 19 trả JSON |
-| `data/` | 23 | `ConnectionPool`, `DBUtil`, `DatabaseLifecycleListener` và các `XxxDB` |
+| `business/` | 57 | JavaBean + luật nghiệp vụ, gồm bốn bean Đợt9 |
+| `controller/` | 38 | `@WebServlet`; 19 forward sang JSP, 19 trả JSON |
+| `data/` | 24 | `ConnectionPool`, `DBUtil`, `DatabaseLifecycleListener` và các `XxxDB` |
 | `util/` | 10 | Tiện ích request/JSON/form và exception giữ layout đã bị từ chối |
 | `filter/` | 1 | `RequestContextFilter` (ngoài slide) |
 
@@ -269,3 +269,32 @@ bị JavaBean từ chối dù vị trí đúng; FK slot/hướng bảo vệ dữ
 AssemblyPlacementException chỉ giữ layout vừa được kiểm trong transaction để Servlet
 gọi messageFor(code, instanceId, slotId); không truy vấn lại hoặc chứa luật nghiệp vụ.
 Tiến độ DETAILED đọc hai COUNT trong truy vấn phiên owner; GROUP giữ dữ kiện chuẩn bị.
+
+## 16. Sau khi hoàn tất — Servlet/JSP và nhật ký
+
+```text
+GET /assembly-review?session=…
+ → AssemblyReviewPageServlet: HttpSession, đọc phiên(id,user_id), no-store
+ → RobotDB / AssemblyStepDB / AssemblyPlacementDB / AssemblyEventDB / QuizAttemptDB
+ → AssemblyDrawing tính phép chiếu; AssemblyReview tổng hợp lịch sử/quiz đã lưu
+ → request.setAttribute → RequestDispatcher.forward
+ → assembly-review.jsp + assembly-drawing.jspf: EL/getter, c:forEach, c:out
+```
+
+Bốn phần: mẫu hoàn chỉnh, quy trình, phiếu và kiểm tra kiến thức. GROUP dùng ảnh
+chính thức/bước chuẩn; DETAILED thêm hai SVG từ tọa độ server. Kích thước khối là
+quy ước minh họa, không bản vẽ kỹ thuật. Quiz giữ đúng robot, owner và thang cũ.
+Trang đọc không tạo phiên, chấm lại hoặc sửa lịch sử; JS chỉ gọi in.
+
+Mọi thay đổi bố cục khóa phiên trước. `AssemblyEventDB.insert(Connection,…)`
+dùng chính kết nối của `AssemblyPlacementDB.change`, không mở transaction mới.
+ACCEPTED và placement/version cùng commit/rollback. REJECTED từ luật bean có
+commit nhật ký riêng trong khóa phiên, giữ placement/version; cap300. Phiên
+COMPLETED không nhận thêm bản ghi để giữ lịch sử cũ bất biến; không backfill.
+
+Undo lấy sự kiện gần nhất sau RESET, kiểm lại bằng `AssemblyLayout.validateUndo`
+và validateAttach/validateDetach; ghi UNDO có FK cùng phiên và UNIQUE tham chiếu.
+Version chống tab cũ; khóa phiên + UNIQUE chống đảo cùng sự kiện hai lần.
+Replay GET nhận ACCEPTED theo thứ tự, áp cả thao tác gốc và UNDO, không gọi API
+ghi. Timer được dọn khi rời trang; reduced-motion chỉ bấm từng bước. Quyền vẫn
+được server kiểm ở GET events/layout. Nhật ký không phải bằng chứng robot thật.
