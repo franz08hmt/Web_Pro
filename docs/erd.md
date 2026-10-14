@@ -1,5 +1,41 @@
 # ERD - Robot Lab
 
+## Xưởng thiết kế — ERD trước migration015, 14/10/2026
+
+11 bảng mới tách khỏi mọi bảng/luật của phòng lắp mẫu và nhiệm vụ:
+
+| Bảng | Khóa và dữ kiện |
+| --- | --- |
+| design_rule_sets | id PK, version_no UNIQUE, DRAFT/PUBLISHED CHECK, created_at |
+| design_component_roles | PK(rule_set_id,component_id), FK rule/components RESTRICT, role CHECK, driver_channels nullable>0 |
+| design_mounts | PK(rule_set_id,component_id,mount_code), type/nhãn/order, x/y/z/ry + rx/rz có bounds |
+| design_fits | PK(rule_set_id,component_id,mount_type,orientation_code), FK role, CHECK bốn hướng |
+| design_goals | code PK, tên/mô tả, năm mục tiêu |
+| design_goal_requirements | PK(rule_set_id,goal_code,role), FK rule/goal RESTRICT, min_count1..30 |
+| user_kit_items | PK(user_id,component_id), FK user/components, quantity1..10, updated_at |
+| robot_designs | id PK, owner/goal/rule FK, source/status CHECK, version≥1, summary/ngày kiểm nullable, timestamps, index(owner,id) |
+| design_instances | id PK, FK design CASCADE/component RESTRICT, UNIQUE(design_id,component_id,instance_no), instance_no1..10, UNIQUE(id,design_id,component_id) |
+| design_placements | PK instance_id, UNIQUE(design_id,host_instance_id,mount_code), rule/loại/host loại/mount_type/hướng/time |
+| design_events | id PK, design/instances FK CASCADE, action/outcome CHECK, reason/host/mount/hướng/hướng trước/version/date, UNIQUE undo, FK undo cùng design, index(design_id,id) |
+
+FK ghép giữ instance/host cùng design và loại, design/rule cùng phiên bản, mount
+cùng rule/loại host và fit đúng loại/điểm/hướng. Root dùng hostNULL, mount=base,
+type=ROOT và fit ROOT/Y0; cột sinh root_design_id UNIQUE chỉ một gốc. REJECTED
+không FK fit để ghi được thao tác sai. Con design CASCADE phục vụ POST xóa có
+xác nhận; catalog/luật RESTRICT. Khóa owner trước xóa, không xóa dữ liệu mẫu.
+
+Điều chỉnh kỹ thuật: MOTOR_MOUNT_L/R phân biệt Y90/Y270; thêm rx/rz cho mount
+giữ tư thế động cơ/bánh v2 (không sửa v2). Chassis gốc(0,.42,0); offset con bằng
+tọa độ v2 trừ cha. Axle(0,.09,-.37) xoay Y90/Y270 của host tạo bánh trái/phải.
+Ry mount bù hướng theo quy ước8b. Server xoay offset Y bội90 theo cây; không
+nhận pose client. SERVO_HORN ở trên servo. Không mô phỏng chính xác chiều trục.
+
+Rule PUBLISHED bất biến, design pin rule_set_id/snapshot số lượng. CHECKED vẫn
+sửa được; mutation trở về DRAFT/xóa dữ kiện kiểm cũ. CHECK tính lại dưới khóa.
+Giới hạn20design/owner,30instances/design,10/loại: bean kiểm dưới khóa users/design.
+Kit đổi không đổi snapshot. Import tổng CONFIRMED owner, cap10, GREATEST chống
+cộng trùng. Catalog13 renderer; arm-frame/mini-gripper không role/fit → UNSUPPORTED.
+
 ## Nhật ký lắp ráp — thiết kế trước migration 014, 14/10/2026
 
 assembly_events: PK id BIGINT UNSIGNED, session_id FK RESTRICT; action ATTACH/DETACH/

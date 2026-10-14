@@ -465,3 +465,26 @@ M6 chốt tài liệu/demo/vấn đáp,182Node/106JUnit, clean package JDK17; ki
 Chrome390/768/1440, replay không ghi và PDF thật (phiên cũ3 trang, phiên mới4 trang).
 Các giới hạn/ca chưa kiểm ghi trong PHASE9_REVIEW_QA_REPORT.md, không tuyên bố đã
 kiểm Firefox/Safari/cảm ứng vật lý/screen reader. Giữ các dữ liệu QA để người dùng quản lý.
+
+## Đợt10 — Xưởng thiết kế, M0
+
+HEAD b0bf22c, integration/fullstack-v2 ahead8; giữ10 file WIP/untracked nguyên byte.
+Baseline thực183Node/109JUnit, JDK17 clean package xanh. DB44 bảng có001–014,
+015 chưa dùng, quyền CREATE có sẵn; catalog có đủ13 renderer. ERD đã viết trước code.
+
+Tái sử dụng placement view (adapter slot host:mount), hình thủ tục, drawing/JSP
+fragment, SessionUtil/CSRF và cơ chế transaction/nhật ký. Các route JSP mới:
+/my-kit, /designs, /design-sheet; API /api/designs/* cho tương tác3D riêng.
+Tạo11 bảng qua015, seed luật v1 chỉ INSERT có khóa/guard version, không sửa mẫu.
+M1 bean luật/DDL/seed/reader → M2 kit/form/import → M3 thiết kế/snapshot/PRG →
+M4 layout/động tác/undo/API/3D → M5 check ba lớp → M6 hồ sơ/BOM/cây/bản vẽ/in →
+M7 QA/demo/vấn đáp/tài liệu. Commit local từng mốc, không push.
+
+CHECKED vẫn sửa, mutation xóa kết quả kiểm cũ và trở về DRAFT. Xóa design chỉ
+own POST có xác nhận, con CASCADE; không xóa đơn/kit/mẫu. Tách MOTOR_MOUNT_L/R,
+thêm rx/rz và fit ROOT giải thích trong ERD để FK/pose đúng, không thay schema mẫu.
+M6 trả nợ drawing: không ném lỗi khi hết chỗ nhãn; thêm ca30 vật thể và dùng lại
+isLearningError, thêm bốn mã Xưởng. Không tính design làm bằng chứng nhiệm vụ.
+QA8081 riêng, snapshot44 tập hàng cũ, hai USER, import idempotent, version409,
+Chrome390/1440, đối chiếu SQL/bản vẽ/PDF và hình obstacle giống mẫu chuẩn.
+Giới hạn điện/servo tham khảo nguồn chính thức Arduino/ST, không xác nhận an toàn thật.
