@@ -12,6 +12,7 @@ public class RobotDesign implements Serializable {
     private long id;
     private long userId;
     private long ruleSetId;
+    private int ruleVersion;
     private String name = "";
     private String goalCode = "BASIC_2WD";
     private String goalName = "";
@@ -55,6 +56,32 @@ public class RobotDesign implements Serializable {
     /** Ghi dữ kiện ruleSetId. */
     public void setRuleSetId(long ruleSetId) {
         this.ruleSetId = ruleSetId;
+    }
+
+    /** Phiên bản của chính FK luật đã lưu, không phải phiên bản mới nhất. */
+    public int getRuleVersion() {
+        return ruleVersion;
+    }
+
+    /** Ghi phiên bản đọc từ JOIN của thiết kế. */
+    public void setRuleVersion(int ruleVersion) {
+        this.ruleVersion = ruleVersion;
+    }
+
+    /** Nhãn phiên bản để người dùng phân biệt thiết kế cũ và mới. */
+    public String getRuleVersionLabel() {
+        return "v" + ruleVersion;
+    }
+
+    /** v1 giữ bất biến, chỉ cảnh báo thay vì tự đổi hình hoặc luật. */
+    public boolean isLegacyDirections() {
+        return ruleVersion == 1;
+    }
+
+    /** Giải thích đúng phạm vi lỗi hiển thị của luật cũ. */
+    public String getDirectionNotice() {
+        return isLegacyDirections() ? "Thiết kế dùng luật v1: hướng hiển thị của khoang pin và mặt trước bị lệch; "
+                + "hãy tạo thiết kế mới để dùng luật đã sửa." : "";
     }
 
     /** Đọc dữ kiện name. */

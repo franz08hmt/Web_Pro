@@ -22,7 +22,8 @@ public class DesignDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = connection.prepareStatement("SELECT d.*,g.name AS goal_name FROM robot_designs d "
+            ps = connection.prepareStatement("SELECT d.*,g.name AS goal_name,r.version_no AS rule_version "
+                    + "FROM robot_designs d JOIN design_rule_sets r ON r.id = d.rule_set_id "
                     + "JOIN design_goals g ON g.code = d.goal_code WHERE d.user_id = ? ORDER BY d.id DESC");
             ps.setLong(1, userId);
             rs = ps.executeQuery();
@@ -54,7 +55,8 @@ public class DesignDB {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            String query = "SELECT d.*,g.name AS goal_name FROM robot_designs d "
+            String query = "SELECT d.*,g.name AS goal_name,r.version_no AS rule_version FROM robot_designs d "
+                    + "JOIN design_rule_sets r ON r.id = d.rule_set_id "
                     + "JOIN design_goals g ON g.code = d.goal_code WHERE d.id = ? AND d.user_id = ?";
             if (lock) {
                 query += " FOR UPDATE";
@@ -254,6 +256,7 @@ public class DesignDB {
         design.setId(rs.getLong("id"));
         design.setUserId(rs.getLong("user_id"));
         design.setRuleSetId(rs.getLong("rule_set_id"));
+        design.setRuleVersion(rs.getInt("rule_version"));
         design.setName(rs.getString("name"));
         design.setGoalCode(rs.getString("goal_code"));
         design.setGoalName(rs.getString("goal_name"));

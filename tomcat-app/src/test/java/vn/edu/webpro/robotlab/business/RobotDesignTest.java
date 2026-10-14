@@ -7,6 +7,21 @@ import org.junit.jupiter.api.Test;
 
 class RobotDesignTest {
     @Test
+    void oldRuleDisplaysAMigrationNoticeWithoutChangingItsPinnedVersion() {
+        RobotDesign design = new RobotDesign();
+        design.setRuleSetId(1);
+        design.setRuleVersion(1);
+        assertEquals("v1", design.getRuleVersionLabel());
+        assertTrue(design.isLegacyDirections());
+        assertTrue(design.getDirectionNotice().contains("hãy tạo thiết kế mới"));
+        assertEquals(1, design.getRuleSetId());
+        design.setRuleVersion(2);
+        assertEquals("v2", design.getRuleVersionLabel());
+        assertFalse(design.isLegacyDirections());
+        assertEquals("", design.getDirectionNotice());
+    }
+
+    @Test
     void creationEnforcesInventoryBaseCountAndTotalWithoutCountingUnsupportedAsSupported() {
         RobotDesign design = new RobotDesign();
         design.setName("Thiết kế thử");

@@ -4,6 +4,24 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 class DesignLayoutTest {
+    @Test
+    void correctedRuleBaseAnglesAreAddedOnceForPowerBayAndFrontSensor() {
+        DesignLayout layout = fixture();
+        DesignInstance battery = new DesignInstance();
+        battery.setId(7);
+        battery.setComponentId("battery-holder");
+        layout.getInstances().add(battery);
+        DesignLayoutTest.mount(layout, "chassis-2wd", "rear-bay", "POWER_BAY", 0, .3, .82);
+        DesignLayoutTest.fit(layout, "battery-holder", "POWER_BAY", "Y90");
+        DesignLayoutTest.placed(layout, 1, 0, "base", "Y0");
+        DesignLayoutTest.placed(layout, 7, 1, "rear-bay", "Y90");
+        DesignLayoutTest.placed(layout, 4, 1, "front-top", "Y180");
+        assertEquals(0, layout.resolveSlot("1:rear-bay").getRy(), .000001);
+        assertEquals(Math.PI / 2, layout.poseOf(7).getRy(), .000001);
+        assertEquals(0, layout.resolveSlot("1:front-top").getRy(), .000001);
+        assertEquals(Math.PI, layout.poseOf(4).getRy(), .000001);
+    }
+
     static DesignLayout fixture() {
         DesignLayout layout = new DesignLayout();
         String[] components = {"chassis-2wd", "dc-motor", "wheel", "hc-sr04", "arduino-uno", "arm-frame"};

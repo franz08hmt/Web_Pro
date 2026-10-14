@@ -26,8 +26,11 @@
                     <dt>Mục tiêu</dt><dd><c:out value="${sheetDesign.goalName}" /></dd>
                     <dt>Nguồn linh kiện</dt><dd><c:out value="${sheetDesign.sourceLabel}" /></dd>
                     <dt>Cập nhật</dt><dd><c:out value="${sheetDesign.updatedAtLabel}" /></dd>
-                    <dt>Luật kiểm chứng</dt><dd>Phiên bản <c:out value="${designSheet.layout.rules.versionNo}" /></dd>
+                    <dt>Luật kiểm chứng</dt><dd><c:out value="${sheetDesign.ruleVersionLabel}" /></dd>
                 </dl>
+                <c:if test="${sheetDesign.legacyDirections}">
+                    <p><c:out value="${sheetDesign.directionNotice}" /></p>
+                </c:if>
                 <p class="review-links no-print">
                     <a href="${pageContext.request.contextPath}/designs">Thiết kế của tôi</a>
                     <a href="${pageContext.request.contextPath}/pages/xuong-thiet-ke.html?design=${sheetDesign.id}">

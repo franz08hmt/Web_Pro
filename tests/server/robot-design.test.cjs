@@ -6,6 +6,23 @@ const path = require("node:path");
 const root = path.resolve(__dirname, "../..");
 const read = file => fs.readFileSync(path.join(root, file), "utf8");
 
+test("corrected design seed copies immutable v1 and changes only the two chassis mount base angles", () => {
+  const sql = read("database/seed-design-rules-v2.sql");
+  assert.match(sql, /START TRANSACTION/);
+  assert.match(sql, /FOR UPDATE/);
+  assert.match(sql, /version_no = 1 AND state = 'PUBLISHED'/);
+  assert.match(sql, /NOT EXISTS \(SELECT 1 FROM design_rule_sets WHERE version_no = 2\)/);
+  assert.match(sql, /SELECT 2, 'PUBLISHED' WHERE @create_design_rules_v2/);
+  assert.doesNotMatch(sql, /^\s*(UPDATE|DELETE|ALTER|DROP|TRUNCATE|REPLACE)\b/im);
+  for (const table of ["design_component_roles", "design_mounts", "design_fits", "design_goal_requirements"]) {
+    assert.match(sql, new RegExp("FROM " + table + " WHERE rule_set_id = @source_design_rules_v1 AND @create_design_rules_v2"));
+  }
+  assert.match(sql, /mount_code IN \('rear-bay', 'front-top'\) THEN 0 ELSE ry END/);
+  assert.match(sql, /component_id, mount_code, mount_type, label, x, y, z, rx,/);
+  assert.match(sql, /rz, display_order/);
+  assert.equal((sql.match(/CASE WHEN/g) || []).length, 1);
+});
+
 test("design schema is additive owner scoped and pins versioned fits and unique mounts", () => {
   const sql = read("database/migrations/015_robot_design.sql");
   assert.doesNotMatch(sql, /^\s*(DROP|TRUNCATE|ALTER|UPDATE|DELETE)\b/im);

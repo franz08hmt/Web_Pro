@@ -30,6 +30,10 @@
                     <h2><c:out value="${designRecord.name}" /></h2>
                     <p><c:out value="${designRecord.goalName}" /> · <c:out value="${designRecord.sourceLabel}" /></p>
                     <p class="status-badge"><c:out value="${designRecord.statusLabel}" /></p>
+                    <p>Luật kiểm chứng <c:out value="${designRecord.ruleVersionLabel}" />.</p>
+                    <c:if test="${designRecord.legacyDirections}">
+                        <p><c:out value="${designRecord.directionNotice}" /></p>
+                    </c:if>
                     <p>Cập nhật <c:out value="${designRecord.updatedAtLabel}" />.</p>
                     <c:if test="${designRecord.checked}">
                         <p><c:out value="${designRecord.lastCheckSummary}" /></p>
