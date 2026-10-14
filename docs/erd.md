@@ -1,5 +1,14 @@
 # ERD - Robot Lab
 
+## Đợt10b — Migration016 sửa tên catalog, không đổi cấu trúc
+
+components.id=dc-motor giữ nguyên, name từ “Động cơ DC TT & Bánh xe” thành
+“Động cơ DC TT (hộp số)” chỉ khi name còn đúng tên cũ. Không thêm cột/bảng/FK.
+Schema/seed cài mới dùng tên đúng; tên runtime từ JOIN components, không ghi tên
+ngoại lệ trong DesignInstance/AssemblyEventDB/AssemblyPlacementDB. Nhãn trái/phải
+ở assembly_slots đã công bố giữ nguyên; order_items.product_name_snapshot giữ tên
+lúc mua, không cập nhật ngược lịch sử. Camera/bệ/sàn không lưu dữ liệu nghiệp vụ.
+
 ## Xưởng thiết kế — ERD trước migration015, 14/10/2026
 
 11 bảng mới tách khỏi mọi bảng/luật của phòng lắp mẫu và nhiệm vụ:

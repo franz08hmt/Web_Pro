@@ -311,3 +311,9 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] M6: hồ sơ/BOM/cây/bản vẽ/in, crowded30, thống kê lỗi học tập dùng chung.
 - [x] M7: user duyệt v2, seed/diff/idempotence, pose7/8, final192 Node/126 JUnit và cleanup8081.
 
+## Đợt10b
+
+- [x] M1: migration016/seed/catalog, tên từ DB, test và14 ca nhãn thật.
+- [x] M2: bounds/FOV camera, nút focus/bệ/sàn,16 camera và4 motion/keyboard checks.
+- [x] M3: tài liệu/vấn đáp,197 Node/127 JUnit và clean package JDK17, WAR smoke/reload, dọn QA8081.
+

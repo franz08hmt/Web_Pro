@@ -500,3 +500,11 @@ Node192/JUnit126;39 ca v2 +68 HTTP cuối +15 browser/JS-off, PDF mới3 trang m
 M7 hoàn tất: mvn -q test, clean package JDK17 và npm test đều xanh192/126,0skip;
 PDF v2 mỗi mẫu3 trang đã xem, runtime QA/config/log đã dọn và8081 đóng.
 Commit tài liệu riêng, không push; các giới hạn servo-scout/thiết bị thật ghi rõ.
+
+## Đợt10b — Tên catalog và khung nhìn
+
+M1 migration016 có điều kiện tên cũ, seed/catalog mới đúng tên, bỏ ba overrideJava;
+nhãn spec và snapshot đơn cũ giữ nguyên. M2 camera theo bounds/FOV/aspect, focus
+native và bệ/sàn theo phòng mẫu. M3 QA/docs: baseline192/126→197/127, Chrome thật
+1440/768/390 và gắn/tháo/undo/camera.10 file được bảo vệ nguyên byte, chỉ QA7 đổi
+bố cục/version/ngày kiểm qua API và phục hồi10/10; không checkout thêm hoặc sửa kho.

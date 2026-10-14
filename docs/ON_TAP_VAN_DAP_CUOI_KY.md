@@ -1103,3 +1103,13 @@ Mở [seed-design-rules-v2.sql:1](../database/seed-design-rules-v2.sql#L1)
 Chỉ ghi tên chủ đề: chưa xác minh được số slide từ Word nhúng trong pptx nên không
 gán số chương/slide. Y90/Y270 vẫn là quy ước mô hình giản lược; không xác nhận chiều
 trục động cơ thật, điện hay firmware. Điểm quiz và rubric A/B giữ nguyên.
+
+**7. Vì sao sửa tên bằng migration mà không viết cứng trong code?** Tên thuộc
+dữ liệu catalog. Nếu mỗi lớp tự đặt tên riêng, trang linh kiện, shop, BOM và nhật
+ký sẽ không thống nhất, và không theo tên admin sửa. Migration016 chỉ cập nhật
+dc-motor khi tên còn cũ, có transaction và schema_migrations để quản lý cài đặt.
+Java đọc components.name qua JOIN, bean chỉ ghép số vật thể1/2,2/2.
+Mở [016_component_name_fix.sql:1](../database/migrations/016_component_name_fix.sql#L1),
+[DesignInstance:79](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DesignInstance.java#L79),
+[AssemblyPlacementDB:400](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L400).
+Không sửa ID, số lượng, nhãn spec đã công bố hoặc snapshot tên trong đơn hàng cũ.

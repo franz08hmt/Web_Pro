@@ -189,3 +189,64 @@ thật giữ nguyên; đối chiếu servo-scout là preview cấu hình chỉ �
 
 Không push. Tài khoản QA23, đơn2, kit và design1/2/4/7/8 giữ lại cho người dùng
 quản lý; không có dữ liệu mới trong bảng phòng lắp mẫu. Bằng chứng QA giữ ngoài Git.
+
+## Đợt10b — Tên linh kiện và khung nhìn Xưởng
+
+HEAD bắt đầu4af9d39, ahead18. Baseline thật192 Node/126 JUnit,0 fail/skip;
+10 file WIP/untracked ghi hash trước thao tác,55 bảng DB ghi hash tập hàng cũ.
+M1 migration016 chỉ đổi components.name của dc-motor nếu còn tên cũ. Đã chạy/rerun,
+schema_migrations chỉ có một016; đối chiếu phục dựng tên cũ chứng minh các trường
+khác của components không đổi. Không sửa spec/slot PUBLISHED. Seed.sql hex UTF-8,
+schema.sql và catalog cục bộ data.js đồng bộ tên; mọi nơi nạp data.js tăng phiên bản
+asset, chỉ thay query cache, không đổi bố cục HTML. Guard migration hồ sơ chỉ thêm
+016 vào whitelist chức năng khác, vẫn chặn migration lạ; test cũ không bị xóa/nới.
+
+DesignInstance, AssemblyEventDB và AssemblyPlacementDB bỏ tên ngoại lệ motor,
+lấy name từ catalog như các linh kiện khác. M1 đạt195 Node/127 JUnit/package JDK17.
+14 ca nhãn thật: API layout Xưởng/mẫu trả “Động cơ DC TT (hộp số) 1/2”,2/2;
+phòng mẫu và nhật ký/hoàn thiện hiển thị tên mới; BOM không còn “& Bánh xe”;
+components/shop/cart đúng tên. Cart QA23 thêm rồi xóa qua API,204; không checkout,
+không giảm kho hay tạo đơn. Lịch sử đơn GET200 và giữ snapshot tên lúc mua. Không
+có đơn dc-motor của QA23 để kiểm snapshot mới bằng checkout; không tạo đơn mới chỉ
+để dựng ca. Đường checkout đang lấy product.getName từ JOIN components vào snapshot
+(OrderDB:51); đây là đối chiếu source, không tuyên bố đã mua dc-motor thật qua HTTP.
+
+M2 chỉ camera/view: Box3 từ vật thể có userData.instanceId, gồm khay; không đưa
+marker/bệ/sàn vào bounds. Bounding sphere + FOV dọc/ngang theo aspect để không cắt
+mô hình trên mobile. Căn khi tải/reload, khi layoutVersion đổi sau thao tác, khi
+viewport đổi hoặc nút native Căn giữa mô hình; không liên tục giành camera lúc kéo.
+Dùng camera42°, góc nhìn, bệ Cylinder/sàn/grid/vòng trang trí/material/tone mapping
+từ phòng lắp mẫu. Class assembly-3d-view với CSS giới hạn .design-room; không import
+style.css toàn cục hoặc đổi theme toàn site. Asset riêng tăng cache-busting.
+
+| Kiểm M2 bằng Chrome thật | Kết quả |
+| --- | --- |
+|1440px|Bounds mô hình chiếm53% rộng/66% cao khung, trọn trong viewport |
+|768px|45% rộng/66% cao, không tràn toàn trang |
+|390px|84% rộng/59% cao, trọn mô hình; cuộn trang tới controls được |
+| Nút căn giữa / zoom |Khôi phục frame sau zoom; Enter dùng được, vùng chạm44px |
+| Gắn/tháo/undo thật |200, auto-frame sau callback, không đổi luật/API |
+| Kéo vật thể / kéo nền |Vật thể di chuyển nhưng camera giữ nguyên / camera xoay |
+| Reload và network |Layout server được dựng lại,0 pageerror/asset404 |
+
+16 ca camera +4 ca kéo/keyboard đạt. QA chỉ thao tác design7 của USER QA23 và kiểm
+lại để phục hồi10 placement/CHECKED; không tạo thiết kế/tài khoản/đơn mới. Nhật ký
+QA7 thêm thao tác, version/ngày kiểm/placed_at đổi do chính API.52/55 tập hàng cũ
+giữ hash, ba ngoại lệ đúng phạm vi:components.name, header QA7 và placement QA7;
+spec/phiên mẫu/orders/stock/kit/luật và mọi bảng khác nguyên hash.10 file WIP nguyên byte.
+
+M2/final197 Node/127 JUnit,0 fail/error/skip; có5 Node và1 JUnit mới so baseline.
+Node camera dùng Three.js cục bộ để chiếu tám góc bounds ở portrait/landscape, loại
+marker ngoài xa và kiểm mô hình rỗng. Không thêm thư viện. Ảnh trước/sau1440/768/390
+đã chụp/xem tại D:/Web-Pro/qa-evidence/phase10b/before-*.png,after-*.png; cùng design7.
+JSON migration/m1/m2/motion/audit và logs build/test giữ ngoài Git, không bí mật.
+Chưa kiểm Firefox/Safari, cảm ứng vật lý, screen reader hoặc snapshot đơn mới bằng
+checkout. Đây là thay nhãn/camera, không chứng nhận mô hình điện/cơ khí thật.
+
+M1:b579645 — feat(design): correct motor catalog name and remove hardcoded label overrides.
+M2:59f6a2b — feat(design): fit workshop camera to models and reuse assembly stage.
+M3 commit tài liệu riêng, không push; runtime QA riêng8081, không can thiệp8080.
+Đã chạy mvn test và clean package JDK17/npm test cuối,197/127 không fail/skip;
+WAR cuối qua smoke/reload,7 GET hồi quy, owner404 và check server vẫn đạt.
+Dừng đúng PID QA, dọn CATALINA_BASE/config/log/cookie context,8081 đóng;
+không đụng8080. Audit nguyên byte10 file kiểm lại trước bàn giao vẫn đạt.

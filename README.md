@@ -436,3 +436,13 @@ thư viện, chọn mục tiêu → vào Xưởng → gắn/xoay/hoàn tác → 
 Giới hạn20 thiết kế,30 vật thể/thiết kế,10/loại và đúng một khung nền. arm-frame và
 mini-gripper có hình3D nhưng chưa hỗ trợ kiểm chứng. Đổi kit không đổi snapshot thiết kế.
 Phòng lắp mẫu cũ và spec v1/v2 giữ nguyên. Kết quả/giới hạn QA: [báo cáo Đợt10](docs/PHASE10_DESIGN_QA_REPORT.md).
+
+### Đợt10b — Tên catalog và khung nhìn Xưởng
+
+Database đang có015: chạy `database/migrations/016_component_name_fix.sql` trên
+đúng database. Migration chỉ đổi tên dc-motor khi còn tên cũ, ghi schema_migrations
+và chạy lại an toàn; không ghi đè tên admin đã biên soạn khác. Máy mới dùng schema.sql
+và seed.sql đã có tên “Động cơ DC TT (hộp số)”. Không sửa nhãn spec đã PUBLISHED.
+Nhãn động cơ/bánh xe là hai linh kiện riêng; không viết tên ngoại lệ trong Java.
+Tên đơn hàng cũ là snapshot lúc mua và giữ nguyên. Xưởng tự căn theo vật thể/khay,
+có nút Căn giữa mô hình; camera/bệ/sàn dùng thông số của phòng lắp mẫu.
