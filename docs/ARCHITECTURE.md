@@ -298,3 +298,45 @@ Version chống tab cũ; khóa phiên + UNIQUE chống đảo cùng sự kiện 
 Replay GET nhận ACCEPTED theo thứ tự, áp cả thao tác gốc và UNDO, không gọi API
 ghi. Timer được dọn khi rời trang; reduced-motion chỉ bấm từng bước. Quyền vẫn
 được server kiểm ở GET events/layout. Nhật ký không phải bằng chứng robot thật.
+
+## Xưởng thiết kế riêng — Model 2 và ranh giới với mẫu chuẩn
+
+Trang `/my-kit`, `/designs`, `/design-sheet`: GET → Servlet kiểm HttpSession →
+XxxDB đọc owner-scoped → JavaBean kiểm/dựng dữ kiện → request.setAttribute →
+String url/RequestDispatcher.forward → JSP EL/JSTL core/c:out. Form POST đọc
+getParameter/getParameterValues, hidden csrfToken; server báo lỗi lên form,
+thành công redirect PRG. Không dùng API để thay luồng form môn học.
+
+Phòng3D riêng `pages/xuong-thiet-ke.html?design=…`: thao tác → fetch cùng origin,
+X-CSRF-Token/expectedLayoutVersion → DesignApiServlet → DesignPlacementDB khóa
+robot_designs FOR UPDATE theo owner → DesignLayout.validateAttach/Detach/Undo →
+PreparedStatement lưu placement/version và DesignEventDB.insert cùng connection →
+commit → JSON quote → placement view dựng lại từ trạng thái server. Lỗi mạng không
+báo đã lưu. REJECTED do bean chỉ ghi nhật ký, không đổi bố cục, cap300/thiết kế;
+NOT_FOUND/quyền và retry unchanged không ghi. UNIQUE undo giữ lịch sử đảo một lần.
+
+Luật lắp và tọa độ nằm trong bộ luật pin rule_set_id, không nhận compatible/pose
+tự khai client. Root một khung; mount con từ cha và offset xoay Y bội90. Adapter
+chỉ đưa slot id chuỗi host:mount vào view chung; không sửa placement view phòng mẫu.
+Hai loại MOTOR_MOUNT_L/R giữ phân biệt hướng; rx/rz phục vụ tư thế khối giản lược.
+
+DesignCheck kiểm ba lớp từ vật thể đã gắn: chuỗi cơ khí, vai trò mục tiêu, cấu hình.
+Không có role/fit → chưa hỗ trợ, không tự PASS. Mục tiêu quét yêu cầu cảm biến trên
+SERVO_HORN. WARN là lưu ý; FAIL/UNSUPPORTED chặn kết luận đạt. CHECK lưu dưới khóa,
+tăng version, status CHECKED chỉ có nghĩa đã kiểm; vẫn có thể không đạt. Sửa bố cục
+trở về DRAFT và xóa kết luận cũ. Không đổi điểm/rubric hay assembly_sessions.
+
+DesignSheet dựng BOM từ snapshot + kit hiện tại, cây cha trước con theo display_order,
+và adapter Drawing chỉ trong bộ nhớ. Không tạo phiên mẫu, không ghi tọa độ vào bảng
+mẫu. GET hồ sơ đọc layout/kit/events trong cùng transaction snapshot, không chấm/lưu
+một lượt mới. Thống kê dùng AssemblyReview.isLearningError, loại lỗi tab/khóa/request.
+Bản vẽ hết chỗ đặt nhãn dùng tâm và giữ chú giải, không gây trang500. In dùng CSS
+assembly-review có A4 trắng/đen, ẩn navigation, bảng giữ header và cuộn được khi xem.
+
+Sửa góc bằng seed luật v2 additive: sao chép bộ v1, đổi đúng hai ry nền về0.
+V1 đã bù góc hai lần vì battery/sensor trong spec v2 có nền≈0; view đã cộng
+Y90/Y180. Không sửa Java tính pose để vá riêng version và không UPDATE v1;
+thiết kế cũ giữ cả bố cục và luật, được cảnh báo ở danh sách/hồ sơ. Thiết kế mới
+pin v2. RobotDesign đọc version_no qua JOIN cùng rule_set_id để hiển thị v1/v2,
+không nhầm ID số của luật với phiên bản. Seed khóa chassis và guard chưa có v2,
+chạy lại không sửa bộ PUBLISHED. Không có migration ngoài015.

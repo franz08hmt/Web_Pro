@@ -849,3 +849,51 @@ Y90/Y270 vẫn là quy ước trái/phải của mô hình3D giản lược đã
 Đối chiếu kiến thức ở bảng bằng tên chủ đề; không ghi số slide khi chưa trích/xác minh
 được nội dung Word nhúng trong pptx. Phòng3D không có panel bước/checkbox; các bước
 chuẩn nằm ở trang ngoài và trang hoàn thiện. MẫuA/B, nối dây, hỗ trợ, shop không đổi luật.
+
+## Demo Xưởng thiết kế — 3 phút (Tài)
+
+1. Tài khoản → Bộ linh kiện của tôi: chỉ13 loại dựng3D; hai linh kiện chưa có luật
+   được ghi rõ. Nhập từ đơn đã mua; bấm lại không cộng trùng nhờ GREATEST của tổng
+   số CONFIRMED owner (cap10), giữ lượng manual cao hơn. Không trừ kho lần nữa.
+2. Thiết kế của tôi → Tạo: mục tiêu tránh vật cản, nguồn kit hoặc thư viện; chọn
+   một khung, hai động cơ/hai bánh, Arduino, L298N, pin, bánh tự do, HC-SR04.
+   Nguồn kit không vượt số đang có, thư viện cho mô phỏng trước khi mua.
+3. Vào Xưởng: gắn khung → bánh vào mặt trên bị từ chối có tên → gắn động cơ trái
+   sai hướng bị từ chối → chọn90° gắn được → gắn bánh vào trục. Kéo vật thể không
+   xoay camera; kéo nền xoay góc nhìn. Có radio/nút thay cho kéo.
+4. Hoàn tác rồi gắn lại; reload vẫn có vật thể. Lắp đủ → Kiểm tra thiết kế: đọc ba
+   lớp cơ khí/vai trò/cấu hình. Tháo L298N rồi kiểm lại sẽ cần sửa. arm-frame luôn
+   chưa hỗ trợ, không nhận đúng chỉ vì có hình3D.
+5. Hồ sơ: hai hình chiếu, bảng chú giải, BOM số cần/đang có/thiếu/link shop,
+   trình tự cha trước con, kết luận gần nhất, lưu ý ngắt nguồn; In/Lưu PDF.
+
+Giới hạn: tự thiết kế trong bộ được hỗ trợ, không kiểm mọi linh kiện mua ngoài đời.
+Không mô phỏng điện/dòng, vật lý, firmware; hình khối không chứng nhận chiều trục
+hay khả năng vận hành thật. Luật motor-driver là kiểm cấu hình cơ bản; tài liệu
+nhà sản xuất vẫn cần khi lắp thật. Thiết kế riêng không làm bằng chứng nhiệm vụ.
+
+| Chức năng | Kiến thức | Servlet | Bean/XxxDB | View/bảng |
+| --- | --- | --- | --- | --- |
+| Kit, nhập đơn | POST/getParameterValues/CSRF/PRG/transaction | MyKitServlet | KitItem/UserKitDB | my-kit.jsp; user_kit_items, orders/items/products |
+| Tạo/đổi/xóa | Form/session/owner/snapshot | DesignPageServlet | RobotDesign/DesignDB | design-list/form.jsp; robot_designs/instances |
+| Gắn/tháo/undo | JSON request/response, transaction/version | DesignApiServlet | DesignLayout/DesignPlacementDB/DesignEventDB | xuong-thiet-ke.html; placements/events |
+| Kiểm tra | Luật instance JavaBean | DesignApiServlet | DesignCheck/DesignPlacementDB | JSON → textContent; designs/events |
+| Hồ sơ/in | setAttribute/forward/EL/JSTL | DesignSheetServlet | DesignSheet/AssemblyDrawing/DesignPlacementDB | design-sheet.jsp/drawing.jspf; snapshot owner |
+
+Căn cứ cấu hình: [ST L298](https://www.st.com/en/motor-drivers/l298.html) có hai cầu
+điều khiển; [Arduino — servo](https://docs.arduino.cc/learn/electronics/servo-motors/)
+giải thích nhu cầu nguồn riêng tùy tải. Đây là căn cứ cho luật/cảnh báo giản lược,
+không phải kiểm điện hoặc bảo đảm robot thật hoạt động.
+
+Demo hiện dùng luật Xưởng v2: seed v2 chạy sau v1. Thiết kế QA7 tránh vật cản
+lắp10/10, pin ở rear-bay chọn90°, HC-SR04 ở front-top chọn180°. Hai góc nền bằng0,
+không bù lần nữa; hình khớp spec v2 phòng mẫu. Thiết kế QA8 quét lắp11/11, servo
+ở front-top/0°, cảm biến trên horn/180°; cảnh báo nguồn servo5V riêng vẫn hiển thị.
+Mẫu servo-scout hiện sensor ry=0 (không khai báo), khác hướng180° của obstacle;
+Xưởng theo obstacle đã kiểm8b và không sửa servo-scout. Tọa độ servo/sensor Xưởng
+cũng khác mẫu servo-scout:1.02/1.77 ở z−.92 so với .82/1.42 và z−.92/−1.14.
+Đây là đối chiếu có ghi giới hạn, không tuyên bố giống toàn bộ servo-scout.
+
+Thiết kế v1 hiện cảnh báo: tạo mới để dùng luật sửa; không tự chuyển các thiết kế
+1/2/4 sang v2. Đơn QA2 mua Arduino giữ nguyên vì OrderServlet/OrderDB không có
+luồng hủy hoàn kho; không sửa SQL tồn kho hoặc thêm chức năng hủy trong đợt này.

@@ -300,3 +300,14 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] M5: undo có bean/version/khóa, không Redo; HTTP/concurrency/Ctrl+Z và replay đầy đủ đã kiểm.
 - [x] M6: HTTP/SQL/Chrome/PDF/hồi quy, tài liệu/vấn đáp và cleanup8081; không push.
 
+## Đợt10 — Xưởng thiết kế riêng
+
+- [x] M0: baseline, ERD trước code, bảo vệ file và dữ liệu cũ.
+- [x] M1:015/seed v1/rule bean/reader, MySQL FK/cột sinh kiểm thật.
+- [x] M2: kit Servlet/JSP/POST/PRG, nhập đơn hai lần không cộng trùng.
+- [x] M3: tạo/đổi/xóa owner, KIT validation/snapshot, CSRF/version.
+- [x] M4: API/transaction/placement/undo,3D adapter, HTTP/SQL/Chrome.
+- [x] M5: ba lớp JavaBean, CHECK dưới khóa, xóa kết luận khi đổi bố cục.
+- [x] M6: hồ sơ/BOM/cây/bản vẽ/in, crowded30, thống kê lỗi học tập dùng chung.
+- [x] M7: user duyệt v2, seed/diff/idempotence, pose7/8, final192 Node/126 JUnit và cleanup8081.
+

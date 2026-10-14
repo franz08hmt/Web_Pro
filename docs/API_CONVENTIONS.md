@@ -469,3 +469,45 @@ Client gọi GET layout/phiên/events, dựng từ trống rồi áp ATTACH/DETA
 Cả thao tác gốc đã undo vẫn được phát lại trước sự kiện đảo; không gọi API ghi.
 Không có nhật ký thì báo thiếu dữ liệu, không bịa lịch sử. Phát/Tạm dừng/Bước
 trước/Bước sau là tương tác trình bày; reduced-motion chỉ bấm từng bước.
+
+## Đợt10 — Xưởng thiết kế
+
+| Route | Input | Kết quả |
+| --- | --- | --- |
+| GET /my-kit | HttpSession | JSP13 linh kiện, lượng owner, hỗ trợ và link shop |
+| POST /my-kit | action=save/import, csrfToken; componentId lặp, quantity_{id} | lỗi422 trên form, thành công302 PRG |
+| GET /designs | action=new/rename/delete tùy form; id khi đổi/xóa | JSP danh sách/form owner |
+| POST /designs | action=create/rename/delete, csrfToken; name/goalCode/source, componentId/quantity | tạo snapshot;302 PRG; KIT vượt lượng422 |
+| GET /design-sheet?id=… | HttpSession | JSP bản vẽ/BOM/trình tự/kết quả, không ghi |
+| GET /api/designs/{id}/layout | HttpSession | data layout, luật phiên bản, instances/placements/version, check hoặc null |
+| POST /api/designs/{id}/placements | instanceId, slotId dạng host:mount, orientation, expectedLayoutVersion | data layout đã lưu |
+| DELETE /api/designs/{id}/placements/{instanceId} | query expectedLayoutVersion | data layout sau tháo |
+| POST /api/designs/{id}/undo | expectedLayoutVersion | đảo sự kiện gần nhất, kiểm lại bằng bean |
+| POST /api/designs/{id}/check | expectedLayoutVersion | kiểm ba lớp, lưu summary/ngày/version; không có thang điểm |
+
+Mọi API ghi có X-CSRF-Token, owner từ session. Trang/API riêng no-store, noindex
+cho JSP/HTML có dữ liệu riêng. Khách vào JSP302 tài khoản, API401; ID khác chủ404
+NOT_FOUND; CSRF403; version cũ409 LAYOUT_CONFLICT; JDBC503 không SQL/stack trace.
+Đổi tên/xóa dùng expectedLayoutVersion và checkbox confirmDelete=yes khi xóa.
+GET không tạo/xóa/ghi kiểm. CHECKED không đồng nghĩa đạt mục tiêu.
+
+422 do luật: NOT_SUPPORTED, MOUNT_INCOMPATIBLE, MOUNT_OCCUPIED,
+ORIENTATION_NOT_ALLOWED, HOST_MISSING, ALREADY_PLACED, HAS_DEPENDENTS,
+NOTHING_TO_UNDO; LOCKED là nhánh phòng vệ nếu trạng thái không sửa được.
+VALIDATION_ERROR dành cho request sai định dạng. Message tiếng Việt nêu tên từ
+roster/layout của đúng owner; NOT_FOUND/LOCKED/LAYOUT_CONFLICT dùng câu chung.
+Retry gắn đúng cặp/hướng đang có trả unchanged:true, không tăng version hoặc event.
+REJECTED do bean ghi truy vết cùng khóa, chỉ lỗi học tập được đếm trong hồ sơ.
+
+Slots trả nhãn điểm gắn và các hướng gợi ý của loại đó, có tọa độ từ server; item
+componentId có trong snapshot. Client chỉ chọn/gửi ý định, server kiểm fit cụ thể.
+`check.items` có layer/label/message cho người học; không hiển thị enum. Kết quả
+chỉ có khi bố cục đã CHECKED; mọi thao tác đổi bố cục xóa check cũ. Thiết kế lưu
+rule_set_id, không lấy luật mới nhất để tính lại thiết kế cũ.
+
+Luật Xưởng v2 sửa riêng góc nền rear-bay/front-top về0 do v1 bù góc hai lần;
+battery/sensor của spec v2 có nền≈0, hướng Y90/Y180 được view cộng đúng một lần.
+Không đổi route/schema/fit hoặc luật phòng mẫu. Tạo mới chọn PUBLISHED mới nhất;
+GET cũ vẫn đọc FK v1. Danh sách/hồ sơ hiển thị v1/v2; v1 có câu cảnh báo tạo mới,
+không tự chuyển version. SCANNING_AVOIDER giữ cảm biến SERVO_HORN/Y180 theo
+obstacle-avoider; servo-scout hiện có target sensor không ry (0), không sửa mẫu đó.

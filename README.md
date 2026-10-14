@@ -220,6 +220,11 @@ Database cũ có013: kiểm `schema_migrations` rồi chạy
 `database/migrations/014_assembly_events.sql` nếu chưa có014. Database mới nhận
 bảng nhật ký từ `schema.sql`, không chạy lại migration. Không có seed nhật ký.
 
+Xưởng thiết kế: database cũ chạy `database/migrations/015_robot_design.sql` sau014
+nếu chưa có015. Database mới nhận bảng từ schema.sql. Sau seed catalog chạy
+`database/seed-design-rules-v1.sql`, rồi `database/seed-design-rules-v2.sql`.
+Thiết kế mới lấy luật PUBLISHED mới nhất; thiết kế cũ giữ phiên bản đã lưu.
+
 Chạy Tomcat rồi mở `http://localhost:8080/api/health`:
 
 | Kết quả | Nguyên nhân thường gặp | Cách xử lý |
@@ -409,3 +414,25 @@ nhật ký hồi tố. Đây là mô hình giản lược, không phải bản v
 Sau013, chạy014 bằng tài khoản có quyền CREATE/REFERENCES trên đúng DB.
 Migration thêm `assembly_events`, giữ spec v1/v2 và mọi dữ liệu cũ; không cần seed mới.
 Xem [bằng chứng và giới hạn Đợt9](docs/PHASE9_REVIEW_QA_REPORT.md).
+
+## Xưởng thiết kế robot — Đợt 10
+
+Tự thiết kế trong bộ linh kiện được hỗ trợ kiểm chứng, không ghép mọi linh kiện bất kỳ.
+Luật lắp ghép/cấu hình không mô phỏng điện, vật lý hay firmware; thiết kế riêng không
+tính hoàn thành mẫu chính thức và không làm bằng chứng nhiệm vụ.
+
+Máy đã có database: kiểm schema_migrations, chạy
+`database/migrations/015_robot_design.sql` nếu chưa có015, sau014, trên đúng database.
+Máy mới dùng `database/schema.sql` đã chứa11 bảng Xưởng; không cần chạy lại015.
+Sau seed catalog/robot/shop và cấu hình lắp mẫu, chạy `database/seed-design-rules-v1.sql`.
+Sau đó chạy `database/seed-design-rules-v2.sql`: sao chép v1, chỉ sửa góc nền
+rear-bay/front-top về0 vì v1 bù góc hai lần. Không sửa schema hoặc spec mẫu.
+Seed luật dùng transaction/guard version; chạy lại không đổi bản đã công bố.
+Không nâng quyền ứng dụng; dùng tài khoản cài đặt được cấp CREATE/REFERENCES nếu cần.
+
+Vào Tài khoản → Bộ linh kiện của tôi hoặc Thiết kế của tôi. Bộ linh kiện có thể nhập
+từ đơn CONFIRMED của chính mình; bấm lại không cộng trùng. Tạo thiết kế từ kit hoặc
+thư viện, chọn mục tiêu → vào Xưởng → gắn/xoay/hoàn tác → Kiểm tra → Hồ sơ thiết kế/In.
+Giới hạn20 thiết kế,30 vật thể/thiết kế,10/loại và đúng một khung nền. arm-frame và
+mini-gripper có hình3D nhưng chưa hỗ trợ kiểm chứng. Đổi kit không đổi snapshot thiết kế.
+Phòng lắp mẫu cũ và spec v1/v2 giữ nguyên. Kết quả/giới hạn QA: [báo cáo Đợt10](docs/PHASE10_DESIGN_QA_REPORT.md).

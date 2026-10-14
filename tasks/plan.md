@@ -488,3 +488,15 @@ isLearningError, thêm bốn mã Xưởng. Không tính design làm bằng chứ
 QA8081 riêng, snapshot44 tập hàng cũ, hai USER, import idempotent, version409,
 Chrome390/1440, đối chiếu SQL/bản vẽ/PDF và hình obstacle giống mẫu chuẩn.
 Giới hạn điện/servo tham khảo nguồn chính thức Arduino/ST, không xác nhận an toàn thật.
+
+M1–M6 đã triển khai/commit:015/schema/seed, kit+nhập đơn, snapshot thiết kế,
+API placement/undo, check ba lớp, hồ sơ/in. Node183→191/JUnit109→124, build đạt.
+10 file WIP nguyên byte,43/44 tập hàng cũ giữ hash; shop_products đổi do một đơn QA.
+M7 phát hiện bù góc hai lần; user duyệt luật v2 chỉ sửa hai góc nền về0. Seed đã
+chạy/rerun/diff đúng hai ô, không đổi v1/schema/spec. QA7 obstacle10/10 khớp mẫu,
+QA8 scanning11/11 giữ hướng180° theo obstacle và ghi khác biệt với servo-scout.
+Node192/JUnit126;39 ca v2 +68 HTTP cuối +15 browser/JS-off, PDF mới3 trang mỗi mẫu.
+Đơn QA2 giữ nguyên vì không có luồng hủy hoàn kho; không sửa tồn kho bằng tay.
+M7 hoàn tất: mvn -q test, clean package JDK17 và npm test đều xanh192/126,0skip;
+PDF v2 mỗi mẫu3 trang đã xem, runtime QA/config/log đã dọn và8081 đóng.
+Commit tài liệu riêng, không push; các giới hạn servo-scout/thiết bị thật ghi rõ.

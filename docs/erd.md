@@ -29,7 +29,7 @@ Instances/events CASCADE phục vụ xóa cả design; catalog/luật RESTRICT. 
 Điều chỉnh kỹ thuật: MOTOR_MOUNT_L/R phân biệt Y90/Y270; thêm rx/rz cho mount
 giữ tư thế động cơ/bánh v2 (không sửa v2). Chassis gốc(0,.42,0); offset con bằng
 tọa độ v2 trừ cha. Axle(0,.09,-.37) xoay Y90/Y270 của host tạo bánh trái/phải.
-Ry mount bù hướng theo quy ước8b. Server xoay offset Y bội90 theo cây; không
+Ry motor bù hướng theo quy ước8b. Server xoay offset Y bội90 theo cây; không
 nhận pose client. SERVO_HORN ở trên servo. Không mô phỏng chính xác chiều trục.
 
 Rule PUBLISHED bất biến, design pin rule_set_id/snapshot số lượng. CHECKED vẫn
@@ -37,6 +37,13 @@ sửa được; mutation trở về DRAFT/xóa dữ kiện kiểm cũ. CHECK tí
 Giới hạn20design/owner,30instances/design,10/loại: bean kiểm dưới khóa users/design.
 Kit đổi không đổi snapshot. Import tổng CONFIRMED owner, cap10, GREATEST chống
 cộng trùng. Catalog13 renderer; arm-frame/mini-gripper không role/fit → UNSUPPORTED.
+
+Luật Xưởng v2 dùng cùng schema015, không migration mới: sao chép nguyên roles,
+mounts, fits và goal requirements v1; chỉ ry của chassis rear-bay/front-top bằng0.
+Nguyên nhân v1 bù góc hai lần: góc nền battery/sensor trong spec v2 đã xấp xỉ0,
+rồi view cộng hướng Y90/Y180. Luật v2 chỉ cộng một lần, giữ x/y/z/rx/rz và mọi
+ràng buộc khác. Không UPDATE/DELETE v1; design1/2/4 vẫn pin v1, design7/8 pin v2.
+Phiên bản hiển thị đọc JOIN rule_set_id, không thêm cột schema hoặc đổi kết quả cũ.
 
 ## Nhật ký lắp ráp — thiết kế trước migration 014, 14/10/2026
 

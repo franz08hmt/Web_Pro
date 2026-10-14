@@ -1035,6 +1035,71 @@ rồi áp sự kiện UNDO để thấy quá trình thật.
 | Toàn vẹn dữ liệu | 014_assembly_events.sql:17,23 | UNIQUE undo, FK cùng phiên, CHECK |
 | JSON response và tương tác view | AssemblyPlacementJson.events; assembly-3d-replay.js | quote nhãn, dựng lại scene, không chấm/không ghi |
 
+## Đợt10 — Trình bày Xưởng thiết kế bằng chức năng và code
+
+**1. Có tự lắp ngoài năm mẫu được không?** Có, trong13 loại có hình3D và bộ luật
+được hỗ trợ. Tạo thiết kế riêng qua form; không tạo assembly_sessions hay bằng
+chứng nhiệm vụ. Mở [DesignPageServlet:27](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/DesignPageServlet.java#L27)
+để chỉ doGet/doPost; [RobotDesign:194](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/RobotDesign.java#L194)
+để chỉ giới hạn một BASE,30 vật thể,10/loại và20 thiết kế. Các bảng riêng là
+robot_designs/design_instances, pin rule_set_id; kit đổi không làm đổi snapshot.
+
+**2. Chọn từ thư viện và kéo thả nối client–server thế nào?** Form chọn nguồn
+LIBRARY hoặc KIT và số lượng; POST dùng getParameterValues, validate ở server,
+thành công redirect PRG. Phòng3D chỉ gửi ý định instance/host:mount/hướng/version.
+Mở [DesignFormUtil:1](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/DesignFormUtil.java#L1),
+[design-room.js:1](../assets/js/design-room.js#L1),
+[DesignApiServlet:40](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/DesignApiServlet.java#L40),
+[DesignLayout:91](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DesignLayout.java#L91).
+X-CSRF-Token/session/owner được Servlet kiểm; JavaBean quyết định fit; DB khóa và
+lưu trước khi view hiện đã xác nhận. Có radio/nút nếu không kéo được.
+
+**3. Dùng linh kiện đã mua ra sao?** Nhập từ đơn CONFIRMED của chính người dùng,
+JOIN order_items/shop_products.component_id, cap10 và GREATEST thay vì cộng thêm
+lượng mỗi lần bấm. Mở [UserKitDB:80](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/UserKitDB.java#L80),
+[MyKitServlet:32](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/MyKitServlet.java#L32).
+Chỉ thay user_kit_items, không mua lại/giảm kho lần nữa; hidden csrfToken và PRG.
+Nguồn KIT được kiểm lại trong transaction tạo snapshot, không tin số lượng form.
+
+**4. Website biết tương thích bằng gì?** Bằng luật được hỗ trợ, không phải mô
+phỏng điện. Mở [DesignLayout:91](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DesignLayout.java#L91)
+cho type/hướng/host/occupied; [DesignCheck:65](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DesignCheck.java#L65)
+cho ba lớp và PASS/WARN/FAIL/UNSUPPORTED. Chỉ đếm vai trò vật thể đã gắn; thiếu
+L298N, thiếu nguồn hoặc vượt số kênh cần sửa. arm-frame/mini-gripper chưa có luật
+thì không kết luận đạt. CHECKED là đã kiểm, không đồng nghĩa đạt.
+Mở [DesignPlacementDB:59](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/DesignPlacementDB.java#L59)
+để chỉ PreparedStatement lưu kết luận/version/event dưới FOR UPDATE của owner.
+
+**5. Có dùng kết quả lắp robot thật được không?** Có thể tham khảo, phải kiểm lại
+thực tế. Mở [DesignSheetServlet:21](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/DesignSheetServlet.java#L21):
+request.getParameter(id) → session → XxxDB → setAttribute → forward JSP.
+Mở [DesignSheet:88](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DesignSheet.java#L88)
+cho BOM, hai hình chiếu và [DesignSheet:159](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DesignSheet.java#L159)
+cho cha trước con theo display_order. [design-sheet.jsp:1](../tomcat-app/src/main/webapp/WEB-INF/views/design-sheet.jsp#L1)
+dùng c:forEach/c:out và getter số trong SVG; không scriptlet, không chấm bằng JS.
+BOM là số cần/đang có/thiếu, có link shop; in A4 và nhắc ngắt nguồn trước đổi dây.
+Không xác nhận điện, vật lý, firmware hoặc vận hành thật.
+
+| Kiến thức đã học | Code để chỉ trực tiếp |
+| --- | --- |
+| Request, doGet/doPost, getParameterValues | MyKitServlet, DesignPageServlet, DesignFormUtil |
+| HttpSession, CSRF, quyền owner | SessionUtil, DesignApiServlet.handle |
+| JavaBean chứa luật instance | RobotDesign.validateCreation, DesignLayout.validateAttach, DesignCheck.evaluate |
+| JDBC/PreparedStatement/finally/transaction | UserKitDB.change, DesignDB.create, DesignPlacementDB.change/check |
+| setAttribute/forward/EL/JSTL | DesignSheetServlet.doGet → design-sheet.jsp/drawing.jspf |
+| Bản ghi bất biến và cập nhật lỗi thời | DesignEventDB.insert/selectUndoTarget, layout_version, UNIQUE undo_of_event_id |
+
+Chỉ ghi tên chủ đề; chưa xác minh được số slide trong Word nhúng thì không gán số slide.
+
+**6. Vì sao sửa góc bằng luật v2 mà không sửa v1?** V1 đã PUBLISHED và thiết kế
+đã pin rule_set_id. Sửa v1 sẽ làm hình/kết quả cũ thay đổi sau khi người học lưu.
+Seed v2 sao chép nguyên bộ v1, chỉ đổi rear-bay/front-top ry về0: v1 bù góc hai
+lần trong khi góc nền spec v2 đã≈0; hướng Y90/Y180 chỉ cộng một lần ở view.
+Thiết kế mới lấy PUBLISHED mới nhất, thiết kế cũ vẫn có cảnh báo v1.
+Mở [seed-design-rules-v2.sql:1](../database/seed-design-rules-v2.sql#L1)
+để chỉ transaction/guard/copy; [DesignDB:17](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/DesignDB.java#L17)
+để chỉ JOIN phiên bản pin. Không sửa spec v1/v2, schema hoặc dữ liệu cũ.
+
 Chỉ ghi tên chủ đề: chưa xác minh được số slide từ Word nhúng trong pptx nên không
 gán số chương/slide. Y90/Y270 vẫn là quy ước mô hình giản lược; không xác nhận chiều
 trục động cơ thật, điện hay firmware. Điểm quiz và rubric A/B giữ nguyên.
