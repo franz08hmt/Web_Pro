@@ -37,3 +37,13 @@ Guard redirect được mở rộng kiểm cả @WebServlet và file HTML, loạ
 Bằng chứng ngoài Git: D:/Web-Pro/qa-evidence/phase10; baseline/test/package logs,
 migration-results.json, m2-results.json, kit390/1440.png, hash WIP/DB và metadata QA.
 Các mốc tiếp theo chưa được coi đã kiểm hoặc hoàn thành trong mục này.
+
+## M3 — Tạo/quản lý/snapshot
+
+188Node/112JUnit/package xanh;18 HTTP/SQL/Chrome kiểm đạt. KIT vượt số đang có422
+trên form, không header/instances mới; LIBRARY và KIT hợp lệ302, snapshot10 vật thể.
+Kit đổi bánh về0 không đổi hai instance bánh đã chọn. Đổi tên302, form cũ409;
+USER khác GET/POST404. Xóa thiếu xác nhận422, có xác nhận302, cascade snapshot
+chỉ của thiết kế đó. Tên chứa chuỗi script hiển thị dạng chữ;390/1440 không tràn.
+User QA23 có design1 LIBRARY và design2 KIT; design QA3 dùng kiểm xóa đã xóa qua form.
+Không dùng thiết kế riêng làm phiên assembly/nhiệm vụ; không sửa luật mẫu.

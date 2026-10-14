@@ -68,3 +68,17 @@ test("kit forms use session owner CSRF PRG and imports confirmed purchases witho
   assert.match(view, /type="number"/);
   assert.match(view, /c:out/);
 });
+
+test("design creation snapshots quantities under owner lock and mutations keep ownership and form CSRF", () => {
+  const base = "tomcat-app/src/main/java/vn/edu/webpro/robotlab/";
+  const db = read(base + "data/DesignDB.java");
+  assert.match(db, /UserKitDB\.lockOwner\(connection, userId\)/);
+  assert.match(db, /validateCreation/);
+  assert.match(db, /INSERT INTO design_instances/);
+  assert.match(db, /d\.id = \? AND d\.user_id = \?/);
+  const servlet = read(base + "controller/DesignPageServlet.java");
+  assert.match(servlet, /hasValidFormCsrfToken/);
+  assert.match(servlet, /confirmDelete/);
+  assert.match(servlet, /setAttribute/);
+  assert.match(servlet, /getRequestDispatcher\(url\)\.forward/);
+});

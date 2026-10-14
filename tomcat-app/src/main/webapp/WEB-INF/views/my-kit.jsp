@@ -23,6 +23,7 @@
                 <p role="status">Đã cập nhật bộ linh kiện.</p>
             </c:if>
             <p><a href="${pageContext.request.contextPath}/pages/tai-khoan.html">Về tài khoản</a></p>
+            <p><a href="${pageContext.request.contextPath}/designs">Thiết kế của tôi</a></p>
             <form method="post" action="${pageContext.request.contextPath}/my-kit">
                 <input type="hidden" name="csrfToken" value="<c:out value='${sessionScope.csrfToken}'/>">
                 <input type="hidden" name="action" value="save">
