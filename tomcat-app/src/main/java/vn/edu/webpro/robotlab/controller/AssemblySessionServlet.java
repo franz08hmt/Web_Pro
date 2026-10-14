@@ -407,7 +407,8 @@ public class AssemblySessionServlet extends HttpServlet {
         String path = request.getPathInfo();
         String[] segments = path == null ? new String[0] : path.substring(1).split("/");
         if (segments.length < 2 || (!"layout".equals(segments[1]) && !"placements".equals(segments[1])
-                && !"check".equals(segments[1]) && !"progress".equals(segments[1]) && !"events".equals(segments[1]))) {
+                && !"check".equals(segments[1]) && !"progress".equals(segments[1])
+                && !"events".equals(segments[1]) && !"undo".equals(segments[1]))) {
             return false;
         }
         long intentInstanceId = 0;
@@ -425,7 +426,7 @@ public class AssemblySessionServlet extends HttpServlet {
                 return true;
             }
             long sessionId = id(segments[0]);
-            if (("POST".equals(method) && "placements".equals(segments[1]))
+            if (("POST".equals(method) && ("placements".equals(segments[1]) || "undo".equals(segments[1])))
                     || ("DELETE".equals(method) && "placements".equals(segments[1]))) {
                 current = AssemblyPlacementDB.selectLayout(sessionId, user.getId());
                 if (current == null) {
@@ -435,7 +436,11 @@ public class AssemblySessionServlet extends HttpServlet {
                     throw new IllegalArgumentException("GROUP_MODE");
                 }
             }
-            if ("GET".equals(method) && segments.length == 2 && "events".equals(segments[1])) {
+            if ("POST".equals(method) && segments.length == 2 && "undo".equals(segments[1])) {
+                String body = JsonUtil.readBody(request.getReader(), MAX_BODY);
+                sendLayout(response, AssemblyPlacementDB.change(sessionId, user.getId(),
+                        "undo", 0, 0, "", version(body)));
+            } else if ("GET".equals(method) && segments.length == 2 && "events".equals(segments[1])) {
                 if (AssemblyPlacementDB.selectLayout(sessionId, user.getId()) == null) {
                     throw new IllegalArgumentException("NOT_FOUND");
                 }
@@ -568,7 +573,7 @@ public class AssemblySessionServlet extends HttpServlet {
             AssemblyLayout layout) throws IOException {
         if (code == null || !code.matches("NOT_FOUND|LAYOUT_CONFLICT|WRONG_COMPONENT|SLOT_OCCUPIED|"
                 + "ORIENTATION_NOT_ALLOWED|PARENT_MISSING|ALREADY_PLACED|HAS_DEPENDENTS|"
-                + "SESSION_LOCKED|ASSEMBLY_INCOMPLETE|GROUP_MODE|VALIDATION_ERROR")) {
+                + "SESSION_LOCKED|ASSEMBLY_INCOMPLETE|GROUP_MODE|VALIDATION_ERROR|NOTHING_TO_UNDO")) {
             code = "VALIDATION_ERROR";
         }
         int status = "NOT_FOUND".equals(code) ? 404 : "LAYOUT_CONFLICT".equals(code) ? 409 : 422;

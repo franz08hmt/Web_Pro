@@ -154,7 +154,18 @@ public class AssemblyPlacementDB {
                 throw new IllegalArgumentException("GROUP_MODE");
             }
             String reason = "";
-            if ("attach".equals(action)) {
+            String effect = action;
+            AssemblyEvent undoTarget = null;
+            if ("undo".equals(action)) {
+                undoTarget = AssemblyEventDB.selectUndoTarget(connection, id, userId);
+                reason = layout.validateUndo(undoTarget, expectedVersion);
+                if (undoTarget != null) {
+                    effect = undoTarget.getInverseAction();
+                    instanceId = undoTarget.getInstanceId();
+                    slotId = undoTarget.getSlotId();
+                    orientation = undoTarget.getInverseOrientation();
+                }
+            } else if ("attach".equals(action)) {
                 reason = layout.validateAttach(instanceId, slotId, orientation, expectedVersion);
             } else if ("detach".equals(action)) {
                 reason = layout.validateDetach(instanceId, expectedVersion);
@@ -181,7 +192,11 @@ public class AssemblyPlacementDB {
             }
             AssemblyEvent event = new AssemblyEvent();
             event.capture(action, layout, instanceId, slotId, orientation);
-            if ("attach".equals(action)) {
+            if (undoTarget != null) {
+                event.setUndoOfEventId(undoTarget.getId());
+                event.setOrientationCode("attach".equals(effect) ? orientation : null);
+            }
+            if ("attach".equals(effect)) {
                 ps = connection.prepareStatement("INSERT INTO assembly_placements "
                         + "(instance_id, session_id, spec_id, slot_id, component_id, orientation_code) "
                         + "VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE "
@@ -193,14 +208,14 @@ public class AssemblyPlacementDB {
                 ps.setString(5, layout.findInstance(instanceId).getComponentId());
                 ps.setString(6, orientation);
                 ps.executeUpdate();
-            } else if ("detach".equals(action) || "reset".equals(action)) {
+            } else if ("detach".equals(effect) || "reset".equals(effect)) {
                 String query = "DELETE FROM assembly_placements WHERE session_id = ?";
-                if ("detach".equals(action)) {
+                if ("detach".equals(effect)) {
                     query += " AND instance_id = ?";
                 }
                 ps = connection.prepareStatement(query);
                 ps.setLong(1, id);
-                if ("detach".equals(action)) {
+                if ("detach".equals(effect)) {
                     ps.setLong(2, instanceId);
                 }
                 ps.executeUpdate();

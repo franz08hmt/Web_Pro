@@ -5,6 +5,45 @@ import org.junit.jupiter.api.Test;
 
 class AssemblyEventTest {
     @Test
+    void undoUsesTheSameAttachDetachRulesAndVersionChecks() {
+        AssemblyLayout l = new AssemblyLayout();
+        l.setMode("DETAILED");
+        l.setStatus("IN_PROGRESS");
+        AssemblySlot slot = new AssemblySlot();
+        slot.setId(1);
+        slot.setComponentId("wheel");
+        slot.getOrientations().add("Y0");
+        slot.getOrientations().add("Y180");
+        l.getSpec().getSlots().add(slot);
+        AssemblyInstance item = new AssemblyInstance();
+        item.setId(1);
+        item.setComponentId("wheel");
+        l.getInstances().add(item);
+        AssemblyPlacement placed = new AssemblyPlacement();
+        placed.setInstanceId(1);
+        placed.setSlotId(1);
+        placed.setOrientationCode("Y180");
+        l.getPlacements().add(placed);
+        AssemblyEvent e = new AssemblyEvent();
+        e.setAction("ATTACH");
+        e.setOutcome("ACCEPTED");
+        e.setInstanceId(1);
+        e.setSlotId(1);
+        assertEquals("", l.validateUndo(e, 1));
+        e.setPrevOrientationCode("Y0");
+        assertEquals("", l.validateUndo(e, 1));
+        assertEquals("LAYOUT_CONFLICT", l.validateUndo(e, 2));
+        l.getPlacements().clear();
+        e.setAction("DETACH");
+        e.setOrientationCode("Y0");
+        assertEquals("", l.validateUndo(e, 1));
+        assertEquals("NOTHING_TO_UNDO", l.validateUndo(null, 1));
+        l.setStatus("COMPLETED");
+        assertEquals("SESSION_LOCKED", l.validateUndo(e, 1));
+        l.setMode("GROUP");
+        assertEquals("GROUP_MODE", l.validateUndo(e, 1));
+    }
+    @Test
     void eventCapturesPreviousOrientationAndHasLearnerLabels() {
         AssemblyLayout l = new AssemblyLayout();
         l.setSessionId(10);

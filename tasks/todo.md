@@ -297,6 +297,6 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] M2: bản vẽ SVG theo dữ liệu phiên và test tỉ lệ; render thật nối ở M3.
 - [x] M3: trang hoàn thiện Servlet/JSP bốn phần, điều hướng/in/quiz;51 ca runtime, PDF3 trang.
 - [x] M4: events API owner và replay chỉ đọc; playback đầy đủ kiểm sau M5 hoàn tất.
-- [ ] M5: undo có bean/version/khóa, không Redo.
+- [x] M5: undo có bean/version/khóa, không Redo; HTTP/concurrency/Ctrl+Z và replay đầy đủ đã kiểm.
 - [ ] M6: HTTP/SQL/Chrome/PDF/hồi quy, tài liệu và cleanup; không push.
 

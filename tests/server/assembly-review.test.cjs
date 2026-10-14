@@ -108,3 +108,18 @@ test("events endpoint verifies owner and replay bypasses automatic session mutat
   assert.match(front, /if \(replayMode\) \{[\s\S]*?restoreReplay\(\);[\s\S]*?return;/);
   assert.match(front, /replayController\?\.dispose\(\)/);
 });
+
+test("undo is owner scoped versioned CSRF protected and shares existing bean validation", () => {
+  const base = "tomcat-app/src/main/java/vn/edu/webpro/robotlab/";
+  const db = read(base + "data/AssemblyPlacementDB.java");
+  assert.match(db, /selectUndoTarget\(connection, id, userId\)/);
+  assert.match(db, /layout\.validateUndo\(undoTarget, expectedVersion\)/);
+  assert.match(db, /setUndoOfEventId\(undoTarget\.getId\(\)\)/);
+  const servlet = read(base + "controller/AssemblySessionServlet.java");
+  assert.match(servlet, /"undo"\.equals\(segments\[1\]\)/);
+  assert.match(servlet, /hasValidCsrfToken\(request, response\)/);
+  const front = read("assets/js/assembly-3d-placement.js");
+  assert.match(front, /event\.ctrlKey/);
+  assert.match(front, /contenteditable/);
+  assert.match(front, /options\.onUndo\(layout\.layoutVersion\)/);
+});

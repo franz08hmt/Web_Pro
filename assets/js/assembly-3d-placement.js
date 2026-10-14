@@ -40,6 +40,10 @@ window.createAssemblyPlacementView = function (options) {
   const cancel = document.createElement("button");
   cancel.type = "button";
   cancel.textContent = "Hủy chọn";
+  const undo = document.createElement("button");
+  undo.type = "button";
+  undo.textContent = "Hoàn tác";
+  undo.addEventListener("click", () => mutate("undo"));
   const reload = document.createElement("button");
   reload.type = "button";
   reload.textContent = "Tải lại mô hình từ server";
@@ -57,11 +61,11 @@ window.createAssemblyPlacementView = function (options) {
   rotateRight.textContent = "Xoay phải 90°";
   rotateRight.addEventListener("click", () => rotate(1));
   panel.replaceChildren(heading, help, live, tray, slots, directions,
-    rotateLeft, rotateRight, attach, cancel, retry, reload, installed);
+    rotateLeft, rotateRight, attach, cancel, undo, retry, reload, installed);
   panel.classList.add("assembly-placement");
   if (options.readOnly) {
     for (const node of [heading, help, live, tray, slots, directions, rotateLeft, rotateRight,
-      attach, cancel, retry, reload]) node.hidden = true;
+      attach, cancel, undo, retry, reload]) node.hidden = true;
   }
 
   function message(text, state) {
@@ -112,7 +116,7 @@ window.createAssemblyPlacementView = function (options) {
   }
 
   async function mutate(kind, instanceId = selectedInstance) {
-    if (busy || !layout?.canEdit || !instanceId || (kind === "attach" && !selectedSlot)) return;
+    if (busy || !layout?.canEdit || (kind !== "undo" && !instanceId) || (kind === "attach" && !selectedSlot)) return;
     if (exploded) setExploded(false);
     busy = true;
     message("Đang gửi ý định thao tác; chưa đồng bộ…", "preview");
@@ -120,7 +124,8 @@ window.createAssemblyPlacementView = function (options) {
     try {
       const result = kind === "attach"
         ? await onAttach(instanceId, selectedSlot, orientation, layout.layoutVersion)
-        : await onDetach(instanceId, layout.layoutVersion);
+        : kind === "detach" ? await onDetach(instanceId, layout.layoutVersion)
+          : await options.onUndo(layout.layoutVersion);
       unsynced = false;
       retry.hidden = true;
       sync(result);
@@ -146,6 +151,7 @@ window.createAssemblyPlacementView = function (options) {
     slots.disabled = disabled;
     directions.disabled = disabled;
     attach.disabled = disabled;
+    undo.disabled = disabled;
     cancel.disabled = busy;
     retry.disabled = disabled;
     rotateLeft.disabled = disabled;
@@ -335,6 +341,11 @@ window.createAssemblyPlacementView = function (options) {
   }
 
   function keydown(event) {
+    if (event.ctrlKey && !event.shiftKey && event.key.toLowerCase() === "z") {
+      if (event.target.matches?.("textarea,input:not([type='radio']):not([type='checkbox']),[contenteditable]")) return;
+      if (layout?.canEdit && !busy) { event.preventDefault(); void mutate("undo"); }
+      return;
+    }
     if (!selectedInstance || busy || !layout?.canEdit) return;
     if (event.key === "Escape") { drag = null; clearSelection(); }
     else if (event.target.matches("textarea, input:not([type='radio']):not([type='checkbox'])")) return;

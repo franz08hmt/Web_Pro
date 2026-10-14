@@ -208,6 +208,26 @@ public class AssemblyLayout implements Serializable {
         return null;
     }
 
+    /** Hoàn tác vẫn kiểm chế độ, trạng thái, phiên bản và cùng luật gắn/tháo. */
+    public String validateUndo(AssemblyEvent event, int expectedVersion) {
+        if (!"DETAILED".equals(mode)) {
+            return "GROUP_MODE";
+        }
+        if (!isCanEdit()) {
+            return "SESSION_LOCKED";
+        }
+        if (expectedVersion != layoutVersion) {
+            return "LAYOUT_CONFLICT";
+        }
+        if (event == null || !event.isAccepted() || event.isUndone() || event.getInverseAction().isEmpty()) {
+            return "NOTHING_TO_UNDO";
+        }
+        if ("detach".equals(event.getInverseAction())) {
+            return validateDetach(event.getInstanceId(), expectedVersion);
+        }
+        return validateAttach(event.getInstanceId(), event.getSlotId(), event.getInverseOrientation(), expectedVersion);
+    }
+
     /** Kiểm toàn bộ ý định gắn; retry giống hệt không tạo thao tác mới. */
     public String validateAttach(long instanceId, long slotId, String orientation, int expectedVersion) {
         AssemblyInstance instance = findInstance(instanceId);
@@ -404,6 +424,9 @@ public class AssemblyLayout implements Serializable {
         }
         if ("GROUP_MODE".equals(code)) {
             return "Phiên này dùng cách lắp theo nhóm linh kiện, không dùng điểm gắn riêng.";
+        }
+        if ("NOTHING_TO_UNDO".equals(code)) {
+            return "Không còn thao tác để hoàn tác sau lần đặt lại gần nhất.";
         }
         return "Không tìm thấy vật thể hoặc điểm gắn trong phiên này.";
     }

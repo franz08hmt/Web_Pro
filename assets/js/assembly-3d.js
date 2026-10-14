@@ -829,6 +829,10 @@
 
   async function restoreReplay() {
     partsContainer.replaceChildren();
+    if (statusElement) statusElement.textContent = "Chế độ xem lại: mô hình và kết quả đã lưu không thay đổi.";
+    if (completeStatus) completeStatus.hidden = true;
+    const progressPanel = progressElement?.closest(".assembly-3d-progress");
+    if (progressPanel) progressPanel.hidden = true;
     for (const node of [resetButton, completeButton, checkButton, drivePanel, explodeButton, completeResult]) {
       if (node) node.hidden = true;
     }
@@ -869,6 +873,7 @@
         onAttach: (instanceId, slotId, orientation, version) =>
           sessionApi.attach(activeSession.id, instanceId, slotId, orientation, version),
         onDetach: (instanceId, version) => sessionApi.detach(activeSession.id, instanceId, version),
+        onUndo: version => sessionApi.undo(activeSession.id, version),
         onExplodedChange: value => {
           explodedView = value;
           explodeButton?.setAttribute("aria-pressed", String(value));

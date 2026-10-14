@@ -35,6 +35,8 @@
   .assembly-review .drawing-item text { fill: black; }
   .assembly-review .workspace-table-scroll { overflow: visible; }
   .assembly-review table { min-width: 0; border-collapse: collapse; }
+  .learning-workspace.assembly-review .workspace-content caption { color: black; break-after: avoid; }
+  .assembly-review .workspace-content th:last-child { white-space: nowrap; min-width: 64px; }
   .assembly-review th, .assembly-review td { border: 1px solid black; color: black; background: white; }
   .assembly-review thead { display: table-header-group; }
   .assembly-review tr { break-inside: avoid; }

@@ -143,6 +143,11 @@
     async events(sessionId) {
       return (await request(`/assembly-sessions/${segment(sessionId)}/events`)).data;
     },
+    async undo(sessionId, expectedLayoutVersion) {
+      return (await request(`/assembly-sessions/${segment(sessionId)}/undo`, {
+        method: "POST", csrf: true, body: {expectedLayoutVersion}
+      })).data;
+    },
     async attach(sessionId, instanceId, slotId, orientation, expectedLayoutVersion) {
       return (await request(`/assembly-sessions/${segment(sessionId)}/placements`, {
         method: "POST", csrf: true,

@@ -69,3 +69,21 @@ HTTP/Chrome9 ca: events35 chỉ3 ACCEPTED, other404; replay33 cũ báo không c�
 controls ghi ẩn,390 không tràn; pending35 chỉ thông báo; không network write/pageerror.
 Replay đầy đủ trên phiên mới hoàn tất sẽ kiểm ở M5/M6, không lấy ca không nhật ký
 làm bằng chứng đã phát lại đủ10 vật thể. Các VM test completion vẫn kiểm normal mode.
+
+## M5 — Hoàn tác có kiểm chứng
+
+182Node/106JUnit xanh. Undo tìm ACCEPTED ATTACH/DETACH gần nhất, chưa undo và sau RESET,
+khóa phiên rồi gọi lại validateAttach/validateDetach; UNIQUE và version bảo vệ gửi đôi.
+24 ca HTTP/SQL: đảo gắn/tháo/đổi hướng, reset barrier, một200/một409 khi đồng thời, quyền404,
+CSRF403, COMPLETED SESSION_LOCKED, GROUP GROUP_MODE, cap300 REJECTED không đổi version.
+Chrome5 ca: nút undo, Ctrl+Z từ radio; Ctrl+Z trong ô nhập không gọi API undo, không pageerror.
+
+Phiên35 đã hoàn tất10/10 v2; hai request hoàn tất trả200 nhưng chỉ một transitioned và một
+unchanged, SQL chỉ một COMPLETE. Phát lại đầy đủ27 ACCEPTED kể cả UNDO/RESET về đúng10 cặp
+vật thể/điểm gắn/hướng cuối; không request ghi và hash phiên/placements/events không đổi.
+Đã kiểm trang mới bốn phần,5 bước chuẩn,20 mục SVG/10 hàng chú giải; các trang cũ bằng đúng
+chủ tài khoản. Script QA ban đầu dùng student cho phiên của builder nên404 đúng; sửa script
+lấy owner từ SQL, không sửa quyền ứng dụng. Evidence m5-results, m5-browser-results,
+final-mutations-results và final-live-results (49 kiểm đọc/replay/hồi quy).
+PDF phiên mới4 trang đã render/xem mọi trang; thêm giữ caption với bảng và không bẻ chữ Hướng.
+Replay bỏ lời hướng dẫn gắn/progress cũ gây hiểu nhầm; chỉ đổi chữ/ẩn vùng thuộc chế độ xem lại.
