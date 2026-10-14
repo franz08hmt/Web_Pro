@@ -430,6 +430,9 @@ public class AssemblySessionServlet extends HttpServlet {
                 if (current == null) {
                     throw new IllegalArgumentException("NOT_FOUND");
                 }
+                if ("GROUP".equals(current.getMode())) {
+                    throw new IllegalArgumentException("GROUP_MODE");
+                }
             }
             if ("GET".equals(method) && segments.length == 2 && "layout".equals(segments[1])) {
                 sendLayout(response, AssemblyPlacementDB.selectLayout(sessionId, user.getId()));
@@ -459,7 +462,9 @@ public class AssemblySessionServlet extends HttpServlet {
         } catch (IllegalArgumentException e) {
             // Lỗi định dạng không che thông báo khóa; lỗi quyền vẫn giữ 404.
             if (current != null && !(e instanceof AssemblyPlacementException)
+                    && "DETAILED".equals(current.getMode())
                     && !"NOT_FOUND".equals(e.getMessage())
+                    && !"GROUP_MODE".equals(e.getMessage())
                     && !("progress".equals(segments[1]) ? current.isCanReset() : current.isCanEdit())) {
                 error(response, "SESSION_LOCKED", intentInstanceId, intentSlotId);
                 return true;

@@ -287,3 +287,27 @@ không tạo bài nộp mới hay mua hàng. Giới hạn tư thế động cơ 
 | M4 | 2a80c82 fix(assembly): show verified slot counts in session overviews |
 | M5 | c1e65d9 fix(assembly): clarify receipt copy and document v2 orientation flow |
 | M6 | Hoàn tất; fix(assembly): finalize v2 QA and model limits (hash xem git log) |
+
+### Đợt 8b-fix — giữ mã lỗi GROUP, 14/10/2026
+
+Catch chỉ đổi lỗi thành SESSION_LOCKED khi layout DETAILED không còn sửa được;
+không đổi NOT_FOUND/GROUP_MODE. Route placement kiểm GROUP sau khi kiểm chủ phiên,
+trước khi đọc field thao tác. AssemblyPlacementDB dùng import AssemblyPlacementException.
+
+| Ca HTTP thật trên Tomcat9/Java17/MySQL | Kết quả |
+| --- | --- |
+| GROUP17 của practice: POST placements / DELETE placements | 422 GROUP_MODE; câu “Phiên này dùng cách lắp theo nhóm linh kiện, không dùng điểm gắn riêng.” |
+| DETAILED33 COMPLETED: POST với Y45 / DELETE placement | 422 SESSION_LOCKED |
+| DETAILED32 IN_PROGRESS: POST với Y45 | 422 VALIDATION_ERROR |
+| Phiên khác chủ: POST / DELETE placement | 404 NOT_FOUND |
+
+Test Node mới đỏ đúng do thiếu điều kiện DETAILED, sau sửa xanh. npm test173/173,
+mvn test97/97 và clean package JDK17 BUILD SUCCESS, không fail/error/skip.
+Giữ build directory riêng và guard byte đối chiếu WAR mới, không clean target của IDE.
+Không tách hàm static vì chỉ thêm điều kiện trong catch; có source guard và HTTP thật.
+Ba USER demo,9 request thao tác đều bị từ chối, kể cả GROUP có field thiếu/sai.
+Hash toàn bộ dữ liệu sáu bảng lắp ráp trước/sau giống nhau; không tạo/sửa phiên,
+spec hoặc tài khoản. Các file WIP/untracked được bảo vệ giữ nguyên byte.
+Tomcat QA8081 đã dừng đúng PID, cổng đóng, cấu hình/log tạm dọn và browser context đóng.
+Bằng chứng ngoài Git: D:/Web-Pro/qa-evidence/phase8b-fix/ (test-red, test/build logs,
+http-results.json và hash file được bảo vệ). Không stage qa-evidence hoặc bí mật.

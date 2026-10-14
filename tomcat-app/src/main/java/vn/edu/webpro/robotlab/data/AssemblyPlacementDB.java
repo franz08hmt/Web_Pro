@@ -13,6 +13,7 @@ import vn.edu.webpro.robotlab.business.AssemblySlot;
 import vn.edu.webpro.robotlab.business.AssemblyInstance;
 import vn.edu.webpro.robotlab.business.AssemblyPlacement;
 import vn.edu.webpro.robotlab.business.RobotComponent;
+import vn.edu.webpro.robotlab.util.AssemblyPlacementException;
 
 /** JDBC cho vật thể riêng; mọi thao tác khóa phiên trước khi gọi luật bean. */
 public class AssemblyPlacementDB {
@@ -164,7 +165,7 @@ public class AssemblyPlacementDB {
                 return layout;
             }
             if (!reason.isEmpty()) {
-                throw new vn.edu.webpro.robotlab.util.AssemblyPlacementException(reason, layout);
+                throw new AssemblyPlacementException(reason, layout);
             }
             if ("attach".equals(action)) {
                 ps = connection.prepareStatement("INSERT INTO assembly_placements "

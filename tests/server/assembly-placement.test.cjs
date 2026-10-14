@@ -66,6 +66,16 @@ test("locked layouts normalize parse failures without masking ownership or edita
   assert.match(source, /direction\.matches\("Y0\|Y90\|Y180\|Y270"\)/);
 });
 
+test("locked catch applies only to DETAILED and preserves GROUP_MODE and ownership errors", () => {
+  const source = fs.readFileSync(path.join(java, "controller/AssemblySessionServlet.java"), "utf8");
+  const conditional = source.match(
+    /if \(current != null && !\(e instanceof AssemblyPlacementException\)[\s\S]*?error\(response, "SESSION_LOCKED"/);
+  assert.ok(conditional);
+  assert.match(conditional[0], /"DETAILED"\.equals\(current\.getMode\(\)\)/);
+  assert.match(conditional[0], /!"NOT_FOUND"\.equals\(e\.getMessage\(\)\)/);
+  assert.match(conditional[0], /!"GROUP_MODE"\.equals\(e\.getMessage\(\)\)/);
+});
+
 test("session overview distinguishes detailed placement facts from GROUP preparation", () => {
   const db = fs.readFileSync(path.join(java, "data/AssemblySessionDB.java"), "utf8");
   assert.match(db, /COUNT\(\*\) FROM assembly_placements/);
