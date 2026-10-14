@@ -1,0 +1,21 @@
+.design-room { padding: 24px; }
+.design-room-header { max-width: 1440px; margin: auto; }
+.design-room-header nav { display: flex; flex-wrap: wrap; gap: 16px; }
+.design-room-header a { min-height: 44px; display: inline-flex; align-items: center; }
+.design-room-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 24px; max-width: 1440px; margin: auto; }
+.design-room-grid > * { min-width: 0; }
+.design-room #design-stage { height: 580px; border: 1px solid #2c363b; background: #151b1f; }
+.design-room canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.design-room #design-tools { overflow-wrap: anywhere; }
+.design-room #design-tools label { display: block; min-height: 44px; padding: 8px; }
+.design-room #design-tools fieldset { margin-bottom: 16px; border: 1px solid #2c363b; }
+.design-room #design-tools button { min-height: 44px; margin: 4px; padding: 10px; }
+.design-room [data-state=error] { color: #fda4af; }
+.design-room [data-state=preview] { color: #fbbf24; }
+.design-room [data-state=saved] { color: #4ade80; }
+.design-room :focus-visible { outline: 3px solid #ffa871; outline-offset: 3px; }
+@media (max-width: 800px) {
+  .design-room { padding: 16px; }
+  .design-room-grid { grid-template-columns: minmax(0, 1fr); }
+  .design-room #design-stage { height: 400px; }
+}

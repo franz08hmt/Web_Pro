@@ -82,3 +82,19 @@ test("design creation snapshots quantities under owner lock and mutations keep o
   assert.match(servlet, /setAttribute/);
   assert.match(servlet, /getRequestDispatcher\(url\)\.forward/);
 });
+
+test("workshop reuses placement view with string mount ids and keeps all writes owner scoped and CSRF protected", () => {
+  const base = "tomcat-app/src/main/java/vn/edu/webpro/robotlab/";
+  const db = read(base + "data/DesignPlacementDB.java");
+  assert.match(db, /load\(connection, id, userId, true\)/);
+  assert.match(db, /DesignEventDB\.insert\(connection, event, userId\)/);
+  assert.match(db, /validateUndo|validateAttach/);
+  const servlet = read(base + "controller/DesignApiServlet.java");
+  assert.match(servlet, /requireUser/);
+  assert.match(servlet, /hasValidCsrfToken/);
+  assert.match(servlet, /"no-store"/);
+  const js = read("assets/js/design-room.js");
+  assert.match(js, /createAssemblyPlacementView/);
+  assert.match(js, /slotId: slot/);
+  assert.doesNotMatch(js, /innerHTML|isCorrect|compatible:|percent:/);
+});
