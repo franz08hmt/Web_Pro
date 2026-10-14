@@ -9,11 +9,84 @@ import vn.edu.webpro.robotlab.business.DesignLayout;
 import vn.edu.webpro.robotlab.business.DesignPlacement;
 import vn.edu.webpro.robotlab.business.DesignSlot;
 import vn.edu.webpro.robotlab.business.DesignEvent;
+import vn.edu.webpro.robotlab.business.DesignCheck;
 import vn.edu.webpro.robotlab.business.RobotDesign;
 import vn.edu.webpro.robotlab.util.DesignException;
 
 /** JDBC bố cục riêng, khóa owner/design trước khi gọi luật JavaBean và ghi nhật ký. */
 public class DesignPlacementDB {
+    /** Kiểm lại và lưu kết luận dưới cùng khóa phiên bản; không nhận điểm/kết luận client. */
+    public static DesignLayout check(long id, long userId, int version) throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        boolean original = true;
+        boolean started = false;
+        boolean committed = false;
+        try {
+            original = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            started = true;
+            DesignLayout layout = load(connection, id, userId, true);
+            if (layout == null) {
+                throw new DesignException("NOT_FOUND", "Không tìm thấy thiết kế bạn được phép dùng.");
+            }
+            String reason = layout.getDesign().isCanEdit() ? "" : "LOCKED";
+            if (reason.isEmpty() && layout.getDesign().getLayoutVersion() != version) {
+                reason = "LAYOUT_CONFLICT";
+            }
+            DesignEvent event = new DesignEvent();
+            event.capture("check", layout, 0, "", null);
+            if (!reason.isEmpty()) {
+                if (DesignEventDB.countRejected(connection, id, userId) < 300) {
+                    event.setOutcome("REJECTED");
+                    event.setReasonCode(reason);
+                    DesignEventDB.insert(connection, event, userId);
+                    connection.commit();
+                    committed = true;
+                }
+                throw new DesignException(reason, layout.messageFor(reason, 0, ""));
+            }
+            DesignCheck report = new DesignCheck();
+            report.evaluate(layout);
+            ps = connection.prepareStatement("UPDATE robot_designs SET status = 'CHECKED',"
+                    + "last_check_summary = ?,last_checked_at = CURRENT_TIMESTAMP,"
+                    + "updated_at = CURRENT_TIMESTAMP,layout_version = layout_version + 1 "
+                    + "WHERE id = ? AND user_id = ? AND layout_version = ?");
+            ps.setString(1, report.getSummary());
+            ps.setLong(2, id);
+            ps.setLong(3, userId);
+            ps.setInt(4, version);
+            if (ps.executeUpdate() != 1) {
+                throw new DesignException("LAYOUT_CONFLICT", layout.messageFor("LAYOUT_CONFLICT", 0, ""));
+            }
+            DesignLayout updated = load(connection, id, userId, false);
+            event.setLayoutVersionAfter(updated.getDesign().getLayoutVersion());
+            DesignEventDB.insert(connection, event, userId);
+            connection.commit();
+            committed = true;
+            return updated;
+        } catch (SQLException | IllegalArgumentException e) {
+            if (started && !committed) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollback) {
+                    e.addSuppressed(rollback);
+                }
+            }
+            throw e;
+        } finally {
+            DBUtil.closePreparedStatement(ps);
+            try {
+                if (started) {
+                    connection.setAutoCommit(original);
+                }
+            } finally {
+                pool.freeConnection(connection);
+            }
+        }
+    }
+
     /** Đọc snapshot nhất quán, GET không ghi hoặc tự kiểm thiết kế. */
     public static DesignLayout selectLayout(long id, long userId) throws SQLException {
         ConnectionPool pool = ConnectionPool.getInstance();

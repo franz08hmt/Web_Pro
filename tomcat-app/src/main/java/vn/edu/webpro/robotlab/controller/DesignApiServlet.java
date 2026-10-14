@@ -64,7 +64,9 @@ public class DesignApiServlet extends HttpServlet {
             } else if ("POST".equals(method) && parts.length == 2) {
                 String body = JsonUtil.readBody(request.getReader(), 4096);
                 int version = version(JsonUtil.longField(body, "expectedLayoutVersion"));
-                if ("undo".equals(parts[1])) {
+                if ("check".equals(parts[1])) {
+                    result = DesignPlacementDB.check(id, user.getId(), version);
+                } else if ("undo".equals(parts[1])) {
                     result = DesignPlacementDB.change(id, user.getId(), "undo", 0, "", "", version);
                 } else if ("placements".equals(parts[1])) {
                     long item = JsonUtil.longField(body, "instanceId");

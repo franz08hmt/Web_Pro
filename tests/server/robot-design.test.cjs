@@ -98,3 +98,16 @@ test("workshop reuses placement view with string mount ids and keeps all writes 
   assert.match(js, /slotId: slot/);
   assert.doesNotMatch(js, /innerHTML|isCorrect|compatible:|percent:/);
 });
+
+test("design check is calculated under owner version lock and mutations invalidate the saved summary", () => {
+  const base = "tomcat-app/src/main/java/vn/edu/webpro/robotlab/";
+  const db = read(base + "data/DesignPlacementDB.java");
+  assert.match(db, /report\.evaluate\(layout\)/);
+  assert.match(db, /last_check_summary = \?/);
+  assert.match(db, /last_check_summary = NULL/);
+  assert.match(db, /WHERE id = \? AND user_id = \? AND layout_version = \?/);
+  const check = read(base + "business/DesignCheck.java");
+  assert.match(check, /findPlacement/);
+  assert.match(check, /"UNSUPPORTED"/);
+  assert.match(check, /"SERVO_HORN"/);
+});

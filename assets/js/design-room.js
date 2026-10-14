@@ -58,6 +58,22 @@
     document.getElementById("design-name").textContent = layout.name;
     status.textContent = `${layout.statusLabel} · ${layout.goalLabel} · luật phiên bản ${layout.ruleVersion}.`;
     view.sync(layout);
+    showCheck(layout);
+  }
+  function showCheck(layout) {
+    document.getElementById("design-check").disabled = !layout.canEdit;
+    const target = document.getElementById("design-check-result");
+    target.replaceChildren();
+    const summary = document.createElement("p");
+    summary.textContent = layout.check?.summary || "Chưa có kết quả cho bố cục hiện tại. Hãy bấm Kiểm tra thiết kế.";
+    target.append(summary);
+    if (!layout.check) return;
+    const list = document.createElement("ul");
+    for (const item of layout.check.items) {
+      const row = document.createElement("li");
+      row.textContent = `${item.layer} · ${item.label}: ${item.message}`; list.append(row);
+    }
+    target.append(list);
   }
   const base = "designs/" + encodeURIComponent(id);
   view = window.createAssemblyPlacementView({THREE, camera, root, canvas: renderer.domElement, panel,
@@ -68,9 +84,16 @@
       + "?expectedLayoutVersion=" + version, "DELETE")).data,
     onUndo: async version => (await api(base + "/undo", "POST", {expectedLayoutVersion: version})).data,
     onReload: async () => { try { sync((await api(base + "/layout")).data); } catch (e) { status.textContent = e.message; } },
-    onChange: layout => { if (layout) { latest = layout; status.textContent = layout.statusLabel + " · " + layout.goalLabel; } }
+    onChange: layout => { if (layout) { latest = layout; status.textContent = layout.statusLabel + " · " + layout.goalLabel; showCheck(layout); } }
   });
   const canvas = renderer.domElement;
+  document.getElementById("design-check").addEventListener("click", async event => {
+    if (!latest) return;
+    event.currentTarget.disabled = true;
+    try { sync((await api(base + "/check", "POST", {expectedLayoutVersion: latest.layoutVersion})).data); }
+    catch (error) { status.textContent = error.message; }
+    finally { document.getElementById("design-check").disabled = !latest.canEdit; }
+  });
   canvas.addEventListener("pointerdown", event => {
     if (view.pointerDown(event)) return;
     orbit = {x: event.clientX, y: event.clientY}; canvas.setPointerCapture(event.pointerId);

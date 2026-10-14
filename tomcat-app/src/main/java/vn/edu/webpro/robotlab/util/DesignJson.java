@@ -4,6 +4,8 @@ import vn.edu.webpro.robotlab.business.DesignLayout;
 import vn.edu.webpro.robotlab.business.DesignSlot;
 import vn.edu.webpro.robotlab.business.DesignInstance;
 import vn.edu.webpro.robotlab.business.DesignPlacement;
+import vn.edu.webpro.robotlab.business.DesignCheck;
+import vn.edu.webpro.robotlab.business.DesignCheckItem;
 
 /** Adapter JSON cho view chung; không tính luật hoặc đọc client compatible. */
 public class DesignJson {
@@ -64,6 +66,26 @@ public class DesignJson {
                     .append(",\"slotId\":").append(JsonUtil.quote(placed.getSlotId()))
                     .append(",\"orientation\":").append(JsonUtil.quote(placed.getOrientationCode())).append('}');
         }
-        return json.append("]}").toString();
+        json.append("],\"check\":");
+        if (!"CHECKED".equals(layout.getDesign().getStatus())) {
+            json.append("null");
+        } else {
+            DesignCheck report = new DesignCheck();
+            report.evaluate(layout);
+            json.append("{\"summary\":").append(JsonUtil.quote(report.getSummary()))
+                    .append(",\"passed\":").append(report.isPassed()).append(",\"items\":[");
+            first = true;
+            for (DesignCheckItem item : report.getItems()) {
+                if (!first) {
+                    json.append(',');
+                }
+                first = false;
+                json.append("{\"layer\":").append(JsonUtil.quote(item.getLayer()))
+                        .append(",\"label\":").append(JsonUtil.quote(item.getResultLabel()))
+                        .append(",\"message\":").append(JsonUtil.quote(item.getMessage())).append('}');
+            }
+            json.append("]}");
+        }
+        return json.append('}').toString();
     }
 }

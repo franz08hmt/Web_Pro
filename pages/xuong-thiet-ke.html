@@ -10,7 +10,7 @@
     <script src="../assets/vendor/three/three.min.js?v=20260921.1" defer></script>
     <script src="../assets/js/assembly-3d-parts.js?v=20260921.1" defer></script>
     <script src="../assets/js/assembly-3d-placement.js?v=20261014.3" defer></script>
-    <script src="../assets/js/design-room.js?v=20261014.1" defer></script>
+    <script src="../assets/js/design-room.js?v=20261014.2" defer></script>
 </head>
 <body class="learning-workspace design-room">
     <a class="workspace-skip" href="#workspace-main">Đi đến nội dung chính</a>
@@ -34,6 +34,12 @@
         </section>
         <aside id="design-tools" aria-label="Chọn vật thể và điểm gắn"></aside>
     </main>
+    <section class="design-room-header" aria-labelledby="check-heading">
+        <h2 id="check-heading">Kiểm tra thiết kế</h2>
+        <p>Kiểm tra các vật thể đã gắn, vai trò theo mục tiêu và cấu hình cơ bản. Lưu ý không phải kiểm tra robot thật.</p>
+        <button id="design-check" type="button" disabled>Kiểm tra thiết kế</button>
+        <div id="design-check-result" role="status" aria-live="polite"></div>
+    </section>
     <noscript><p>Cần JavaScript cho phòng 3D. Danh sách, bộ linh kiện và hồ sơ vẫn dùng Servlet/JSP.</p></noscript>
 </body>
 </html>
