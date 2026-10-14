@@ -6,11 +6,11 @@
     <meta name="robots" content="noindex, nofollow">
     <title>Xưởng thiết kế robot | Robot Assembly Lab</title>
     <link rel="stylesheet" href="../assets/css/learning-workspace.css?v=20261006.5">
-    <link rel="stylesheet" href="../assets/css/design-room.css?v=20261014.1">
+    <link rel="stylesheet" href="../assets/css/design-room.css?v=20261014.5">
     <script src="../assets/vendor/three/three.min.js?v=20260921.1" defer></script>
     <script src="../assets/js/assembly-3d-parts.js?v=20260921.1" defer></script>
     <script src="../assets/js/assembly-3d-placement.js?v=20261014.3" defer></script>
-    <script src="../assets/js/design-room.js?v=20261014.3" defer></script>
+    <script src="../assets/js/design-room.js?v=20261014.5" defer></script>
 </head>
 <body class="learning-workspace design-room">
     <a class="workspace-skip" href="#workspace-main">Đi đến nội dung chính</a>
@@ -31,7 +31,8 @@
     <main id="workspace-main" class="design-room-grid" tabindex="-1">
         <section aria-label="Không gian mô hình 3D">
             <p>Kéo vật thể để thử gắn; kéo vùng trống để xoay góc nhìn, cuộn để thu phóng.</p>
-            <div id="design-stage"></div>
+            <div id="design-stage" class="assembly-3d-view"></div>
+            <button id="design-focus" type="button">Căn giữa mô hình</button>
         </section>
         <aside id="design-tools" aria-label="Chọn vật thể và điểm gắn"></aside>
     </main>
