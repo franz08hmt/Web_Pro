@@ -21,8 +21,10 @@
 FK ghép giữ instance/host cùng design và loại, design/rule cùng phiên bản, mount
 cùng rule/loại host và fit đúng loại/điểm/hướng. Root dùng hostNULL, mount=base,
 type=ROOT và fit ROOT/Y0; cột sinh root_design_id UNIQUE chỉ một gốc. REJECTED
-không FK fit để ghi được thao tác sai. Con design CASCADE phục vụ POST xóa có
-xác nhận; catalog/luật RESTRICT. Khóa owner trước xóa, không xóa dữ liệu mẫu.
+không FK fit để ghi được thao tác sai. Placements dùng RESTRICT vì FK CASCADE
+không được MySQL chấp nhận khi cột gốc sinh từ host/design; POST xóa có xác nhận
+phải xóa placements trước instances/design trong cùng khóa owner/transaction.
+Instances/events CASCADE phục vụ xóa cả design; catalog/luật RESTRICT. Không xóa dữ liệu mẫu.
 
 Điều chỉnh kỹ thuật: MOTOR_MOUNT_L/R phân biệt Y90/Y270; thêm rx/rz cho mount
 giữ tư thế động cơ/bánh v2 (không sửa v2). Chassis gốc(0,.42,0); offset con bằng

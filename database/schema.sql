@@ -1028,11 +1028,11 @@ design_id BIGINT UNSIGNED NOT NULL,
     CHECK (host_instance_id IS NULL OR host_instance_id <> instance_id),
     CHECK ((host_instance_id IS NULL AND host_component_id IS NULL AND mount_code = 'base' AND mount_type = 'ROOT')
         OR (host_instance_id IS NOT NULL AND host_component_id IS NOT NULL AND mount_type <> 'ROOT')),
-    FOREIGN KEY (design_id, rule_set_id) REFERENCES robot_designs(id, rule_set_id) ON DELETE CASCADE,
+    FOREIGN KEY (design_id, rule_set_id) REFERENCES robot_designs(id, rule_set_id) ON DELETE RESTRICT,
     FOREIGN KEY (instance_id, design_id, component_id)
-        REFERENCES design_instances(id, design_id, component_id) ON DELETE CASCADE,
+        REFERENCES design_instances(id, design_id, component_id) ON DELETE RESTRICT,
     FOREIGN KEY (host_instance_id, design_id, host_component_id)
-        REFERENCES design_instances(id, design_id, component_id) ON DELETE CASCADE,
+        REFERENCES design_instances(id, design_id, component_id) ON DELETE RESTRICT,
     FOREIGN KEY (rule_set_id, host_component_id, mount_code, mount_type)
         REFERENCES design_mounts(rule_set_id, component_id, mount_code, mount_type) ON DELETE RESTRICT,
     FOREIGN KEY (rule_set_id, component_id, mount_type, orientation_code)
