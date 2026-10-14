@@ -52,10 +52,12 @@
     meter.value = detailed ? session.placedSlotCount : session.progressPercent;
     meter.hidden = false;
     meter.setAttribute("aria-label", `${detailed ? "Tiến độ lắp chi tiết" : "Tiến độ chuẩn bị linh kiện"} của ${modelName}`);
-    action.href = session.status === "ABANDONED"
+    action.href = session.status === "COMPLETED"
+      ? `assembly-review?session=${encodeURIComponent(session.id)}`
+      : session.status === "ABANDONED"
       ? "pages/tai-khoan.html"
       : `pages/${page}?${params}`;
-    action.textContent = session.status === "COMPLETED" ? "Xem mô hình đã hoàn thành"
+    action.textContent = session.status === "COMPLETED" ? "Xem trang hoàn thiện"
       : session.status === "ABANDONED" ? "Xem lịch sử thực hành" : "Tiếp tục phiên này";
     finishPanel();
   }

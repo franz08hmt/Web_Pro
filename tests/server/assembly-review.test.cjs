@@ -55,3 +55,27 @@ test("event persistence shares the placement transaction and caps rejected rows"
   assert.match(events, /s\.user_id = \?/);
   assert.match(events, /finally/);
 });
+
+test("completed review uses owner scoped Servlet attributes core JSP and real model quiz links", () => {
+  const servlet = read("tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java");
+  assert.match(servlet, /selectSession\(sessionId, user\.getId\(\)\)/);
+  assert.match(servlet, /setHeader\("Cache-Control", "no-store"\)/);
+  assert.match(servlet, /setAttribute\("assemblyReview"/);
+  assert.match(servlet, /String url = "\/WEB-INF\/views\/assembly-review.jsp"/);
+  assert.match(servlet, /getRequestDispatcher\(url\)\.forward\(request, response\)/);
+  const view = read("tomcat-app/src/main/webapp/WEB-INF/views/assembly-review.jsp");
+  for (const id of ["review-model", "review-process", "review-receipt", "review-quiz"]) {
+    assert.ok(view.includes('id="' + id + '"'));
+  }
+  assert.match(view, /var="reviewQuizUrl" value="\/pages\/kiem-tra\.html"/);
+  assert.match(view, /c:param name="model" value="\$\{session\.robotId\}"/);
+  assert.match(view, /c:out/);
+  assert.doesNotMatch(view, /<%(?!@)|fmt:|fn:|<select/);
+  for (const file of ["assets/js/account.js", "assets/js/assembly-3d.js", "assets/js/personalization.js"]) {
+    assert.match(read(file), /assembly-review\?session=/);
+  }
+});
+
+test("drawing fragment declares UTF-8 explicitly for Jasper static inclusion", () => {
+  assert.match(read("tomcat-app/src/main/webapp/WEB-INF/views/assembly-drawing.jspf"), /pageEncoding="UTF-8"/);
+});

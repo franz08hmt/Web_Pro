@@ -59,7 +59,7 @@ test("successful completion immediately locks reset and part inputs while retain
   assert.ok(inputs.every((input) => input.disabled));
   assert.equal(context.completeButton.hidden, true);
   assert.equal(context.completeResult.hidden, false);
-  assert.equal(context.viewReceiptLink.href, "../assembly-receipt?session=42");
+  assert.equal(context.viewReceiptLink.href, "../assembly-review?session=42");
   assert.equal(context.retryLink.href, "lap-rap.html?model=line-follower");
   assert.equal(fixture.celebrations(), 1);
 });

@@ -74,6 +74,27 @@ public class AssemblyEventDB {
         }
     }
 
+    /** So thời điểm tạo phiên với migration để không gọi phiên mới là phiên cũ. */
+    public static boolean createdBeforeJournal(long sessionId, long userId) throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement("SELECT s.created_at <= m.applied_at FROM assembly_sessions s "
+                    + "JOIN schema_migrations m ON m.version = '014_assembly_events' "
+                    + "WHERE s.id = ? AND s.user_id = ?");
+            ps.setLong(1, sessionId);
+            ps.setLong(2, userId);
+            rs = ps.executeQuery();
+            return rs.next() && rs.getBoolean(1);
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
+
     /** Đọc thứ tự và nhãn bằng một truy vấn, không SELECT riêng từng vật thể. */
     public static List<AssemblyEvent> selectBySession(long sessionId, long userId) throws SQLException {
         ConnectionPool pool = ConnectionPool.getInstance();

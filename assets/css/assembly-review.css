@@ -1,0 +1,43 @@
+.assembly-review .review-links { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.assembly-review .review-links a, .assembly-review button { min-height: 44px; padding: 10px 14px; }
+.assembly-review section { margin-block: 32px; scroll-margin-top: 120px; }
+.assembly-review .review-facts { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; }
+.assembly-review .review-facts dd { margin: 0; }
+.assembly-review figure { margin: 16px 0; }
+.assembly-review figure img { display: block; width: min(100%, 560px); height: auto; border-radius: 12px; }
+.assembly-review .assembly-drawing-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.assembly-review .assembly-drawing-grid section { margin: 0; }
+.assembly-review .assembly-drawing-grid svg { display: block; width: 100%; height: auto; background: #151b1f; border: 1px solid #2c363b; }
+.assembly-review .drawing-item rect, .assembly-review .drawing-item circle { fill: #2dd4bf22; stroke: #ffa871; stroke-width: 2; }
+.assembly-review .drawing-item text { fill: #eef3f2; font: 700 20px sans-serif; text-anchor: middle; dominant-baseline: middle; }
+.assembly-review .workspace-table-scroll { overflow: auto; max-width: 100%; }
+.assembly-review table { min-width: 540px; width: 100%; }
+.assembly-review th, .assembly-review td { overflow-wrap: anywhere; }
+.assembly-review .review-standard-steps li { margin-block: 16px; }
+.assembly-review .review-standard-steps p { white-space: pre-wrap; }
+.assembly-review a:focus-visible, .assembly-review button:focus-visible { outline: 3px solid #ffa871; outline-offset: 3px; }
+@media (max-width: 768px) {
+  .assembly-review .assembly-drawing-grid { grid-template-columns: 1fr; }
+  .assembly-review .review-facts { grid-template-columns: 1fr; gap: 4px; }
+  .assembly-review .review-facts dd { margin-bottom: 12px; }
+}
+@media print {
+  @page { size: A4; margin: 14mm; }
+  .assembly-review, .assembly-review * { box-sizing: border-box; }
+  .learning-workspace.assembly-review { background: white; color: black; }
+  .assembly-review .workspace-header, .assembly-review .workspace-footer, .assembly-review .no-print { display: none; }
+  .assembly-review .workspace-content { width: auto; max-width: none; padding: 0; margin: 0; }
+  .assembly-review section { margin-block: 16px; }
+  .assembly-review figure img { max-height: 65mm; width: auto; max-width: 100%; object-fit: contain; }
+  .assembly-review .assembly-drawing-grid { grid-template-columns: 1fr 1fr; }
+  .assembly-review .assembly-drawing-grid svg { background: white; border-color: black; }
+  .assembly-review .drawing-item rect, .assembly-review .drawing-item circle { fill: none; stroke: black; }
+  .assembly-review .drawing-item text { fill: black; }
+  .assembly-review .workspace-table-scroll { overflow: visible; }
+  .assembly-review table { min-width: 0; border-collapse: collapse; }
+  .assembly-review th, .assembly-review td { border: 1px solid black; color: black; background: white; }
+  .assembly-review thead { display: table-header-group; }
+  .assembly-review tr { break-inside: avoid; }
+  .assembly-review h2, .assembly-review h3, .assembly-review h4 { color: black; break-after: avoid; }
+  .assembly-review .assembly-drawing-grid section { break-inside: avoid; }
+}

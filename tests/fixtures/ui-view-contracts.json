@@ -3000,5 +3000,63 @@
       "wiringTerminal.id",
       "wiringTerminal.label"
     ]
+  },
+  "assembly-review.jsp": {
+    "controls": [
+      {
+        "tag": "button",
+        "attributes": {
+          "id": "assembly-review-print",
+          "type": "button"
+        }
+      }
+    ],
+    "bindings": [
+      "pageContext.request.contextPath",
+      "not empty assemblyReviewError",
+      "assemblyReviewError",
+      "not session.completed",
+      "assemblyReview.continuePage",
+      "session.robotId",
+      "session.id",
+      "reviewContinueUrl",
+      "robot.name",
+      "robot.summary",
+      "assemblyReview.modeLabel",
+      "assemblyReview.startedAtLabel",
+      "assemblyReview.completedAtLabel",
+      "not empty assemblyReview.imagePath",
+      "assemblyReview.imagePath",
+      "assemblyDrawing.available",
+      "reviewSteps",
+      "reviewStep.title",
+      "reviewStep.instruction",
+      "assemblyReview.oldJournal",
+      "empty assemblyReview.activeEvents",
+      "assemblyReview.activeEvents",
+      "reviewEvent.createdAtLabel",
+      "reviewEvent.actionLabel",
+      "reviewEvent.hasInstance",
+      "reviewEvent.instanceLabel",
+      "reviewEvent.slotLabel",
+      "reviewEvent.orientationLabel",
+      "empty assemblyReview.rejectionSummary",
+      "assemblyReview.rejectionSummary",
+      "reviewError.reasonLabel",
+      "reviewError.repeatCount",
+      "assemblyReview.canReplay",
+      "reviewReplayUrl",
+      "session.detailed",
+      "assemblyReview.correctCount",
+      "assemblyReview.requiredCount",
+      "reviewReceiptUrl",
+      "assemblyReview.hasQuiz",
+      "assemblyReview.bestQuizLabel",
+      "assemblyReview.latestQuizLabel",
+      "not assemblyReview.hasQuiz",
+      "assemblyReview.hasQuizQuestions",
+      "reviewQuizUrl",
+      "reviewRetryUrl"
+    ]
   }
 }

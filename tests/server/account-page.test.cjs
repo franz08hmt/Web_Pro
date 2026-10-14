@@ -64,14 +64,14 @@ test("server-rendered account view escapes user-controlled fields", () => {
   assert.match(jsp, /<c:out value="\$\{user\.email\}"\s*\/>/);
 });
 
-/* /assembly-receipt là servlet gốc ("/"), không nằm dưới /pages/ — link tương
+/* /assembly-review là servlet gốc ("/"), không nằm dưới /pages/ — link tương
    đối từ tai-khoan.html (đang ở /pages/) phải có tiền tố "../" nếu không sẽ
-   trỏ nhầm sang /pages/assembly-receipt (404). */
-test("completed sessions link to the results receipt with a path that resolves from /pages/", () => {
+   trỏ nhầm sang /pages/assembly-review (404). */
+test("completed sessions link to the review with a path that resolves from /pages/", () => {
   const source = fs.readFileSync(path.join(root, "assets", "js", "account.js"), "utf8");
   assert.match(source, /session\.status === "COMPLETED"/);
-  assert.match(source, /\.\.\/assembly-receipt\?session=\$\{encodeURIComponent\(session\.id\)\}/);
-  assert.doesNotMatch(source, /href = `assembly-receipt\?session=/, "Thiếu \"../\" sẽ trỏ vào /pages/assembly-receipt");
+  assert.match(source, /\.\.\/assembly-review\?session=\$\{encodeURIComponent\(session\.id\)\}/);
+  assert.doesNotMatch(source, /href = `assembly-review\?session=/, "Thiếu \"../\" sẽ trỏ vào /pages/assembly-review");
 });
 
 test("assembly receipt page is only reachable by its owner and escapes robot text", () => {

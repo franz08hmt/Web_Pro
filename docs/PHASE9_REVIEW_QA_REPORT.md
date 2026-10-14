@@ -40,4 +40,22 @@ JUnit đã đỏ do thiếu bean, sau đó103/103; Node177/177 xanh. Test10 mụ
 bounds SVG, khung rỗng/một vật thể không chia0, GROUP không đoán tọa độ.
 Fragment core JSTL/c:out, tọa độ SVG chỉ từ getter số; có chú giải và giới hạn tỉ lệ.
 BEANS map đăng ký hai bean; Jasper/render fragment sẽ kiểm trên trang thật ở M3.
-M3–M6 chưa hoàn tất; không coi M2 là nghiệm thu toàn đợt.
+## M3 — Trang hoàn thiện Servlet/JSP
+
+/assembly-review đọc owner từ session, no-store, setAttribute và forward. Có ảnh/bản
+vẽ, bước chuẩn/trình tự/thống kê lỗi, phiếu/in và quiz đúng model. Điểm quiz hiển thị
+score/total đã lưu, best so tỷ lệ câu đúng; không thêm thang điểm. Chưa COMPLETED chỉ
+có thông báo/tiếp tục; GROUP có ảnh/bước/phiếu/quiz, không đoán tọa độ hoặc replay.
+Điều hướng hoàn tất chuyển sang review, URL phiếu cũ vẫn giữ. Các assertion đường
+dẫn cũ cập nhật có chủ đích theo route mới, vẫn kiểm ../ và quyền/escape của phiếu.
+Manifest/fixture bổ sung đúng một trang mới (36); không sửa hợp đồng form trang cũ.
+Cookie/session/CSRF/owner và các file WIP không đổi. JS trên trang chỉ gọi window.print.
+
+179Node/105JUnit/package xanh. Live51 ca:30/31/33/34, GROUP16, bốn phần,20 SVG items
+cho hai góc nhìn/10 hàng chú giải, quiz model đúng, pending35, foreign404, guest302,
+no-store,390px không tràn, không browsererror/asset404. Đã export PDF3 trang, render
+và xem mọi trang. Runtime/PDF phát hiện fragment thiếu pageEncoding bị Jasper đọc
+sai dấu; đã thêm UTF-8 riêng, test đỏ→xanh và kiểm lại HTML thật đúng chữ.
+Print áp box-sizing trong namespace riêng; không mang header/menu/theme tối vào PDF.
+Evidence m3-results.json, review-old-desktop/390.png, review-old.pdf và review-print-*.png.
+M4–M6 chưa hoàn tất; replay phiên mới có nhật ký sẽ kiểm sau M5 hoàn tất.

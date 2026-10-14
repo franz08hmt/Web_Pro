@@ -113,8 +113,8 @@
     item.append(name, state, date, preparation, progress, steps);
     if (session.status === "COMPLETED") {
       const link = document.createElement("a");
-      link.href = `../assembly-receipt?session=${encodeURIComponent(session.id)}`;
-      link.textContent = "Xem phiếu kết quả →";
+      link.href = `../assembly-review?session=${encodeURIComponent(session.id)}`;
+      link.textContent = "Xem trang hoàn thiện →";
       const quizLink = document.createElement("a");
       quizLink.href = `kiem-tra.html?model=${encodeURIComponent(session.robotId)}`;
       quizLink.textContent = "Kiểm tra kiến thức →";

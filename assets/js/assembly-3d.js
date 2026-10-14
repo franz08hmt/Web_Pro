@@ -155,7 +155,7 @@
     }
     setCompleteStatus("");
     if (viewReceiptLink && activeSession) {
-      viewReceiptLink.href = `../assembly-receipt?session=${encodeURIComponent(activeSession.id)}`;
+      viewReceiptLink.href = `../assembly-review?session=${encodeURIComponent(activeSession.id)}`;
     }
     if (retryLink) {
       retryLink.href = `lap-rap.html?model=${encodeURIComponent(model.id)}`;
