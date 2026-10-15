@@ -47,11 +47,11 @@ Quyền trong bảng là điều kiện của dữ liệu/thao tác, không dự
 | URL | Loại / method | Quyền | Chức năng | Vai trò trang | Đường vào |
 | --- | --- | --- | --- | --- | --- |
 | /index.html | HTML + API | Khách; dữ liệu riêng cần đăng nhập | Robot Assembly Lab — Hướng dẫn lắp ráp robot | Chính | Menu chung |
-| /pages/admin-content.html | HTML + API | ADMIN (API kiểm quyền) | Quản trị nội dung — Robot Assembly Lab | Chính | Quản trị |
-| /pages/admin-quiz.html | HTML + API | ADMIN (API kiểm quyền) | Quản trị bài kiểm tra — Robot Assembly Lab | Chính | Quản trị |
-| /pages/admin-shop.html | HTML + API | ADMIN (API kiểm quyền) | Quản trị cửa hàng — Robot Assembly Lab | Chính | Quản trị |
-| /pages/admin-troubleshooting.html | HTML + API | ADMIN (API kiểm quyền) | Quản trị tra cứu lỗi — Robot Assembly Lab | Chính | Quản trị |
-| /pages/admin-users.html | HTML + API | ADMIN (API kiểm quyền) | Quản lý tài khoản — Robot Assembly Lab | Chính | Quản trị |
+| /pages/admin-content.html | HTML + API | ADMIN (Filter + API kiểm quyền) | Quản trị nội dung — Robot Assembly Lab | Chính | Quản trị |
+| /pages/admin-quiz.html | HTML + API | ADMIN (Filter + API kiểm quyền) | Quản trị bài kiểm tra — Robot Assembly Lab | Chính | Quản trị |
+| /pages/admin-shop.html | HTML + API | ADMIN (Filter + API kiểm quyền) | Quản trị cửa hàng — Robot Assembly Lab | Chính | Quản trị |
+| /pages/admin-troubleshooting.html | HTML + API | ADMIN (Filter + API kiểm quyền) | Quản trị tra cứu lỗi — Robot Assembly Lab | Chính | Quản trị |
+| /pages/admin-users.html | HTML + API | ADMIN (Filter + API kiểm quyền) | Quản lý tài khoản — Robot Assembly Lab | Chính | Quản trị |
 | /pages/cua-hang.html | HTML + API | Khách; dữ liệu riêng cần đăng nhập | Cửa hàng mô phỏng — Robot Assembly Lab | Chính | Menu chung |
 | /pages/gio-hang.html | HTML + API | Khách; dữ liệu riêng cần đăng nhập | Giỏ hàng mô phỏng — Robot Assembly Lab | Chính | Menu chung |
 | /pages/kiem-tra.html | HTML + API | Khách; dữ liệu riêng cần đăng nhập | Kiểm tra kiến thức | Chính | Menu chung |
@@ -65,17 +65,17 @@ Quyền trong bảng là điều kiện của dữ liệu/thao tác, không dự
 | /pages/tra-cuu-loi.html | HTML + API | Khách; dữ liệu riêng cần đăng nhập | Tra cứu lỗi lắp ráp | Chính | Menu chung |
 | /pages/xuong-thiet-ke.html | HTML + API | Khách; dữ liệu riêng cần đăng nhập | Xưởng thiết kế robot — Robot Assembly Lab | Phòng tương tác | Lắp ráp / Thiết kế |
 | /account | Servlet → JSP; GET | Đăng nhập (owner khi có ID) | AccountPageServlet | Chính | Menu chung |
-| /api/admin/components/* | JSON API; GET/POST/DELETE | ADMIN | AdminComponentServlet | Hỗ trợ tương tác | Trang tương ứng gọi API |
+| /api/admin/components/* | JSON API; GET/POST/PATCH/DELETE | ADMIN | AdminComponentServlet | Hỗ trợ tương tác | Trang tương ứng gọi API |
 | /admin-diagnosis | Servlet → JSP; GET/POST | ADMIN | AdminDiagnosisServlet | Chính | Menu chung |
-| /api/admin/library-resources/* | JSON API; GET/POST/DELETE | ADMIN | AdminLibraryResourceServlet | Hỗ trợ tương tác | Trang tương ứng gọi API |
-| /api/admin/quiz/questions/* | JSON API; GET/POST/DELETE | ADMIN | AdminQuizServlet | Hỗ trợ tương tác | Trang tương ứng gọi API |
-| /api/admin/robots/* | JSON API; GET/POST/DELETE | ADMIN | AdminRobotServlet | Hỗ trợ tương tác | Trang tương ứng gọi API |
-| /api/admin/shop/products/* | JSON API; GET/POST/DELETE | ADMIN | AdminShopServlet | Hỗ trợ tương tác | Trang tương ứng gọi API |
+| /api/admin/library-resources/* | JSON API; GET/POST/PATCH/DELETE | ADMIN | AdminLibraryResourceServlet | Hỗ trợ tương tác | Trang tương ứng gọi API |
+| /api/admin/quiz/questions/* | JSON API; GET/POST/PATCH/DELETE | ADMIN | AdminQuizServlet | Hỗ trợ tương tác | Trang tương ứng gọi API |
+| /api/admin/robots/* | JSON API; GET/POST/PATCH/DELETE | ADMIN | AdminRobotServlet | Hỗ trợ tương tác | Trang tương ứng gọi API |
+| /api/admin/shop/products/* | JSON API; GET/POST/PATCH/DELETE | ADMIN | AdminShopServlet | Hỗ trợ tương tác | Trang tương ứng gọi API |
 | /admin-stats | Servlet → JSP; GET | ADMIN | AdminStatsServlet | Chính | Menu chung |
-| /api/admin/steps/* | JSON API; GET/POST/DELETE | ADMIN | AdminStepServlet | Hỗ trợ tương tác | Trang tương ứng gọi API |
+| /api/admin/steps/* | JSON API; GET/POST/PATCH/DELETE | ADMIN | AdminStepServlet | Hỗ trợ tương tác | Trang tương ứng gọi API |
 | /admin-task-reviews | Servlet → JSP; GET/POST | ADMIN | AdminTaskReviewServlet | Chi tiết | Lịch sử / Bảng điều khiển / kết quả |
 | /admin-tasks | Servlet → JSP; GET/POST | ADMIN | AdminTaskServlet | Chính | Menu chung |
-| /api/admin/troubleshooting-guides/* | JSON API; GET/POST/DELETE | ADMIN | AdminTroubleshootingServlet | Hỗ trợ tương tác | Trang tương ứng gọi API |
+| /api/admin/troubleshooting-guides/* | JSON API; GET/POST/PATCH/DELETE | ADMIN | AdminTroubleshootingServlet | Hỗ trợ tương tác | Trang tương ứng gọi API |
 | /api/admin/users/* | JSON API; GET | ADMIN | AdminUserServlet | Hỗ trợ tương tác | Trang tương ứng gọi API |
 | /admin-wiring | Servlet → JSP; GET/POST | ADMIN | AdminWiringServlet | Chính | Menu chung |
 | /admin-wiring-support | Servlet → JSP; GET/POST | ADMIN | AdminWiringSupportServlet | Chính | Menu chung |
@@ -114,3 +114,21 @@ Không tạo link menu tới một ID cố định hoặc lấy ID của ngườ
 
 Robots/components có dải thông báo minh họa Model 2, vẫn giữ route. Đăng nhập thành công đi tới /account. Kết quả học tập có nút Bản in / PDF; không sửa hồ sơ WIP.
 
+
+## Bổ sung/chốt M8
+
+| URL | Loại/quyền | Chức năng và đường vào |
+| --- | --- | --- |
+| POST /design-cart | Form Servlet; đăng nhập + CSRF + owner | Hồ sơ thiết kế → thêm phần thiếu →302 giỏ |
+| GET /design-cart | Redirect tới trang giỏ | Không ghi dữ liệu |
+| GET /api/design-cart-notice | JSON riêng của session, no-store | Giỏ đọc thông báo sau PRG |
+| GET /api/learning-links | JSON công khai; kit chỉ của session | Catalog và phòng3D lấy liên kết theo ngữ cảnh |
+| WEB-INF/views/error-404.jsp, error-500.jsp | View riêng, không phải URL menu | web.xml ERROR dispatch; API được filter giữJSON |
+
+Bốn route /tasks,/wiring,/wiring-support,/diagnosis chỉ dành USER sau đăng nhập;
+ADMIN có bản quản trị riêng. Không ẩn chức năng có dữ liệu để lách review.
+/admin-task-reviews cần ID được chọn từ /admin-tasks; không đặt link menu thiếu ID.
+/learning-profile vẫn là trang phụ in từ tổng kết; không sửa file WIP.
+Các mục menu chính đều có đích200/302 và tới được trong2bấm. Các bản ghi riêng
+(phiếu, hồ sơ, bài chấm) mở từ danh sách/phiên; không dùng ID cố định trong menu.
+Mọi menu HTML/JSP đối chiếu fixture theo vai trò trong207ô; chi tiết QA ở báo cáoĐợt11.

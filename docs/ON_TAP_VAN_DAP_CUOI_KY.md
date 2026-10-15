@@ -1113,3 +1113,48 @@ Mở [016_component_name_fix.sql:1](../database/migrations/016_component_name_fi
 [DesignInstance:79](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DesignInstance.java#L79),
 [AssemblyPlacementDB:400](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L400).
 Không sửa ID, số lượng, nhãn spec đã công bố hoặc snapshot tên trong đơn hàng cũ.
+
+## Đợt 11 — Điều hướng theo hành trình
+
+**1. Vì sao menu JSP dùng include .jspf?** Menu chung được ghép lúc dịch JSP;
+không phải JS lấy menu rồi tự cho quyền. Đọc [workspace-header.jspf:24](../tomcat-app/src/main/webapp/WEB-INF/views/workspace-header.jspf#L24)
+và [site-nav.jspf:102](../tomcat-app/src/main/webapp/WEB-INF/views/site-nav.jspf#L102).
+
+**2. Ẩn nút quản trị có đủ bảo mật không?** Không. Filter chặn trang HTML và API
+vẫn kiểm vai trò/session_version tại server. Đọc [AdminPageFilter.java:28](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/filter/AdminPageFilter.java#L28)
+và [SessionUtil.java:47](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java#L47).
+
+**3. Client gửi gì khi thêm vật tư?** Form gửi designId và hidden csrfToken bằng
+POST; danh tính lấy từ HttpSession. Server đọc snapshot/kit/giỏ/kho, không tin
+số thiếu do client tự khai. Đọc [design-sheet.jsp:55](../tomcat-app/src/main/webapp/WEB-INF/views/design-sheet.jsp#L55)
+và [DesignCartServlet.java:37](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/DesignCartServlet.java#L37).
+
+**4. Forward khác redirect và PRG ở đâu?** Dashboard đặt bean vào request rồi
+forward JSP trong cùng request. Thêm vật tư thành công thì sendRedirect về GET giỏ;
+tải lại không gửi lại POST. Dù người học bấm form hai lần, bean vẫn chỉ bù thiếu.
+Đọc [AccountPageServlet.java:120](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AccountPageServlet.java#L120),
+[DesignCartServlet.java:44](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/DesignCartServlet.java#L44)
+và [DesignCartResult.java:23](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DesignCartResult.java#L23).
+
+**5. Vì sao transaction không chỉ là gọi hai câu SQL?** Cần khóa user/design đúng
+chủ và kho, đọc dữ liệu nhất quán, commit hết hoặc rollback; finally đóng tài nguyên
+và phục hồi autoCommit. Không tạo đơn hay giảm kho ở bước thêm giỏ.
+Đọc [CartDB.java:128](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/CartDB.java#L128).
+
+**6. Cô hỏi request/response ở code nào?** Bắt đầu ở form bộ kit hoặc tạo thiết kế:
+getParameterValues nhận nhiều componentId; Servlet kiểm, đặt attribute rồi forward
+JSP để hiện lỗi, hoặc redirect khi lưu xong. EL gọi getter, c:out escape dữ liệu.
+Đọc [DesignFormUtil.java:33](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/DesignFormUtil.java#L33) và
+[dashboard.jsp:19](../tomcat-app/src/main/webapp/WEB-INF/views/dashboard.jsp#L19).
+
+**7. Trang lỗi và hai cách dựng HTML khác gì?** web.xml chọn JSP lỗi; filter giữ
+JSON cho API, không hiện exception. /robots do Servlet dựng HTML bằng JDBC→bean→JSP;
+pages/mau-robot.html fetch JSON rồi dựng DOM. Cả hai vẫn phải kiểm quyền/luật ở server.
+Đọc [web.xml:10](../tomcat-app/src/main/webapp/WEB-INF/web.xml#L10),
+[PageErrorFilter.java:16](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/filter/PageErrorFilter.java#L16),
+[RobotCatalogPageServlet.java:45](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/RobotCatalogPageServlet.java#L45) và
+[robot-catalog-api.js:84](../assets/js/robot-catalog-api.js#L84).
+
+Không cần học thuộc số slide. Mở file, nói đoạn code **nhận gì → kiểm gì → trả gì**;
+chạy /architecture để mở thử luồng tương ứng. Số dòng đúng tại bản Đợt11, có thể
+dịch khi source đổi. Không sửa các tài liệu điện thoại WIP trong đợt này.

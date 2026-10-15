@@ -340,3 +340,31 @@ thiết kế cũ giữ cả bố cục và luật, được cảnh báo ở danh
 pin v2. RobotDesign đọc version_no qua JOIN cùng rule_set_id để hiển thị v1/v2,
 không nhầm ID số của luật với phiên bản. Seed khóa chassis và guard chưa có v2,
 chạy lại không sửa bộ PUBLISHED. Không có migration ngoài015.
+
+## Đợt 11 — Điều hướng theo hành trình
+
+Hai cách trình bày giữ nguyên Model 2: trang tổng hợp /account và /architecture
+dùng Servlet → setAttribute → forward → JSP; HTML catalog/phòng 3D đọc JSON để
+tương tác. Menu JSP là include lúc dịch trang, không do JS quyết định quyền.
+Nguồn kiểm nhãn/URL/nhóm/quyền là tests/fixtures/site-nav.json; test đối chiếu mọi HTML.
+
+DashboardSummary tổng hợp các XxxDB sẵn có theo user_id; chỉ thêm truy vấn phiên
+gần nhất LIMIT1 ở AssemblySessionDB. Không sửa TaskServlet/LearningProfileServlet.
+LearningLinkDB đọc quan hệ linh kiện–robot, kit riêng và sản phẩm đang bán bằng
+một truy vấn; LearningLinkServlet trả GET no-store. Không đổi API nội dung cũ.
+
+DesignCartServlet đọc designId từ form và user từ session. CartDB.ensureMissing
+khóa user rồi thiết kế đúng chủ trong một transaction, đọc snapshot số lượng và kit,
+dùng lại khóa kho/giới hạn giỏ. DesignCartResult tính lượng đích, bấm lại không cộng
+trùng; commit/rollback và khôi phục autoCommit trong finally. Không ghi orders/stock.
+POST thành công redirect /pages/gio-hang.html?designNotice=1, GET thông báo thuộc
+chính session; GET /design-cart chỉ đưa về trang giỏ. Đây là form + PRG, không phải
+client tự quyết số thiếu hay độ tương thích.
+
+web.xml ánh xạ404/500/Throwable tới JSP riêng trong WEB-INF. PageErrorFilter chỉ
+chạy ERROR dispatch: API giữ JSON/mã HTTP/no-store, HTML không in lỗi nội bộ.
+AdminPageFilter chặn cả HTML quản trị ở server (khách302, USER403), bên cạnh
+kiểm quyền API sẵn có. Breadcrumb dùng javax.servlet.forward.servlet_path để
+đánh dấu route gốc sau forward, không nhầm với đường dẫn JSP.
+WorkspaceCacheFilter bổ sung no-store cho learning-summary/order-history/admin-stats
+và hai catalog có menu theo session. Không thay query, luật hoặc file WIP.

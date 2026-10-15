@@ -52,6 +52,10 @@ public class DesignCartServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         response.setHeader("Cache-Control", "no-store");
+        if ("/design-cart".equals(request.getServletPath())) {
+            response.sendRedirect(request.getContextPath() + "/pages/gio-hang.html");
+            return;
+        }
         if (SessionUtil.requireUser(request, response) == null) {
             return;
         }

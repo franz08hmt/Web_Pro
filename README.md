@@ -446,3 +446,22 @@ và seed.sql đã có tên “Động cơ DC TT (hộp số)”. Không sửa nh
 Nhãn động cơ/bánh xe là hai linh kiện riêng; không viết tên ngoại lệ trong Java.
 Tên đơn hàng cũ là snapshot lúc mua và giữ nguyên. Xưởng tự căn theo vật thể/khay,
 có nút Căn giữa mô hình; camera/bệ/sàn dùng thông số của phòng lắp mẫu.
+
+## Đợt 11 — Điều hướng theo hành trình
+
+Menu chung có sáu nhóm Học, Luyện tập, Tài nguyên, Của tôi, Giới thiệu, Quản trị.
+Các nhóm mở bằng một lần bấm rồi chọn chức năng; desktop vẫn có nút thu gọn sidebar.
+HTML và JSP cùng nhãn/thứ tự/đích theo tests/fixtures/site-nav.json. JSP dùng include
+site-nav.jspf và c:if; HTML chỉ mở nhóm riêng sau GET /api/auth/me, không tin localStorage.
+USER và khách thấy đường vào luyện tập; ADMIN dùng nhóm quản trị vì các route luyện tập
+USER vốn chặn ADMIN. Mục chấm mở danh sách chọn nhiệm vụ, không trỏ route thiếu ID.
+
+Trang chính: pages/mau-robot.html, pages/linh-kien.html, /account (Bảng điều khiển).
+pages/tai-khoan.html giữ đăng nhập/đăng ký, hồ sơ tài khoản và lịch sử lắp; đăng nhập
+thành công tới /account. /robots và /components vẫn là ví dụ Servlet/JSP và mở từ
+/architecture. Kết quả học tập → /learning-summary; Bản in/PDF → /learning-profile.
+
+/architecture là bản đồ môn học công khai, in được, nối chủ đề với chức năng và
+file:dòng. Hồ sơ thiết kế có form bổ sung vật tư thiếu vào giỏ: token, kiểm owner,
+transaction, bù lượng chưa có trong kit/giỏ; PRG về giỏ, không checkout hoặc đổi kho.
+Không cần migration/seed mới. Xem docs/SITE_MAP.md và docs/PHASE11_UX_QA_REPORT.md.

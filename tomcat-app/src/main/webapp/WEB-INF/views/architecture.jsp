@@ -49,7 +49,7 @@
                         <c:out value="${courseItem.explanation}"/></p>
                     <p><code><c:out value="${courseItem.sourcePath}"/>:<c:out value="${courseItem.sourceLine}"/></code></p>
                     <c:url var="courseTry" value="${courseItem.path}"/>
-                    <a class="no-print" href="<c:out value="${courseTry}"/>">Mở thử</a>
+                    <a class="no-print workspace-action-link" href="<c:out value="${courseTry}"/>">Mở thử</a>
                     <c:if test="${courseItem.requiresLogin}"><span> — Cần đăng nhập</span></c:if>
                 </article>
             </c:forEach>

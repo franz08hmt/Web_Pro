@@ -12,8 +12,8 @@
   <script src="../assets/js/ui.js?v=20260921.1"></script>
   <script src="../assets/js/tooltip.js?v=20260921.1" defer></script>
   <script src="../assets/js/admin-content.js?v=20260921.1" defer></script>
-  <link rel="stylesheet" href="../assets/css/site-nav.css?v=20261015.2">
-  <script src="../assets/js/site-nav.js?v=20261015.2" defer></script>
+  <link rel="stylesheet" href="../assets/css/site-nav.css?v=20261015.4">
+  <script src="../assets/js/site-nav.js?v=20261015.3" defer></script>
 </head>
 <body class="admin-page">
   <a class="skip-link" href="#main-content">Chuyển đến nội dung</a>
@@ -24,7 +24,7 @@
 </svg></span>
       <span class="brand-name">ROBOT<span>ASSEMBLY LAB</span></span>
     </a>
-    <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="true" aria-controls="primary-nav" aria-label="Thu gọn thanh điều hướng" hidden>
+    <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="true" aria-controls="primary-nav" aria-label="Thu gọn thanh điều hướng">
       <svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5 11.25 12l7.5-7.5M12.75 19.5 5.25 12l7.5-7.5"/>
       </svg>
@@ -33,7 +33,7 @@
     <p class="nav-caption">KHÔNG GIAN THỰC HÀNH</p>
     <nav class="site-nav" data-site-nav id="primary-nav" aria-label="Điều hướng chính">
   <details class="site-nav-group" data-nav-group="learn" data-nav-role="PUBLIC">
-    <summary>Học</summary>
+    <summary title="Học" aria-label="Học">Học</summary>
     <ul class="nav-list">
       <li><a href="../pages/mau-robot.html" data-nav-target="/pages/mau-robot.html"><span>Mẫu robot</span></a></li>
       <li><a href="../pages/lap-rap.html" data-nav-target="/pages/lap-rap.html"><span>Lắp ráp</span></a></li>
@@ -41,7 +41,7 @@
     </ul>
   </details>
   <details class="site-nav-group" data-nav-group="practice" data-nav-role="PUBLIC">
-    <summary>Luyện tập</summary>
+    <summary title="Luyện tập" aria-label="Luyện tập">Luyện tập</summary>
     <ul class="nav-list">
       <li><a href="../pages/kiem-tra.html" data-nav-target="/pages/kiem-tra.html"><span>Kiểm tra kiến thức</span></a></li>
       <li data-nav-audience="LEARNER"><a href="../wiring" data-nav-target="/wiring"><span>Nối dây</span></a></li>
@@ -52,7 +52,7 @@
     </ul>
   </details>
   <details class="site-nav-group" data-nav-group="resources" data-nav-role="PUBLIC">
-    <summary>Tài nguyên</summary>
+    <summary title="Tài nguyên" aria-label="Tài nguyên">Tài nguyên</summary>
     <ul class="nav-list">
       <li><a href="../pages/linh-kien.html" data-nav-target="/pages/linh-kien.html"><span>Linh kiện</span></a></li>
       <li><a href="../pages/thu-vien.html" data-nav-target="/pages/thu-vien.html"><span>Thư viện</span></a></li>
@@ -60,7 +60,7 @@
     </ul>
   </details>
   <details class="site-nav-group" data-nav-group="mine" data-nav-role="AUTH" hidden>
-    <summary>Của tôi</summary>
+    <summary title="Của tôi" aria-label="Của tôi">Của tôi</summary>
     <ul class="nav-list">
       <li><a href="../account" data-nav-target="/account"><span>Bảng điều khiển</span></a></li>
       <li><a href="../my-kit" data-nav-target="/my-kit"><span>Bộ linh kiện</span></a></li>
@@ -72,14 +72,14 @@
     </ul>
   </details>
   <details class="site-nav-group" data-nav-group="about" data-nav-role="PUBLIC">
-    <summary>Giới thiệu</summary>
+    <summary title="Giới thiệu" aria-label="Giới thiệu">Giới thiệu</summary>
     <ul class="nav-list">
       <li><a href="../pages/thanh-vien.html" data-nav-target="/pages/thanh-vien.html"><span>Thành viên</span></a></li>
       <li><a href="../architecture" data-nav-target="/architecture"><span>Bản đồ môn học</span></a></li>
     </ul>
   </details>
   <details class="site-nav-group" data-nav-group="admin" data-nav-role="ADMIN" hidden>
-    <summary>Quản trị</summary>
+    <summary title="Quản trị" aria-label="Quản trị">Quản trị</summary>
     <ul class="nav-list">
       <li><a href="../pages/admin-content.html" data-nav-target="/pages/admin-content.html" aria-current="page"><span>Nội dung mẫu và linh kiện</span></a></li>
       <li><a href="../pages/admin-quiz.html" data-nav-target="/pages/admin-quiz.html"><span>Câu hỏi kiểm tra</span></a></li>

@@ -12,7 +12,7 @@ test("all static and JSP navigation groups match the single menu fixture", () =>
     groups.forEach((g, index) => {
       const block = blocks[index][0];
       assert.ok(block.includes(`data-nav-group="${g.id}" data-nav-role="${g.role}"`), file);
-      assert.ok(block.includes(`<summary>${g.label}</summary>`), file);
+      assert.equal(block.match(/<summary[^>]*>([^<]+)<\/summary>/)?.[1], g.label, file);
       assert.deepEqual([...block.matchAll(/data-nav-target="([^"]+)"/g)].map(m => m[1]), g.items.map(i => i.href), file);
       for (const i of g.items) assert.ok(block.includes(i.label), file + ": " + i.label);
       if (!file.endsWith("jspf") && g.role !== "PUBLIC") assert.match(block.split(">", 1)[0], /hidden/);

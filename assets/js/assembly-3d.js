@@ -622,6 +622,8 @@
 
       label.append(checkbox, order, copy);
       partsContainer.append(label);
+      const componentInfo = window.LearningContext?.componentLink(part.id);
+      if (componentInfo) partsContainer.append(componentInfo);
 
       checkbox.addEventListener("change", async () => {
         if (checkbox.checked) {

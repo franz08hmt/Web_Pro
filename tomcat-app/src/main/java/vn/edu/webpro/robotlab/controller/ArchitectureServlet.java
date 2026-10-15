@@ -17,6 +17,7 @@ public class ArchitectureServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.setHeader("Cache-Control", "no-store");
         List<CourseMapItem> items = new ArrayList<>();
         add(items, "Servlet, @WebServlet, doGet/doPost",
                 "Bộ linh kiện", "/my-kit",
@@ -25,12 +26,12 @@ public class ArchitectureServlet extends HttpServlet {
                 + "đặt JDBC trong JSP.");
         add(items, "Request và response; form GET/POST",
                 "Tạo thiết kế", "/designs?action=new",
-                "tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/DesignFormUtil.java", 23, true,
+                "tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/DesignFormUtil.java", 33, true,
                 "Trình duyệt gửi các field. Servlet đọc getParameter/getParameterValues qua tiện ích "
                 + "form; response trả lỗi hoặc chuyển hướng khi thành công.");
         add(items, "setAttribute và forward",
                 "Bảng điều khiển", "/account",
-                "tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AccountPageServlet.java", 106, true,
+                "tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AccountPageServlet.java", 120, true,
                 "Servlet lấy dữ liệu của user trong session, đặt JavaBean vào request rồi forward JSP "
                 + "trong WEB-INF.");
         add(items, "sendRedirect và PRG",
@@ -90,7 +91,7 @@ public class ArchitectureServlet extends HttpServlet {
                 + "để hạn chế lưu dữ liệu riêng trên cache.");
         add(items, "Xử lý lỗi thân thiện",
                 "Trang không tồn tại", "/trang-khong-ton-tai",
-                "tomcat-app/src/main/java/vn/edu/webpro/robotlab/filter/RequestContextFilter.java", 31, false,
+                "tomcat-app/src/main/webapp/WEB-INF/web.xml", 10, false,
                 "Không hiển thị SQL hoặc stack trace. Mã HTTP được giữ; lỗi API trả JSON, trang người "
                 + "dùng có đường quay về.");
         request.setAttribute("courseItems", items);

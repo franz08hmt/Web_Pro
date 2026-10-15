@@ -22,4 +22,5 @@ test("context API reads personal kit only from the session and DOM links encode 
   assert.match(read("assets/js/learning-context.js"), /function componentLink\(id\)[\s\S]*encodeURIComponent\(id\)/);
   assert.doesNotMatch(read("assets/js/learning-context.js"), /innerHTML/);
   assert.match(read("assets/js/assembly-3d-placement.js"), /LearningContext\?\.errorLinks/);
+  assert.match(read("assets/js/assembly-3d.js"), /LearningContext\?\.componentLink\(part.id\)/);
 });

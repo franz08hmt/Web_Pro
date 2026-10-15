@@ -317,3 +317,14 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] M2: bounds/FOV camera, nút focus/bệ/sàn,16 camera và4 motion/keyboard checks.
 - [x] M3: tài liệu/vấn đáp,197 Node/127 JUnit và clean package JDK17, WAR smoke/reload, dọn QA8081.
 
+
+## Đợt11 — Điều hướng và kết nối
+
+- [x] M0: baseline,120GET ba vai trò, SITE_MAP và kế hoạch,10 hash WIP.
+- [x] M1: fixture/menu18HTML +JSP, role từserver, bànphím/mobile/thu gọn.
+- [x] M2/M6: trangchính/minhhọa và hồsơin; giữroute/module dữliệu.
+- [x] M3: dashboard Servlet/bean/XxxDB/JSP, empty/zero test.
+- [x] M4: context theo robot/component; formCSRF/owner/transaction/idempotent bổsunggiỏ.
+- [x] M5: coursemap15chủđề, sourcefile:dòng đãđối chiếu, không bịa slide.
+- [x] M7: breadcrumb,404/500/Throwable, APIJSON, filterHTMLadmin.
+- [x] M8:205Node/130JUnit, cleanpackage17,207ôChrome/HTTP3vai trò/PDF/ảnh và cleanup.

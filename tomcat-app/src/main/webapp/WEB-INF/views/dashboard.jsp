@@ -26,7 +26,8 @@
                         </c:if>
                         <c:if test="${not empty dashboardCard.model}"><c:param name="model" value="${dashboardCard.model}"/></c:if>
                     </c:url>
-                    <a href="<c:out value="${dashboardTarget}"/>"><c:out value="${dashboardCard.action}"/></a>
+                    <a class="workspace-action-link" href="<c:out value="${dashboardTarget}"/>">
+                        <c:out value="${dashboardCard.action}"/></a>
                 </article>
             </c:forEach>
         </div>

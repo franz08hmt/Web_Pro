@@ -23,9 +23,11 @@
             <h1>Phòng thực hành nối dây</h1>
             <p>Luyện tập có tài liệu: server chấm các cặp trực tiếp của bài mẫu, không mô phỏng điện hay xác nhận robot thật.</p>
             <h2>Bài đang công bố</h2>
+            <c:set var="wiringVisibleCount" value="0"/>
             <div class="workspace-grid">
                 <c:forEach var="wiringExercise" items="${wiringExercises}">
                     <c:if test="${empty param.robotId or wiringExercise.robotId eq param.robotId}">
+                    <c:set var="wiringVisibleCount" value="${wiringVisibleCount + 1}"/>
                     <section class="workspace-panel workspace-course">
                         <h3><c:out value="${wiringExercise.title}"/></h3>
                         <p><c:out value="${wiringExercise.robotName}"/></p>
@@ -42,6 +44,9 @@
                 </c:forEach>
             </div>
             <h2>Lượt đã lưu và lịch sử của tôi</h2>
+            <c:if test="${wiringVisibleCount eq 0}">
+                <p>Chưa có bài nối dây phù hợp. Hãy chọn mẫu khác hoặc quay lại danh sách bài đang công bố.</p>
+            </c:if>
             <c:if test="${empty wiringAttempts}">
                 <p>Chưa có lượt thực hành.</p>
             </c:if>

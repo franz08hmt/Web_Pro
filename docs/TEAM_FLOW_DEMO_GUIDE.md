@@ -897,3 +897,25 @@ cũng khác mẫu servo-scout:1.02/1.77 ở z−.92 so với .82/1.42 và z−.9
 Thiết kế v1 hiện cảnh báo: tạo mới để dùng luật sửa; không tự chuyển các thiết kế
 1/2/4 sang v2. Đơn QA2 mua Arduino giữ nguyên vì OrderServlet/OrderDB không có
 luồng hủy hoàn kho; không sửa SQL tồn kho hoặc thêm chức năng hủy trong đợt này.
+
+## Đợt 11 — Điều hướng theo hành trình
+
+Bắt đầu từ **/architecture — Bản đồ môn học**. Trình bày chức năng trước:
+
+1. “Website giúp học lắp robot: chọn mẫu, tự lắp và nhận giải thích khi sai,
+   hoàn tất để xem lại sản phẩm/quy trình/phiếu rồi kiểm tra kiến thức.” Mở Mẫu robot.
+2. Đăng nhập USER. Bảng điều khiển có dữ liệu thật: tiếp tục phiên hoặc mở kết quả.
+   Mở phòng lắp mẫu đã chuẩn bị; gắn sai hướng → đọc lý do và thông tin linh kiện;
+   sửa đúng → hoàn tác → lắp đủ → hoàn tất. Giữ giới hạn mô phỏng đã nêu ở các đợt trước.
+3. Trang hoàn thiện có ảnh, bản vẽ/quy trình/phiếu/quiz; nối tiếp sang bài nối dây
+   của đúng mẫu hoặc tra cứu hướng dẫn. Phát lại chỉ đọc, không gửi API ghi.
+4. Xưởng: mở thiết kế → kiểm tra → hồ sơ có bản vẽ/BOM/trình tự. Bấm thêm phần
+   thiếu vào giỏ, đọc thông báo; bấm lại không cộng trùng. Dừng ở giỏ, không checkout.
+5. Kết quả học tập → Bản in/PDF; Tài khoản HTML vẫn có đổi hồ sơ/mật khẩu/lịch sử.
+6. Đổi sang ADMIN để quản trị nội dung, bài luyện, nhiệm vụ/chấm, cửa hàng/thống kê.
+   Không dùng ADMIN để trình bày route luyện tập USER; menu đã phản ánh quyền đó.
+
+Khi cô hỏi kiến thức: quay /architecture, chọn chủ đề và chỉ đúng file:dòng.
+Nói theo chuỗi **request → Servlet/session/token → JavaBean → XxxDB → response → JSP**.
+Không đọc tên chương/slide chưa xác minh. Ví dụ form thêm giỏ minh họa getParameter,
+CSRF, transaction, forward/redirect và PRG rõ ràng; ẩn menu không thay kiểm quyền.

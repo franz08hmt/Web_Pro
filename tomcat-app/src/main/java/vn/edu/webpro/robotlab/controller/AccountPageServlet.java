@@ -50,6 +50,10 @@ public class AccountPageServlet extends HttpServlet {
                 active.setSummary(open.isDetailed()
                         ? "Đã gắn " + open.getPlacedSlotCount() + "/" + open.getRequiredSlotCount() + " điểm gắn."
                         : "Chuẩn bị linh kiện: " + open.getProgressPercent() + "%.");
+                Robot activeRobot = RobotDB.selectRobot(open.getRobotId());
+                if (activeRobot != null) {
+                    active.setSummary(activeRobot.getName() + " · " + active.getSummary());
+                }
                 active.setAction("Tiếp tục lắp ráp");
                 active.setPath(open.isInProgress() ? "/pages/lap-rap-3d.html" : "/pages/lap-rap.html");
                 active.setParameterName("session");
@@ -61,6 +65,10 @@ public class AccountPageServlet extends HttpServlet {
                     "/pages/mau-robot.html");
             if (complete != null) {
                 finished.setSummary("Xem lại sản phẩm, quy trình, phiếu và bài kiểm tra của mẫu vừa hoàn tất.");
+                Robot finishedRobot = RobotDB.selectRobot(complete.getRobotId());
+                if (finishedRobot != null) {
+                    finished.setSummary(finishedRobot.getName() + ". " + finished.getSummary());
+                }
                 finished.setAction("Xem trang hoàn thiện");
                 finished.setPath("/assembly-review");
                 finished.setParameterName("session");
@@ -70,7 +78,8 @@ public class AccountPageServlet extends HttpServlet {
                     dashboard.quizSummary(QuizAttemptDB.selectAttempts(user.getId(), null, 1, 0)),
                     "Làm bài kiểm tra", "/pages/kiem-tra.html");
             for (Robot completedRobot : StatsDB.selectCompletedRobots(user.getId())) {
-                if (QuizAttemptDB.countAttempts(user.getId(), completedRobot.getId()) == 0) {
+                if (QuizAttemptDB.countAttempts(user.getId(), completedRobot.getId()) == 0
+                        && QuizQuestionDB.countQuestions(completedRobot.getId()) > 0) {
                     quiz.setSummary(quiz.getSummary() + " Bạn đã lắp " + completedRobot.getName()
                             + " nhưng chưa làm bài kiểm tra của mẫu này.");
                     quiz.setParameterName("model");

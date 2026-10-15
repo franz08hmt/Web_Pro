@@ -30,6 +30,17 @@
 .site-header .site-nav summary { width: 100%; }
 .site-header .site-nav .nav-list a > span { position: static; width: auto; height: auto; clip-path: none; }
 .site-header .nav-toggle[hidden] { display: none; }
+@media (min-width: 1025px) {
+  .nav-collapsed .site-header .site-nav summary { font-size: 0; gap: 4px; padding: 10px 6px; }
+  .nav-collapsed .site-header .site-nav summary::before {
+    content: ""; display: block; width: 22px; height: 22px; background: currentColor;
+    mask: url("../icons/cpu-chip.svg") center / contain no-repeat;
+  }
+  .nav-collapsed .site-header .site-nav summary::after { font-size: 14px; }
+  .nav-collapsed .site-header:has(.site-nav details[open]) { width: 280px; align-items: stretch; }
+  .nav-collapsed .site-header:has(.site-nav details[open]) .site-nav summary { font-size: 14px; }
+  .nav-collapsed .site-header .site-nav .site-nav-auth { font-size: 11px; padding: 6px; overflow-wrap: anywhere; }
+}
 .workspace-header .site-nav { margin-left: auto; }
 .assembly-3d-page > .site-nav, .design-room > .site-nav { padding: 8px 16px; border-bottom: 1px solid #3d4a50; }
 @media (max-width: 1024px) {
@@ -45,4 +56,6 @@
 @media print { .site-nav { display: none; } }
 .workspace-breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; flex-basis: 100%; font-size: 13px; }
 .workspace-breadcrumb a { display: inline-flex; align-items: center; min-height: 44px; }
-.learning-context a { display: inline-flex; align-items: center; min-height: 44px; margin-right: 12px; }
+.learning-context a, .learning-context-link, .workspace-action-link {
+  display: inline-flex; align-items: center; min-height: 44px; margin-right: 12px;
+}

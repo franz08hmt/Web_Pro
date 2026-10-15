@@ -43,9 +43,11 @@
                 </a></p>
             </c:forEach>
             <h2>Tình huống đang công bố</h2>
+            <c:set var="diagnosisVisibleCount" value="0"/>
             <div class="workspace-grid">
                 <c:forEach var="diagnosisScenario" items="${diagnosisScenarios}">
                     <c:if test="${empty param.robotId or diagnosisScenario.robotId eq param.robotId}">
+                    <c:set var="diagnosisVisibleCount" value="${diagnosisVisibleCount + 1}"/>
                     <section class="task-card">
                         <h3><c:out value="${diagnosisScenario.title}"/></h3>
                         <p><c:out value="${diagnosisScenario.robotName}"/> · Phiên bản <c:out value="${diagnosisScenario.versionNo}"/></p>
@@ -64,6 +66,9 @@
                     </c:if>
                 </c:forEach>
             </div>
+            <c:if test="${diagnosisVisibleCount eq 0}">
+                <p>Chưa có tình huống chẩn đoán phù hợp. Bạn có thể tra cứu hướng dẫn hoặc chọn mẫu khác.</p>
+            </c:if>
         </main>
         <%@ include file="workspace-footer.jspf" %>
     </body>

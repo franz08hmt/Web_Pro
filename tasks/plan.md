@@ -521,3 +521,16 @@ ngữ cảnh + POST thiếu vật tư vào giỏ (transaction/idempotent, không
 M5 bản đồ môn học → M7 lỗi/breadcrumb → M8 kiểm link, HTTP3vai trò, Chrome390/768/1440,
 ảnh ngoàiGit và tài liệu. Không schema, không sửa luật/spec/API cũ hoặc file WIP.
 Commit local từng mốc, không push.
+
+### Đợt11 — M1–M8 đã kiểm chứng
+
+Menu18HTML +sharedJSP, trang chính/phụ, dashboard owner, context và BOM→cart,
+course map15 chủ đề, error404/500/JSON và serverfilterHTMLadmin đã triển khai.
+M6 gộpM2, không ẩn module dữ liệu. Baseline197/127→205Node/130JUnit,0fail/skip;
+JDK17 test+cleanpackage xanh. HTTPcuối81, giỏ/browser31, tương tác13;207ôChrome
+390/768/1440 đạt. PDFcourse4trang vàhồsơ3trang đã xem; bằng chứng ngoàiGit.
+QA39/40 tựtạo bởi luồngcũ; QA7 phục hồi10/10 nhưngnhậtký/versionđổi; cart23cuốirỗng.
+Khôngorder/checkout/stock/spec/schema thay đổi.10fileWIP giữhash. RuntimeQA8081
+đãdọn, khôngđụng8080; giới hạnbrowser/POSThồi quy ghi rõ trong PHASE11_UX_QA_REPORT.
+WAR cuối có thêm36 kiểm smoke/header/quyền; WorkspaceCacheFilter bảo vệ no-store
+ở các trang cũ, không sửa controller hoặc JSP WIP của người dùng.

@@ -13,7 +13,9 @@
     const a = document.createElement("a"); a.textContent = text; a.href = local(path); return a;
   };
   function componentLink(id) {
-    return link("Thông tin linh kiện", `pages/linh-kien.html?component=${encodeURIComponent(id)}#component-${encodeURIComponent(id)}`);
+    const info = link("Thông tin linh kiện", `pages/linh-kien.html?component=${encodeURIComponent(id)}#component-${encodeURIComponent(id)}`);
+    info.className = "learning-context-link";
+    return info;
   }
   async function errorLinks(container, componentId, code) {
     container.replaceChildren();

@@ -30,6 +30,7 @@ window.createAssemblyPlacementView = function (options) {
   live.setAttribute("role", "status");
   live.setAttribute("aria-live", "polite");
   const contextLinks = document.createElement("p");
+  contextLinks.className = "learning-context";
   const tray = document.createElement("fieldset");
   const slots = document.createElement("fieldset");
   const directions = document.createElement("fieldset");

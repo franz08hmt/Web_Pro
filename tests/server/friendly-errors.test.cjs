@@ -14,4 +14,9 @@ test("container errors use private friendly views while APIs retain JSON and HTT
   assert.match(filter, /javax.servlet.error.request_uri/);
   assert.match(filter, /ResponseUtil.sendError\(result, status/);
   assert.match(filter, /getContextPath\(\) \+ "\/api\/"/);
+  const cache = read("tomcat-app/src/main/java/vn/edu/webpro/robotlab/filter/WorkspaceCacheFilter.java");
+  for (const route of ["/learning-summary", "/order-history", "/admin-stats", "/robots", "/components"]) {
+    assert.ok(cache.includes('"' + route + '"'), route);
+  }
+  assert.match(cache, /setHeader\("Cache-Control", "no-store"\)/);
 });

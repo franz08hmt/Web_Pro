@@ -511,3 +511,31 @@ Không đổi route/schema/fit hoặc luật phòng mẫu. Tạo mới chọn PU
 GET cũ vẫn đọc FK v1. Danh sách/hồ sơ hiển thị v1/v2; v1 có câu cảnh báo tạo mới,
 không tự chuyển version. SCANNING_AVOIDER giữ cảm biến SERVO_HORN/Y180 theo
 obstacle-avoider; servo-scout hiện có target sensor không ry (0), không sửa mẫu đó.
+
+## Đợt 11 — Điều hướng theo hành trình
+
+Các hợp đồng API cũ, CSRF/version/mã lỗi vẫn giữ nguyên. Bổ sung chỉ đọc:
+
+| Route | Quyền/dữ liệu | Kết quả |
+| --- | --- | --- |
+| GET /api/learning-links | Công khai; kit của user trong session nếu đăng nhập | data[]: componentId, owned (null với khách), productId, robots[{id,name,hasWiring,hasGuide}] |
+| POST /design-cart | Form đăng nhập; csrfToken, designId; chỉ chủ thiết kế | 302 PRG tới /pages/gio-hang.html?designNotice=1; thiếu token403, khác chủ404, DB503 |
+| GET /api/design-cart-notice | Đăng nhập; thông báo trong chính session | data[] thông báo tiếng Việt, no-store; không ghi DB |
+| GET /design-cart | Không có thao tác ghi | 302 tới trang giỏ |
+
+CartDB khóa user/design/kho bằng cơ chế giỏ hiện có. Lượng cần = BOM trừ kit;
+lượng giỏ đích = max(giỏ hiện có, min(phần thiếu, kho, giới hạn giỏ)). Không giảm
+mục đã có; nếu giỏ cũ đang vượt kho thì báo cần kiểm lại, không thêm vượt kho.
+Không thêm sản phẩm ngừng bán/hết hàng; giải thích từng mục, không checkout.
+Bấm lại không cộng trùng. Mọi tên/chuỗi JSON qua JsonUtil.quote, DOM dùng textContent.
+
+/wiring?robotId= và /diagnosis?robotId= chỉ lọc danh sách đã được phép đọc; không
+thay quyền, dữ liệu bài, đáp án hoặc request POST. /pages/tra-cuu-loi.html dùng
+robotId/componentGroup/search là các bộ lọc sẵn có. Catalog có link đúng component
+và sản phẩm; chỉ hiện đường nối dây khi DB có bài PUBLISHED của robot đó.
+
+404/500 HTML có trang lỗi; lỗi đã xử lý của /api/* giữ ResponseUtil JSON.
+ERROR dispatch404/500 của container dưới /api/* cũng trả JSON, không lộ stack/SQL.
+Năm trang HTML quản trị giờ kiểm ở server; các API quản trị không đổi hợp đồng.
+Trang tổng kết, lịch sử đơn, thống kê và catalog SSR có no-store qua WorkspaceCacheFilter;
+không thay mã HTTP, query hoặc quyền của các trang này.

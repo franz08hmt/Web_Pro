@@ -4,7 +4,8 @@ const java = "tomcat-app/src/main/java/vn/edu/webpro/robotlab/";
 const files = ["business/DashboardCard", "business/DashboardSummary", "business/ComponentContext",
   "business/DesignCartResult", "business/RobotLearningLink", "business/CourseMapItem",
   "controller/AccountPageServlet", "controller/ArchitectureServlet", "controller/DesignCartServlet",
-  "controller/LearningLinkServlet", "data/LearningLinkDB", "filter/PageErrorFilter", "filter/AdminPageFilter"];
+  "controller/LearningLinkServlet", "data/LearningLinkDB", "filter/PageErrorFilter", "filter/AdminPageFilter",
+  "filter/WorkspaceCacheFilter"];
 test("Phase11 Java keeps traditional syntax and new JSP fragments stay presentation-only", () => {
   for (const file of files) {
     const source = read(java + file + ".java");

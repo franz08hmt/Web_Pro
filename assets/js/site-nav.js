@@ -4,7 +4,7 @@
 (() => {
   const nav = document.querySelector("[data-site-nav]");
   if (!nav) return;
-  document.documentElement.classList.remove("nav-collapsed");
+  if (!document.querySelector("#nav-toggle")) document.documentElement.classList.remove("nav-collapsed");
   const groups = [...nav.querySelectorAll("details")];
   groups.forEach(group => {
     group.addEventListener("toggle", () => {
