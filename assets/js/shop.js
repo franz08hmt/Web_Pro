@@ -9,7 +9,7 @@
   if (!api || !grid || !status) return;
 
   const PAGE_SIZE = 20;
-  const state = { page: 1, total: 0, user: null, cart: [] };
+  const state = { page: 1, total: 0, user: null, cart: [], authKnown: false, cartKnown: false };
   let listVersion = 0, focusVersion = 0, visibleItems = [], focusedProduct = null, followedHash = "";
   const focusArea = document.createElement("section");
   focusArea.setAttribute("aria-label", "Sản phẩm từ liên kết");
@@ -44,17 +44,23 @@
   async function readSession() {
     try {
       state.user = await api.auth.me();
-      if (userLabel) userLabel.textContent = `Xin chào, ${state.user.fullName}`;
-      const role = String(state.user.role || "").toUpperCase();
-      const adminLink = document.getElementById("admin-shop-link");
-      if (adminLink && role === "ADMIN") adminLink.hidden = false;
-      state.cart = await api.cart.get();
+      state.authKnown = true;
     } catch (error) {
       state.user = null;
       state.cart = [];
-      if (userLabel) userLabel.textContent = "Khách";
-      if (error.status !== 401 && error.status !== 403) throw error;
+      state.authKnown = error.status === 401;
+      if (!state.authKnown) throw error;
     }
+    if (!state.user) {
+      if (userLabel) userLabel.textContent = "Khách";
+      return;
+    }
+    if (userLabel) userLabel.textContent = `Xin chào, ${state.user.fullName}`;
+    const adminLink = document.getElementById("admin-shop-link");
+    if (adminLink) adminLink.hidden = state.user.role !== "ADMIN";
+    // Cart failure must not turn a confirmed identity into a guest or overwrite unseen quantities.
+    state.cart = await api.cart.get();
+    state.cartKnown = true;
   }
 
   function renderProducts(items, container = grid) {
@@ -75,8 +81,10 @@
         <p class="shop-description">${escapeHtml(product.description)}</p>
         <p class="shop-product-price">${formatMoney(product.priceVnd)}</p>
         <p class="shop-stock${Number(product.stockQuantity) <= 3 ? " is-low" : ""}">${stockText}</p>
-        <button class="button" type="button" data-add-product="${escapeHtml(product.id)}" ${outOfStock ? "disabled" : ""}>
-          ${state.user ? (quantity ? `Thêm vào giỏ (${quantity})` : "Thêm vào giỏ") : "Đăng nhập để thêm"}
+        <button class="button" type="button" data-add-product="${escapeHtml(product.id)}"
+          ${outOfStock || !state.authKnown || (state.user && !state.cartKnown) ? "disabled" : ""}>
+          ${!state.authKnown ? "Chưa xác minh tài khoản" : state.user && !state.cartKnown ? "Giỏ tạm chưa sẵn sàng"
+            : state.user ? (quantity ? `Thêm vào giỏ (${quantity})` : "Thêm vào giỏ") : "Đăng nhập để thêm"}
         </button>
         <a class="shop-inline-link" href="${escapeHtml(window.LearningContext.componentUrl(product.componentId))}">Xem thông số kỹ thuật</a>
       </article>`;
@@ -157,9 +165,10 @@
       renderProducts(visibleItems);
       renderFocus();
       renderPagination();
-      setStatus(state.user
-        ? "Giá tham khảo và tồn kho được hiển thị từ máy chủ; đơn đặt chỉ là dữ liệu mô phỏng."
-        : "Bạn đang xem với tư cách khách. Đăng nhập để thêm linh kiện vào giỏ.");
+      setStatus(!state.authKnown ? "Chưa xác minh được tài khoản. Hãy tải lại trang để thử lại."
+        : state.user && !state.cartKnown ? "Đã xác nhận tài khoản; giỏ tạm chưa sẵn sàng. Hãy tải lại để thử lại."
+        : state.user ? "Giá tham khảo và tồn kho được hiển thị từ máy chủ; đơn đặt chỉ là dữ liệu mô phỏng."
+          : "Bạn đang xem với tư cách khách. Đăng nhập để thêm linh kiện vào giỏ.");
     } catch (error) {
       if (version !== listVersion) return;
       setStatus(error.message || "Không tải được catalog. Vui lòng thử lại.", true);
@@ -170,7 +179,7 @@
 
   async function addProduct(event) {
     const button = event.target.closest("[data-add-product]");
-    if (!button) return;
+    if (!button || button.disabled || !state.authKnown || (state.user && !state.cartKnown)) return;
     if (!state.user) {
       setStatus("Hãy đăng nhập trước khi thêm vào giỏ.", true);
       window.location.href = "tai-khoan.html";
@@ -204,7 +213,7 @@
     try {
       await readSession();
     } catch {
-      if (userLabel) userLabel.textContent = "Chưa kết nối";
+      if (userLabel && !state.authKnown) userLabel.textContent = "Chưa xác minh tài khoản";
     }
     await loadProducts();
     await loadFocusedProduct();

@@ -12,12 +12,13 @@ class Element {
   replaceChildren() { this.children = []; this.innerHTML = ""; }
   addEventListener(name, callback) { this.listeners[name] = callback; }
 }
-function boot(id, get) {
+function boot(id, get, options = {}) {
   const grid = new Element(), status = new Element(), pagination = new Element(), user = new Element();
   const calls = [], listeners = {}, location = new URL("http://localhost/pages/cua-hang.html#shop-product-" + id);
   const products = Array.from({length: 21}, (_, i) => ({id: "sku" + (i + 1), name: "Product " + (i + 1),
     componentId: "l298n", stockQuantity: 2, priceVnd: 1000}));
-  const api = {auth: {me: async () => { throw {status: 401}; }}, cart: {get: async () => []}, shop: {
+  const api = {auth: {me: options.me || (async () => { throw {status: 401}; })},
+    cart: {get: options.cart || (async () => [])}, shop: {
     list: async params => { calls.push(["list", params.page]);
       return {items: products.slice((params.page - 1) * 20, params.page * 20), meta: {total: 21}}; },
     get: async sku => { calls.push(["get", sku]); return get ? get(sku, products) : products.find(p => p.id === sku); }
@@ -29,7 +30,7 @@ function boot(id, get) {
   const window = {RobotAssemblyApi: api, location, LearningContext: {componentUrl: id => "linh-kien.html?component=" + id},
     addEventListener: (name, callback) => { listeners[name] = callback; }};
   vm.runInNewContext(read("assets/js/shop.js"), {window, document, location, URL, Intl, console});
-  return {grid, status, pagination, calls, listeners, location, products,
+  return {grid, status, pagination, calls, listeners, location, products, user,
     focus: () => grid.beforeElement.children[1], notice: () => grid.beforeElement.children[0]};
 }
 test("page two SKU uses one bounded product read and keeps the paginated catalog", async () => {
@@ -77,4 +78,17 @@ test("the additive detail endpoint reads one active product without changing the
   const data = read("tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ShopProductDB.java");
   assert.match(data, /WHERE p.id = \?"\);\s*ps.setString\(1, id\)/);
   for (const line of servlet.split(/\r?\n/)) assert.ok(line.length <= 120);
+});
+test("auth and cart failures are not presented as a guest and never enable an unsafe cart write", async () => {
+  const guest = boot("sku21", null, {me: async () => null}); await settle();
+  assert.equal(guest.user.textContent, "Khách");
+  assert.match(guest.status.textContent, /tư cách khách/);
+  const unknown = boot("sku21", null, {me: async () => { throw {status: 503}; }}); await settle();
+  assert.match(unknown.status.textContent, /Chưa xác minh/);
+  assert.match(unknown.focus().innerHTML, /disabled/);
+  const unavailableCart = boot("sku21", null, {me: async () => ({role: "USER", fullName: "Fixture"}),
+    cart: async () => { throw {status: 503}; }}); await settle();
+  assert.equal(unavailableCart.user.textContent, "Xin chào, Fixture");
+  assert.match(unavailableCart.status.textContent, /Đã xác nhận tài khoản; giỏ tạm chưa sẵn sàng/);
+  assert.match(unavailableCart.focus().innerHTML, /disabled/);
 });
