@@ -1,4 +1,4 @@
-# Bản đồ Robot Assembly Lab
+﻿# Bản đồ Robot Assembly Lab
 
 ## Khảo sát Đợt 11 (15/10/2026)
 
@@ -109,3 +109,8 @@ Quyền trong bảng là điều kiện của dữ liệu/thao tác, không dự
 
 Các route có tham số (session, id, action…) chỉ mở chi tiết từ bản ghi thuộc người dùng.
 Không tạo link menu tới một ID cố định hoặc lấy ID của người khác.
+
+### M2 — Trang chính và trang minh họa
+
+Robots/components có dải thông báo minh họa Model 2, vẫn giữ route. Đăng nhập thành công đi tới /account. Kết quả học tập có nút Bản in / PDF; không sửa hồ sơ WIP.
+

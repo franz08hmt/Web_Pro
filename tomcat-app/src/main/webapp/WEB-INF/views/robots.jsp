@@ -1,4 +1,4 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!doctype html>
 <html lang="vi">
@@ -6,7 +6,7 @@
         <meta charset="UTF-8">
         <link rel="icon" href="${pageContext.request.contextPath}/assets/icons/cpu-chip.svg" type="image/svg+xml">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Danh mục robot (JSP) | Robot Assembly Lab</title>
+        <title>Danh mục robot (minh họa Servlet/JSP) | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <meta name="description" content="Danh mục và kiến thức thực hành Robot Assembly Lab.">
@@ -16,6 +16,10 @@
         <main class="workspace-content" id="workspace-main" tabindex="-1">
 
             <h1>Danh mục mô hình robot</h1>
+            <c:url var="illustrationCatalog" value="/pages/mau-robot.html"/>
+            <p class="notice">Đây là phiên bản Servlet → JSP của trang Danh mục robot,
+                dùng để minh họa Model 2. Trang chính:
+                <a href="<c:out value="${illustrationCatalog}"/>">Danh mục robot</a>.</p>
 
 
             <c:if test="${not empty errorMessage}">
@@ -73,7 +77,7 @@
             </c:if>
 
             <p class="links">
-            <a href="${pageContext.request.contextPath}/components">Danh mục linh kiện (JSP)</a> ·
+            <a href="${pageContext.request.contextPath}/components">Danh mục linh kiện (minh họa Servlet/JSP)</a> ·
             <a href="${pageContext.request.contextPath}/architecture">Sơ đồ kiến trúc</a> ·
             <a href="${pageContext.request.contextPath}/index.html">Về trang chủ</a>
             </p>
@@ -90,3 +94,4 @@
         <%@ include file="workspace-footer.jspf" %>
     </body>
 </html>
+

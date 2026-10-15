@@ -224,6 +224,7 @@
         const fields = new FormData(loginForm);
         showUser(await api.auth.login({ email: fields.get("email"), password: fields.get("password") }));
         loginForm.reset();
+        window.location.assign("../account");
       } catch (error) {
         showNote(loginForm, error.message || "Không thể đăng nhập. Vui lòng thử lại.", "error");
       } finally {
@@ -256,6 +257,7 @@
           password: fields.get("password")
         }));
         signupForm.reset();
+        window.location.assign("../account");
       } catch (error) {
         showNote(signupForm, error.message || "Không thể tạo tài khoản. Vui lòng thử lại.", "error");
       } finally {

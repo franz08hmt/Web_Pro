@@ -176,7 +176,9 @@ test("print button uses the small dedicated script and both existing entry point
   assert.match(script, /print-profile/);
   assert.match(account, /href="\.\.\/learning-profile"[^>]*>Hồ sơ học tập \(in\/PDF\)</);
   assert.match(account, /account-session-actions/);
-  assert.match(summary, /href="\$\{pageContext\.request\.contextPath\}\/learning-profile"[^>]*>Hồ sơ học tập/);
+  // Phase11: same print destination, now labeled as an action and encoded with JSTL c:url.
+  assert.match(summary, /<c:url var="summaryPrint" value="\/learning-profile"\/>/);
+  assert.match(summary, /href="<c:out value="\$\{summaryPrint\}"\/>"[^>]*>Bản in \/ PDF/);
 });
 
 test("the learning profile adds no schema migration", () => {

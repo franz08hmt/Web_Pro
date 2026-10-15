@@ -1,6 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!doctype html>
 <html lang="vi">
     <head>
@@ -103,7 +102,8 @@
             </c:choose>
 
             <p class="links">
-            <a href="${pageContext.request.contextPath}/learning-profile">Hồ sơ học tập (in/PDF)</a> ·
+            <c:url var="summaryPrint" value="/learning-profile"/>
+            <a href="<c:out value="${summaryPrint}"/>">Bản in / PDF</a> ·
             <a href="${pageContext.request.contextPath}/pages/tai-khoan.html">Xem lịch sử phiên và phiếu kết quả</a> ·
             <a href="${pageContext.request.contextPath}/pages/tra-cuu-loi.html">Tra cứu lỗi lắp ráp</a> ·
             <a href="${pageContext.request.contextPath}/index.html">Về trang chủ</a>
