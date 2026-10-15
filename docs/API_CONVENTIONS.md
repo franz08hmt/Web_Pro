@@ -539,3 +539,14 @@ ERROR dispatch404/500 của container dưới /api/* cũng trả JSON, không l�
 Năm trang HTML quản trị giờ kiểm ở server; các API quản trị không đổi hợp đồng.
 Trang tổng kết, lịch sử đơn, thống kê và catalog SSR có no-store qua WorkspaceCacheFilter;
 không thay mã HTTP, query hoặc quyền của các trang này.
+
+
+### ??t 11b ? Deep link s?n ph?m (GET additive)
+
+`GET /api/shop/products/{id}` tr? `200 {data: product}` cho m?t SKU ?ang b?n,
+k? c? khi t?n kho b?ng 0 (n?t th?m b? v? hi?u h?a). Kh?ng c?/ng?ng b?n c?ng tr?
+404 NOT_FOUND, th?ng b?o kh?ng ti?t l? s?n ph?m qu?n tr?; DB l?i tr?503 JSON.
+Kh?ng ghi gi? hay t?n kho. Query PreparedStatement theo kh?a ch?nh, t?i ?a m?t d?ng.
+GET danh s?ch `/api/shop/products?page=1&limit=20` gi? nguy?n response/ph?n trang.
+Deep link `pages/cua-hang.html#shop-product-ID` v?n d?ng ???c: ??c m?t SKU ??c l?p
+v?i trang hi?n t?i, ch?ng response c? v? kh?ng t?o ID tr?ng khi SKU n?m tr?n trang.

@@ -245,6 +245,9 @@
   });
 
   const shop = Object.freeze({
+    async get(id) {
+      return (await request(`/shop/products/${segment(id)}`)).data;
+    },
     async list(params = {}) {
       const query = new URLSearchParams();
       if (params.page !== undefined) query.set("page", params.page);

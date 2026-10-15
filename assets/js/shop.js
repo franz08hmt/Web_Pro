@@ -10,6 +10,16 @@
 
   const PAGE_SIZE = 20;
   const state = { page: 1, total: 0, user: null, cart: [] };
+  let listVersion = 0, focusVersion = 0, visibleItems = [], focusedProduct = null, followedHash = "";
+  const focusArea = document.createElement("section");
+  focusArea.setAttribute("aria-label", "Sản phẩm từ liên kết");
+  focusArea.hidden = true;
+  const focusStatus = document.createElement("p");
+  focusStatus.setAttribute("role", "status");
+  const focusGrid = document.createElement("div");
+  focusGrid.className = "shop-product-grid";
+  focusArea.append(focusStatus, focusGrid);
+  grid.before(focusArea);
   const money = new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 0 });
   const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -47,12 +57,12 @@
     }
   }
 
-  function renderProducts(items) {
+  function renderProducts(items, container = grid) {
     if (!items.length) {
-      grid.innerHTML = '<p class="shop-empty">Chưa có sản phẩm đang mở bán.</p>';
+      container.innerHTML = '<p class="shop-empty">Chưa có sản phẩm đang mở bán.</p>';
       return;
     }
-    grid.innerHTML = items.map((product) => {
+    container.innerHTML = items.map((product) => {
       const src = imageUrl(product.image);
       const cartItem = state.cart.find((item) => item.product?.id === product.id);
       const quantity = cartItem?.quantity || 0;
@@ -82,25 +92,83 @@
       <button type="button" data-page="${state.page + 1}" ${state.page >= pages ? "disabled" : ""}>Trang sau →</button>`;
   }
 
+  function requestedProduct() {
+    if (!location.hash.startsWith("#shop-product-")) return null;
+    return decodeURIComponent(location.hash.slice("#shop-product-".length));
+  }
+
+  function renderFocus() {
+    // Clear the focused copy before rendering a page that might contain the same SKU.
+    focusGrid.replaceChildren();
+    if (!focusedProduct) return;
+    const onPage = visibleItems.some(item => item.id === focusedProduct.id);
+    focusArea.hidden = onPage;
+    if (!onPage) renderProducts([focusedProduct], focusGrid);
+    const target = document.getElementById(`shop-product-${focusedProduct.id}`);
+    if (target && followedHash !== location.hash) {
+      followedHash = location.hash;
+      target.setAttribute("tabindex", "-1");
+      target.scrollIntoView({block: "center"});
+      target.focus({preventScroll: true});
+    }
+  }
+
+  async function loadFocusedProduct() {
+    const version = ++focusVersion;
+    focusedProduct = null;
+    focusGrid.replaceChildren();
+    focusArea.hidden = true;
+    let id;
+    try { id = requestedProduct(); }
+    catch {
+      focusArea.hidden = false;
+      focusStatus.textContent = "Liên kết sản phẩm không hợp lệ. Bạn vẫn có thể xem catalog bên dưới.";
+      return;
+    }
+    if (!id) return;
+    focusArea.hidden = false;
+    focusStatus.textContent = "Đang tìm sản phẩm từ liên kết…";
+    try {
+      const product = await api.shop.get(id);
+      if (version !== focusVersion) return;
+      focusedProduct = product;
+      focusStatus.textContent = Number(product.stockQuantity) < 1
+        ? "Sản phẩm được yêu cầu hiện tạm hết hàng." : "Sản phẩm được yêu cầu từ liên kết:";
+      renderFocus();
+    } catch (error) {
+      if (version !== focusVersion) return;
+      focusStatus.textContent = error.status === 404
+        ? "Sản phẩm không tồn tại hoặc đã ngừng bán. Bạn vẫn có thể xem catalog bên dưới."
+        : "Chưa tải được sản phẩm từ liên kết. Hãy tải lại trang; catalog bên dưới vẫn dùng được.";
+    }
+  }
+
   async function loadProducts() {
+    const version = ++listVersion;
+    const page = state.page;
     setStatus("Đang tải catalog…");
     grid.setAttribute("aria-busy", "true");
     try {
-      const result = await api.shop.list({ page: state.page, limit: PAGE_SIZE });
+      const result = await api.shop.list({ page, limit: PAGE_SIZE });
+      if (version !== listVersion) return;
       state.total = Number(result.meta?.total) || 0;
-      renderProducts(result.items || []);
+      visibleItems = result.items || [];
+      focusGrid.replaceChildren();
+      renderProducts(visibleItems);
+      renderFocus();
       renderPagination();
       setStatus(state.user
         ? "Giá tham khảo và tồn kho được hiển thị từ máy chủ; đơn đặt chỉ là dữ liệu mô phỏng."
         : "Bạn đang xem với tư cách khách. Đăng nhập để thêm linh kiện vào giỏ.");
     } catch (error) {
+      if (version !== listVersion) return;
       setStatus(error.message || "Không tải được catalog. Vui lòng thử lại.", true);
     } finally {
-      grid.setAttribute("aria-busy", "false");
+      if (version === listVersion) grid.setAttribute("aria-busy", "false");
     }
   }
 
-  grid.addEventListener("click", async (event) => {
+  async function addProduct(event) {
     const button = event.target.closest("[data-add-product]");
     if (!button) return;
     if (!state.user) {
@@ -120,7 +188,10 @@
     } finally {
       button.disabled = false;
     }
-  });
+  }
+  grid.addEventListener("click", addProduct);
+  focusGrid.addEventListener("click", addProduct);
+  window.addEventListener("hashchange", () => { followedHash = ""; void loadFocusedProduct(); });
 
   pagination.addEventListener("click", async (event) => {
     const button = event.target.closest("[data-page]");
@@ -136,5 +207,6 @@
       if (userLabel) userLabel.textContent = "Chưa kết nối";
     }
     await loadProducts();
+    await loadFocusedProduct();
   })();
 })();
