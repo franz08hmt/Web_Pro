@@ -29,6 +29,20 @@
                     <a href="<c:out value='${reviewContinueUrl}'/>">Tiếp tục lắp ráp</a>
                 </c:when>
                 <c:otherwise>
+                    <p class="no-print">
+                        <c:if test="${reviewHasWiring}">
+                            <c:url var="reviewWiring" value="/wiring"><c:param name="robotId" value="${session.robotId}"/></c:url>
+                            <a href="<c:out value="${reviewWiring}"/>">Bài nối dây của mẫu này</a>
+                        </c:if>
+                        <c:if test="${not empty reviewGuideGroup}">
+                            <c:url var="reviewGuide" value="/pages/tra-cuu-loi.html">
+                                <c:param name="robotId" value="${session.robotId}"/>
+                                <c:param name="componentGroup" value="${reviewGuideGroup}"/>
+                            </c:url>
+                            <a href="<c:out value="${reviewGuide}"/>">Tra cứu lỗi:
+                                <c:out value="${reviewErrorLabel}"/></a>
+                        </c:if>
+                    </p>
                     <c:url var="reviewReceiptUrl" value="/assembly-receipt">
                         <c:param name="session" value="${session.id}" />
                     </c:url>

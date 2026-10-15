@@ -19,6 +19,8 @@
   });
 
   const requestedRobotId = new URLSearchParams(window.location.search).get("robotId");
+  const requestedGroup = new URLSearchParams(window.location.search).get("componentGroup");
+  searchInput.value = new URLSearchParams(window.location.search).get("search") || "";
   if (requestedRobotId && robotNames.has(requestedRobotId)) {
     robotSelect.value = requestedRobotId;
   }
@@ -55,6 +57,10 @@
       article.append(link);
     }
     if (guide.robotId) {
+      const diagnosis = document.createElement("a");
+      diagnosis.href = `../diagnosis?robotId=${encodeURIComponent(guide.robotId)}`;
+      diagnosis.textContent = "Luyện chẩn đoán cùng mẫu";
+      article.append(diagnosis);
       const link = document.createElement("a");
       link.href = `lap-rap.html?model=${encodeURIComponent(guide.robotId)}`;
       link.textContent = "Về trang chuẩn bị & lắp ráp mẫu này →";
@@ -80,6 +86,11 @@
           option.textContent = group;
           groupSelect.append(option);
         });
+        if (requestedGroup && meta.componentGroups.includes(requestedGroup)) {
+          groupSelect.value = requestedGroup;
+          void search();
+          return;
+        }
       }
 
       listEl.replaceChildren(...items.map(renderGuide));

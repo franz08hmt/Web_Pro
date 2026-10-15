@@ -3371,6 +3371,35 @@
           "id": "assembly-review-print",
           "type": "button"
         }
+      },
+      {
+        "tag": "form",
+        "attributes": {
+          "method": "post",
+          "action": "${designCartAction}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "csrfToken",
+          "value": "${sessionScope.csrfToken}"
+        }
+      },
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "hidden",
+          "name": "designId",
+          "value": "${sheetDesign.id}"
+        }
+      },
+      {
+        "tag": "button",
+        "attributes": {
+          "type": "submit"
+        }
       }
     ],
     "bindings": [

@@ -45,10 +45,15 @@
             <h2>Tình huống đang công bố</h2>
             <div class="workspace-grid">
                 <c:forEach var="diagnosisScenario" items="${diagnosisScenarios}">
+                    <c:if test="${empty param.robotId or diagnosisScenario.robotId eq param.robotId}">
                     <section class="task-card">
                         <h3><c:out value="${diagnosisScenario.title}"/></h3>
                         <p><c:out value="${diagnosisScenario.robotName}"/> · Phiên bản <c:out value="${diagnosisScenario.versionNo}"/></p>
                         <p class="task-text"><c:out value="${diagnosisScenario.symptomText}"/></p>
+                        <c:url var="diagnosisLookup" value="/pages/tra-cuu-loi.html">
+                            <c:param name="robotId" value="${diagnosisScenario.robotId}"/>
+                        </c:url>
+                        <p><a href="<c:out value="${diagnosisLookup}"/>">Tra cứu lỗi của mẫu</a></p>
                         <form method="post" action="${pageContext.request.contextPath}/diagnosis">
                             <input type="hidden" name="csrfToken" value="<c:out value="${sessionScope.csrfToken}"/>">
                             <input type="hidden" name="action" value="start">
@@ -56,6 +61,7 @@
                             <button>Bắt đầu luyện</button>
                         </form>
                     </section>
+                    </c:if>
                 </c:forEach>
             </div>
         </main>

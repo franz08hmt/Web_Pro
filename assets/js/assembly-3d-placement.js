@@ -29,6 +29,7 @@ window.createAssemblyPlacementView = function (options) {
   const live = document.createElement("p");
   live.setAttribute("role", "status");
   live.setAttribute("aria-live", "polite");
+  const contextLinks = document.createElement("p");
   const tray = document.createElement("fieldset");
   const slots = document.createElement("fieldset");
   const directions = document.createElement("fieldset");
@@ -60,7 +61,7 @@ window.createAssemblyPlacementView = function (options) {
   rotateRight.type = "button";
   rotateRight.textContent = "Xoay phải 90°";
   rotateRight.addEventListener("click", () => rotate(1));
-  panel.replaceChildren(heading, help, live, tray, slots, directions,
+  panel.replaceChildren(heading, help, live, contextLinks, tray, slots, directions,
     rotateLeft, rotateRight, attach, cancel, undo, retry, reload, installed);
   panel.classList.add("assembly-placement");
   if (options.readOnly) {
@@ -69,6 +70,7 @@ window.createAssemblyPlacementView = function (options) {
   }
 
   function message(text, state) {
+    contextLinks.replaceChildren();
     live.textContent = text;
     live.dataset.state = state;
   }
@@ -139,6 +141,8 @@ window.createAssemblyPlacementView = function (options) {
       retry.onclick = () => mutate(kind, instanceId);
       message(unsynced ? `Chưa đồng bộ. ${error.message} Có thể thử lại hoặc tải lại.` : error.message,
         unsynced ? "preview" : "error");
+      const item = layout.instances.find(i => String(i.id) === String(instanceId));
+      window.LearningContext?.errorLinks(contextLinks, item?.componentId, error.code);
     } finally {
       busy = false;
       updateControls();
@@ -227,6 +231,11 @@ window.createAssemblyPlacementView = function (options) {
         trayIndex++;
         radio(tray, "assembly-instance", String(item.id), item.label, selectedInstance === String(item.id),
           () => choose(item.id));
+        const info = window.LearningContext?.componentLink(item.componentId);
+        if (info) {
+          info.setAttribute("aria-label", `Thông tin linh kiện ${item.label}`);
+          tray.append(info);
+        }
       }
       root.add(object);
       objects.set(String(item.id), object);

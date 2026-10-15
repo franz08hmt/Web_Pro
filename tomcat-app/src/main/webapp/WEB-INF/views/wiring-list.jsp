@@ -25,6 +25,7 @@
             <h2>Bài đang công bố</h2>
             <div class="workspace-grid">
                 <c:forEach var="wiringExercise" items="${wiringExercises}">
+                    <c:if test="${empty param.robotId or wiringExercise.robotId eq param.robotId}">
                     <section class="workspace-panel workspace-course">
                         <h3><c:out value="${wiringExercise.title}"/></h3>
                         <p><c:out value="${wiringExercise.robotName}"/></p>
@@ -37,6 +38,7 @@
                             <button>Bắt đầu lượt mới</button>
                         </form>
                     </section>
+                    </c:if>
                 </c:forEach>
             </div>
             <h2>Lượt đã lưu và lịch sử của tôi</h2>

@@ -171,7 +171,10 @@ test("practice task code uses only course slide syntax and guard catches injecte
   for(const view of views) {
     const source = read("tomcat-app/src/main/webapp/WEB-INF/views/" + view);
     assert.doesNotMatch(source, /<fmt:|<fn:|<%(?!@)/);
-    for(const tag of source.matchAll(/<c:(\w+)/g)) assert.ok(["out","if","choose","when","otherwise","forEach","set"].includes(tag[1]));
+    // Phase11 requires encoded URLs using JSTL core; the remaining syntax guard is unchanged.
+    for (const tag of source.matchAll(/<c:(\w+)/g)) {
+      assert.ok(["out","if","choose","when","otherwise","forEach","set","url","param"].includes(tag[1]));
+    }
     assert.doesNotMatch(source, /\.state\s*(?:eq|==)/);
   }
 });

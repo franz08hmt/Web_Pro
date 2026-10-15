@@ -50,6 +50,13 @@
                 <section aria-labelledby="sheet-bom-heading">
                     <h2 id="sheet-bom-heading">2. Danh sách vật tư cần chuẩn bị</h2>
                     <p>Số cần lấy từ bộ linh kiện đã chọn cho thiết kế; số đang có lấy từ Bộ linh kiện của tôi hiện tại.</p>
+                    <c:url var="designCartAction" value="/design-cart"/>
+                    <form method="post" action="<c:out value="${designCartAction}"/>" class="no-print">
+                        <input type="hidden" name="csrfToken" value="<c:out value="${sessionScope.csrfToken}"/>">
+                        <input type="hidden" name="designId" value="<c:out value="${sheetDesign.id}"/>">
+                        <p>Chỉ bổ sung phần thiếu; bấm lại không cộng trùng. Không tạo đơn hoặc giữ chỗ hàng.</p>
+                        <button type="submit">Thêm phần còn thiếu vào giỏ</button>
+                    </form>
                     <div class="workspace-table-scroll" role="region" aria-label="Danh sách vật tư" tabindex="0">
                         <table>
                             <caption>Vật tư của thiết kế, gồm cả vật thể còn trong khay</caption>

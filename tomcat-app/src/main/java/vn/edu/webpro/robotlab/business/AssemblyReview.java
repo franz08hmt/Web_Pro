@@ -212,6 +212,17 @@ public class AssemblyReview implements Serializable {
                 || "HOST_MISSING".equals(code) || "NOT_SUPPORTED".equals(code);
     }
 
+    /** Lỗi lắp ghép xuất hiện nhiều nhất; không tính lỗi tab, trạng thái hoặc request. */
+    public AssemblyEvent getMostFrequentLearningError() {
+        AssemblyEvent most = null;
+        for (AssemblyEvent item : rejectionSummary) {
+            if (most == null || item.getRepeatCount() > most.getRepeatCount()) {
+                most = item;
+            }
+        }
+        return most;
+    }
+
     /** So kết quả bằng tỷ lệ câu đúng, giữ giá trị điểm đã lưu để hiển thị. */
     public void summarizeQuiz() {
         hasQuiz = !quizAttempts.isEmpty();

@@ -20,6 +20,12 @@ import vn.edu.webpro.robotlab.data.RobotDB;
 import vn.edu.webpro.robotlab.data.QuizAttemptDB;
 import vn.edu.webpro.robotlab.data.QuizQuestionDB;
 import vn.edu.webpro.robotlab.util.SessionUtil;
+import vn.edu.webpro.robotlab.business.AssemblyEvent;
+import vn.edu.webpro.robotlab.business.AssemblyInstance;
+import vn.edu.webpro.robotlab.business.WiringExercise;
+import vn.edu.webpro.robotlab.business.TroubleshootingGuide;
+import vn.edu.webpro.robotlab.data.WiringDB;
+import vn.edu.webpro.robotlab.data.TroubleshootingGuideDB;
 
 /** Trang hoàn thiện chỉ đọc: owner từ session, dữ kiện bean qua setAttribute và forward JSP. */
 @WebServlet("/assembly-review")
@@ -77,6 +83,36 @@ public class AssemblyReviewPageServlet extends HttpServlet {
         review.setOldJournal(review.getEvents().isEmpty()
                 && AssemblyEventDB.createdBeforeJournal(session.getId(), userId));
         review.summarizeEvents();
+        for (WiringExercise exercise : WiringDB.selectExercises(false)) {
+            if (session.getRobotId().equals(exercise.getRobotId())) {
+                request.setAttribute("reviewHasWiring", true);
+                break;
+            }
+        }
+        AssemblyEvent most = review.getMostFrequentLearningError();
+        if (most != null && session.isDetailed()) {
+            AssemblyLayout contextLayout = AssemblyPlacementDB.selectLayout(session.getId(), userId);
+            String componentId = "";
+            for (AssemblyEvent event : review.getEvents()) {
+                if (most.getReasonCode().equals(event.getReasonCode())) {
+                    for (AssemblyInstance item : contextLayout.getInstances()) {
+                        if (item.getId() == event.getInstanceId()) {
+                            componentId = item.getComponentId();
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            for (TroubleshootingGuide guide : TroubleshootingGuideDB.selectGuides(
+                    session.getRobotId(), null, null, 100, 0)) {
+                if (!componentId.isEmpty() && componentId.equals(guide.getRelatedComponentId())) {
+                    request.setAttribute("reviewGuideGroup", guide.getComponentGroup());
+                    request.setAttribute("reviewErrorLabel", most.getReasonLabel());
+                    break;
+                }
+            }
+        }
         review.setQuizAttempts(QuizAttemptDB.selectAttempts(userId, session.getRobotId(), Integer.MAX_VALUE, 0));
         review.summarizeQuiz();
         review.setHasQuizQuestions(QuizQuestionDB.countQuestions(session.getRobotId()) > 0);
