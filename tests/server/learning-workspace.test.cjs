@@ -34,10 +34,11 @@ test("redesign preserves every existing form contract and business binding", () 
 
 test("all independent learning views use the scoped shell with private indexing rules", () => {
   const pages = fs.readdirSync(path.join(root, folder)).filter(n => n.endsWith(".jsp") && n !== "wiring-diagram.jsp");
-  assert.equal(pages.length, 40); // Phase10 kit, design list/form and printable design sheet.
+  assert.equal(pages.length, 41); // Phase11 adds the personal dashboard; every previous view remains guarded.
   for (const name of pages) {
     const s = read(folder + name);
-    assert.match(s, /learning-workspace\.css\?v=/, name);
+    // New views encode asset URLs with c:url/c:param; old literal URLs remain checked as before.
+    assert.match(s, /learning-workspace\.css\?v=|value="\/assets\/css\/learning-workspace\.css"><c:param name="v" value="[\d.]+"/, name);
     assert.match(s, /class="learning-workspace/, name);
     assert.match(s, /workspace-header\.jspf/, name);
     assert.match(s, /workspace-footer\.jspf/, name);

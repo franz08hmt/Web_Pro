@@ -46,6 +46,8 @@ final class JspExpressionContractTest {
 
     /** Tên biến Servlet đặt bằng setAttribute (hoặc var của c:forEach) → lớp JavaBean. */
     private static final Map<String, Class<?>> BEANS = Map.ofEntries(
+            Map.entry("dashboard", DashboardSummary.class),
+            Map.entry("dashboardCard", DashboardCard.class),
             Map.entry("designSheet", DesignSheet.class),
             Map.entry("sheetDesign", RobotDesign.class),
             Map.entry("sheetCheck", DesignCheck.class),

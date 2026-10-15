@@ -373,6 +373,30 @@ public class AssemblySessionDB {
         }
     }
 
+    /** Phiên gần nhất theo nhóm trạng thái; giới hạn ngay tại SQL của đúng người dùng. */
+    public static AssemblySession selectLatestSession(long userId, boolean completed) throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            String condition = completed ? "status = 'COMPLETED'" : "status IN ('PREPARING','READY','IN_PROGRESS')";
+            String order = completed ? "completed_at" : "updated_at";
+            ps = connection.prepareStatement("SELECT " + FIELDS + " FROM assembly_sessions WHERE user_id = ? AND "
+                    + condition + " ORDER BY " + order + " DESC, id DESC LIMIT 1");
+            ps.setLong(1, userId);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return readSession(connection, rs);
+            }
+            return null;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
+
     /* Dùng chung cho linh kiện và bước: hai bảng có cùng dạng
        (session_id, robot_id, mã, giá trị true/false). */
     private static int writeProgress(AssemblySession session, String query, String itemId, boolean value)
