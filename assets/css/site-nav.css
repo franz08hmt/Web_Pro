@@ -1,0 +1,45 @@
+/* Shared navigation only: the existing page theme, stage and typography stay in charge. */
+.site-nav { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; position: relative; }
+.site-nav [hidden] { display: none; }
+.site-nav-group { position: relative; min-width: 0; }
+.site-nav summary, .site-nav .site-nav-auth {
+  display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 12px;
+  color: #eef3f2; font: 500 14px/1.5 inherit; font-family: inherit;
+  font-size: 14px; line-height: 1.5; font-weight: 500; cursor: pointer;
+  border: 1px solid #3d4a50; border-radius: 6px; list-style: none; text-decoration: none;
+}
+.site-nav summary::-webkit-details-marker { display: none; }
+.site-nav summary::after { content: "⌄"; margin-left: auto; color: #ffa871; }
+.site-nav details[open] > summary { color: #ffa871; background: #232c31; }
+.site-nav :focus-visible { outline: 3px solid #2dd4bf; outline-offset: 3px; }
+.site-nav .nav-list {
+  position: absolute; z-index: 100; top: 100%; left: 0; width: 280px; max-width: calc(100vw - 32px);
+  display: grid; grid-template-columns: 1fr; gap: 2px; list-style: none; padding: 8px; margin: 4px 0;
+  max-height: 60vh; overflow-y: auto; background: #1b2226; border: 1px solid #3d4a50; border-radius: 8px;
+}
+.site-nav .nav-list a {
+  display: flex; min-height: 44px; align-items: center; padding: 8px 10px;
+  color: #eef3f2; font-size: 14px; line-height: 1.5; text-decoration: none;
+  white-space: normal; overflow-wrap: anywhere; border-radius: 6px;
+}
+.site-nav .nav-list a:hover, .site-nav .nav-list a[aria-current="page"] { color: #ffa871; background: #232c31; }
+.site-nav .nav-list li:last-child { grid-column: auto; }
+.site-nav-group[data-nav-group="admin"] .nav-list { left: auto; right: 0; }
+.site-header .site-nav { display: grid; width: 100%; }
+.site-header .site-nav .nav-list { position: static; width: 100%; max-height: none; }
+.site-header .site-nav summary { width: 100%; }
+.site-header .site-nav .nav-list a > span { position: static; width: auto; height: auto; clip-path: none; }
+.site-header .nav-toggle[hidden] { display: none; }
+.workspace-header .site-nav { margin-left: auto; }
+.assembly-3d-page > .site-nav, .design-room > .site-nav { padding: 8px 16px; border-bottom: 1px solid #3d4a50; }
+@media (max-width: 1024px) {
+  .site-header .site-nav { display: flex; }
+  .site-nav-group { flex: 1 1 130px; }
+  .site-nav-group[open] { flex-basis: 100%; }
+  .site-nav .nav-list, .site-header .site-nav .nav-list {
+    position: static; width: 100%; max-width: none; max-height: 50vh;
+  }
+  .site-nav .site-nav-auth { flex: 1 1 130px; justify-content: center; }
+  .workspace-header .site-nav { flex-basis: 100%; }
+}
+@media print { .site-nav { display: none; } }

@@ -21,41 +21,6 @@
                 <c:otherwise>Thư viện học tập</c:otherwise>
             </c:choose>
         </span>
-        <nav class="workspace-nav" aria-label="Điều hướng học tập">
-            <a href="${pageContext.request.contextPath}/pages/tai-khoan.html">Tài khoản</a>
-            <c:choose>
-                <c:when test="${sessionScope.user.admin}">
-                    <a href="${pageContext.request.contextPath}/admin-tasks">Nhiệm vụ</a>
-                    <a href="${pageContext.request.contextPath}/admin-wiring">Bài nối dây</a>
-                </c:when>
-                <c:when test="${not empty sessionScope.user}">
-                    <a href="${pageContext.request.contextPath}/tasks">Nhiệm vụ</a>
-                    <a href="${pageContext.request.contextPath}/wiring">Nối dây</a>
-                </c:when>
-            </c:choose>
-            <details class="workspace-more">
-                <summary>Khám phá</summary>
-                <nav aria-label="Các trang liên quan">
-                    <a href="${pageContext.request.contextPath}/robots">Danh mục robot</a>
-                    <a href="${pageContext.request.contextPath}/components">Linh kiện</a>
-                    <c:choose>
-                        <c:when test="${sessionScope.user.admin}">
-                            <a href="${pageContext.request.contextPath}/admin-diagnosis">Tình huống chẩn đoán</a>
-                            <a href="${pageContext.request.contextPath}/admin-wiring-support">Yêu cầu hỗ trợ</a>
-                            <a href="${pageContext.request.contextPath}/admin-stats">Thống kê</a>
-                        </c:when>
-                        <c:when test="${not empty sessionScope.user}">
-                            <a href="${pageContext.request.contextPath}/diagnosis">Luyện chẩn đoán</a>
-                            <a href="${pageContext.request.contextPath}/wiring-support">Hỗ trợ nối dây</a>
-                        </c:when>
-                    </c:choose>
-                    <c:if test="${not empty sessionScope.user}">
-                        <a href="${pageContext.request.contextPath}/learning-summary">Tổng kết học tập</a>
-                        <a href="${pageContext.request.contextPath}/learning-profile">Hồ sơ in / PDF</a>
-                    </c:if>
-                    <a href="${pageContext.request.contextPath}/architecture">Kiến trúc môn học</a>
-                </nav>
-            </details>
-        </nav>
-    </div>
+        <%@ include file="site-nav.jspf" %>
+  </div>
 </header>

@@ -1,0 +1,5 @@
+<%@ page pageEncoding="UTF-8" %>
+<c:url var="siteNavCss" value="/assets/css/site-nav.css"><c:param name="v" value="20261015.1"/></c:url>
+<c:url var="siteNavJs" value="/assets/js/site-nav.js"><c:param name="v" value="20261015.1"/></c:url>
+<link rel="stylesheet" href="<c:out value="${siteNavCss}"/>">
+<script src="<c:out value="${siteNavJs}"/>" defer></script>

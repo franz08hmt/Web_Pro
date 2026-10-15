@@ -1,0 +1,172 @@
+[
+  {
+    "id": "learn",
+    "label": "Học",
+    "role": "PUBLIC",
+    "items": [
+      {
+        "label": "Mẫu robot",
+        "href": "/pages/mau-robot.html"
+      },
+      {
+        "label": "Lắp ráp",
+        "href": "/pages/lap-rap.html"
+      },
+      {
+        "label": "Xưởng thiết kế",
+        "href": "/designs"
+      }
+    ]
+  },
+  {
+    "id": "practice",
+    "label": "Luyện tập",
+    "role": "PUBLIC",
+    "items": [
+      {
+        "label": "Kiểm tra kiến thức",
+        "href": "/pages/kiem-tra.html"
+      },
+      {
+        "label": "Nối dây",
+        "href": "/wiring"
+      },
+      {
+        "label": "Hỗ trợ nối dây",
+        "href": "/wiring-support"
+      },
+      {
+        "label": "Luyện chẩn đoán",
+        "href": "/diagnosis"
+      },
+      {
+        "label": "Tra cứu lỗi",
+        "href": "/pages/tra-cuu-loi.html"
+      },
+      {
+        "label": "Nhiệm vụ",
+        "href": "/tasks"
+      }
+    ]
+  },
+  {
+    "id": "resources",
+    "label": "Tài nguyên",
+    "role": "PUBLIC",
+    "items": [
+      {
+        "label": "Linh kiện",
+        "href": "/pages/linh-kien.html"
+      },
+      {
+        "label": "Thư viện",
+        "href": "/pages/thu-vien.html"
+      },
+      {
+        "label": "Cửa hàng",
+        "href": "/pages/cua-hang.html"
+      }
+    ]
+  },
+  {
+    "id": "mine",
+    "label": "Của tôi",
+    "role": "AUTH",
+    "items": [
+      {
+        "label": "Bảng điều khiển",
+        "href": "/account"
+      },
+      {
+        "label": "Bộ linh kiện",
+        "href": "/my-kit"
+      },
+      {
+        "label": "Thiết kế của tôi",
+        "href": "/designs"
+      },
+      {
+        "label": "Kết quả học tập",
+        "href": "/learning-summary"
+      },
+      {
+        "label": "Đơn hàng",
+        "href": "/order-history"
+      },
+      {
+        "label": "Giỏ hàng",
+        "href": "/pages/gio-hang.html"
+      },
+      {
+        "label": "Tài khoản",
+        "href": "/pages/tai-khoan.html"
+      }
+    ]
+  },
+  {
+    "id": "about",
+    "label": "Giới thiệu",
+    "role": "PUBLIC",
+    "items": [
+      {
+        "label": "Thành viên",
+        "href": "/pages/thanh-vien.html"
+      },
+      {
+        "label": "Bản đồ môn học",
+        "href": "/architecture"
+      }
+    ]
+  },
+  {
+    "id": "admin",
+    "label": "Quản trị",
+    "role": "ADMIN",
+    "items": [
+      {
+        "label": "Nội dung mẫu và linh kiện",
+        "href": "/pages/admin-content.html"
+      },
+      {
+        "label": "Câu hỏi kiểm tra",
+        "href": "/pages/admin-quiz.html"
+      },
+      {
+        "label": "Cửa hàng quản trị",
+        "href": "/pages/admin-shop.html"
+      },
+      {
+        "label": "Hướng dẫn tra cứu",
+        "href": "/pages/admin-troubleshooting.html"
+      },
+      {
+        "label": "Người dùng",
+        "href": "/pages/admin-users.html"
+      },
+      {
+        "label": "Nhiệm vụ quản trị",
+        "href": "/admin-tasks"
+      },
+      {
+        "label": "Chấm nhiệm vụ",
+        "href": "/admin-task-reviews"
+      },
+      {
+        "label": "Bài nối dây quản trị",
+        "href": "/admin-wiring"
+      },
+      {
+        "label": "Hỗ trợ nối dây quản trị",
+        "href": "/admin-wiring-support"
+      },
+      {
+        "label": "Tình huống chẩn đoán",
+        "href": "/admin-diagnosis"
+      },
+      {
+        "label": "Thống kê",
+        "href": "/admin-stats"
+      }
+    ]
+  }
+]

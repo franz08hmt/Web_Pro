@@ -11,9 +11,76 @@
     <link rel="stylesheet" href="../assets/css/style.css?v=20260924.1">
     <link rel="icon" href="../assets/icons/cpu-chip.svg" type="image/svg+xml">
     <script src="../assets/js/tooltip.js?v=20260921.1" defer></script>
+  <link rel="stylesheet" href="../assets/css/site-nav.css?v=20261015.1">
+  <script src="../assets/js/site-nav.js?v=20261015.1" defer></script>
 </head>
 
 <body class="quiz-page">
+<nav class="site-nav" data-site-nav id="primary-nav" aria-label="Điều hướng chính">
+  <details class="site-nav-group" data-nav-group="learn" data-nav-role="PUBLIC">
+    <summary>Học</summary>
+    <ul class="nav-list">
+      <li><a href="../pages/mau-robot.html" data-nav-target="/pages/mau-robot.html"><span>Mẫu robot</span></a></li>
+      <li><a href="../pages/lap-rap.html" data-nav-target="/pages/lap-rap.html"><span>Lắp ráp</span></a></li>
+      <li><a href="../designs" data-nav-target="/designs"><span>Xưởng thiết kế</span></a></li>
+    </ul>
+  </details>
+  <details class="site-nav-group" data-nav-group="practice" data-nav-role="PUBLIC">
+    <summary>Luyện tập</summary>
+    <ul class="nav-list">
+      <li><a href="../pages/kiem-tra.html" data-nav-target="/pages/kiem-tra.html" aria-current="page"><span>Kiểm tra kiến thức</span></a></li>
+      <li><a href="../wiring" data-nav-target="/wiring"><span>Nối dây</span></a></li>
+      <li><a href="../wiring-support" data-nav-target="/wiring-support"><span>Hỗ trợ nối dây</span></a></li>
+      <li><a href="../diagnosis" data-nav-target="/diagnosis"><span>Luyện chẩn đoán</span></a></li>
+      <li><a href="../pages/tra-cuu-loi.html" data-nav-target="/pages/tra-cuu-loi.html"><span>Tra cứu lỗi</span></a></li>
+      <li><a href="../tasks" data-nav-target="/tasks"><span>Nhiệm vụ</span></a></li>
+    </ul>
+  </details>
+  <details class="site-nav-group" data-nav-group="resources" data-nav-role="PUBLIC">
+    <summary>Tài nguyên</summary>
+    <ul class="nav-list">
+      <li><a href="../pages/linh-kien.html" data-nav-target="/pages/linh-kien.html"><span>Linh kiện</span></a></li>
+      <li><a href="../pages/thu-vien.html" data-nav-target="/pages/thu-vien.html"><span>Thư viện</span></a></li>
+      <li><a href="../pages/cua-hang.html" data-nav-target="/pages/cua-hang.html"><span>Cửa hàng</span></a></li>
+    </ul>
+  </details>
+  <details class="site-nav-group" data-nav-group="mine" data-nav-role="AUTH" hidden>
+    <summary>Của tôi</summary>
+    <ul class="nav-list">
+      <li><a href="../account" data-nav-target="/account"><span>Bảng điều khiển</span></a></li>
+      <li><a href="../my-kit" data-nav-target="/my-kit"><span>Bộ linh kiện</span></a></li>
+      <li><a href="../designs" data-nav-target="/designs"><span>Thiết kế của tôi</span></a></li>
+      <li><a href="../learning-summary" data-nav-target="/learning-summary"><span>Kết quả học tập</span></a></li>
+      <li><a href="../order-history" data-nav-target="/order-history"><span>Đơn hàng</span></a></li>
+      <li><a href="../pages/gio-hang.html" data-nav-target="/pages/gio-hang.html"><span>Giỏ hàng</span></a></li>
+      <li><a href="../pages/tai-khoan.html" data-nav-target="/pages/tai-khoan.html"><span>Tài khoản</span></a></li>
+    </ul>
+  </details>
+  <details class="site-nav-group" data-nav-group="about" data-nav-role="PUBLIC">
+    <summary>Giới thiệu</summary>
+    <ul class="nav-list">
+      <li><a href="../pages/thanh-vien.html" data-nav-target="/pages/thanh-vien.html"><span>Thành viên</span></a></li>
+      <li><a href="../architecture" data-nav-target="/architecture"><span>Bản đồ môn học</span></a></li>
+    </ul>
+  </details>
+  <details class="site-nav-group" data-nav-group="admin" data-nav-role="ADMIN" hidden>
+    <summary>Quản trị</summary>
+    <ul class="nav-list">
+      <li><a href="../pages/admin-content.html" data-nav-target="/pages/admin-content.html"><span>Nội dung mẫu và linh kiện</span></a></li>
+      <li><a href="../pages/admin-quiz.html" data-nav-target="/pages/admin-quiz.html"><span>Câu hỏi kiểm tra</span></a></li>
+      <li><a href="../pages/admin-shop.html" data-nav-target="/pages/admin-shop.html"><span>Cửa hàng quản trị</span></a></li>
+      <li><a href="../pages/admin-troubleshooting.html" data-nav-target="/pages/admin-troubleshooting.html"><span>Hướng dẫn tra cứu</span></a></li>
+      <li><a href="../pages/admin-users.html" data-nav-target="/pages/admin-users.html"><span>Người dùng</span></a></li>
+      <li><a href="../admin-tasks" data-nav-target="/admin-tasks"><span>Nhiệm vụ quản trị</span></a></li>
+      <li><a href="../admin-task-reviews" data-nav-target="/admin-task-reviews"><span>Chấm nhiệm vụ</span></a></li>
+      <li><a href="../admin-wiring" data-nav-target="/admin-wiring"><span>Bài nối dây quản trị</span></a></li>
+      <li><a href="../admin-wiring-support" data-nav-target="/admin-wiring-support"><span>Hỗ trợ nối dây quản trị</span></a></li>
+      <li><a href="../admin-diagnosis" data-nav-target="/admin-diagnosis"><span>Tình huống chẩn đoán</span></a></li>
+      <li><a href="../admin-stats" data-nav-target="/admin-stats"><span>Thống kê</span></a></li>
+    </ul>
+  </details>
+  <a href="../pages/tai-khoan.html" data-guest="true" aria-label="Đăng nhập hoặc đăng ký" class="site-nav-auth"><span>Đăng nhập / Đăng ký</span></a>
+</nav>
 
 <header class="quiz-header">
     <a class="quiz-back" href="tai-khoan.html"

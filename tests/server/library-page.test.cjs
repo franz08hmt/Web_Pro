@@ -41,9 +41,15 @@ test("library page and seed point only to existing local files", () => {
   const pagePaths = [...page.matchAll(/(?:href|src)="([^"?#]+)(?:[?#][^"]*)?"/g)]
     .map(match => match[1]).filter(url => !/^(?:[a-z]+:|\/\/)/i.test(url));
   const seedPaths = [...librarySeed.matchAll(/'(\/assets\/[^']+)'/g)].map(match => match[1]);
+  // Phase11: the shared menu also links to real Servlet pages, not only static assets.
+  const controllers = path.join(root, "tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller");
+  const servletSources = fs.readdirSync(controllers)
+    .map(name => fs.readFileSync(path.join(controllers, name), "utf8")).join("\n");
   for (const url of pagePaths) {
     const local = path.resolve(root, "pages", url);
-    assert.ok(fs.existsSync(local) && fs.statSync(local).isFile(), `Missing page asset/link: ${url}`);
+    const route = "/" + path.relative(root, local).replaceAll("\\", "/");
+    const mapped = servletSources.includes(`@WebServlet("${route}")`);
+    assert.ok((fs.existsSync(local) && fs.statSync(local).isFile()) || mapped, `Missing page asset/link: ${url}`);
   }
   for (const url of seedPaths) {
     const local = path.join(root, url.slice(1));

@@ -8,6 +8,8 @@
   <link rel="icon" href="../assets/icons/cpu-chip.svg" type="image/svg+xml">
   <script src="../assets/js/ui.js?v=20260921.1"></script>
   <script src="../assets/js/tooltip.js?v=20260921.1" defer></script>
+  <link rel="stylesheet" href="../assets/css/site-nav.css?v=20261015.1">
+  <script src="../assets/js/site-nav.js?v=20261015.1" defer></script>
 </head>
 <body class="team-page">
   <a class="skip-link" href="#main-content">Chuyển đến nội dung</a>
@@ -18,41 +20,78 @@
 </svg></span>
       <span class="brand-name">ROBOT<span>ASSEMBLY LAB</span></span>
     </a>
-    <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="true" aria-controls="primary-nav" aria-label="Thu gọn thanh điều hướng">
+    <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="true" aria-controls="primary-nav" aria-label="Thu gọn thanh điều hướng" hidden>
       <svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5 11.25 12l7.5-7.5M12.75 19.5 5.25 12l7.5-7.5"/>
       </svg>
       <span>Thu gọn</span>
     </button>
     <p class="nav-caption">KHÔNG GIAN THỰC HÀNH</p>
-    <nav id="primary-nav" aria-label="Điều hướng chính">
-      <ul class="nav-list">
-        <li><a href="../index.html"><svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/>
-</svg><span>Tổng quan</span></a></li>
-        <li><a href="../pages/mau-robot.html"><svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
-  <path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/>
-</svg><span>Mẫu robot</span></a></li>
-        <li><a href="../pages/linh-kien.html"><svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z"/>
-</svg><span>Linh kiện</span></a></li>
-        <li><a href="../pages/lap-rap.html"><svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z"/>
-</svg><span>Lắp ráp</span></a></li>
-        <li><a href="../pages/cua-hang.html"><svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
-  <path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/>
-</svg><span>Cửa hàng</span></a></li>
-        <li><a href="../pages/thu-vien.html"><svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
-  <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/>
-</svg><span>Thư viện</span></a></li>
-        <li><a href="../pages/thanh-vien.html" aria-current="page"><svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/>
-</svg><span>Thành viên</span></a></li>
-        <li><a href="../pages/tai-khoan.html"><svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-</svg><span>Tài khoản</span></a></li>
-      </ul>
-    </nav>
+    <nav class="site-nav" data-site-nav id="primary-nav" aria-label="Điều hướng chính">
+  <details class="site-nav-group" data-nav-group="learn" data-nav-role="PUBLIC">
+    <summary>Học</summary>
+    <ul class="nav-list">
+      <li><a href="../pages/mau-robot.html" data-nav-target="/pages/mau-robot.html"><span>Mẫu robot</span></a></li>
+      <li><a href="../pages/lap-rap.html" data-nav-target="/pages/lap-rap.html"><span>Lắp ráp</span></a></li>
+      <li><a href="../designs" data-nav-target="/designs"><span>Xưởng thiết kế</span></a></li>
+    </ul>
+  </details>
+  <details class="site-nav-group" data-nav-group="practice" data-nav-role="PUBLIC">
+    <summary>Luyện tập</summary>
+    <ul class="nav-list">
+      <li><a href="../pages/kiem-tra.html" data-nav-target="/pages/kiem-tra.html"><span>Kiểm tra kiến thức</span></a></li>
+      <li><a href="../wiring" data-nav-target="/wiring"><span>Nối dây</span></a></li>
+      <li><a href="../wiring-support" data-nav-target="/wiring-support"><span>Hỗ trợ nối dây</span></a></li>
+      <li><a href="../diagnosis" data-nav-target="/diagnosis"><span>Luyện chẩn đoán</span></a></li>
+      <li><a href="../pages/tra-cuu-loi.html" data-nav-target="/pages/tra-cuu-loi.html"><span>Tra cứu lỗi</span></a></li>
+      <li><a href="../tasks" data-nav-target="/tasks"><span>Nhiệm vụ</span></a></li>
+    </ul>
+  </details>
+  <details class="site-nav-group" data-nav-group="resources" data-nav-role="PUBLIC">
+    <summary>Tài nguyên</summary>
+    <ul class="nav-list">
+      <li><a href="../pages/linh-kien.html" data-nav-target="/pages/linh-kien.html"><span>Linh kiện</span></a></li>
+      <li><a href="../pages/thu-vien.html" data-nav-target="/pages/thu-vien.html"><span>Thư viện</span></a></li>
+      <li><a href="../pages/cua-hang.html" data-nav-target="/pages/cua-hang.html"><span>Cửa hàng</span></a></li>
+    </ul>
+  </details>
+  <details class="site-nav-group" data-nav-group="mine" data-nav-role="AUTH" hidden>
+    <summary>Của tôi</summary>
+    <ul class="nav-list">
+      <li><a href="../account" data-nav-target="/account"><span>Bảng điều khiển</span></a></li>
+      <li><a href="../my-kit" data-nav-target="/my-kit"><span>Bộ linh kiện</span></a></li>
+      <li><a href="../designs" data-nav-target="/designs"><span>Thiết kế của tôi</span></a></li>
+      <li><a href="../learning-summary" data-nav-target="/learning-summary"><span>Kết quả học tập</span></a></li>
+      <li><a href="../order-history" data-nav-target="/order-history"><span>Đơn hàng</span></a></li>
+      <li><a href="../pages/gio-hang.html" data-nav-target="/pages/gio-hang.html"><span>Giỏ hàng</span></a></li>
+      <li><a href="../pages/tai-khoan.html" data-nav-target="/pages/tai-khoan.html"><span>Tài khoản</span></a></li>
+    </ul>
+  </details>
+  <details class="site-nav-group" data-nav-group="about" data-nav-role="PUBLIC">
+    <summary>Giới thiệu</summary>
+    <ul class="nav-list">
+      <li><a href="../pages/thanh-vien.html" data-nav-target="/pages/thanh-vien.html" aria-current="page"><span>Thành viên</span></a></li>
+      <li><a href="../architecture" data-nav-target="/architecture"><span>Bản đồ môn học</span></a></li>
+    </ul>
+  </details>
+  <details class="site-nav-group" data-nav-group="admin" data-nav-role="ADMIN" hidden>
+    <summary>Quản trị</summary>
+    <ul class="nav-list">
+      <li><a href="../pages/admin-content.html" data-nav-target="/pages/admin-content.html"><span>Nội dung mẫu và linh kiện</span></a></li>
+      <li><a href="../pages/admin-quiz.html" data-nav-target="/pages/admin-quiz.html"><span>Câu hỏi kiểm tra</span></a></li>
+      <li><a href="../pages/admin-shop.html" data-nav-target="/pages/admin-shop.html"><span>Cửa hàng quản trị</span></a></li>
+      <li><a href="../pages/admin-troubleshooting.html" data-nav-target="/pages/admin-troubleshooting.html"><span>Hướng dẫn tra cứu</span></a></li>
+      <li><a href="../pages/admin-users.html" data-nav-target="/pages/admin-users.html"><span>Người dùng</span></a></li>
+      <li><a href="../admin-tasks" data-nav-target="/admin-tasks"><span>Nhiệm vụ quản trị</span></a></li>
+      <li><a href="../admin-task-reviews" data-nav-target="/admin-task-reviews"><span>Chấm nhiệm vụ</span></a></li>
+      <li><a href="../admin-wiring" data-nav-target="/admin-wiring"><span>Bài nối dây quản trị</span></a></li>
+      <li><a href="../admin-wiring-support" data-nav-target="/admin-wiring-support"><span>Hỗ trợ nối dây quản trị</span></a></li>
+      <li><a href="../admin-diagnosis" data-nav-target="/admin-diagnosis"><span>Tình huống chẩn đoán</span></a></li>
+      <li><a href="../admin-stats" data-nav-target="/admin-stats"><span>Thống kê</span></a></li>
+    </ul>
+  </details>
+  <a href="../pages/tai-khoan.html" data-guest="true" aria-label="Đăng nhập hoặc đăng ký" class="site-nav-auth"><span>Đăng nhập / Đăng ký</span></a>
+</nav>
     <aside class="sidebar-guide" aria-label="Bắt đầu thực hành">
       <svg class="icon" width="24" height="24" focusable="false" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
   <path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/>

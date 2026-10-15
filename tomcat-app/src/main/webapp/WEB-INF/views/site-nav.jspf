@@ -1,0 +1,136 @@
+<%@ page pageEncoding="UTF-8" %>
+<nav class="site-nav" data-site-nav data-server-nav aria-label="Điều hướng chính">
+  <details class="site-nav-group" data-nav-group="learn" data-nav-role="PUBLIC">
+    <summary>Học</summary>
+    <ul class="nav-list">
+      <c:url var="navTarget" value="/pages/mau-robot.html"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/pages/mau-robot.html"
+          ${pageContext.request.servletPath eq '/pages/mau-robot.html' ? 'aria-current="page"' : ''}>Mẫu robot</a></li>
+      <c:url var="navTarget" value="/pages/lap-rap.html"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/pages/lap-rap.html"
+          ${pageContext.request.servletPath eq '/pages/lap-rap.html' ? 'aria-current="page"' : ''}>Lắp ráp</a></li>
+      <c:url var="navTarget" value="/designs"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/designs"
+          ${pageContext.request.servletPath eq '/designs' ? 'aria-current="page"' : ''}>Xưởng thiết kế</a></li>
+    </ul>
+  </details>
+  <details class="site-nav-group" data-nav-group="practice" data-nav-role="PUBLIC">
+    <summary>Luyện tập</summary>
+    <ul class="nav-list">
+      <c:url var="navTarget" value="/pages/kiem-tra.html"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/pages/kiem-tra.html"
+          ${pageContext.request.servletPath eq '/pages/kiem-tra.html' ? 'aria-current="page"' : ''}>Kiểm tra kiến thức</a></li>
+      <c:url var="navTarget" value="/wiring"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/wiring"
+          ${pageContext.request.servletPath eq '/wiring' ? 'aria-current="page"' : ''}>Nối dây</a></li>
+      <c:url var="navTarget" value="/wiring-support"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/wiring-support"
+          ${pageContext.request.servletPath eq '/wiring-support' ? 'aria-current="page"' : ''}>Hỗ trợ nối dây</a></li>
+      <c:url var="navTarget" value="/diagnosis"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/diagnosis"
+          ${pageContext.request.servletPath eq '/diagnosis' ? 'aria-current="page"' : ''}>Luyện chẩn đoán</a></li>
+      <c:url var="navTarget" value="/pages/tra-cuu-loi.html"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/pages/tra-cuu-loi.html"
+          ${pageContext.request.servletPath eq '/pages/tra-cuu-loi.html' ? 'aria-current="page"' : ''}>Tra cứu lỗi</a></li>
+      <c:url var="navTarget" value="/tasks"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/tasks"
+          ${pageContext.request.servletPath eq '/tasks' ? 'aria-current="page"' : ''}>Nhiệm vụ</a></li>
+    </ul>
+  </details>
+  <details class="site-nav-group" data-nav-group="resources" data-nav-role="PUBLIC">
+    <summary>Tài nguyên</summary>
+    <ul class="nav-list">
+      <c:url var="navTarget" value="/pages/linh-kien.html"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/pages/linh-kien.html"
+          ${pageContext.request.servletPath eq '/pages/linh-kien.html' ? 'aria-current="page"' : ''}>Linh kiện</a></li>
+      <c:url var="navTarget" value="/pages/thu-vien.html"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/pages/thu-vien.html"
+          ${pageContext.request.servletPath eq '/pages/thu-vien.html' ? 'aria-current="page"' : ''}>Thư viện</a></li>
+      <c:url var="navTarget" value="/pages/cua-hang.html"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/pages/cua-hang.html"
+          ${pageContext.request.servletPath eq '/pages/cua-hang.html' ? 'aria-current="page"' : ''}>Cửa hàng</a></li>
+    </ul>
+  </details>
+  <c:if test="${not empty sessionScope.user}">
+  <details class="site-nav-group" data-nav-group="mine" data-nav-role="AUTH">
+    <summary>Của tôi</summary>
+    <ul class="nav-list">
+      <c:url var="navTarget" value="/account"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/account"
+          ${pageContext.request.servletPath eq '/account' ? 'aria-current="page"' : ''}>Bảng điều khiển</a></li>
+      <c:url var="navTarget" value="/my-kit"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/my-kit"
+          ${pageContext.request.servletPath eq '/my-kit' ? 'aria-current="page"' : ''}>Bộ linh kiện</a></li>
+      <c:url var="navTarget" value="/designs"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/designs"
+          ${pageContext.request.servletPath eq '/designs' ? 'aria-current="page"' : ''}>Thiết kế của tôi</a></li>
+      <c:url var="navTarget" value="/learning-summary"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/learning-summary"
+          ${pageContext.request.servletPath eq '/learning-summary' ? 'aria-current="page"' : ''}>Kết quả học tập</a></li>
+      <c:url var="navTarget" value="/order-history"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/order-history"
+          ${pageContext.request.servletPath eq '/order-history' ? 'aria-current="page"' : ''}>Đơn hàng</a></li>
+      <c:url var="navTarget" value="/pages/gio-hang.html"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/pages/gio-hang.html"
+          ${pageContext.request.servletPath eq '/pages/gio-hang.html' ? 'aria-current="page"' : ''}>Giỏ hàng</a></li>
+      <c:url var="navTarget" value="/pages/tai-khoan.html"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/pages/tai-khoan.html"
+          ${pageContext.request.servletPath eq '/pages/tai-khoan.html' ? 'aria-current="page"' : ''}>Tài khoản</a></li>
+    </ul>
+  </details>
+  </c:if>
+  <details class="site-nav-group" data-nav-group="about" data-nav-role="PUBLIC">
+    <summary>Giới thiệu</summary>
+    <ul class="nav-list">
+      <c:url var="navTarget" value="/pages/thanh-vien.html"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/pages/thanh-vien.html"
+          ${pageContext.request.servletPath eq '/pages/thanh-vien.html' ? 'aria-current="page"' : ''}>Thành viên</a></li>
+      <c:url var="navTarget" value="/architecture"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/architecture"
+          ${pageContext.request.servletPath eq '/architecture' ? 'aria-current="page"' : ''}>Bản đồ môn học</a></li>
+    </ul>
+  </details>
+  <c:if test="${not empty sessionScope.user and sessionScope.user.admin}">
+  <details class="site-nav-group" data-nav-group="admin" data-nav-role="ADMIN">
+    <summary>Quản trị</summary>
+    <ul class="nav-list">
+      <c:url var="navTarget" value="/pages/admin-content.html"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/pages/admin-content.html"
+          ${pageContext.request.servletPath eq '/pages/admin-content.html' ? 'aria-current="page"' : ''}>Nội dung mẫu và linh kiện</a></li>
+      <c:url var="navTarget" value="/pages/admin-quiz.html"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/pages/admin-quiz.html"
+          ${pageContext.request.servletPath eq '/pages/admin-quiz.html' ? 'aria-current="page"' : ''}>Câu hỏi kiểm tra</a></li>
+      <c:url var="navTarget" value="/pages/admin-shop.html"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/pages/admin-shop.html"
+          ${pageContext.request.servletPath eq '/pages/admin-shop.html' ? 'aria-current="page"' : ''}>Cửa hàng quản trị</a></li>
+      <c:url var="navTarget" value="/pages/admin-troubleshooting.html"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/pages/admin-troubleshooting.html"
+          ${pageContext.request.servletPath eq '/pages/admin-troubleshooting.html' ? 'aria-current="page"' : ''}>Hướng dẫn tra cứu</a></li>
+      <c:url var="navTarget" value="/pages/admin-users.html"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/pages/admin-users.html"
+          ${pageContext.request.servletPath eq '/pages/admin-users.html' ? 'aria-current="page"' : ''}>Người dùng</a></li>
+      <c:url var="navTarget" value="/admin-tasks"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/admin-tasks"
+          ${pageContext.request.servletPath eq '/admin-tasks' ? 'aria-current="page"' : ''}>Nhiệm vụ quản trị</a></li>
+      <c:url var="navTarget" value="/admin-task-reviews"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/admin-task-reviews"
+          ${pageContext.request.servletPath eq '/admin-task-reviews' ? 'aria-current="page"' : ''}>Chấm nhiệm vụ</a></li>
+      <c:url var="navTarget" value="/admin-wiring"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/admin-wiring"
+          ${pageContext.request.servletPath eq '/admin-wiring' ? 'aria-current="page"' : ''}>Bài nối dây quản trị</a></li>
+      <c:url var="navTarget" value="/admin-wiring-support"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/admin-wiring-support"
+          ${pageContext.request.servletPath eq '/admin-wiring-support' ? 'aria-current="page"' : ''}>Hỗ trợ nối dây quản trị</a></li>
+      <c:url var="navTarget" value="/admin-diagnosis"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/admin-diagnosis"
+          ${pageContext.request.servletPath eq '/admin-diagnosis' ? 'aria-current="page"' : ''}>Tình huống chẩn đoán</a></li>
+      <c:url var="navTarget" value="/admin-stats"/>
+      <li><a href="<c:out value="${navTarget}"/>" data-nav-target="/admin-stats"
+          ${pageContext.request.servletPath eq '/admin-stats' ? 'aria-current="page"' : ''}>Thống kê</a></li>
+    </ul>
+  </details>
+  </c:if>
+  <c:url var="navAuth" value="/pages/tai-khoan.html"/>
+  <a class="site-nav-auth" href="<c:out value="${navAuth}"/>">Tài khoản / Đăng nhập</a>
+</nav>
+<%@ include file="site-nav-assets.jspf" %>
