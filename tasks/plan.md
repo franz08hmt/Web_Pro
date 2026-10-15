@@ -508,3 +508,16 @@ nhãn spec và snapshot đơn cũ giữ nguyên. M2 camera theo bounds/FOV/aspec
 native và bệ/sàn theo phòng mẫu. M3 QA/docs: baseline192/126→197/127, Chrome thật
 1440/768/390 và gắn/tháo/undo/camera.10 file được bảo vệ nguyên byte, chỉ QA7 đổi
 bố cục/version/ngày kiểm qua API và phục hồi10/10; không checkout thêm hoặc sửa kho.
+
+## Đợt11 — Điều hướng và kết nối chức năng (M0)
+
+HEAD191146b đồng bộ origin; bảo toàn hash10 file WIP/untracked. Baseline197Node/127JUnit,
+JDK17 clean package. Khảo sát120GET ba vai trò, ADMIN QA đăng nhập được. SITE_MAP.md
+liệt kê42 ánh xạServlet +18HTML, quyết định giữ/account làm dashboard, HTML tài khoản
+giữ auth/settings, robots/components minh họa. M6 không ẩn module có dữ liệu.
+
+M1 fixture/menu chung → M2 trang chính/phụ → M3 dashboard dữ liệu owner → M4 link
+ngữ cảnh + POST thiếu vật tư vào giỏ (transaction/idempotent, không checkout) →
+M5 bản đồ môn học → M7 lỗi/breadcrumb → M8 kiểm link, HTTP3vai trò, Chrome390/768/1440,
+ảnh ngoàiGit và tài liệu. Không schema, không sửa luật/spec/API cũ hoặc file WIP.
+Commit local từng mốc, không push.
