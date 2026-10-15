@@ -328,3 +328,14 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] M5: coursemap15chủđề, sourcefile:dòng đãđối chiếu, không bịa slide.
 - [x] M7: breadcrumb,404/500/Throwable, APIJSON, filterHTMLadmin.
 - [x] M8:205Node/130JUnit, cleanpackage17,207ôChrome/HTTP3vai trò/PDF/ảnh và cleanup.
+
+
+## ??t 11b ? s?a review
+
+- [x] Kh?o s?t Git, hash 10 file, review v? baseline Node/JUnit JDK17.
+- [ ] M0: ??i chi?u source/commit/artifact; ghi r? tr?ng th?i deploy IDE.
+- [ ] M1: link linh ki?n canonical/c?, t?i ch?m/fallback/focus kh?ng gi?t.
+- [ ] M2: link n?i dung ??ng quy?n USER/ADMIN/kh?ch, auth ch?m/l?i ??ng quy?n.
+- [ ] M3: deep link SKU trang2, endpoint GET additive, kh?ng ghi d? li?u.
+- [ ] M4: nghi?p v? dashboard trong JavaBean, d? ki?n c? gi?i h?n, unit test.
+- [ ] Ch?t full test/build/browser/HTTP, WIP hash v? cleanup runtime.

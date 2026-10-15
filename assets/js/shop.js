@@ -68,7 +68,7 @@
         <button class="button" type="button" data-add-product="${escapeHtml(product.id)}" ${outOfStock ? "disabled" : ""}>
           ${state.user ? (quantity ? `Thêm vào giỏ (${quantity})` : "Thêm vào giỏ") : "Đăng nhập để thêm"}
         </button>
-        <a class="shop-inline-link" href="linh-kien.html">Xem thông số kỹ thuật</a>
+        <a class="shop-inline-link" href="${escapeHtml(window.LearningContext.componentUrl(product.componentId))}">Xem thông số kỹ thuật</a>
       </article>`;
     }).join("");
   }

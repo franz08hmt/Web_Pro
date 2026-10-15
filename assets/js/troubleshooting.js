@@ -51,8 +51,7 @@
     article.append(heading, meta, causesTitle, causes, stepsTitle, steps);
 
     if (guide.relatedComponentId) {
-      const link = document.createElement("a");
-      link.href = `linh-kien.html#${encodeURIComponent(guide.relatedComponentId)}`;
+      const link = window.LearningContext.componentLink(guide.relatedComponentId);
       link.textContent = `Xem linh kiện liên quan: ${guide.relatedComponentId} →`;
       article.append(link);
     }

@@ -534,3 +534,29 @@ Khôngorder/checkout/stock/spec/schema thay đổi.10fileWIP giữhash. RuntimeQ
 đãdọn, khôngđụng8080; giới hạnbrowser/POSThồi quy ghi rõ trong PHASE11_UX_QA_REPORT.
 WAR cuối có thêm36 kiểm smoke/header/quyền; WorkspaceCacheFilter bảo vệ no-store
 ở các trang cũ, không sửa controller hoặc JSP WIP của người dùng.
+
+
+## ??t 11b ? s?a review v? x?c minh deploy (15/10/2026)
+
+Baseline HEAD 99e8337, ??ng integration/fullstack-v2. ?? l?u SHA-256 10 file b?o v?
+ngo?i Git. Node t?i repo: 204 ??t/1 l?i exploded byte/0 skip; build ri?ng JDK17:
+130 JUnit ??t/0 skip. Kh?ng c? Tomcat hay ti?n tr?nh build d?ng target g?c khi kh?o s?t.
+IDE ch?n artifact `robot-assembly-lab-tomcat:war exploded`, c?n XML artifact duy nh?t
+trong repo ??nh ngh?a `war exploded2` t?i out/artifacts; ch?a c? HTTP8080 ?? x?c minh.
+Kh?ng s?a c?u h?nh IDE ho?c m?c ??nh hai artifact l? m?t.
+
+- M0: build working tree v? commit HEAD ??c l?p; rebuild target g?c khi kh?ng b? d?ng;
+  ??i chi?u HTTP QA v?i source. Deploy IDE c?n t?ch ri?ng, kh?ng s?a artifact b?ng tay.
+- M1: URL linh ki?n canonical `linh-kien.html?component=ID#component-ID`; h? tr? hash
+  c?, ch? catalog ho?n t?t k? c? fallback, focus m?t l?n; kh?ng ph? thu?c API context.
+- M2: t?i s? d?ng x?c th?c server c?a menu cho link luy?n t?p trong n?i dung; ch? USER;
+  kh?ng m? quy?n backend v? kh?ng coi l?i m?ng/DB l? kh?ch.
+- M3: contract additive **GET /api/shop/products/{id}**, c?ng khai, ch? s?n ph?m ?ang
+  b?n; 200 `{data: product}` k? c? h?t h?ng, 404 JSON khi kh?ng c?/ng?ng b?n, 503
+  khi DB l?i. GET danh s?ch c? gi? nguy?n contract/ph?n trang. Frontend d?ng m?t
+  GET theo SKU v? khu v?c t?p trung ngo?i trang hi?n t?i, ch?ng ph?n h?i c?/ID tr?ng;
+  kh?ng t?i m?i trang v? kh?ng c? request ghi khi m? link. Kh?ng ??i schema.
+- M4: DashboardSummary quy?t ??nh c?c th?/g?i ?/kit. Servlet ch? ??c d? ki?n owner,
+  g?i bean v? forward; truy v?n g?p quiz v? LIMIT thi?t k? g?n nh?t tr?nh N+1.
+- QA: Chrome th?t + fixture browser 21 SKU/slow/error/roles, Node h?nh vi, JUnit,
+  smoke GET th?t; kh?ng POST gi?/phi?n/thi?t k?, kh?ng s?a/d?n d? li?u c?.

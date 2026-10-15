@@ -95,8 +95,11 @@
   }
 
   async function start() {
+    catalog.dataset.catalogState = "loading";
     if (!api.enabled) {
       if (status) status.textContent = "Đang hiển thị dữ liệu dự phòng trong chế độ xem tĩnh.";
+      catalog.dataset.catalogState = "fallback";
+      document.dispatchEvent(new CustomEvent("robot:components-updated"));
       return;
     }
 
@@ -119,10 +122,13 @@
         renderCard(component, usages.get(component.id)?.join(", "))
       ));
       updateChart(components);
-      document.dispatchEvent(new CustomEvent("robot:components-updated"));
+      catalog.dataset.catalogState = "ready";
       if (status) status.textContent = `Đã đồng bộ ${components.length} linh kiện từ Content API.`;
     } catch (error) {
+      catalog.dataset.catalogState = "fallback";
       if (status) status.textContent = `Không thể đồng bộ API; đang dùng dữ liệu dự phòng. ${error.message}`;
+    } finally {
+      document.dispatchEvent(new CustomEvent("robot:components-updated"));
     }
   }
 
