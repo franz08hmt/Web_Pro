@@ -32,6 +32,98 @@ public class DashboardSummary implements Serializable {
         return card;
     }
 
+    /** Chọn hành động của phiên đang làm và phiên hoàn tất; không thay đổi trạng thái phiên. */
+    public void addAssemblyCards(AssemblySession open, Robot activeRobot,
+            AssemblySession complete, Robot finishedRobot) {
+        DashboardCard active = addCard("Đang lắp ráp", null, "Chọn mẫu để lắp", "/pages/lap-rap.html");
+        if (open != null) {
+            active.setSummary(open.isDetailed()
+                    ? "Đã gắn " + open.getPlacedSlotCount() + "/" + open.getRequiredSlotCount() + " điểm gắn."
+                    : "Chuẩn bị linh kiện: " + open.getProgressPercent() + "%.");
+            if (activeRobot != null) {
+                active.setSummary(activeRobot.getName() + " · " + active.getSummary());
+            }
+            active.setAction("Tiếp tục lắp ráp");
+            active.setPath(open.isInProgress() ? "/pages/lap-rap-3d.html" : "/pages/lap-rap.html");
+            active.setParameterName("session");
+            active.setParameterValue(String.valueOf(open.getId()));
+            active.setModel(open.getRobotId());
+        }
+        DashboardCard finished = addCard("Mẫu đã hoàn tất", null, "Khám phá mẫu robot", "/pages/mau-robot.html");
+        if (complete != null) {
+            finished.setSummary("Xem lại sản phẩm, quy trình, phiếu và bài kiểm tra của mẫu vừa hoàn tất.");
+            if (finishedRobot != null) {
+                finished.setSummary(finishedRobot.getName() + ". " + finished.getSummary());
+            }
+            finished.setAction("Xem trang hoàn thiện");
+            finished.setPath("/assembly-review");
+            finished.setParameterName("session");
+            finished.setParameterValue(String.valueOf(complete.getId()));
+        }
+    }
+
+    /** Giữ thứ tự tên mẫu từ truy vấn; chỉ gợi ý mẫu có câu hỏi và chưa có lượt làm. */
+    public void addQuizCard(List<QuizAttempt> attempts, List<DashboardQuizCandidate> candidates) {
+        DashboardCard quiz = addCard("Kiểm tra kiến thức", quizSummary(attempts),
+                "Làm bài kiểm tra", "/pages/kiem-tra.html");
+        for (DashboardQuizCandidate candidate : candidates) {
+            if (candidate.getAttemptCount() == 0 && candidate.getQuestionCount() > 0) {
+                quiz.setSummary(quiz.getSummary() + " Bạn đã lắp " + candidate.getRobotName()
+                        + " nhưng chưa làm bài kiểm tra của mẫu này.");
+                quiz.setParameterName("model");
+                quiz.setParameterValue(candidate.getRobotId());
+                break;
+            }
+        }
+    }
+
+    /** Khoảng hạn sắp tới do bean quyết định, XxxDB chỉ bind hai mốc thời gian. */
+    public Date upcomingDeadline(Date now) {
+        return new Date(now.getTime() + 72L * 60 * 60 * 1000);
+    }
+
+    /** Thẻ nhiệm vụ phụ thuộc vai trò thật, giữ nguyên nhãn và đích điều hướng. */
+    public void addTaskCard(User user, int[] counts) {
+        if (user.isAdmin()) {
+            addCard("Quản lý nhiệm vụ", "Phân công và chấm nhiệm vụ học tập.",
+                    "Mở quản trị nhiệm vụ", "/admin-tasks");
+        } else {
+            addCard("Nhiệm vụ", counts[0] + " nhiệm vụ đang mở · " + counts[1]
+                    + " nhiệm vụ đến hạn trong 3 ngày tới.", "Xem nhiệm vụ", "/tasks");
+        }
+    }
+
+    /** Một thiết kế gần nhất đã được giới hạn tại DB. */
+    public void addDesignCard(RobotDesign recent) {
+        DashboardCard design = addCard("Thiết kế gần đây", null, "Mở Xưởng thiết kế", "/designs");
+        if (recent != null) {
+            design.setSummary(recent.getName() + " · " + recent.getStatusLabel());
+            design.setPath("/design-sheet");
+            design.setAction("Xem hồ sơ thiết kế");
+            design.setParameterName("id");
+            design.setParameterValue(String.valueOf(recent.getId()));
+        }
+    }
+
+    /** Chỉ cộng các loại đang có; số lượng 0 không trở thành một loại sở hữu. */
+    public void addKitCard(List<KitItem> items) {
+        int kinds = 0;
+        int total = 0;
+        for (KitItem item : items) {
+            if (item.getQuantity() > 0) {
+                kinds++;
+                total += item.getQuantity();
+            }
+        }
+        addCard("Bộ linh kiện", kinds + " loại · " + total + " vật thể đang có.", "Xem bộ linh kiện", "/my-kit");
+    }
+
+    /** Giữ trạng thái chưa có đơn khác với một đơn có nhãn kết quả. */
+    public void addOrderCard(List<ShopOrder> orders) {
+        addCard("Đơn hàng gần nhất", orders.isEmpty() ? null : orders.get(0).getStatusLabel(),
+                "Xem đơn hàng", "/order-history");
+    }
+
     /** Chỉ đếm nhiệm vụ đang mở và sắp đến hạn trong 72 giờ tiếp theo. */
     public String taskSummary(List<PracticeTask> tasks, Date now) {
         int open = 0;

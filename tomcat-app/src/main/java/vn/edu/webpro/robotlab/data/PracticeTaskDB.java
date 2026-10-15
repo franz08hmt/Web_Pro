@@ -10,6 +10,31 @@ import java.util.List;
 /** JDBC theo Ch12; mọi ghi nhiệm vụ khóa task trước recipient rồi round (Ch13). */
 public class PracticeTaskDB {
 
+    /** Chỉ trả hai số tổng hợp của owner; khoảng hạn do JavaBean truyền vào. */
+    public static int[] selectDashboardCounts(long userId, Date now, Date upcoming) throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement("SELECT COUNT(*) AS open_count,"
+                    + "COALESCE(SUM(CASE WHEN t.due_at BETWEEN ? AND ? THEN 1 ELSE 0 END),0) AS soon_count "
+                    + "FROM practice_tasks t JOIN robots r ON r.id = t.robot_id "
+                    + "JOIN task_recipients tr ON tr.task_id = t.id "
+                    + "WHERE tr.user_id = ? AND t.state = 'OPEN'");
+            ps.setTimestamp(1, new Timestamp(now.getTime()));
+            ps.setTimestamp(2, new Timestamp(upcoming.getTime()));
+            ps.setLong(3, userId);
+            rs = ps.executeQuery();
+            rs.next();
+            return new int[] {rs.getInt("open_count"), rs.getInt("soon_count")};
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
+
     static void bind(PreparedStatement ps, Object... values) throws SQLException {
         for (int i = 0; i < values.length; i++) {
             Object value = values[i];

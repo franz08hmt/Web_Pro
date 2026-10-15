@@ -2,7 +2,6 @@ package vn.edu.webpro.robotlab.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Date;
 import vn.edu.webpro.robotlab.business.*;
 import vn.edu.webpro.robotlab.data.*;
@@ -45,78 +44,18 @@ public class AccountPageServlet extends HttpServlet {
         try {
             DashboardSummary dashboard = new DashboardSummary();
             AssemblySession open = AssemblySessionDB.selectLatestSession(user.getId(), false);
-            DashboardCard active = dashboard.addCard("Đang lắp ráp", null, "Chọn mẫu để lắp", "/pages/lap-rap.html");
-            if (open != null) {
-                active.setSummary(open.isDetailed()
-                        ? "Đã gắn " + open.getPlacedSlotCount() + "/" + open.getRequiredSlotCount() + " điểm gắn."
-                        : "Chuẩn bị linh kiện: " + open.getProgressPercent() + "%.");
-                Robot activeRobot = RobotDB.selectRobot(open.getRobotId());
-                if (activeRobot != null) {
-                    active.setSummary(activeRobot.getName() + " · " + active.getSummary());
-                }
-                active.setAction("Tiếp tục lắp ráp");
-                active.setPath(open.isInProgress() ? "/pages/lap-rap-3d.html" : "/pages/lap-rap.html");
-                active.setParameterName("session");
-                active.setParameterValue(String.valueOf(open.getId()));
-                active.setModel(open.getRobotId());
-            }
             AssemblySession complete = AssemblySessionDB.selectLatestSession(user.getId(), true);
-            DashboardCard finished = dashboard.addCard("Mẫu đã hoàn tất", null, "Khám phá mẫu robot",
-                    "/pages/mau-robot.html");
-            if (complete != null) {
-                finished.setSummary("Xem lại sản phẩm, quy trình, phiếu và bài kiểm tra của mẫu vừa hoàn tất.");
-                Robot finishedRobot = RobotDB.selectRobot(complete.getRobotId());
-                if (finishedRobot != null) {
-                    finished.setSummary(finishedRobot.getName() + ". " + finished.getSummary());
-                }
-                finished.setAction("Xem trang hoàn thiện");
-                finished.setPath("/assembly-review");
-                finished.setParameterName("session");
-                finished.setParameterValue(String.valueOf(complete.getId()));
-            }
-            DashboardCard quiz = dashboard.addCard("Kiểm tra kiến thức",
-                    dashboard.quizSummary(QuizAttemptDB.selectAttempts(user.getId(), null, 1, 0)),
-                    "Làm bài kiểm tra", "/pages/kiem-tra.html");
-            for (Robot completedRobot : StatsDB.selectCompletedRobots(user.getId())) {
-                if (QuizAttemptDB.countAttempts(user.getId(), completedRobot.getId()) == 0
-                        && QuizQuestionDB.countQuestions(completedRobot.getId()) > 0) {
-                    quiz.setSummary(quiz.getSummary() + " Bạn đã lắp " + completedRobot.getName()
-                            + " nhưng chưa làm bài kiểm tra của mẫu này.");
-                    quiz.setParameterName("model");
-                    quiz.setParameterValue(completedRobot.getId());
-                    break;
-                }
-            }
-            if (user.isAdmin()) {
-                dashboard.addCard("Quản lý nhiệm vụ", "Phân công và chấm nhiệm vụ học tập.",
-                        "Mở quản trị nhiệm vụ", "/admin-tasks");
-            } else {
-                dashboard.addCard("Nhiệm vụ", dashboard.taskSummary(
-                        PracticeTaskDB.selectTasks(user.getId(), false, "OPEN"), new Date()), "Xem nhiệm vụ", "/tasks");
-            }
-            List<RobotDesign> designs = DesignDB.selectDesigns(user.getId());
-            DashboardCard design = dashboard.addCard("Thiết kế gần đây", null, "Mở Xưởng thiết kế", "/designs");
-            if (!designs.isEmpty()) {
-                RobotDesign recent = designs.get(0);
-                design.setSummary(recent.getName() + " · " + recent.getStatusLabel());
-                design.setPath("/design-sheet");
-                design.setAction("Xem hồ sơ thiết kế");
-                design.setParameterName("id");
-                design.setParameterValue(String.valueOf(recent.getId()));
-            }
-            int kinds = 0;
-            int total = 0;
-            for (KitItem item : UserKitDB.selectItems(user.getId(), DesignRuleDB.selectPublished())) {
-                if (item.getQuantity() > 0) {
-                    kinds++;
-                    total += item.getQuantity();
-                }
-            }
-            dashboard.addCard("Bộ linh kiện", kinds + " loại · " + total + " vật thể đang có.",
-                    "Xem bộ linh kiện", "/my-kit");
-            List<ShopOrder> orders = OrderDB.selectOrders(user.getId(), 1, 0);
-            dashboard.addCard("Đơn hàng gần nhất", orders.isEmpty() ? null : orders.get(0).getStatusLabel(),
-                    "Xem đơn hàng", "/order-history");
+            Robot activeRobot = open == null ? null : RobotDB.selectRobot(open.getRobotId());
+            Robot finishedRobot = complete == null ? null : RobotDB.selectRobot(complete.getRobotId());
+            dashboard.addAssemblyCards(open, activeRobot, complete, finishedRobot);
+            dashboard.addQuizCard(QuizAttemptDB.selectAttempts(user.getId(), null, 1, 0),
+                    StatsDB.selectDashboardQuizCandidates(user.getId()));
+            Date now = new Date();
+            dashboard.addTaskCard(user, PracticeTaskDB.selectDashboardCounts(user.getId(), now,
+                    dashboard.upcomingDeadline(now)));
+            dashboard.addDesignCard(DesignDB.selectLatestDesign(user.getId()));
+            dashboard.addKitCard(UserKitDB.selectItems(user.getId(), DesignRuleDB.selectPublished()));
+            dashboard.addOrderCard(OrderDB.selectOrders(user.getId(), 1, 0));
             request.setAttribute("dashboard", dashboard);
         } catch (SQLException e) {
             response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);

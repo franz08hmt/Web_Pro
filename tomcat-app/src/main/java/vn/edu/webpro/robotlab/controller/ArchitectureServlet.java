@@ -31,7 +31,7 @@ public class ArchitectureServlet extends HttpServlet {
                 + "form; response trả lỗi hoặc chuyển hướng khi thành công.");
         add(items, "setAttribute và forward",
                 "Bảng điều khiển", "/account",
-                "tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AccountPageServlet.java", 120, true,
+                "tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AccountPageServlet.java", 59, true,
                 "Servlet lấy dữ liệu của user trong session, đặt JavaBean vào request rồi forward JSP "
                 + "trong WEB-INF.");
         add(items, "sendRedirect và PRG",
@@ -51,7 +51,7 @@ public class ArchitectureServlet extends HttpServlet {
                 + "c:if theo session, không bằng JavaScript.");
         add(items, "JavaBean",
                 "Quy tắc và trạng thái thẻ", "/account",
-                "tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DashboardSummary.java", 9, true,
+                "tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DashboardSummary.java", 36, true,
                 "Bean Serializable có constructor rỗng, private field và getter/setter; phân biệt điểm "
                 + "0 thật với chưa có lượt kiểm tra.");
         add(items, "HttpSession, phân quyền, session_version",

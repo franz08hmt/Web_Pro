@@ -1132,7 +1132,7 @@ và [DesignCartServlet.java:37](../tomcat-app/src/main/java/vn/edu/webpro/robotl
 **4. Forward khác redirect và PRG ở đâu?** Dashboard đặt bean vào request rồi
 forward JSP trong cùng request. Thêm vật tư thành công thì sendRedirect về GET giỏ;
 tải lại không gửi lại POST. Dù người học bấm form hai lần, bean vẫn chỉ bù thiếu.
-Đọc [AccountPageServlet.java:120](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AccountPageServlet.java#L120),
+Đọc [AccountPageServlet.java:59](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AccountPageServlet.java#L59),
 [DesignCartServlet.java:44](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/DesignCartServlet.java#L44)
 và [DesignCartResult.java:23](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DesignCartResult.java#L23).
 
@@ -1158,3 +1158,16 @@ pages/mau-robot.html fetch JSON rồi dựng DOM. Cả hai vẫn phải kiểm q
 Không cần học thuộc số slide. Mở file, nói đoạn code **nhận gì → kiểm gì → trả gì**;
 chạy /architecture để mở thử luồng tương ứng. Số dòng đúng tại bản Đợt11, có thể
 dịch khi source đổi. Không sửa các tài liệu điện thoại WIP trong đợt này.
+
+
+### ??t 11b ? Ai quy?t ??nh n?i dung B?ng ?i?u khi?n?
+
+Servlet l?y owner t? session, ??c d? ki?n gi?i h?n, g?i bean r?i setAttribute/forward.
+JavaBean quy?t ??nh ???ng ti?p t?c PREPARING/READY/IN_PROGRESS, g?i ? m?u ?? l?p
+nh?ng ch?a ki?m tra (ph?i c? c?u h?i), t?ng s? kit v? n?i dung b?y th?. XxxDB ch?
+truy v?n/bind/map; m?t truy v?n g?p quiz tr?nh g?i DB trong v?ng l?p. ?i?m0 th?t
+v?n kh?c ch?a l?m. Thi?t k? g?n nh?t d?ng LIMIT1, nhi?m v? tr? hai s? g?p.
+
+- [Servlet: ??c d? ki?n v? forward](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AccountPageServlet.java#L44).
+- [JavaBean: quy?t ??nh th?](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DashboardSummary.java#L36).
+- [JUnit: tr?ng th?i r?ng v? c?c tr??ng h?p bi?n](../tomcat-app/src/test/java/vn/edu/webpro/robotlab/business/DashboardSummaryTest.java#L20).

@@ -17,6 +17,7 @@ import vn.edu.webpro.robotlab.business.QuizRobotAggregate;
 import vn.edu.webpro.robotlab.business.QuizRobotScore;
 import vn.edu.webpro.robotlab.business.Robot;
 import vn.edu.webpro.robotlab.business.RobotPopularity;
+import vn.edu.webpro.robotlab.business.DashboardQuizCandidate;
 
 /**
  * Truy vấn tổng hợp cho trang tổng kết học tập cá nhân và thống kê quản trị
@@ -31,6 +32,41 @@ public class StatsDB {
             {"PREPARING", "READY", "IN_PROGRESS", "COMPLETED", "ABANDONED"};
 
     // ---------- Cá nhân ----------
+
+    /** Đọc số câu hỏi/lượt làm của các mẫu đã hoàn tất bằng một truy vấn, không N+1. */
+    public static List<DashboardQuizCandidate> selectDashboardQuizCandidates(long userId) throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            String query = "SELECT r.id,r.name,COALESCE(q.total,0) AS question_count,"
+                    + "COALESCE(a.total,0) AS attempt_count FROM robots r "
+                    + "JOIN (SELECT DISTINCT robot_id FROM assembly_sessions "
+                    + "WHERE user_id = ? AND status = 'COMPLETED') done ON done.robot_id = r.id "
+                    + "LEFT JOIN (SELECT robot_id,COUNT(*) AS total FROM quiz_questions GROUP BY robot_id) q "
+                    + "ON q.robot_id = r.id LEFT JOIN (SELECT robot_id,COUNT(*) AS total FROM quiz_attempts "
+                    + "WHERE user_id = ? GROUP BY robot_id) a ON a.robot_id = r.id ORDER BY r.name,r.id";
+            ps = connection.prepareStatement(query);
+            ps.setLong(1, userId);
+            ps.setLong(2, userId);
+            rs = ps.executeQuery();
+            List<DashboardQuizCandidate> candidates = new ArrayList<>();
+            while (rs.next()) {
+                DashboardQuizCandidate candidate = new DashboardQuizCandidate();
+                candidate.setRobotId(rs.getString("id"));
+                candidate.setRobotName(rs.getString("name"));
+                candidate.setQuestionCount(rs.getInt("question_count"));
+                candidate.setAttemptCount(rs.getInt("attempt_count"));
+                candidates.add(candidate);
+            }
+            return candidates;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
 
     /** Số phiên theo từng trạng thái của một tài khoản; trạng thái chưa có phiên nào vẫn xuất hiện với giá trị 0. */
     public static Map<String, Long> countSessionsByStatusForUser(long userId) throws SQLException {

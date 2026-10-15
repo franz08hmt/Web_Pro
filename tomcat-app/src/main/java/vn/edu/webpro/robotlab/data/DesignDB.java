@@ -15,6 +15,27 @@ import vn.edu.webpro.robotlab.util.DesignException;
 
 /** Quản lý thiết kế riêng theo owner; không chạm các phiên lắp theo mẫu. */
 public class DesignDB {
+    /** Đọc đúng một thiết kế gần nhất, giữ thứ tự id của danh sách hiện có. */
+    public static RobotDesign selectLatestDesign(long userId) throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement("SELECT d.*,g.name AS goal_name,r.version_no AS rule_version "
+                    + "FROM robot_designs d JOIN design_rule_sets r ON r.id = d.rule_set_id "
+                    + "JOIN design_goals g ON g.code = d.goal_code "
+                    + "WHERE d.user_id = ? ORDER BY d.id DESC LIMIT 1");
+            ps.setLong(1, userId);
+            rs = ps.executeQuery();
+            return rs.next() ? fromRow(rs) : null;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
+
     /** Danh sách chỉ của tài khoản trong HttpSession. */
     public static List<RobotDesign> selectDesigns(long userId) throws SQLException {
         ConnectionPool pool = ConnectionPool.getInstance();
