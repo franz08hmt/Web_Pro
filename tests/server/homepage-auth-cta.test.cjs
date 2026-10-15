@@ -16,9 +16,11 @@ test("homepage gives guests a direct, visible path to login and registration wit
   assert.match(styleSource, /\.nav-list a\[data-guest="true"\][\s\S]*?color:\s*var\(--accent-strong\)/);
 });
 
-test("homepage account navigation switches from the guest call-to-action to the signed-in greeting", () => {
-  assert.match(personalizationSource, /accountLink\.querySelector\("span"\)\.textContent\s*=\s*`Chào, \$\{shortName\}`/);
-  assert.match(personalizationSource, /accountLink\.removeAttribute\("data-guest"\)/);
-  assert.match(personalizationSource, /accountLink\.dataset\.authenticated\s*=\s*"true"/);
+test("account navigation uses the same signed-in label on every page", () => {
+  // Phase11 keeps menu labels stable; the shared menu handles authenticated access.
+  const navigation = fs.readFileSync(path.join(projectRoot, "assets/js/site-nav.js"), "utf8");
+  assert.match(navigation, /auth.textContent = user \? "Tài khoản" : "Đăng nhập \/ Đăng ký"/);
+  assert.doesNotMatch(navigation, /localStorage/);
+  assert.doesNotMatch(personalizationSource, /accountLink/);
   assert.match(homeSource, /assets\/js\/personalization\.js\?v=\d{8}\.\d+/);
 });

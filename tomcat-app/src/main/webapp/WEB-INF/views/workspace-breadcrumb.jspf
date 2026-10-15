@@ -1,0 +1,45 @@
+<%@ page pageEncoding="UTF-8" %>
+<c:set var="workspacePageLabel" value="Không gian học tập"/>
+<c:choose>
+    <c:when test="${sitePagePath eq '/account'}">
+        <c:set var="workspacePageLabel" value="Bảng điều khiển"/>
+    </c:when>
+    <c:when test="${sitePagePath eq '/architecture'}">
+        <c:set var="workspacePageLabel" value="Bản đồ môn học"/>
+    </c:when>
+    <c:when test="${sitePagePath eq '/designs'}">
+        <c:set var="workspacePageLabel" value="Thiết kế của tôi"/>
+    </c:when>
+    <c:when test="${sitePagePath eq '/design-sheet'}">
+        <c:set var="workspacePageLabel" value="Hồ sơ thiết kế"/>
+    </c:when>
+    <c:when test="${sitePagePath eq '/assembly-review'}">
+        <c:set var="workspacePageLabel" value="Hoàn thiện mẫu robot"/>
+    </c:when>
+    <c:when test="${sitePagePath eq '/assembly-receipt'}">
+        <c:set var="workspacePageLabel" value="Phiếu kết quả lắp ráp"/>
+    </c:when>
+    <c:when test="${sitePagePath eq '/learning-summary'}">
+        <c:set var="workspacePageLabel" value="Kết quả học tập"/>
+    </c:when>
+    <c:when test="${sitePagePath eq '/learning-profile'}">
+        <c:set var="workspacePageLabel" value="Bản in học tập"/>
+    </c:when>
+    <c:when test="${sitePagePath eq '/my-kit'}"><c:set var="workspacePageLabel" value="Bộ linh kiện"/></c:when>
+    <c:when test="${sitePagePath eq '/tasks'}"><c:set var="workspacePageLabel" value="Nhiệm vụ"/></c:when>
+    <c:when test="${sitePagePath eq '/wiring'}"><c:set var="workspacePageLabel" value="Nối dây"/></c:when>
+    <c:when test="${sitePagePath eq '/diagnosis'}"><c:set var="workspacePageLabel" value="Chẩn đoán"/></c:when>
+    <c:when test="${sitePagePath eq '/wiring-support'}">
+        <c:set var="workspacePageLabel" value="Hỗ trợ nối dây"/>
+    </c:when>
+    <c:when test="${sitePagePath eq '/order-history'}"><c:set var="workspacePageLabel" value="Đơn hàng"/></c:when>
+</c:choose>
+<c:url var="breadcrumbHome" value="/index.html"/>
+<c:url var="breadcrumbAccount" value="/account"/>
+<nav class="workspace-breadcrumb no-print" aria-label="Đường dẫn phân cấp">
+    <a href="<c:out value="${breadcrumbHome}"/>">Trang chủ</a>
+    <c:if test="${not empty sessionScope.user and sitePagePath ne '/account'}">
+        <span aria-hidden="true">/</span> <a href="<c:out value="${breadcrumbAccount}"/>">Của tôi</a>
+    </c:if>
+    <span aria-hidden="true">/</span> <span aria-current="page"><c:out value="${workspacePageLabel}"/></span>
+</nav>

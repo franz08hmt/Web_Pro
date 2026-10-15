@@ -34,7 +34,7 @@ test("redesign preserves every existing form contract and business binding", () 
 
 test("all independent learning views use the scoped shell with private indexing rules", () => {
   const pages = fs.readdirSync(path.join(root, folder)).filter(n => n.endsWith(".jsp") && n !== "wiring-diagram.jsp");
-  assert.equal(pages.length, 41); // Phase11 adds the personal dashboard; every previous view remains guarded.
+  assert.equal(pages.length, 43); // Phase11 dashboard plus two friendly error pages; old views remain guarded.
   for (const name of pages) {
     const s = read(folder + name);
     // New views encode asset URLs with c:url/c:param; old literal URLs remain checked as before.

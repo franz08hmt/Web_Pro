@@ -78,8 +78,13 @@ public class AccountPageServlet extends HttpServlet {
                     break;
                 }
             }
-            dashboard.addCard("Nhiệm vụ", dashboard.taskSummary(
-                    PracticeTaskDB.selectTasks(user.getId(), false, "OPEN"), new Date()), "Xem nhiệm vụ", "/tasks");
+            if (user.isAdmin()) {
+                dashboard.addCard("Quản lý nhiệm vụ", "Phân công và chấm nhiệm vụ học tập.",
+                        "Mở quản trị nhiệm vụ", "/admin-tasks");
+            } else {
+                dashboard.addCard("Nhiệm vụ", dashboard.taskSummary(
+                        PracticeTaskDB.selectTasks(user.getId(), false, "OPEN"), new Date()), "Xem nhiệm vụ", "/tasks");
+            }
             List<RobotDesign> designs = DesignDB.selectDesigns(user.getId());
             DashboardCard design = dashboard.addCard("Thiết kế gần đây", null, "Mở Xưởng thiết kế", "/designs");
             if (!designs.isEmpty()) {

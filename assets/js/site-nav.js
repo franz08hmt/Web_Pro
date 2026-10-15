@@ -35,5 +35,10 @@
         const role = group.dataset.navRole;
         group.hidden = role === "AUTH" ? !user : role === "ADMIN" ? user?.role !== "ADMIN" : false;
       });
+      nav.querySelectorAll('[data-nav-audience="LEARNER"]').forEach(item => {
+        item.hidden = user?.role === "ADMIN";
+      });
+      const auth = nav.querySelector(".site-nav-auth");
+      auth.textContent = user ? "Tài khoản" : "Đăng nhập / Đăng ký";
     }).catch(() => { /* Auth-only links stay hidden; server remains the permission boundary. */ });
 })();

@@ -22,5 +22,6 @@
             </c:choose>
         </span>
         <%@ include file="site-nav.jspf" %>
+        <%@ include file="workspace-breadcrumb.jspf" %>
   </div>
 </header>

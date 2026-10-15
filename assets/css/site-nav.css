@@ -4,7 +4,7 @@
 .site-nav-group { position: relative; min-width: 0; }
 .site-nav summary, .site-nav .site-nav-auth {
   display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 12px;
-  color: #eef3f2; font: 500 14px/1.5 inherit; font-family: inherit;
+  color: #eef3f2; font-family: inherit;
   font-size: 14px; line-height: 1.5; font-weight: 500; cursor: pointer;
   border: 1px solid #3d4a50; border-radius: 6px; list-style: none; text-decoration: none;
 }
@@ -43,3 +43,6 @@
   .workspace-header .site-nav { flex-basis: 100%; }
 }
 @media print { .site-nav { display: none; } }
+.workspace-breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; flex-basis: 100%; font-size: 13px; }
+.workspace-breadcrumb a { display: inline-flex; align-items: center; min-height: 44px; }
+.learning-context a { display: inline-flex; align-items: center; min-height: 44px; margin-right: 12px; }

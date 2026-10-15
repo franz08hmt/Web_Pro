@@ -1,10 +1,9 @@
 "use strict";
 
 (() => {
-  const accountLink = document.querySelector('.nav-list a[href$="tai-khoan.html"]');
   const panel = document.querySelector("#home-progress");
   const accessCard = document.querySelector("#home-access-card");
-  if (!accountLink && !panel && !accessCard) return;
+  if (!panel && !accessCard) return;
 
   const title = panel?.querySelector("#home-progress-title");
   const kicker = panel?.querySelector("#home-progress-kicker");
@@ -70,13 +69,6 @@
   api.auth.me().then(async (user) => {
     const isAdmin = user.role === "ADMIN";
 
-    if (accountLink) {
-      const shortName = user.fullName.trim().split(/\s+/).at(-1);
-      accountLink.querySelector("span").textContent = `Chào, ${shortName}`;
-      accountLink.setAttribute("aria-label", `Tài khoản của ${user.fullName}`);
-      accountLink.removeAttribute("data-guest");
-      accountLink.dataset.authenticated = "true";
-    }
 
     if (accessCard) {
       accessCard.dataset.role = isAdmin ? "ADMIN" : "USER";

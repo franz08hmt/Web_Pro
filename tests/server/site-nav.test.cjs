@@ -31,4 +31,10 @@ test("menu links target existing files or servlet mappings and JSP roles are che
   assert.match(read(views + "workspace-header.jspf"), /<%@ include file="site-nav.jspf" %>/);
   assert.doesNotMatch(read("assets/js/site-nav.js"), /localStorage/);
   assert.match(read("assets/js/site-nav.js"), /api\/auth\/me/);
+  const filter = read("tomcat-app/src/main/java/vn/edu/webpro/robotlab/filter/AdminPageFilter.java");
+  for (const item of groups.find(g => g.id === "admin").items.filter(i => i.href.endsWith(".html"))) {
+    assert.ok(filter.includes('"' + item.href + '"'), item.href);
+  }
+  assert.match(filter, /SessionUtil.getCurrentUser\(http\)/);
+  assert.match(filter, /if \(!user.isAdmin\(\)\)[\s\S]*sendError\(403\)/);
 });

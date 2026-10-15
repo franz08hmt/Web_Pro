@@ -29,15 +29,18 @@
       },
       {
         "label": "Nối dây",
-        "href": "/wiring"
+        "href": "/wiring",
+        "audience": "LEARNER"
       },
       {
         "label": "Hỗ trợ nối dây",
-        "href": "/wiring-support"
+        "href": "/wiring-support",
+        "audience": "LEARNER"
       },
       {
         "label": "Luyện chẩn đoán",
-        "href": "/diagnosis"
+        "href": "/diagnosis",
+        "audience": "LEARNER"
       },
       {
         "label": "Tra cứu lỗi",
@@ -45,7 +48,8 @@
       },
       {
         "label": "Nhiệm vụ",
-        "href": "/tasks"
+        "href": "/tasks",
+        "audience": "LEARNER"
       }
     ]
   },
@@ -148,8 +152,8 @@
         "href": "/admin-tasks"
       },
       {
-        "label": "Chấm nhiệm vụ",
-        "href": "/admin-task-reviews"
+        "label": "Chấm nhiệm vụ (chọn bài)",
+        "href": "/admin-tasks"
       },
       {
         "label": "Bài nối dây quản trị",
