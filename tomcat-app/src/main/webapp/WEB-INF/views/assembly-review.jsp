@@ -30,7 +30,7 @@
                 </c:when>
                 <c:otherwise>
                     <p class="no-print">
-                        <c:if test="${reviewHasWiring}">
+                        <c:if test="${reviewHasWiring and not empty sessionScope.user and not sessionScope.user.admin}">
                             <c:url var="reviewWiring" value="/wiring"><c:param name="robotId" value="${session.robotId}"/></c:url>
                             <a href="<c:out value="${reviewWiring}"/>">Bài nối dây của mẫu này</a>
                         </c:if>
@@ -185,8 +185,10 @@
                         </c:if>
                         <c:choose>
                             <c:when test="${assemblyReview.hasQuizQuestions}">
-                                <a class="no-print" href="<c:out value='${reviewQuizUrl}'/>">
-                                    Làm bài kiểm tra</a>
+                                <c:if test="${not empty sessionScope.user and not sessionScope.user.admin}">
+                                    <a class="no-print" href="<c:out value='${reviewQuizUrl}'/>">
+                                        Làm bài kiểm tra</a>
+                                </c:if>
                             </c:when>
                             <c:otherwise>
                                 <p>Mẫu này chưa có bài kiểm tra.</p>

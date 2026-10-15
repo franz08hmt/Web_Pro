@@ -27,10 +27,20 @@
     const target = new URL(link.href);
     if (target.pathname === location.pathname) link.setAttribute("aria-current", "page");
   });
+  const publishAuth = (status, user = null) => {
+    window.SiteAuthState = {status, user};
+    window.dispatchEvent(new CustomEvent("robot:auth-ready", {detail: window.SiteAuthState}));
+  };
+  publishAuth("pending");
   fetch(new URL("api/auth/me", root), {credentials: "same-origin", cache: "no-store"})
-    .then(response => response.ok ? response.json() : null)
+    .then(response => {
+      if (response.status === 401) return {data: {user: null}};
+      if (!response.ok) throw Error("Xác thực tạm gián đoạn.");
+      return response.json();
+    })
     .then(result => {
       const user = result?.data?.user;
+      if (!result?.data || (user && !["USER", "ADMIN"].includes(user.role))) throw Error("Invalid identity");
       groups.forEach(group => {
         const role = group.dataset.navRole;
         group.hidden = role === "AUTH" ? !user : role === "ADMIN" ? user?.role !== "ADMIN" : false;
@@ -40,5 +50,9 @@
       });
       const auth = nav.querySelector(".site-nav-auth");
       auth.textContent = user ? "Tài khoản" : "Đăng nhập / Đăng ký";
-    }).catch(() => { /* Auth-only links stay hidden; server remains the permission boundary. */ });
+      publishAuth("ready", user || null);
+    }).catch(() => {
+      publishAuth("unavailable");
+      nav.querySelector(".site-nav-auth").textContent = "Xác thực tạm gián đoạn";
+    });
 })();

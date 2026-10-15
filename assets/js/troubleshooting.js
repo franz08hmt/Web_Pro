@@ -56,9 +56,8 @@
       article.append(link);
     }
     if (guide.robotId) {
-      const diagnosis = document.createElement("a");
-      diagnosis.href = `../diagnosis?robotId=${encodeURIComponent(guide.robotId)}`;
-      diagnosis.textContent = "Luyện chẩn đoán cùng mẫu";
+      const diagnosis = window.LearningContext.learnerLink("Luyện chẩn đoán cùng mẫu",
+        `diagnosis?robotId=${encodeURIComponent(guide.robotId)}`);
       article.append(diagnosis);
       const link = document.createElement("a");
       link.href = `lap-rap.html?model=${encodeURIComponent(guide.robotId)}`;

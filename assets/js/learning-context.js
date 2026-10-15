@@ -22,6 +22,19 @@
     info.className = "learning-context-link";
     return info;
   }
+  const learnerLinks = new Set();
+  function learnerLink(text, path) {
+    const action = link(text, path);
+    action.hidden = window.SiteAuthState?.status !== "ready" || window.SiteAuthState.user?.role !== "USER";
+    learnerLinks.add(action);
+    return action;
+  }
+  window.addEventListener("robot:auth-ready", () => {
+    learnerLinks.forEach(action => {
+      if (!action.isConnected) { learnerLinks.delete(action); return; }
+      action.hidden = window.SiteAuthState?.status !== "ready" || window.SiteAuthState.user?.role !== "USER";
+    });
+  });
   async function errorLinks(container, componentId, code) {
     container.replaceChildren();
     const learning = ["WRONG_COMPONENT", "SLOT_OCCUPIED", "ORIENTATION_NOT_ALLOWED", "PARENT_MISSING",
@@ -37,7 +50,7 @@
         link("Tra cứu lỗi", `pages/tra-cuu-loi.html?robotId=${encodeURIComponent(robot.id)}`));
     } catch { /* The component link remains available if the optional catalog fails. */ }
   }
-  window.LearningContext = {componentLink, componentUrl, errorLinks};
+  window.LearningContext = {componentLink, componentUrl, errorLinks, learnerLink};
 
   // Catalog identity and navigation also work when optional context data fails.
   function componentTarget() {
@@ -118,8 +131,8 @@
         assembly.textContent = "Lắp mẫu này";
         card.querySelector(".learning-context")?.remove();
         const actions = document.createElement("p"); actions.className = "learning-context button-group";
-        actions.append(link("Làm bài kiểm tra", `pages/kiem-tra.html?model=${encodeURIComponent(id)}`));
-        if (robot?.hasWiring) actions.append(link("Bài nối dây", `wiring?robotId=${encodeURIComponent(id)}`));
+        actions.append(learnerLink("Làm bài kiểm tra", `pages/kiem-tra.html?model=${encodeURIComponent(id)}`));
+        if (robot?.hasWiring) actions.append(learnerLink("Bài nối dây", `wiring?robotId=${encodeURIComponent(id)}`));
         if (robot?.hasGuide) actions.append(link("Tra cứu lỗi của mẫu", `pages/tra-cuu-loi.html?robotId=${encodeURIComponent(id)}`));
         card.append(actions);
       });

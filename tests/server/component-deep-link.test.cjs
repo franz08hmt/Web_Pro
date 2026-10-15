@@ -20,7 +20,7 @@ function boot(url, {loading = false, ids = ["l298n"]} = {}) {
   vm.runInNewContext(source, {window, document, URL, URLSearchParams, location: new URL(url),
     fetch: async () => { throw Error("Optional context unavailable"); },
     MutationObserver: class { observe() {} }});
-  return {cards, catalog, notice: notices[0], listeners, helper: window.LearningContext};
+  return {cards, catalog, notice: notices[0], listeners, helper: window.LearningContext, window};
 }
 test("canonical, canonical hash and legacy hash locate and focus the component once", () => {
   for (const suffix of ["?component=l298n#component-l298n", "#component-l298n", "#l298n"]) {
@@ -48,4 +48,19 @@ test("unknown, special and malformed identifiers report a missing target safely"
   const special = boot("http://localhost/pages/linh-kien.html?component=a%2Fb", {ids: ["a/b"]});
   assert.equal(special.cards[0].focusCount, 1);
   assert.match(special.helper.componentUrl("a/b"), /component=a%2Fb#component-a%2Fb$/);
+});
+test("contextual practice actions fail closed until the server confirms a USER", () => {
+  const page = boot("http://localhost/pages/linh-kien.html");
+  const action = page.helper.learnerLink("Luyện", "diagnosis?robotId=a%2Fb");
+  action.isConnected = true;
+  assert.equal(action.hidden, true);
+  for (const [status, role, hidden] of [
+    ["pending", "USER", true], ["unavailable", "USER", true], ["ready", "ADMIN", true],
+    ["ready", null, true], ["ready", "USER", false]
+  ]) {
+    page.window.SiteAuthState = {status, user: role ? {role} : null};
+    page.listeners["robot:auth-ready"]();
+    assert.equal(action.hidden, hidden, status + ":" + role);
+  }
+  assert.match(action.href, /diagnosis\?robotId=a%2Fb$/);
 });
