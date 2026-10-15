@@ -1159,15 +1159,15 @@ Không cần học thuộc số slide. Mở file, nói đoạn code **nhận gì
 chạy /architecture để mở thử luồng tương ứng. Số dòng đúng tại bản Đợt11, có thể
 dịch khi source đổi. Không sửa các tài liệu điện thoại WIP trong đợt này.
 
+### Đợt 11b — Ai quyết định nội dung Bảng điều khiển?
 
-### ??t 11b ? Ai quy?t ??nh n?i dung B?ng ?i?u khi?n?
+Servlet lấy owner từ session, đọc dữ kiện giới hạn, gọi bean rồi setAttribute/forward.
+JavaBean quyết định đường tiếp tục PREPARING/READY/IN_PROGRESS, gợi ý mẫu đã lắp
+nhưng chưa kiểm tra (phải có câu hỏi), tổng số kit và nội dung bảy thẻ. XxxDB chỉ
+truy vấn/bind/map; một truy vấn gộp quiz tránh gọi DB trong vòng lặp. Điểm0 thật
+vẫn khác chưa làm. Thiết kế gần nhất dùng LIMIT1, nhiệm vụ trả hai số gộp.
 
-Servlet l?y owner t? session, ??c d? ki?n gi?i h?n, g?i bean r?i setAttribute/forward.
-JavaBean quy?t ??nh ???ng ti?p t?c PREPARING/READY/IN_PROGRESS, g?i ? m?u ?? l?p
-nh?ng ch?a ki?m tra (ph?i c? c?u h?i), t?ng s? kit v? n?i dung b?y th?. XxxDB ch?
-truy v?n/bind/map; m?t truy v?n g?p quiz tr?nh g?i DB trong v?ng l?p. ?i?m0 th?t
-v?n kh?c ch?a l?m. Thi?t k? g?n nh?t d?ng LIMIT1, nhi?m v? tr? hai s? g?p.
-
-- [Servlet: ??c d? ki?n v? forward](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AccountPageServlet.java#L44).
-- [JavaBean: quy?t ??nh th?](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DashboardSummary.java#L36).
-- [JUnit: tr?ng th?i r?ng v? c?c tr??ng h?p bi?n](../tomcat-app/src/test/java/vn/edu/webpro/robotlab/business/DashboardSummaryTest.java#L20).
+- [Servlet: đọc dữ kiện và forward](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AccountPageServlet.java#L44).
+- [JavaBean: quyết định thẻ](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DashboardSummary.java#L36).
+- [JavaBean: chọn gợi ý quiz](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DashboardSummary.java#L66).
+- [JUnit: trạng thái rỗng và trường hợp biên](../tomcat-app/src/test/java/vn/edu/webpro/robotlab/business/DashboardSummaryTest.java#L20).

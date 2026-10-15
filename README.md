@@ -465,3 +465,18 @@ thành công tới /account. /robots và /components vẫn là ví dụ Servlet/
 file:dòng. Hồ sơ thiết kế có form bổ sung vật tư thiếu vào giỏ: token, kiểm owner,
 transaction, bù lượng chưa có trong kit/giỏ; PRG về giỏ, không checkout hoặc đổi kho.
 Không cần migration/seed mới. Xem docs/SITE_MAP.md và docs/PHASE11_UX_QA_REPORT.md.
+
+### Đợt 11b — liên kết và kiểm bản demo
+
+Link linh kiện thống nhất query `component` + hash `component-ID`, nhận cả hash
+cũ. Link luyện tập trong nội dung chờ USER được server xác nhận. Cửa hàng giải
+quyết SKU qua GET riêng, giữ phân trang; không ghi giỏ khi mở link. Dashboard
+đặt quyết định trong JavaBean, không gọi DB để chọn gợi ý trong vòng lặp.
+Không có migration/seed/dependency mới.
+
+Build bằng JDK17: đặt JAVA_HOME đúng trong phiên rồi chạy Maven `clean package`,
+sau đó `npm test` tại repo. Tránh để compiler IDE khác phiên bản ghi đè
+`tomcat-app/target/classes`. ROOT.xml IntelliJ đã quan sát trỏ tới
+`tomcat-app/target/robot-assembly-lab`; XML artifact exploded2 riêng không chứng
+minh đang được phục vụ. Bằng chứng source/commit/artifact/HTTP và giới hạn:
+docs/PHASE11B_REVIEW_FIX_QA_REPORT.md.

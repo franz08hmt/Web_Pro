@@ -919,3 +919,22 @@ Khi cô hỏi kiến thức: quay /architecture, chọn chủ đề và chỉ đ
 Nói theo chuỗi **request → Servlet/session/token → JavaBean → XxxDB → response → JSP**.
 Không đọc tên chương/slide chưa xác minh. Ví dụ form thêm giỏ minh họa getParameter,
 CSRF, transaction, forward/redirect và PRG rõ ràng; ẩn menu không thay kiểm quyền.
+
+## Đợt 11b — trình bày liên kết và trách nhiệm xử lý
+
+Dùng USER để mở bài nối dây/chẩn đoán; ADMIN dùng đúng trang quản trị. Các nút
+luyện tập trong nội dung chờ xác thực server, còn link thông tin linh kiện và
+tra cứu là tài liệu công khai. Từ tra cứu, bấm linh kiện liên quan: danh mục
+phải focus đúng thẻ sau khi tải xong, kể cả link hash cũ/dữ liệu dự phòng.
+Từ catalog/hồ sơ thiết kế, link cửa hàng đọc đúng SKU kể cả SKU ngoài trang1;
+GET không thêm vào giỏ. Ca21SKU dùng fixture browser, không seed thêm dữ liệu.
+
+Nói về dashboard: Servlet nhận request/session và đọc dữ kiện đúng chủ qua
+XxxDB. DashboardSummary chọn hành động, gợi ý quiz và cộng kit; request.setAttribute
+chuyển bean sang JSP để EL/JSTL hiển thị. Điểm0 thật khác chưa làm quiz. Truy vấn
+gộp tránh N+1, thiết kế gần nhất có LIMIT1.
+
+Trước demo, clean package bằng JDK17 và kiểm bản HTTP khớp artifact. Metadata
+VS Code từng đặt compiler25 dù POM/IntelliJ là17; không chữa bằng nâng Java.
+Không kết luận Tomcat lỗi source khi nó còn dùng artifact cũ. Tình trạng IDE/QA
+chi tiết và bằng chứng nằm trong PHASE11B_REVIEW_FIX_QA_REPORT.md.

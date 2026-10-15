@@ -329,13 +329,15 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] M7: breadcrumb,404/500/Throwable, APIJSON, filterHTMLadmin.
 - [x] M8:205Node/130JUnit, cleanpackage17,207ôChrome/HTTP3vai trò/PDF/ảnh và cleanup.
 
+## Đợt 11b — sửa review
 
-## ??t 11b ? s?a review
-
-- [x] Kh?o s?t Git, hash 10 file, review v? baseline Node/JUnit JDK17.
-- [ ] M0: ??i chi?u source/commit/artifact; ghi r? tr?ng th?i deploy IDE.
-- [ ] M1: link linh ki?n canonical/c?, t?i ch?m/fallback/focus kh?ng gi?t.
-- [ ] M2: link n?i dung ??ng quy?n USER/ADMIN/kh?ch, auth ch?m/l?i ??ng quy?n.
-- [ ] M3: deep link SKU trang2, endpoint GET additive, kh?ng ghi d? li?u.
-- [ ] M4: nghi?p v? dashboard trong JavaBean, d? ki?n c? gi?i h?n, unit test.
-- [ ] Ch?t full test/build/browser/HTTP, WIP hash v? cleanup runtime.
+- [x] Khảo sát Git, hash10 file, review và baseline Node/JUnit JDK17.
+- [x] M0: source/HEAD/artifact độc lập; target gốc JDK17, HTTP đúng docBase IDE.
+- [x] M1: canonical/hash cũ, tải chậm/fallback/focus không giật, ID đặc biệt.
+- [x] M2: nội dung đúng vai trò, auth chậm/lỗi đóng quyền, JSTL giữ kiểm server.
+- [x] M3: SKU trang2, GET additive, race/error/stock/ID trùng, không ghi dữ liệu.
+- [x] M4: nghiệp vụ dashboard trong bean, dữ kiện gộp/LIMIT,8 JUnit bổ sung.
+- [x] Test/build/HTTP/browser và đối chiếu byte, hash WIP/DB, tài liệu UTF-8.
+- [x] Dọn đúng runtime QA8081/8082; kiểm Maven test và npm test lại tại repo gốc.
+- [ ] Xác nhận ngăn VS Code compiler25 tái ghi target sau khi nhập lại dự án.
+- [ ] Quan sát lần Run/redeploy IntelliJ8080 tiếp theo; chưa tự chạy phiên người dùng.

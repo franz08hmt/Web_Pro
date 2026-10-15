@@ -1,0 +1,148 @@
+# Đợt 11b — sửa review và xác minh bản demo
+
+Ngày kiểm: 15/10/2026. Nhánh `integration/fullstack-v2`, baseline `99e8337`.
+Không push. Không thay schema, quyền, rubric, published rules hay luồng checkout.
+Review độc lập Đợt11 được giữ nguyên; kết quả dưới đây là kiểm lại trong lượt này.
+
+## Năm vấn đề và kết quả
+
+| Vấn đề | Tái hiện/nguyên nhân | Sửa và bằng chứng |
+| --- | --- | --- |
+| Artifact lệch source/JDK | Repo gốc 204 Node đạt, 1 lỗi byte exploded, 0 skip. Sau một clean build17, package không clean gặp class69 | Clean package bằng17; xác định docBase IDE thật; kiểm chính target qua QA8081. 177 class chính và26 class test đều major61;10 resource HTTP khớp byte source |
+| Deep link linh kiện | Tra cứu dùng `#l298n`, context dùng `component-l298n`; focus phụ thuộc API context và lặp mỗi render | Một helper canonical query+hash; nhận hash cũ, chờ catalog/fallback, focus đúng thẻ một lần, báo thiếu/sai URL bằng chữ an toàn. Node và Chrome kiểm tải chậm/lỗi/ký tự đặc biệt |
+| Link ngữ cảnh sai quyền | ADMIN/khách được dựng nút luyện tập trong nội dung trước xác minh quyền | Dùng trạng thái auth từ GET server của menu; USER mới hiện nút. JSP kiểm session bằng JSTL. Pending/lỗi đóng quyền; backend giữ403 cũ. Lỗi đọc giỏ không biến người đã xác thực thành khách |
+| SKU ngoài trang1 | Browser fixture21SKU: SKU21 không có trong DOM trang1 | GET một SKU đang bán theo khóa chính, không tải tuần tự catalog. Khu vực tập trung khi ngoài trang; không ID trùng, bỏ response cũ, phân biệt hết hàng/không bán/lỗi tải;0 request ghi |
+| Nghiệp vụ dashboard ở Servlet | Chọn gợi ý/card/kit trong controller; gọi count quiz trong vòng lặp, tải cả danh sách thiết kế | DashboardSummary quyết định; Servlet đọc dữ kiện và forward. Một query gộp candidates, LIMIT1 thiết kế, COUNT/SUM nhiệm vụ.8 JUnit mới; bảy thẻ USER/ADMIN trước/sau giống nhau |
+
+Không đổi method/action/form/CSRF/API lỗi cũ. Thêm đúng một GET additive; không có
+migration/seed/dependency mới, không sửa vendor hay chỉnh artifact bằng tay.
+
+## Source, commit và deploy là ba trạng thái riêng
+
+| Trạng thái | Đã kiểm |
+| --- | --- |
+| A — working tree | Build17 trong thư mục riêng, sau đó clean package17 tại target gốc;216 Node/138 JUnit,0 lỗi/skip |
+| B — HEAD sạch khởi đầu | Archive99e8337 ngoài repo, clean package17 và npm test:205 Node/130 JUnit,0 lỗi/skip; không mang WIP vào bản này |
+| B — mã sửa đã commit | Các commit source ở bảng dưới; build sạch snapshot sau commit được ghi trong evidence `committed-build.log` và `committed-node.log` |
+| C — artifact IDE được cấu hình | Đọc ROOT.xml của CATALINA_BASE IntelliJ, docBase là `D:/Web-Pro/robot-engine-website/tomcat-app/target/robot-assembly-lab`. Đã rebuild và kiểm HTTP chính docBase này bằng Tomcat QA riêng8081 |
+| Phiên IntelliJ8080 của người dùng | Không chạy trong lúc khảo sát/QA; không dừng/khởi động/redeploy hoặc đổi cấu hình của phiên này. Lần Run8080 tiếp theo chưa được quan sát trực tiếp |
+
+Ban đầu XML artifact duy nhất trong `.idea/artifacts` định nghĩa `war exploded2`
+tại `out/artifacts`. Đây không phải bằng chứng artifact đang deploy: cấu hình
+Run chọn `war exploded`, và ROOT.xml thực tế xác định target như trên. Không sửa
+XML IDE để giải quyết nhầm đường dẫn. Bản QA ban đầu dùng WAR riêng; vòng cuối
+dùng Context docBase trỏ thẳng target gốc, work/log/config nằm trong runtime QA.
+
+### Vì sao class Java25 xuất hiện lại?
+
+POM đặt `maven.compiler.release=17`, IntelliJ đặt languageLevel/JDK17. Tuy nhiên
+metadata VS Code của chính dự án có compiler source/compliance/targetPlatform25,
+classpath `JavaSE-25`, output `target/classes`; language server chạy bằng JRE25
+đi kèm extension. Đây là compiler IDE khác Maven đang cùng ghi vào target.
+Không kết luận chỉ từ phiên bản JRE của language server: đã kiểm cả preferences
+và classpath dự án, cùng bytecode thực tế69.
+
+Người dùng cho phép tạm dừng đúng language server. Đã xác minh PID41060 theo
+executable của extension và launcher JDT, kiểm không phải Tomcat rồi mới dừng.
+VS Code tự khởi động lại language server; không khẳng định nó còn dừng. Sau
+clean build cuối, toàn bộ class đã kiểm đều major61 và các test gốc đạt.
+Không đổi source/WIP để né lỗi, không nâng project lên25.
+
+Đã trình xin phép cấu hình runtime JavaSE-17 cho workspace và nhập lại Maven.
+Nếu chưa có quyết định riêng, không tự sửa settings/compiler cache/IDE. Cần
+xác nhận lại compiler17 sau bước này để ngăn tái diễn; không thể cam kết chỉ
+một lần clean sẽ ngăn IDE ghi lại class25 trong tương lai. Không ép JRE chạy
+language server xuống17 nếu extension cần JRE mới; cần phân biệt JRE của công
+cụ với target Java17 của project.
+
+## Test và build thực chạy
+
+JDK: Eclipse Adoptium17.0.19.10; Tomcat9.0.120; Maven3.9.15 hiện có. JAVA_HOME
+đặt trong phiên lệnh, không đổi cấu hình hệ thống.
+
+| Lần kiểm | Node | JUnit | Ghi chú |
+| --- | --- | --- | --- |
+| Repo gốc trước sửa |204 đạt/1 lỗi/0 skip|—|tomcat-encoding kiểm byte exploded thất bại |
+| Working tree build riêng trước sửa |—|130 đạt/0 lỗi/skip|clean package17 đạt |
+| Archive HEAD99e8337 |205 đạt/0 lỗi/skip|130 đạt/0 lỗi/skip|Bản commit sạch độc lập |
+| M1 |208 đạt/0 lỗi/skip|130 đạt/0 lỗi/skip|Root target được clean build khi không bị dùng |
+| M2 |209 đạt/0 lỗi/skip|130 đạt/0 lỗi/skip|Node dùng exploded riêng; không tuyên bố root đã sửa từ lần này |
+| M3 |214 đạt/0 lỗi/skip|130 đạt/0 lỗi/skip|GET additive và ca SKU21 |
+| M4 |215 đạt/0 lỗi/skip|138 đạt/0 lỗi/skip|8 JUnit mới; dashboard trước/sau giống nhau |
+| Chốt source/root target |216 đạt/0 lỗi/skip|138 đạt/0 lỗi/skip|npm test mặc định tại repo; clean package17 đạt |
+
+Có một lần `package` không clean thất bại vì class69. Log giữ trong evidence;
+không xóa/nới test, không thêm skip hoặc đổi testbyte để che lỗi này. Kiểm Node
+trong bản build riêng có đặt biến exploded chỉ nhằm kiểm bản riêng; số chốt
+root dùng đường dẫn mặc định, không override.11 Node và8 JUnit được bổ sung.
+
+## Kiểm HTTP/browser
+
+Bằng chứng ngoài Git: `D:/Web-Pro/qa-evidence/phase11b/`.
+
+| Nhóm | Kết quả | Nguồn dữ liệu/bằng chứng |
+| --- | --- | --- |
+| HTTP ba vai trò |69 kiểm mã HTTP đạt:49×200,11×302,5×403,4×404|DB thật, `real-qa.json` |
+| Asset/deploy |10/10 file HTTP khớp từng byte source; menu và cache version mới|`real-qa.json`, QA dùng docBase target gốc |
+| Các trang sửa, ba vai trò |42/42 ô 390/768/1440 không tràn ngang;0 pageerror/asset404|Catalog linh kiện/robot, tra cứu, shop, dashboard; `real-qa.json` |
+| Fixture browser |37/37 ca đạt, không request ghi|21SKU, legacy/canonical, fallback/slow/error/special ID, auth pending/503, race/reload/stock/ID trùng, menu Enter/Escape; `final-original-browser.json` |
+| Link phòng mẫu/Xưởng |4/4 ca USER/ADMIN đạt; bấm tài liệu tới đúng thẻ|Layout từng phần chỉ sửa trong response browser; `room-context.json` |
+| Dashboard USER/ADMIN |Bảy thẻ trước/sau refactor giống nhau|DB thật; `before-dashboard.json`, `after-dashboard.json` |
+| Replay phiên37 |Bước sau/Phát/Tạm dừng hoạt động,0 request ghi|Phiên cũ của student; `replay-readonly.json` |
+| Dữ liệu DB |55/55 bảng giữ hash trong toàn bộ QA|Snapshot SELECT chỉ lưu SHA-256, không lưu dữ liệu/bí mật |
+
+HTTP cụ thể: khách `/account` và route cá nhân302; USER mở admin403; ADMIN mở
+`/tasks`, `/wiring`, `/diagnosis`403 đúng luật cũ. Review16/30 của builder200,
+review31 khác chủ404. GET SKU đang bán200 và data giống sản phẩm trong list;
+SKU không tồn tại404 JSON. Đã bấm link cửa hàng từ hồ sơ thiết kế7 tới thẻ
+sản phẩm thật. Không bấm GET trang chuẩn bị thiếu session để tránh tạo phiên.
+
+Ảnh trước là trang từ bản HEAD sạch99e8337 trên QA8082, không phải ảnh của
+exploded cũ bị lệch byte. Ảnh `before-390-*`, `before-1440-*` và ảnh sau
+`final-original-390-*`, `final-original-1440-*`, `real-*` nằm ngoài repo. Đã xem
+ảnh shop mobile, catalog desktop và dashboard mobile. Không commit ảnh/token.
+
+## Hồi quy, giới hạn và an toàn
+
+- Smoke GET thật: tasks, account, learning-profile, wiring, diagnosis, robots,
+  components, summary, kit, designs, orders, admin-stats/admin-shop. Phòng mẫu
+  hoàn tất, Xưởng7, review và replay dùng dữ liệu có sẵn, không tạo phiên mới.
+- Quiz/checkout/ghi nối dây/nhiệm vụ và POST bổ sung giỏ: giữ test cũ, kiểm source;
+  không chạy thao tác ghi thật. Không tuyên bố đã kiểm E2E ghi các module này.
+- SKU21/hết hàng/ngừng bán/503/race dùng fixture browser/Node; không seed hoặc
+  đổi sản phẩm/tồn kho để tạo tình huống. Backend mới được kiểm contract source
+  và GET thật cho SKU hiện có/không tồn tại; không giả lập lỗi DB thật bằng cách
+  làm gián đoạn DB. Không kiểm500 bằng cách phá runtime.
+- Không kiểm Firefox/Safari, thiết bị cảm ứng vật lý hoặc screen reader.
+- Không sửa/xóa QA7, phiên39/40 hay bất kỳ dữ liệu học tập/đơn/giỏ nào. Chỉ POST
+  đăng nhập tài khoản đã có; không tạo tài khoản, không đổi role/mật khẩu.
+- 10/10 file WIP/chưa theo dõi giữ nguyên SHA-256 đầu lượt. Không stage chúng.
+  Không đổi cấu hình IDE khi chưa được duyệt. QA runtime8081/8082, cấu hình/log/
+  work/temp chứa thông tin nhạy cảm được dọn bằng đúng PID của runtime tự tạo;
+ 8080 không bị tác động. Kết quả cleanup nằm ngoài Git.
+- Tài liệu mới từng bị pipeline PowerShell mất dấu; đã viết lại UTF-8, đọc kiểm
+  các heading/nội dung Đợt11b trước commit cuối. Không sửa lịch sử review cũ.
+
+## Commit
+
+| Hash | Message |
+| --- | --- |
+|55af8c0|fix(ux): resolve component deep links after catalog loading|
+|f315a70|fix(ux): align contextual learning links with server roles|
+|7f3f0eb|fix(shop): resolve product deep links beyond the first page|
+|18a1c6b|refactor(ux): move dashboard decisions into JavaBeans|
+|be2df6d|fix(shop): distinguish unavailable authentication from guest access|
+
+Commit tài liệu/QA cuối dùng message `docs(qa): record phase11b verification and deployment status`;
+hash được báo khi bàn giao. Không amend/rebase/reset, không push.
+
+## Đoạn giải thích để trình bày
+
+Trình duyệt gửi HTTP request; Servlet đọc tham số và danh tính từ session.
+Servlet gọi XxxDB đọc dữ kiện đúng chủ bằng PreparedStatement có giới hạn.
+JavaBean quyết định gợi ý, trạng thái và nội dung thẻ rồi Servlet đặt bean vào
+request bằng setAttribute. JSP dùng EL/JSTL hiển thị sau forward, không truy vấn
+DB hay quyết định nghiệp vụ. Link theo ngữ cảnh giữ đúng linh kiện/robot, nhưng
+quyền vẫn được kiểm ở server kể cả khi giao diện đã ẩn nút. Source đúng cần được
+build bằng Java17 và deploy đúng artifact; kiểm byte HTTP giúp chứng minh bản
+demo đang phục vụ đúng phiên bản.

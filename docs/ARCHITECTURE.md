@@ -348,8 +348,8 @@ dùng Servlet → setAttribute → forward → JSP; HTML catalog/phòng 3D đọ
 tương tác. Menu JSP là include lúc dịch trang, không do JS quyết định quyền.
 Nguồn kiểm nhãn/URL/nhóm/quyền là tests/fixtures/site-nav.json; test đối chiếu mọi HTML.
 
-DashboardSummary tổng hợp các XxxDB sẵn có theo user_id; chỉ thêm truy vấn phiên
-gần nhất LIMIT1 ở AssemblySessionDB. Không sửa TaskServlet/LearningProfileServlet.
+DashboardSummary tổng hợp dữ kiện thuần do Servlet chuyển vào; XxxDB đọc theo
+user_id, truy vấn gộp và LIMIT1 như phần Đợt11b bên dưới. Không sửa TaskServlet/LearningProfileServlet.
 LearningLinkDB đọc quan hệ linh kiện–robot, kit riêng và sản phẩm đang bán bằng
 một truy vấn; LearningLinkServlet trả GET no-store. Không đổi API nội dung cũ.
 
@@ -368,3 +368,22 @@ kiểm quyền API sẵn có. Breadcrumb dùng javax.servlet.forward.servlet_pat
 đánh dấu route gốc sau forward, không nhầm với đường dẫn JSP.
 WorkspaceCacheFilter bổ sung no-store cho learning-summary/order-history/admin-stats
 và hai catalog có menu theo session. Không thay query, luật hoặc file WIP.
+
+## Đợt 11b — trách nhiệm dashboard và liên kết đọc
+
+AccountPageServlet chỉ xác thực session, gọi XxxDB lấy dữ kiện, truyền cho
+DashboardSummary, setAttribute và forward dashboard.jsp. Bean thuần quyết định
+nhãn/hành động của bảy thẻ, mẫu đã lắp có câu hỏi nhưng chưa làm quiz và tổng kit;
+không biết JDBC/Servlet. DashboardQuizCandidate giữ số câu hỏi/lượt làm đã gộp.
+StatsDB đọc candidates bằng một truy vấn có owner và thứ tự tên/mã; DesignDB
+đọc thiết kế gần nhất LIMIT1. PracticeTaskDB chỉ đếm nhiệm vụ và bind khoảng hạn
+72 giờ do bean tính. Không gọi DB trong vòng lặp mẫu.
+
+Menu HTML phát trạng thái xác thực server cho các link ngữ cảnh; pending/lỗi
+không cấp quyền. JSP chọn hành động luyện tập bằng JSTL theo session. Backend
+vẫn giữ quyền USER/ADMIN cũ. Thông tin linh kiện/tra cứu là tài liệu công khai.
+
+Định vị linh kiện độc lập với API context: chờ catalog hoặc fallback hoàn tất,
+gán ID và focus một lần. ShopProductServlet đọc một SKU đang bán qua
+ShopProductDB/PreparedStatement; GET danh sách giữ nguyên. Không mở deep link
+bằng cách tải tuần tự toàn catalog hay ghi giỏ/đơn/tồn kho.

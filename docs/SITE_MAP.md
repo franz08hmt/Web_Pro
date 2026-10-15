@@ -132,3 +132,15 @@ ADMIN có bản quản trị riêng. Không ẩn chức năng có dữ liệu đ
 Các mục menu chính đều có đích200/302 và tới được trong2bấm. Các bản ghi riêng
 (phiếu, hồ sơ, bài chấm) mở từ danh sách/phiên; không dùng ID cố định trong menu.
 Mọi menu HTML/JSP đối chiếu fixture theo vai trò trong207ô; chi tiết QA ở báo cáoĐợt11.
+
+## Đợt 11b — quy tắc link và quyền trong nội dung
+
+- Linh kiện canonical: `/pages/linh-kien.html?component=ID#component-ID`. Cả
+  `#ID` cũ và `#component-ID` được nhận; chỉ focus sau catalog/fallback sẵn sàng.
+- Link luyện tập trong catalog/tra cứu/trang hoàn thiện chỉ hiện cho USER đã
+  xác minh. ADMIN/khách/auth lỗi không nhận nút tham gia sai quyền; menu và
+  kiểm quyền backend giữ nguyên. Link tài liệu linh kiện/tra cứu vẫn công khai.
+- `GET /api/shop/products/{id}`: resource đọc công khai mới, chỉ SKU đang bán;
+  hash cửa hàng cũ được giải quyết độc lập với phân trang. Đây là API hỗ trợ,
+  không thêm module/menu/trang chính hay thay quyền của route cũ.
+- Không đổi quyết định gộp/ẩn trang Đợt11, không ẩn module có dữ liệu.

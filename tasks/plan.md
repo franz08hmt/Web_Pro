@@ -535,28 +535,31 @@ Khôngorder/checkout/stock/spec/schema thay đổi.10fileWIP giữhash. RuntimeQ
 WAR cuối có thêm36 kiểm smoke/header/quyền; WorkspaceCacheFilter bảo vệ no-store
 ở các trang cũ, không sửa controller hoặc JSP WIP của người dùng.
 
+## Đợt 11b — sửa review và xác minh deploy (15/10/2026)
 
-## ??t 11b ? s?a review v? x?c minh deploy (15/10/2026)
+Khởi đầu HEAD99e8337, đúng integration/fullstack-v2, 10 file bảo vệ đã lưu SHA-256.
+Node tại repo:204 đạt/1 lỗi exploded byte/0skip; working tree build riêng JDK17:
+130JUnit đạt/0skip. Bản HEAD sạch archive:205Node/130JUnit đạt, không có skip.
+Không có Tomcat đang dùng target gốc khi bắt đầu rebuild.
 
-Baseline HEAD 99e8337, ??ng integration/fullstack-v2. ?? l?u SHA-256 10 file b?o v?
-ngo?i Git. Node t?i repo: 204 ??t/1 l?i exploded byte/0 skip; build ri?ng JDK17:
-130 JUnit ??t/0 skip. Kh?ng c? Tomcat hay ti?n tr?nh build d?ng target g?c khi kh?o s?t.
-IDE ch?n artifact `robot-assembly-lab-tomcat:war exploded`, c?n XML artifact duy nh?t
-trong repo ??nh ngh?a `war exploded2` t?i out/artifacts; ch?a c? HTTP8080 ?? x?c minh.
-Kh?ng s?a c?u h?nh IDE ho?c m?c ??nh hai artifact l? m?t.
+Kế hoạch trước khi code endpoint M3: thêm GET `/api/shop/products/{id}`, công khai,
+chỉ SKU đang bán;200 `{data: product}` kể cả hết hàng,404 JSON nếu không có/ngừng
+bán,503 khi DB lỗi. Request danh sách cũ giữ nguyên. Một GET theo SKU, không tải
+mọi trang, không ghi giỏ/đơn/kho, không đổi schema. Đã triển khai đúng contract.
 
-- M0: build working tree v? commit HEAD ??c l?p; rebuild target g?c khi kh?ng b? d?ng;
-  ??i chi?u HTTP QA v?i source. Deploy IDE c?n t?ch ri?ng, kh?ng s?a artifact b?ng tay.
-- M1: URL linh ki?n canonical `linh-kien.html?component=ID#component-ID`; h? tr? hash
-  c?, ch? catalog ho?n t?t k? c? fallback, focus m?t l?n; kh?ng ph? thu?c API context.
-- M2: t?i s? d?ng x?c th?c server c?a menu cho link luy?n t?p trong n?i dung; ch? USER;
-  kh?ng m? quy?n backend v? kh?ng coi l?i m?ng/DB l? kh?ch.
-- M3: contract additive **GET /api/shop/products/{id}**, c?ng khai, ch? s?n ph?m ?ang
-  b?n; 200 `{data: product}` k? c? h?t h?ng, 404 JSON khi kh?ng c?/ng?ng b?n, 503
-  khi DB l?i. GET danh s?ch c? gi? nguy?n contract/ph?n trang. Frontend d?ng m?t
-  GET theo SKU v? khu v?c t?p trung ngo?i trang hi?n t?i, ch?ng ph?n h?i c?/ID tr?ng;
-  kh?ng t?i m?i trang v? kh?ng c? request ghi khi m? link. Kh?ng ??i schema.
-- M4: DashboardSummary quy?t ??nh c?c th?/g?i ?/kit. Servlet ch? ??c d? ki?n owner,
-  g?i bean v? forward; truy v?n g?p quiz v? LIMIT thi?t k? g?n nh?t tr?nh N+1.
-- QA: Chrome th?t + fixture browser 21 SKU/slow/error/roles, Node h?nh vi, JUnit,
-  smoke GET th?t; kh?ng POST gi?/phi?n/thi?t k?, kh?ng s?a/d?n d? li?u c?.
+- M1: URL linh kiện canonical query+hash, nhận hash cũ, chờ catalog/fallback,
+  focus một lần độc lập API context; link từ tra cứu/khay/lỗi/thông số dùng chung.
+- M2: trạng thái xác thực từ menu/server, đóng quyền khi pending/lỗi; JSP dùng
+  JSTL/session. Không mở quyền backend USER cho ADMIN.
+- M3: GET SKU có giới hạn, khu vực tập trung khi ngoài trang hiện tại; chống
+  response cũ/ID trùng. Auth lỗi khác khách; giỏ lỗi không mất danh tính.
+- M4: DashboardSummary quyết định thẻ/gợi ý/kit; Servlet đọc dữ kiện và forward.
+  Candidates quiz một query, thiết kế LIMIT1, nhiệm vụ COUNT/SUM theo owner.
+- M0 chốt: ROOT.xml IntelliJ thật trỏ target/robot-assembly-lab; đã build lại
+  target bằng17 và phục vụ chính docBase này bằng Tomcat QA riêng8081.
+  POM/IntelliJ17, nhưng metadata VS Code compiler/JRE25, output target/classes;
+  đã xin phép và xác minh đúng language server trước khi dừng. Không sửa cấu hình
+  IDE khi chưa được duyệt; không khởi động/dừng Tomcat người dùng8080.
+- QA:216Node/138JUnit,37 ca fixture browser,4 ca link phòng dùng layout tạm,
+  69HTTP thật và42 ô viewport,10 resource HTTP khớp byte source. Hash55 bảng DB
+  không đổi; chỉ đăng nhập/GET thật. Báo cáo ghi rõ giới hạn deploy/IDE và hồi quy.
