@@ -1,0 +1,11 @@
+.course-map code { overflow-wrap: anywhere; white-space: normal; }
+.course-map #course-demo, .course-map #course-compare { scroll-margin-top: 16px; }
+@media print {
+  .course-map { background: white; color: black; font: 11pt/1.5 Arial, sans-serif; }
+  .course-map .workspace-header, .course-map .workspace-footer, .course-map .workspace-skip,
+  .course-map .no-print { display: none; }
+  .course-map .workspace-content { width: auto; max-width: none; padding: 0; }
+  .course-map .workspace-panel { border: 1px solid #444; padding: 10pt; margin: 10pt 0; break-inside: avoid; }
+  .course-map a { color: black; }
+  .course-map code { font-size: 9pt; }
+}
