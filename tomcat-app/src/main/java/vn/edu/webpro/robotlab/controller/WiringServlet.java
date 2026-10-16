@@ -50,7 +50,12 @@ public class WiringServlet extends HttpServlet {
             String action = TaskFormUtil.text(request, "action");
             if (action.isEmpty()) {
                 request.setAttribute("wiringExercises", WiringDB.selectExercises(false));
-                request.setAttribute("wiringAttempts", WiringDB.selectAttempts(user.getId()));
+                WiringHistoryPage history = new WiringHistoryPage();
+                history.setRequestedPage(ValidationUtil.parsePositiveInt(request.getParameter("page"), 1, 100000));
+                history.setTotalItems(WiringDB.countAttempts(user.getId()));
+                request.setAttribute("wiringHistory", history);
+                request.setAttribute("wiringAttempts",
+                        WiringDB.selectAttempts(user.getId(), history.getPageSize(), history.getOffset()));
                 forward(request, response, "wiring-list");
             } else if ("play".equals(action) || "result".equals(action)) {
                 WiringAttempt a = WiringDB.selectAttempt(WiringFormUtil.id(request, "id"), user.getId());

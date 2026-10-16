@@ -11,8 +11,10 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/wiring.css?v=20261006.2">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <meta name="robots" content="noindex, nofollow">
+        <c:url var="practiceIndexCss" value="/assets/css/practice-index.css"><c:param name="v" value="20261016.1"/></c:url>
+        <link rel="stylesheet" href="<c:out value="${practiceIndexCss}"/>">
     </head>
-    <body class="learning-workspace workspace-page-wiring-list wiring">
+    <body class="learning-workspace workspace-page-wiring-list wiring practice-index">
         <%@ include file="workspace-header.jspf" %>
         <main class="workspace-content" id="workspace-main" tabindex="-1">
 
@@ -22,7 +24,12 @@
             </nav>
             <h1>Phòng thực hành nối dây</h1>
             <p>Luyện tập có tài liệu: server chấm các cặp trực tiếp của bài mẫu, không mô phỏng điện hay xác nhận robot thật.</p>
-            <h2>Bài đang công bố</h2>
+            <nav class="practice-sections" aria-label="Các phần thực hành nối dây">
+                <a href="#wiring-exercises">Bài thực hành</a>
+                <a href="#wiring-history">Lịch sử của tôi</a>
+            </nav>
+            <section id="wiring-exercises" aria-labelledby="wiring-exercises-title">
+            <h2 id="wiring-exercises-title">Bài thực hành</h2>
             <c:set var="wiringVisibleCount" value="0"/>
             <div class="workspace-grid">
                 <c:forEach var="wiringExercise" items="${wiringExercises}">
@@ -43,10 +50,12 @@
                     </c:if>
                 </c:forEach>
             </div>
-            <h2>Lượt đã lưu và lịch sử của tôi</h2>
             <c:if test="${wiringVisibleCount eq 0}">
                 <p>Chưa có bài nối dây phù hợp. Hãy chọn mẫu khác hoặc quay lại danh sách bài đang công bố.</p>
             </c:if>
+            </section>
+            <section id="wiring-history" class="practice-history" aria-labelledby="wiring-history-title">
+            <h2 id="wiring-history-title">Lượt đã lưu và lịch sử của tôi</h2>
             <c:if test="${empty wiringAttempts}">
                 <p>Chưa có lượt thực hành.</p>
             </c:if>
@@ -80,9 +89,31 @@
                             <c:out value="${wiringAttempt.grade.resultLabel}"/>
                         </span></p>
                     </c:if>
-                    <a href="?action=play&amp;id=<c:out value="${wiringAttempt.id}"/>">Tiếp tục / xem kết quả</a>
+                    <c:url var="wiringHistoryTarget" value="/wiring">
+                        <c:param name="action" value="play"/><c:param name="id" value="${wiringAttempt.id}"/>
+                    </c:url>
+                    <a href="<c:out value="${wiringHistoryTarget}"/>">Tiếp tục / xem kết quả</a>
                 </section>
             </c:forEach>
+            <nav class="history-pagination" aria-label="Trang lịch sử nối dây">
+                <p>Trang <c:out value="${wiringHistory.page}"/>/<c:out value="${wiringHistory.totalPages}"/>
+                    · <c:out value="${wiringHistory.totalItems}"/> lượt; mỗi trang tối đa20 lượt.</p>
+                <c:if test="${wiringHistory.hasPrevious}">
+                    <c:url var="wiringPrevious" value="/wiring">
+                        <c:param name="page" value="${wiringHistory.page - 1}"/>
+                        <c:if test="${not empty param.robotId}"><c:param name="robotId" value="${param.robotId}"/></c:if>
+                    </c:url>
+                    <a href="<c:out value="${wiringPrevious}"/>#wiring-history">Trang trước</a>
+                </c:if>
+                <c:if test="${wiringHistory.hasNext}">
+                    <c:url var="wiringNext" value="/wiring">
+                        <c:param name="page" value="${wiringHistory.page + 1}"/>
+                        <c:if test="${not empty param.robotId}"><c:param name="robotId" value="${param.robotId}"/></c:if>
+                    </c:url>
+                    <a href="<c:out value="${wiringNext}"/>#wiring-history">Trang sau</a>
+                </c:if>
+            </nav>
+            </section>
         </main>
         <%@ include file="workspace-footer.jspf" %>
     </body>

@@ -8,6 +8,7 @@
   const groupSelect = document.querySelector("#filter-group");
   const searchInput = document.querySelector("#filter-search");
   let debounceTimer = 0;
+  let searchVersion = 0;
 
   const robots = window.ROBOT_MODELS || [];
   const robotNames = new Map(robots.map((robot) => [robot.id, robot.name]));
@@ -26,11 +27,13 @@
   }
 
   function renderGuide(guide) {
-    const article = document.createElement("article");
+    const article = document.createElement("details");
     article.className = "troubleshoot-item";
 
     const heading = document.createElement("h2");
     heading.textContent = guide.symptom;
+    const summary = document.createElement("summary");
+    summary.append(heading);
 
     const meta = document.createElement("p");
     meta.className = "troubleshoot-meta";
@@ -48,7 +51,7 @@
     steps.className = "troubleshoot-steps";
     steps.textContent = guide.resolutionSteps;
 
-    article.append(heading, meta, causesTitle, causes, stepsTitle, steps);
+    article.append(summary, meta, causesTitle, causes, stepsTitle, steps);
 
     if (guide.relatedComponentId) {
       const link = window.LearningContext.componentLink(guide.relatedComponentId);
@@ -69,13 +72,16 @@
   }
 
   async function search() {
+    const version = ++searchVersion;
     statusEl.textContent = "Đang tìm…";
+    listEl.replaceChildren();
     try {
       const { items, meta } = await api.troubleshooting.search({
         robotId: robotSelect.value || undefined,
         componentGroup: groupSelect.value || undefined,
         search: searchInput.value.trim() || undefined
       });
+      if (version !== searchVersion) return;
 
       if (groupSelect.children.length <= 1 && meta.componentGroups) {
         meta.componentGroups.forEach((group) => {
@@ -96,6 +102,7 @@
         ? "Không tìm thấy tình huống phù hợp."
         : `Tìm thấy ${meta.total} tình huống.`;
     } catch (error) {
+      if (version !== searchVersion) return;
       statusEl.textContent = `Không thể tải dữ liệu. ${error.message}`;
     }
   }

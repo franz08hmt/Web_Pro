@@ -1,0 +1,18 @@
+/* Scoped to practice catalogs and lookup; play/review/3D and shared grids stay unchanged. */
+@media screen {
+  .practice-index .practice-sections { display: flex; flex-wrap: wrap; gap: 12px 24px; margin: 20px 0; }
+  .practice-index .practice-sections a { padding: 8px 0; min-height: 44px; }
+  .practice-index .workspace-course { min-width: 0; margin: 0; }
+  .practice-index .workspace-course form { border: 0; margin: 16px 0 0; padding: 0; }
+  .practice-index .workspace-course .task-text { margin: 12px 0; }
+  .practice-index .workspace-course .practice-secondary { display: inline-block; padding: 10px 0; }
+  .practice-index .practice-history { border-top: 1px solid var(--lab-border); margin-top: 32px; padding-top: 20px; }
+  .practice-index .history-pagination { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; }
+  .practice-index .history-pagination a { min-height: 44px; padding: 10px 0; }
+}
+/* Native details preserve full authored text and keyboard Enter/Space behavior. */
+.troubleshoot-page .troubleshoot-item summary { cursor: pointer; padding: 12px 0; }
+.troubleshoot-page .troubleshoot-item summary h2 { display: inline; font-size: 1.15rem; }
+.troubleshoot-page .troubleshoot-item p { white-space: pre-wrap; overflow-wrap: anywhere; }
+.troubleshoot-page .troubleshoot-item a { display: inline-block; padding: 10px 0; min-height: 44px; }
+.troubleshoot-page .troubleshoot-item :focus-visible { outline: 3px solid #2dd4bf; outline-offset: 4px; }

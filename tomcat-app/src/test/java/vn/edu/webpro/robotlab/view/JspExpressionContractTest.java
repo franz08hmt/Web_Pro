@@ -65,6 +65,7 @@ final class JspExpressionContractTest {
             Map.entry("supportMessage", WiringSupportMessage.class),
             Map.entry("wiringExercise", WiringExercise.class),
             Map.entry("wiringAttempt", WiringAttempt.class),
+            Map.entry("wiringHistory", WiringHistoryPage.class),
             Map.entry("wiringTerminal", WiringTerminal.class),
             Map.entry("wiringRule", WiringRule.class),
             Map.entry("wiringConnection", WiringConnection.class),

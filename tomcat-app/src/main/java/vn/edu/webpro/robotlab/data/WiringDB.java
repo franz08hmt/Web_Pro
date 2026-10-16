@@ -414,6 +414,11 @@ public class WiringDB {
 
     /** Lịch sử metadata của chính người dùng bằng một query, không tải con N+1. */
     public static ArrayList<WiringAttempt> selectAttempts(long owner) throws SQLException {
+        return selectAttempts(owner, Integer.MAX_VALUE, 0);
+    }
+
+    /** Một trang metadata của chính người dùng; lọc owner trước LIMIT/OFFSET, không tải dây. */
+    public static ArrayList<WiringAttempt> selectAttempts(long owner, int limit, int offset) throws SQLException {
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection c = pool.getConnection();
         PreparedStatement ps = null;
@@ -421,8 +426,10 @@ public class WiringDB {
         try {
             ps = c.prepareStatement("SELECT a.*,e.title,e.state AS exercise_state,r.name AS robot_name "
                     + "FROM wiring_attempts a JOIN wiring_exercises e ON e.id=a.exercise_id "
-                    + "JOIN robots r ON r.id=e.robot_id WHERE a.user_id = ? ORDER BY a.id DESC");
+                    + "JOIN robots r ON r.id=e.robot_id WHERE a.user_id = ? ORDER BY a.id DESC LIMIT ? OFFSET ?");
             ps.setLong(1, owner);
+            ps.setInt(2, limit);
+            ps.setInt(3, offset);
             rs = ps.executeQuery();
             ArrayList<WiringAttempt> list = new ArrayList<>();
             while (rs.next()) {
@@ -440,6 +447,25 @@ public class WiringDB {
             DBUtil.closeResultSet(rs);
             DBUtil.closePreparedStatement(ps);
             pool.freeConnection(c);
+        }
+    }
+
+    /** Đếm lịch sử của đúng người dùng, không tải toàn bộ lượt lên Servlet. */
+    public static int countAttempts(long owner) throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement("SELECT COUNT(*) FROM wiring_attempts WHERE user_id = ?");
+            ps.setLong(1, owner);
+            rs = ps.executeQuery();
+            rs.next();
+            return rs.getInt(1);
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
         }
     }
 

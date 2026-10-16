@@ -13,3 +13,13 @@ test("learning summary production code uses course syntax and delegates aggregat
   assert.match(servlet, /summary\.summarizeSessions\(sessionCounts\)/);
   assert.match(servlet, /setAttribute\("totalSessions", summary\.getTotalSessions\(\)\)/);
 });
+
+test("wiring history filters its owner before deterministic database pagination", () => {
+  const db = fs.readFileSync(path.join(root, java, "data/WiringDB.java"), "utf8");
+  assert.match(db, /WHERE a.user_id = \? ORDER BY a.id DESC LIMIT \? OFFSET \?/);
+  assert.match(db, /ps.setLong\(1, owner\);\s*ps.setInt\(2, limit\);\s*ps.setInt\(3, offset\)/);
+  assert.match(db, /SELECT COUNT\(\*\) FROM wiring_attempts WHERE user_id = \?/);
+  const servlet = fs.readFileSync(path.join(root, java, "controller/WiringServlet.java"), "utf8");
+  assert.match(servlet, /selectAttempts\(user.getId\(\), history.getPageSize\(\), history.getOffset\(\)\)/);
+  assert.doesNotMatch(servlet, /subList\(/);
+});
