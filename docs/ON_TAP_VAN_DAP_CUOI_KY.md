@@ -1171,3 +1171,19 @@ vẫn khác chưa làm. Thiết kế gần nhất dùng LIMIT1, nhiệm vụ tr�
 - [JavaBean: quyết định thẻ](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DashboardSummary.java#L56).
 - [JavaBean: chọn gợi ý quiz](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DashboardSummary.java#L86).
 - [JUnit: trạng thái rỗng và trường hợp biên](../tomcat-app/src/test/java/vn/edu/webpro/robotlab/business/DashboardSummaryTest.java#L20).
+
+### Đợt11c — giải thích qua hành trình học
+
+**Tại sao mở bộ chọn quiz chưa tạo lượt làm bài?**
+[quiz.js:30](../assets/js/quiz.js#L30) chỉ gọi GET catalog/câu hỏi hiện có, dựng
+liên kết có model. Luồng submit cũ mới gửi POST; câu hỏi công khai không có đáp án.
+
+**Phép tổng hợp số phiên nằm ở đâu?**
+[LearningSummary:29](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/LearningSummary.java#L29)
+cộng nhóm trạng thái bằng for. Servlet lấy dữ kiện đúng user qua StatsDB rồi
+setAttribute/forward; JSP chỉ đọc kết quả bằng EL và c:out. Không đổi cách chấm.
+
+**Lịch sử dài có bị tải hết rồi mới cắt không?**
+[WiringHistoryPage:47](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/WiringHistoryPage.java#L47)
+tính offset; WiringServlet truyền owner/limit/offset cho WiringDB. SQL lọc user_id
+trước LIMIT/OFFSET, thứ tự id ổn định; JSTL tạo link trang trước/sau bằng c:url.

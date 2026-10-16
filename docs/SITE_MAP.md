@@ -144,3 +144,15 @@ Mọi menu HTML/JSP đối chiếu fixture theo vai trò trong207ô; chi tiết 
   hash cửa hàng cũ được giải quyết độc lập với phân trang. Đây là API hỗ trợ,
   không thêm module/menu/trang chính hay thay quyền của route cũ.
 - Không đổi quyết định gộp/ẩn trang Đợt11, không ẩn module có dữ liệu.
+
+## Đợt11c — đường đi sau review16/10/2026
+
+- `/pages/kiem-tra.html` không model là bộ chọn bài từ catalog/API câu hỏi;
+  chọn mẫu mới mở URL `?model=`. GET không tạo lượt, không tự chọn mẫu đầu.
+- Dashboard giữ7 hành động, tách nhóm học và nhóm vật tư/đơn hàng; không thêm
+  trang chính thứ tư. Tổng kết có link review đúng chủ, quiz đúng mẫu và bản in.
+- `/wiring?page=N#wiring-history`:20 lượt/trang theo owner, thứ tự id giảm dần;
+  trang trước/sau giữ robotId của catalog. Tra cứu mở chi tiết bằng details và
+  giữ mẫu khi sang chẩn đoán. Không đổi route/API ghi hoặc quyền hiện có.
+- Trạng thái cá nhân có tại chi tiết nhiệm vụ. Danh sách chưa có dữ kiện người
+  nhận trong GET WIP, chỉ thêm link mở chi tiết; phần này chưa duyệt mở rộng.

@@ -938,3 +938,21 @@ Trước demo, clean package bằng JDK17 và kiểm bản HTTP khớp artifact.
 VS Code từng đặt compiler25 dù POM/IntelliJ là17; không chữa bằng nâng Java.
 Không kết luận Tomcat lỗi source khi nó còn dùng artifact cũ. Tình trạng IDE/QA
 chi tiết và bằng chứng nằm trong PHASE11B_REVIEW_FIX_QA_REPORT.md.
+
+## Đợt11c — trình bày hành trình học, không tạo dữ liệu QA mới
+
+1. Từ Bảng điều khiển, chỉ thẻ tiếp tục lắp và mẫu đã hoàn tất; kit/đơn hàng ở
+   nhóm phụ. Mở kết quả có sẵn của chính tài khoản, tránh chép số phiên người khác.
+2. Mở menu Luyện tập → Kiểm tra kiến thức. Trang không model cho chọn bài có
+   câu hỏi đã được API xác nhận; chọn mẫu rồi mới xem câu hỏi. Mở trang chưa tạo
+   lượt; nộp bài mới ghi kết quả. Không nộp thử vào DB demo trong lượt QA chỉ đọc.
+3. Sang Nối dây → Lịch sử của tôi → mở lượt đã có. Tra cứu theo mẫu → mở triệu
+   chứng bằng bàn phím → Luyện chẩn đoán cùng mẫu. Chỉ giải thích nút bắt đầu,
+   không bấm nếu chưa được phép tạo lượt trong buổi kiểm chứng.
+4. Tổng kết → mẫu hoàn thiện/ôn tập đúng model → Hồ sơ bản in/PDF. Nhiệm vụ có
+   nhãn trạng thái nhiệm vụ; mở chi tiết xem trạng thái cá nhân và cờ nộp muộn.
+
+Phân biệt lỗi giao diện đã sửa với dữ liệu demo: bài nối dây công bố7 và các
+nhiệm vụ QA vẫn còn, không ẩn theo tên. Báo cáo11c có danh sách và đề xuất DB
+demo riêng chờ duyệt. M5 chưa hiện trạng thái cá nhân ngay trên thẻ danh sách
+vì GET TaskServlet đang WIP; không trình bày phần đó là đã hoàn tất.

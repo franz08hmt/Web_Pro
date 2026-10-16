@@ -355,11 +355,14 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 ## Đợt11c — Hành trình học tập
 
 - [x] M0: Git/hash/review/source,218 Node/138 JUnit/package17 riêng,17 trang Chrome baseline.
-- [ ] M1: menu/dashboard→bộ chọn quiz→đúng bài; lỗi/rỗng/quyền, không ghi dữ liệu.
-- [ ] M2: cộng số phiên trong JavaBean bằng for, guard và JUnit giữ số liệu.
-- [ ] M3: dashboard ưu tiên học, layout riêng, mobile/zoom/empty/long.
-- [ ] M4: bài/lịch sử nối dây, chẩn đoán/tra cứu gọn, giữ dữ liệu và context.
-- [ ] M5: trạng thái nhiệm vụ chỉ từ bean đã có; nêu rõ phần cần WIP/chờ duyệt.
-- [ ] M6: tổng kết→review/quiz đúng mẫu/bản in; không đổi định nghĩa điểm.
-- [ ] M7: browser/DB read-only/HEX, danh sách QA và đề xuất chờ quyết định.
-- [ ] M8: toàn bộ test/build, hành trình Chrome, hash/cleanup/báo cáo, commit local.
+- [x] M1: menu/dashboard→bộ chọn quiz→đúng bài; lỗi/rỗng/quyền, không ghi dữ liệu.
+- [x] M2: cộng số phiên trong JavaBean bằng for, guard và JUnit giữ số liệu.
+- [x] M3: dashboard ưu tiên học, layout riêng, mobile/zoom200/empty DOM/long.
+- [x] M4: bài/lịch sử nối dây, chẩn đoán/tra cứu gọn, giữ dữ liệu và context.
+- [x] M5 phần JSP: chi tiết dùng trạng thái bean/cờ muộn; danh sách có link mở trạng thái.
+- [ ] M5 phần danh sách: chờ duyệt GET TaskServlet WIP để có dữ kiện người nhận, chưa triển khai.
+- [x] M6: tổng kết→review/quiz đúng mẫu/bản in; không đổi định nghĩa điểm.
+- [x] M7: browser/DB read-only/HEX, danh sách QA và đề xuất chờ quyết định; không dọn DB.
+- [x] M8:229 Node/144 JUnit ở working tree và commit sạch,57 ô Chrome/16 kiểm hành trình-quyền,
+  10 ca browser fixture,27 smoke,3 form contract không đổi; hash12 file/55 bảng giữ nguyên.
+- [x] M8 runtime: chỉ chạy bản mới trên QA8081 rồi dọn;8080 không redeploy, không push.

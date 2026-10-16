@@ -616,3 +616,16 @@ cho Robot Assembly Lab. Review là bằng chứng lịch sử, đã đọc lại
   bàn phím và hành trình, cache/version, hash WIP/DB, hồi quy GET và build cuối.
   Phân biệt commit sạch/working tree có WIP/artifact8080 cũ. Commit từng mốc;
   không push. Báo cáo PHASE11C_LEARNING_JOURNEY_QA_REPORT.md ghi phần chờ duyệt.
+
+### Kết quả11c
+
+M1–M4/M6 đã sửa và kiểm; M5 chỉ JSP an toàn, nhánh GET danh sách WIP vẫn chờ duyệt.
+M7 đọc55 bảng: bài nối dây7 công bố có scope mất dấu ngay trong DB,21 nhiệm vụ QA;
+không dọn/ẩn. Không thấy nhóm quiz hiện tại có nhiều mẫu số, giữ công thức cũ.
+Working tree và archive commit sạchafa6ef2 đều229 Node/144 JUnit,0fail/skip,
+clean package17. Chrome57 ô390/768/1440,16 kiểm hành trình/quyền,10 fixture quiz,
+27 smoke, zoom Chrome200% thật trong profile QA riêng,3 form contracts0 khác biệt.
+12 hash bảo vệ/55 hash bảng giữ nguyên. QA8081 phục vụ artifact riêng và đã dọn;
+HTTP quiz/tra cứu trên8080 vẫn là bản cũ, không tự redeploy. Không tạo/nộp lượt,
+checkout hoặc sửa dữ liệu. Giới hạn thao tác ghi/live lịch sử>20/Firefox/Safari
+và M5 được ghi rõ trong PHASE11C_LEARNING_JOURNEY_QA_REPORT.md. Chưa push.

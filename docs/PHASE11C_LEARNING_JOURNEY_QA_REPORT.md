@@ -108,3 +108,89 @@ và điều hướng, server vẫn quyết định quyền, kết quả và dữ
 
 Chi tiết test/hành trình, commit, artifact và giới hạn nghiệm thu được chốt
 bên dưới sau vòng QA cuối. Bằng chứng ngoài Git: `D:/Web-Pro/qa-evidence/phase11c/`.
+
+## Kiểm chứng cuối và bàn giao
+
+| Bản được kiểm | Node | JUnit | Build |
+| --- | --- | --- | --- |
+|Working tree baseline0280960 có WIP|218|138|JDK17 clean package đạt, thư mục riêng|
+|Working tree bản sửa11c có WIP|229|144|JDK17 test/clean package đạt, thư mục riêng|
+|Archive commit sạchafa6ef2, không WIP|229|144|JDK17 clean package đạt tại clean-source|
+
+Tất cả0 fail/skip. Thêm11 test Node (8 hành vi quiz/tra cứu và3 hợp đồng/guard),
+6 JUnit (tổng hợp/actions, nhóm thẻ, phân trang). Test dashboard cũ vẫn kiểm
+c:out nhưng theo static include sang dashboard-card.jspf, đồng thời kiểm include,
+c:url và cấm scriptlet ở fragment; không bỏ/nới guard để ép xanh.
+
+| Hành trình/ca kiểm | Bằng chứng thực tế |
+| --- | --- |
+|Menu→quiz không model→chọn mẫu→câu hỏi|USER; đúng obstacle-avoider, chưa có kết quả/đáp án trước nộp|
+|Dashboard→quiz và mẫu hoàn thiện|CTA giữ context, GET review trả200 của chủ hiện tại|
+|Nối dây→neo lịch sử→lượt đã có|USER lượt30 trả200; URL page quá cao vẫn có đường về trang hợp lệ|
+|Tra cứu theo mẫu→Space mở details→chẩn đoán|Giữ robotId=obstacle-avoider; chọn mục có robot riêng, không gán robot cho mục dùng chung|
+|Tổng kết→review/ôn tập/bản in|GET đúng mẫu/chủ; hồ sơ in vẫn /learning-profile, file WIP giữ hash|
+|Nhiệm vụ→trạng thái cá nhân|Trang chi tiết dùng TaskRecipient; không kiểm POST hoặc coi danh sách đã có trạng thái riêng|
+|Quyền quản trị tại server|Khách302, USER403, ADMIN200; không đổi role/backend|
+|Chrome390/768/1440|57/57 ô: khách6, builder21, student21, ADMIN9; một H1, ID không trùng, menu Tab/Enter/Escape|
+|Dashboard|3/2/1 cột, đủ7 thẻ; nội dung dài/cỡ chữ lớn DOM fixture không tràn|
+|Zoom200% thật|Profile Chrome QA riêng: cửa sổ1440→720 CSS px,2 cột, đủ7 thẻ; profile đã dọn, không đổi Chrome người dùng|
+|Quiz ca biên browser fixture|10 ca: rỗng/503/auth lỗi/không câu hỏi/chậm/model sai/direct hợp lệ;0 request ghi|
+|Hồi quy đọc|27 kiểm gồm16 GET module,6 HTTP asset khớp source, replay37/Xưởng10 tải layout200, QA text/empty DOM/foreign owner404|
+|Form nối dây/chẩn đoán/quiz|3 trang,0 khác biệt method/action/name/type/hidden/required/maxlength/minlength giữa8080 cũ và QA8081; CSRF chuẩn hóa|
+
+Trong ma trận, student là USER ít dữ liệu, vẫn có6 phiên lắp; không gọi đây là
+tài khoản hoàn toàn rỗng. Rỗng được kiểm bằng unit test và DOM fixture có đánh
+dấu riêng. Ca21/41 lượt phân trang dùng JUnit cùng guard SQL owner→LIMIT/OFFSET;
+chưa có lịch sử>20 của tài khoản demo để kiểm trang2 trực tiếp trên DB thật.
+Không tạo lượt mới chỉ để đạt ca biên.
+
+57 ô và16 kiểm hành trình/quyền có0 pageerror/asset404/request ghi của trang.
+Login demo qua HTTP client là POST xác thực duy nhất. Replay/Xưởng chỉ tải dữ
+liệu và xem, không kiểm lại toàn bộ phát timeline/thao tác ghi. Không nộp quiz,
+nối dây, chẩn đoán, nhiệm vụ, lắp ráp hoặc checkout live; hồi quy ghi dựa vào
+test hiện có, không gọi fixture là dữ liệu thật. Không kiểm Firefox/Safari,
+cảm ứng vật lý hoặc screen reader. Không in/PDF lại toàn bộ hồ sơ; file và CSS
+in của hồ sơ không sửa, GET/hành trình tới bản in đạt.
+
+### Artifact, an toàn và dọn runtime
+
+- QA8081 thực sự phục vụ artifact build từ working tree bản sửa trong thư mục
+  riêng;6 resource HTTP khớp byte source. Version quiz.js/troubleshooting.js
+  là20261016.1; CSS mới dashboard/practice-index cũng có version tại mọi nơi nạp.
+  Bản đồ môn học trỏ DashboardSummary.java:56, đã kiểm qua HTTP thật.
+- Archiveafa6ef2 được build/test riêng, không dùng kết quả working tree để gọi
+  commit sạch đã đạt. Chưa chạy runtime archive sạch với DB thật.
+-8080 PID30024 không bị dừng/restart/redeploy. GET quiz.js và troubleshooting.js
+  vẫn200 nhưng chưa khớp source11c; không tuyên bố bản demo người dùng đã cập nhật.
+  Cần người dùng tự Run/redeploy hoặc duyệt phối hợp riêng sau này.
+-12/12 hash (10 WIP/untracked và POM/settings) giữ nguyên;55/55 hash bảng DB
+  trước/sau giữ nguyên. Không sửa role/đơn/giỏ/tồn kho/phiên/nhật ký QA cũ.
+- Đã dừng đúng PID QA tự tạo, xác minh runtime trước khi dừng, dọn conf/log/work/
+  temp; không đụng8080. Browser QA/profile tạm đã đóng/dọn. git diff --check đạt
+  trong phần sửa; không stage WIP/cấu hình/bằng chứng. Không push.
+
+Bằng chứng: `browser-results.json`, ảnh trước `USER-_account-*` và sau
+`after-USER-_account-*` (tương tự các trang), `fixture-results.json`,
+`smoke-results.json`, `zoom-results.json`, `form-contracts.json`,
+`db-before/after.json`, `data-findings.json`, `protected-before/after.json`,
+`final-audit.json`, log Node/Maven và Surefire XML ở build/clean-source.
+Các lần runner cần sửa chỉ là đồng bộ navigation, bỏ qua mục tra cứu dùng chung,
+chuẩn hóa DOM form.action bị field action che; không sửa sản phẩm để né ca kiểm.
+
+### Commit local
+
+| Mốc | Hash | Message |
+| --- | --- | --- |
+|M0|c79d022|docs(qa): plan the phase11c learning journey review|
+|M1|bab4b8c|fix(quiz): provide a valid quiz selection entry|
+|M2|3dd3818|refactor(stats): use course-compliant session aggregation|
+|M3|6e84bf2|fix(ux): prioritize dashboard learning actions|
+|M4|b1ea9fa|fix(ux): clarify practice catalogs and paginate wiring history|
+|M5 phần JSP|525b2d6|fix(ux): distinguish task and learner status in task views|
+|M6|1e8fe59|fix(ux): link learning results to owned reviews and model quizzes|
+|M7|2d03773|docs(qa): record shared QA content and unchanged score semantics|
+|M8 source/guard|afa6ef2|fix(ux): guard learning journey syntax and refresh source references|
+
+Commit tài liệu nghiệm thu cuối được báo hash khi bàn giao. Phần chờ: trạng thái
+cá nhân trên danh sách nhiệm vụ (WIP), quyết định dữ liệu demo và deploy8080;
+không gọi toàn bộ đề xuất đã hoàn tất.
