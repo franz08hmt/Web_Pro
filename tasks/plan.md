@@ -644,3 +644,28 @@ hai người cùng task.231 Node/149 JUnit,0 fail/skip, package17 đạt ở wor
 và archive sạch. Commit source2b4e5fd: TaskServlet chỉ có2 dòng GET trong index,
 WIP3 dòng cũ còn ngoài commit, POST byte-identical.11 hash bảo vệ khác và55 hash
 bảng DB giữ nguyên. QA8081 riêng; không deploy hoặc dừng8080. Chưa push.
+
+## Chốt nghiệm thu11c và artifact demo final — 16/10/2026
+
+HEAD đầu lượt2ff67f1, source M5 là2b4e5fd, không delta source sau review.
+Index rỗng;12 hash đầu lượt mới (10 WIP/untracked và POM/settings) lưu ngoài
+Git tại `qa-evidence/final-demo-11c-20261016/protected-before.json`.
+
+Không sửa chức năng. Archive HEAD sạch, clean package JDK17 ngoài repo; chạy
+Node trên archive sau build. Kiểm bytecode, tài nguyên đóng gói/HTTP, cache
+version; QA8081 riêng, giữ nguyên target/IDE/Tomcat8080. Kiểm các hành trình
+GET bằng tài khoản có sẵn, fixture lỗi/rỗng/tải chậm không ghi DB.
+
+Kết quả mới:231 Node/149 JUnit,0fail/skip;179 application class major61,
+166 tài nguyên khớp archive;31 kiểm browser (15 ô viewport/keyboard),27 smoke,
+10 fixture quiz đạt. Các byte HTTP quan trọng QA8081 khớp archive;8080 cũ,
+dashboard.css/practice-index.css trả404. Không suy từ QA sang deploy người dùng.
+Review độc lập44 kiểm/19 nhãn ngày16/10 được kế thừa với nguồn rõ, không cộng
+thành kiểm mới. Một assertion smoke ban đầu so CSS CRLF của working tree với
+LF của archive; sửa đúng nguồn đối chiếu trong runner ngoài repo, không sửa app/test dự án.
+
+Bổ sung kịch bản final3–5 phút,7 câu vấn đáp/file:dòng và hướng dẫn redeploy
+WAR sạch trong TEAM_FLOW_DEMO_GUIDE; cập nhật báo cáo11c/todo. Chỉ commit tài
+liệu, không gom WIP. Chờ người dùng tự deploy8080 hoặc quyết định giữ bản cũ;
+chờ chọn dữ liệu demo hiện tại có kiểm soát hoặc phương án DB riêng.
+Không tạo DB/dữ liệu, không dọn QA, không sửa M5. Không push.

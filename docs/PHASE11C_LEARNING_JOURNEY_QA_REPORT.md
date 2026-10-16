@@ -254,3 +254,93 @@ log Node/Maven/Surefire, `browser-results.json`, `owners.json`, ảnh hai USER
 theo viewport và hash DB/file trước/sau. Đã dọn đúng QA8081;8080 PID30024 giữ
 nguyên. Chưa push. M5 danh sách đã được triển khai và kiểm; phần còn chờ là
 quyết định dữ liệu demo/deploy8080, không còn chờ quyền sửa GET M5.
+
+## Chốt artifact và chuẩn bị demo final — 16/10/2026
+
+### Bốn bản cần phân biệt
+
+Đầu lượt HEAD `2ff67f1cba597a674a9d3e2c405138ce9eed511d`, nhánh
+`integration/fullstack-v2`, index rỗng. Không delta source kể từ review độc lập.
+Không sửa code/M5/API/schema/quyền/luật trong lượt này. Commit mới chỉ tài liệu.
+
+| Bản | Nguồn / kết quả / giới hạn |
+| --- | --- |
+| Commit sạch | Archive2ff67f1, gồm hunk GET đã duyệt trong2b4e5fd, không có WIP. Build/test mới bên dưới áp dụng cho bản này. |
+| Working tree | Sáu tracked WIP và bốn untracked vẫn riêng; không được coi là phần bàn giao. Không clean package vào target gốc. |
+| Artifact QA/bàn giao | WAR từ archive sạch, build JDK17 ngoài repo; chạy Tomcat riêng8081 và kiểm HTTP/browser. Không mang .env/cấu hình DB local/tài liệu cá nhân. Template JNDI DB_* của repo giữ nguyên, cấu hình thực nằm ngoài WAR. |
+| IntelliJ/Tomcat8080 | PID30024, Java17; ROOT.xml trỏ `D:/Web-Pro/robot-engine-website/tomcat-app/target/robot-assembly-lab`. Không tự dừng/sửa/redeploy. Bản HTTP còn cũ, chưa nghiệm thu làm bản final. |
+
+Bằng chứng mới: `D:/Web-Pro/qa-evidence/final-demo-11c-20261016/`.
+Artifact: `clean-source/tomcat-app/target/robot-assembly-lab.war`.
+SHA-256 WAR: `9281fdb1eec4cc12ec5e61472c04d7a7c2512704047866e3708aa37729420024`.
+Manifest chứa hash archive, class major, số test và đối chiếu HTTP; không chứa bí mật.
+Tài liệu commit sau lượt này không thay đổi byte ứng dụng của artifact2ff67f1.
+
+### Kiểm mới trên bản bàn giao
+
+| Kiểm / nguồn | Kết quả thực hiện lần chốt |
+| --- | --- |
+| Maven clean package JDK17 / archive2ff67f1 | BUILD SUCCESS;149 JUnit,0fail/error/skip; không ghi target repo gốc. |
+| npm test / cùng archive sau build |231 đạt,0fail/skip. So với mốc review231/149: số lượng không đổi. |
+| Bytecode/tài nguyên |179 application class đều major61;166 public/webapp resources khớp byte archive, gồm JSP; không kiểm dependency class như application class. |
+| Cache-busting | site-nav20261015.5 ở HTML/JSP; quiz/tra cứu/dashboard/practice-index20261016.1 tại nơi nạp tương ứng. Không đổi JS/CSS trong lượt này. |
+| Chrome thật, profile QA riêng |31 kiểm, trong đó15 ô390/768/1440 có keyboard menu/focus, dashboard3/2/1;0pageerror,0asset lỗi,0request ghi từ trang. |
+| Menu → quiz | Bấm menu thật → chọn Robot tránh vật cản → đúng model/câu hỏi; không tự nộp/tạo lượt. |
+| Dashboard/tổng kết | Dashboard mở đúng review30 của builder; tổng kết mở review/quiz đúng ngữ cảnh và hồ sơ in. |
+| Nhiệm vụ | Hai USER có15/4 thẻ; mỗi user mở một nhãn đối chiếu chi tiết bằng Enter; URL userId không đổi danh sách. Không lặp lại19 so khớp độc lập đã đạt khi source không đổi. |
+| Nối dây/tra cứu | Neo lịch sử → lượt của chủ; tra cứu theo robot, Space mở chi tiết → chẩn đoán giữ model. Không bắt đầu bài luyện. |
+| Quyền | Khách vào admin302; hai USER403; ADMIN200. ADMIN vào tasks403, review khác chủ404. Không mở rộng backend. |
+| Smoke GET |27 kiểm đạt: các module cũ,6 byte tài nguyên, replay37 của student và Xưởng thiết kế10 của practice chỉ đọc;0request ghi/JS exception. Có1 DOM fixture dashboard rỗng, không coi là user thật rỗng. |
+| Fixture quiz |10 ca rỗng/lỗi catalog/auth/câu hỏi, tải chậm, model không hợp lệ, truy cập thẳng; API chặn/giả lập trong browser, không dữ liệu thật. |
+|8080 so archive | quiz.js, troubleshooting.js, site-nav.js và trang quiz khác byte; dashboard.css/practice-index.css404. Chưa cập nhật8080, không suy từ200 thành đúng phiên bản. |
+
+Log mới: `maven-clean-package.log`, `node-test.log`, `artifact-manifest.json`,
+`browser-results.json`, `smoke-results.json`, `fixture-results.json` và ảnh PNG.
+Assertion smoke đầu tiên so nhầm CSS CRLF của working tree với LF của archive;
+đối chiếu chuẩn hóa chứng minh cùng nội dung. Runner ngoài repo đã chuyển so
+byte với archive sạch, chạy lại đạt27; không sửa source hoặc nới test dự án.
+
+Review độc lập được dùng làm bằng chứng lịch sử riêng:
+`D:/Web-Pro/qa-evidence/review-m5-20261016/REVIEW.md`, `results.json`.
+44 kiểm/19 nhãn khớp từ artifact sạch2ff67f1 là kết quả reviewer, không phải số
+kiểm mới của lượt này. Không tìm thấy lỗi chặn mới trong phạm vi vừa kiểm.
+
+### Dữ liệu demo và phần còn chờ
+
+GET/browser và SELECT/HEX chỉ đọc xác nhận wiring exercise7 vẫn PUBLISHED,
+tên `[UI-QA]`, scope có dấu `?` ngay trong DB. HTML dạng chữ được escape đúng.
+Đọc danh sách thấy21 nhiệm vụ có QA trong tên (ID1–6,9–23); quyền xem/nội dung
+trạng thái cá nhân theo người được giao. Đây là inventory để quyết định demo,
+không phải regex ẩn bài. Bài nối dây công bố dùng chung không biến mất khi đổi user.
+Kết quả truy vấn mới ở `data-readonly.json`, không sửa dữ liệu/snapshot.
+
+Hai lựa chọn đã gửi người dùng, hiện chờ phản hồi:
+
+1. Tự deploy WAR sạch trong IntelliJ context `/` rồi báo để kiểm8080; hoặc giữ
+   nguyên8080 và nhận artifact trước. Hướng dẫn cụ thể trong TEAM_FLOW_DEMO_GUIDE.
+   Chưa có quyền tự dừng/redeploy/sửa IDE hoặc ghi đè docBase.
+2. Giữ DB hiện tại và chọn luồng demo có kiểm soát; hoặc chuẩn bị phương án
+   DB demo riêng để duyệt tiếp. Chưa tạo/copy DB, không sửa/xóa/ẩn QA.
+
+Lượt này chỉ đăng nhập tài khoản có sẵn và đọc GET/SELECT, không tạo phiên,
+thiết kế, bài nộp, chấm, đơn hàng hay thay giỏ/tồn kho. Không tuyên bố kiểm lại
+mọi POST bằng dữ liệu thật. Script thao tác ghi là hướng dẫn cho người demo,
+không phải agent đã tự thực hiện. Firefox/Safari, cảm ứng thật, screen reader
+và xuất PDF thủ công không kiểm mới; kiểm load/error bằng fixture đã ghi rõ.
+Legacy syntax ngoài11c vẫn theo danh sách cũ, không kết luận toàn repo tuân thủ100%.
+
+Hash đầu/cuối của10 WIP/untracked và POM/settings (12/12) giữ nguyên; bằng
+chứng `protected-before.json`, `protected-after.json`, `release-final-proof.json`.
+24 link file:dòng mới trong kịch bản đều có file/dòng tồn tại. `git diff --check`
+phần tài liệu sửa không có lỗi. Đã dừng đúng QA runtime tự tạo và dọn config,
+log/work/temp; không có lỗi ứng dụng trong log.8081 không còn listener,8080
+vẫn PID30024. Không build vào target gốc hay sửa cấu hình IDE.
+
+Ảnh sau ở thư mục bằng chứng mới: `USER-_account-1440.png`,
+`USER-_account-390.png`, `USER-_tasks-390.png`; ảnh trước11c ở
+`D:/Web-Pro/qa-evidence/phase11c/USER-_account-1440.png`.
+Đây là ảnh khác thời điểm/bản phục vụ, không dùng để kết luận8080 đã cập nhật.
+
+Kịch bản final3–5 phút và7 câu vấn đáp/file:dòng nằm trong TEAM_FLOW_DEMO_GUIDE,
+không tạo bộ tài liệu học trùng. Chưa push; ahead28 đầu lượt chỉ so với ref
+origin cục bộ, chưa fetch nên không xác nhận trạng thái remote mới nhất.

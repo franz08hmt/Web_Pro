@@ -369,3 +369,14 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] M8 runtime: chỉ chạy bản mới trên QA8081 rồi dọn;8080 không redeploy, không push.
 - [x] Bổ sung M5:231 Node/149 JUnit,0 fail/skip, build17 working tree/commit sạch;
   WIP cũ/POST giữ nguyên byte khi bỏ2 dòng GET mới;11 hash còn lại và55 bảng giữ nguyên.
+
+## Chốt nghiệm thu11c và demo final — 16/10/2026
+
+- [x] Xác minh HEAD2ff67f1/branch/index, không delta source; snapshot12 hash mới ngoài repo.
+- [x] Archive commit sạch, JDK17 clean package;231 Node/149 JUnit,0fail/skip.
+- [x] Manifest WAR/checksum,179 class major61,166 tài nguyên và HTTP QA8081 khớp archive.
+- [x]31 kiểm browser,27 smoke,10 fixture quiz;390/768/1440, keyboard/quyền/owner; không ghi dữ liệu thử.
+- [x] Xác nhận bài nối dây công bố7 và21 nhiệm vụ tên QA còn tồn tại; chỉ báo cáo, không dọn.
+- [x] Kịch bản3–5 phút +7 câu vấn đáp + file:dòng + cờ ghi DB, hướng dẫn Run/redeploy.
+- [ ] Người dùng cập nhật8080; sau xác nhận đối chiếu asset/quiz/dashboard/nhãn nhiệm vụ trên8080.
+- [ ] Người dùng chốt dữ liệu demo hiện tại có kiểm soát hoặc phương án DB riêng.

@@ -958,3 +958,84 @@ demo riêng chờ duyệt. Bổ sung M5 đã được duyệt riêng nhánh GET:
 chỉ rõ trạng thái nhiệm vụ, trạng thái của em và cờ nộp muộn; mở chi tiết đối chiếu.
 Hai tài khoản có thể khác trạng thái trên cùng nhiệm vụ, do dữ kiện và luật
 TaskRecipient tại server quyết định. Không thay đổi POST hoặc quy tắc chấm.
+
+## Kịch bản final 3–5 phút — chốt sau Đợt11c
+
+**Trình bày chức năng trước, chỉ mở code khi giải thích cách thực hiện.** Dùng
+USER để học/thực hành; ADMIN chỉ dùng cho phần quản trị nếu cô hỏi thêm.
+Không đọc mật khẩu khi trình bày. URL dưới đây tính từ context `/`.
+
+Trước buổi trình bày, người demo tự chuẩn bị một phiên của mình: Robot tránh
+vật cản, DETAILED/spec v2, đã gắn9/10 và còn cảm biến trong khay. Chuẩn bị này
+có ghi DB, chưa được agent tự thực hiện trong lượt nghiệm thu chỉ đọc. Nếu
+chưa chuẩn bị, dùng kết quả có sẵn từ dashboard; không lấy số phiên tài khoản khác.
+
+| Thời gian / trang / quyền | Lời trình bày và thao tác | Kết quả cần thấy / có ghi DB? | Code mở khi cô hỏi |
+| --- | --- | --- | --- |
+| 0:00–0:25; `/architecture`, khách | “Web giúp người học chọn mẫu, tự lắp, nhận giải thích khi sai và xem lại kết quả để học tiếp. Đây là mô hình giản lược, không mô phỏng điện, vật lý hay firmware.” Mở Mẫu robot. | Thấy mẫu và đường vào lắp; chỉ đọc. | [ArchitectureServlet:18](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/ArchitectureServlet.java#L18) |
+| 0:25–0:50; `/account`, USER | “Dashboard đưa em về phiên đang làm hoặc mẫu đã hoàn tất.” Mở phiên9/10 đã chuẩn bị của chính mình. | Đúng robot/owner; mở lại phiên đã có chỉ đọc. Bắt đầu phiên mới có ghi DB. | [AccountPageServlet:45](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AccountPageServlet.java#L45), [DashboardSummary:56](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DashboardSummary.java#L56) |
+| 0:50–2:00; `pages/lap-rap-3d.html?model=obstacle-avoider&session=…`, USER | “Em chọn cảm biến, chọn điểm phía trước, thử0°. Server từ chối và nêu lý do; em xoay180°, gắn lại thì được xác nhận. Một vật thể là một chiếc riêng, không tick cả nhóm.” Sau khi đủ10/10, bấm hoàn tất. | Sai có giải thích; đúng được lưu; server kiểm đủ rồi khóa phiên. **Gắn sai/đúng và hoàn tất đều có thể ghi DB/nhật ký.** | [api.js:152](../assets/js/api.js#L152) → [AssemblySessionServlet:405](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblySessionServlet.java#L405) → [AssemblyLayout:232](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L232) → [AssemblyPlacementDB:137](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L137) |
+| 2:00–3:00; `/assembly-review?session=…`, USER/chủ phiên | “Hoàn tất không kết thúc việc học: em xem mẫu2D, bản vẽ của mình, bước chuẩn và trình tự đã làm, phiếu kết quả, rồi làm quiz đúng mẫu.” Bấm các neo và mở phiếu. | Bốn phần tổng kết; bản vẽ/phiếu đúng phiên. Chỉ đọc; phát lại cũng chỉ đọc. Phiên cũ chưa có nhật ký được thông báo rõ. | [AssemblyReviewPageServlet:35](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L35), [assembly-review.jsp:69](../tomcat-app/src/main/webapp/WEB-INF/views/assembly-review.jsp#L69) |
+| 3:00–3:30; menu → `pages/kiem-tra.html`, USER | “Chức năng phụ phục vụ việc học: từ menu em chọn bài, hoặc từ kết quả mở thẳng quiz của mẫu vừa lắp.” Chọn Robot tránh vật cản, chưa nộp bài. | Bộ chọn → đúng câu hỏi/model, không để “Đang tải…” vô hạn. Xem/chọn không tạo lượt; nộp mới ghi kết quả. | [quiz.js:30](../assets/js/quiz.js#L30) |
+| 3:30–4:30; quay code đang mở sẵn | “Trình duyệt gửi request; Servlet lấy user từ session và kiểm token/tham số. XxxDB đọc dữ kiện trong transaction, gọi luật JavaBean rồi lưu thao tác được chấp nhận. Response trả layout để3D dựng lại. Trang tổng kết dùng setAttribute, forward và JSP/EL/JSTL để hiện HTML.” | Chỉ đọc code; chỉ đúng lệnh đang giải thích, không đọc cả file. | Các tab trong bảng và7 câu dưới đây. |
+
+Nếu cô muốn xem thêm Xưởng: `/designs` → thiết kế của mình → phòng3D →
+`/design-sheet?id=…`. Nói rõ tự thiết kế trong bộ linh kiện được hỗ trợ,
+không thay thế kiểm tra lắp thật và không dùng làm bằng chứng hoàn thành mẫu.
+GET hồ sơ chỉ đọc; Gắn/Hoàn tác/Kiểm tra và thêm vật tư vào giỏ là thao tác ghi.
+Không checkout để minh họa liên kết giữa các chức năng.
+
+### Bảy câu vấn đáp ngắn, chỉ thẳng code
+
+1. **Servlet làm gì?** Nhận request, kiểm session/quyền/token và tham số, gọi
+   phần xử lý rồi trả response. Chỉ `handlePlacement` ở
+   [AssemblySessionServlet:405](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblySessionServlet.java#L405).
+2. **JavaBean chứa luật nào?** `validateAttach` kiểm đúng vật thể, điểm gắn,
+   hướng, bộ phận cha và version; client không tự chấm. Mở
+   [AssemblyLayout:232](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L232).
+3. **Forward khác redirect/PRG?** Forward chuyển cùng request và attribute sang
+   JSP: [AssemblyReviewPageServlet:53](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L53),
+   [forward:65](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L65).
+   Form thêm vật tư POST xử lý xong redirect sang GET giỏ, tránh tải lại gửi lại
+   POST: [DesignCartServlet:34](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/DesignCartServlet.java#L34),
+   [redirect:44](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/DesignCartServlet.java#L44).
+4. **User từ đâu?** Từ HttpSession, được đối chiếu session_version; userId trong
+   URL không đổi owner. Mở [SessionUtil:47](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java#L47)
+   và [owner query:234](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/PracticeTaskDB.java#L234).
+   Ẩn menu không thay thế kiểm quyền ở server.
+5. **JDBC/pool/đóng tài nguyên ở đâu?** JNDI cung cấp DataSource;
+   [ConnectionPool:42](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ConnectionPool.java#L42)
+   lấy kết nối. [AssemblyPlacementDB:200](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L200)
+   dùng PreparedStatement, bind tham số; [finally:258](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L258)
+   đóng qua DBUtil và trả kết nối. Transaction commit/rollback bảo vệ bố cục/nhật ký.
+6. **Vì sao JSP chỉ trình bày?** Servlet đã nạp bean, JSP dùng EL/JSTL lặp/điều
+   kiện và c:out để hiển thị an toàn; không đặt SQL hoặc chấm đúng/sai trong view.
+   Mở [assembly-review.jsp:96](../tomcat-app/src/main/webapp/WEB-INF/views/assembly-review.jsp#L96).
+7. **Hai nhãn nhiệm vụ khác nhau thế nào?** Nháp/mở/đóng là trạng thái nhiệm vụ;
+   chưa nộp/chờ chấm/cần bổ sung/đạt/chưa đạt là trạng thái của người được giao.
+   Bean đọc bài nộp/lần chấm, không đoán từ điểm; cờ nộp muộn hiển thị riêng.
+   Mở [TaskRecipient:106](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/TaskRecipient.java#L106)
+   và [task-list.jsp:46](../tomcat-app/src/main/webapp/WEB-INF/views/task-list.jsp#L46).
+
+### Run/redeploy bản final an toàn
+
+Artifact đã kiểm từ commit sạch `2ff67f1`, không gồm WIP:
+`D:/Web-Pro/qa-evidence/final-demo-11c-20261016/clean-source/tomcat-app/target/robot-assembly-lab.war`.
+Checksum và nguồn build nằm trong `artifact-manifest.json` cùng thư mục bằng chứng.
+WAR giữ template JNDI `${DB_*}` của repo; không nhúng `.env` hoặc giá trị DB local.
+
+Tại lần chốt16/10, IntelliJ ROOT.xml vẫn trỏ tới
+`D:/Web-Pro/robot-engine-website/tomcat-app/target/robot-assembly-lab`,8080 là bản cũ.
+Không Maven clean package vào target này khi Tomcat/IDE đang dùng.
+
+Người dùng tự Stop cấu hình Tomcat đang chạy trong IntelliJ, sau đó có thể dùng
+Deployment → External Source → WAR sạch trên, application context `/`.
+Không để hai deployment cùng context `/`; ghi lại lựa chọn cũ trước khi đổi để
+có thể chọn lại. Giữ JDK17, VM options DB_* và cấu hình còn lại. Không chọn lại
+artifact build từ working tree rồi gọi đó là commit sạch: sáu WIP vẫn chưa được duyệt.
+Người dùng tự Run; agent chỉ đối chiếu HTTP sau khi nhận xác nhận đã deploy.
+Đây là hướng dẫn, chưa phải ghi nhận thao tác triển khai đã xảy ra.
+
+Sau Run cần kiểm byte JS/CSS/cache version, menu → bộ chọn quiz, dashboard3/2/1
+và nhãn cá nhân trên nhiệm vụ. HTTP200 hoặc trình duyệt còn cache không đủ kết luận.
+Trạng thái triển khai/dataset cập nhật tại mục chốt final trong báo cáo11c.
