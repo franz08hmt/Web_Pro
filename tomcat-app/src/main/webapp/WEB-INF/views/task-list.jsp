@@ -26,7 +26,8 @@
                 <c:forEach var="task" items="${tasks}">
                     <section class="task-card">
                         <h2><a href="?action=view&amp;id=<c:out value="${task.id}"/>"><c:out value="${task.title}"/></a></h2>
-                        <p><c:out value="${task.robotName}"/> · <c:set var="workspaceStatusTone" value="neutral"/>
+                        <p><c:out value="${task.robotName}"/> · Trạng thái nhiệm vụ:
+                        <c:set var="workspaceStatusTone" value="neutral"/>
                         <c:choose>
                             <c:when test="${task.open}">
                                 <c:set var="workspaceStatusTone" value="info"/>
@@ -39,6 +40,10 @@
                             <c:out value="${task.stateLabel}"/>
                         </span> · Hạn nộp <c:out
                         value="${task.dueDisplay}"/></p>
+                        <c:url var="taskPersonalStatus" value="/tasks">
+                            <c:param name="action" value="view"/><c:param name="id" value="${task.id}"/>
+                        </c:url>
+                        <a href="<c:out value="${taskPersonalStatus}"/>">Mở nhiệm vụ và xem trạng thái của em</a>
                     </section>
                 </c:forEach>
             </div>

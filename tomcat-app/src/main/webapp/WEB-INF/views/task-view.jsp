@@ -20,7 +20,8 @@
             <h1><c:out value="${task.title}"/></h1>
             <section class="workspace-panel" aria-label="Yêu cầu và tiêu chí nhiệm vụ">
                 <p class="task-text"><c:out value="${task.description}"/></p>
-                <p>Mẫu: <c:out value="${task.robotName}"/> · <c:set var="workspaceStatusTone" value="neutral"/>
+                <p>Mẫu: <c:out value="${task.robotName}"/> · Trạng thái nhiệm vụ:
+                <c:set var="workspaceStatusTone" value="neutral"/>
                 <c:choose>
                     <c:when test="${task.open}">
                         <c:set var="workspaceStatusTone" value="info"/>
@@ -176,6 +177,8 @@ value="${searchQuery}"/>" maxlength="100"></label>
             </c:if>
         </c:when>
         <c:otherwise>
+            <h2>Trạng thái của em</h2>
+            <p>Trạng thái dưới đây dựa trên bài nộp và lần chấm hiện có, tách biệt với việc nhiệm vụ đang mở hay đã đóng.</p>
             <p><strong><c:set var="workspaceStatusTone" value="neutral"/>
             <c:choose>
                 <c:when test="${recipient.latestSubmission.currentReview.passed}">
@@ -194,6 +197,9 @@ value="${searchQuery}"/>" maxlength="100"></label>
             <span class="status-badge status-badge--<c:out value="${workspaceStatusTone}"/>">
                 <c:out value="${recipient.statusLabel}"/>
             </span></strong></p>
+            <c:if test="${recipient.latestSubmission.late}">
+                <p><span class="status-badge status-badge--warning">Nộp muộn</span> theo thời điểm bài nộp đã lưu.</p>
+            </c:if>
             <p>Vòng <c:out value="${recipient.currentRound.roundNo}"/> · bắt đầu <c:out
             value="${recipient.currentRound.startedDisplay}"/></p>
             <c:if test="${recipient.showCurrentRoundQuiz and not empty taskQuiz}">
