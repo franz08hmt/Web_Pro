@@ -563,3 +563,14 @@ mọi trang, không ghi giỏ/đơn/kho, không đổi schema. Đã triển khai
 - QA:216Node/138JUnit,37 ca fixture browser,4 ca link phòng dùng layout tạm,
   69HTTP thật và42 ô viewport,10 resource HTTP khớp byte source. Hash55 bảng DB
   không đổi; chỉ đăng nhập/GET thật. Báo cáo ghi rõ giới hạn deploy/IDE và hồi quy.
+
+### Chốt nghiệm thu Đợt11b — 16/10/2026
+
+Chỉ sửa fragment cache site-nav.js3→5 và đặt tên riêng “Liên kết cửa hàng” cho
+nav phụ ở ba trang shop. Giữ menu chung làm điều hướng chính duy nhất; không
+đổi link, control, ID/data/hook, Java hoặc luật. Hai regression test mới tái hiện
+và bắt được lệch version/nav trùng tên trước sửa. Kết quả218 Node/138 JUnit,
+0 lỗi/skip;21 ô Chrome qua390/768/1440 và bàn phím đạt;55 hash DB giữ nguyên.
+Đã dọn QA8081, phối hợp người dùng mở lại VS Code và Run IntelliJ8080 thật;
+chỉ đọc compiler/bytecode/HTTP sau khi người dùng thực hiện, không tự đóng IDE
+hoặc dừng Tomcat. Nếu chưa có xác nhận thì giữ mục này chưa nghiệm thu.

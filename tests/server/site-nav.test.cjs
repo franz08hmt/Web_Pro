@@ -38,3 +38,20 @@ test("menu links target existing files or servlet mappings and JSP roles are che
   assert.match(filter, /SessionUtil.getCurrentUser\(http\)/);
   assert.match(filter, /if \(!user.isAdmin\(\)\)[\s\S]*sendError\(403\)/);
 });
+test("every static page and the JSP include use the same site-nav script cache version", () => {
+  const fragment = read(views + "site-nav-assets.jspf");
+  const version = fragment.match(/var="siteNavJs"[^\n]*<c:param name="v" value="([^"]+)"/)?.[1];
+  assert.match(version || "", /^\d{8}\.\d+$/);
+  for (const file of pages) {
+    const versions = [...read(file).matchAll(/\/site-nav\.js\?v=([^"&]+)/g)].map(match => match[1]);
+    assert.deepEqual(versions, [version], file + " must match the JSP script version");
+  }
+});
+test("shop pages expose one primary navigation and a separately named shop navigation", () => {
+  for (const file of ["pages/cua-hang.html", "pages/gio-hang.html", "pages/admin-shop.html"]) {
+    const source = read(file);
+    assert.equal((source.match(/<nav\b[^>]*aria-label="Điều hướng chính"/g) || []).length, 1, file);
+    assert.match(source, /<nav aria-label="Liên kết cửa hàng">\s*<small>Liên kết cửa hàng:<\/small>/);
+    assert.match(source, /data-site-nav id="primary-nav" aria-label="Điều hướng chính"/);
+  }
+});

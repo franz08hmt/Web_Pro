@@ -339,5 +339,14 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] M4: nghiệp vụ dashboard trong bean, dữ kiện gộp/LIMIT,8 JUnit bổ sung.
 - [x] Test/build/HTTP/browser và đối chiếu byte, hash WIP/DB, tài liệu UTF-8.
 - [x] Dọn đúng runtime QA8081/8082; kiểm Maven test và npm test lại tại repo gốc.
-- [ ] Xác nhận ngăn VS Code compiler25 tái ghi target sau khi nhập lại dự án.
+- [x] Xác nhận compiler17 sau Reload Projects/restart language server/Full Compilation; xem evidence ide-java17.
 - [ ] Quan sát lần Run/redeploy IntelliJ8080 tiếp theo; chưa tự chạy phiên người dùng.
+
+### Chốt16/10/2026
+
+- [x] Đồng bộ version site-nav.js giữa JSP và mọi HTML, có guard hồi quy.
+- [x] Ba trang shop chỉ có một nav chính, nav cửa hàng có tên riêng nhìn thấy được.
+- [x] Link/form/control/id/data không đổi;218 Node/138 JUnit và21 ô browser/keyboard đạt.
+- [x] Hash WIP/DB giữ nguyên, dọn QA8081; không tự can thiệp IDE/Tomcat8080.
+- [ ] Người dùng mở lại đúng workspace VS Code; kiểm lại compiler/runtime/bytecode.
+- [ ] Người dùng Run IntelliJ8080; đối chiếu byte source/menu/version qua HTTP thật.

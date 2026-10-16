@@ -146,3 +146,33 @@ DB hay quyết định nghiệp vụ. Link theo ngữ cảnh giữ đúng linh k
 quyền vẫn được kiểm ở server kể cả khi giao diện đã ẩn nút. Source đúng cần được
 build bằng Java17 và deploy đúng artifact; kiểm byte HTTP giúp chứng minh bản
 demo đang phục vụ đúng phiên bản.
+
+## Chốt nghiệm thu — 16/10/2026
+
+Phạm vi chỉ gồm cache-busting và tên điều hướng; không sửa Java/JS/CSS nghiệp vụ,
+route, schema, phân quyền hay dữ liệu. HEAD đầu lượt24819e3, đúng nhánh tích hợp.
+Hash10 WIP/chưa theo dõi cùng POM/settings workspace được chụp lại đầu lượt này.
+
+- JSP từng nạp site-nav.js v20261015.3, HTML nạp v20261015.5. Đồng bộ fragment
+  JSP về20261015.5; giữ nguyên JS. Test mới đối chiếu version giữa fragment và
+  mọi HTML để bắt lệch sau này.
+- Ba trang cua-hang/gio-hang/admin-shop có hai nav cùng tên “Điều hướng chính”.
+  Giữ menu site-nav làm điều hướng chính duy nhất; nav cũ trong shop mang tên
+  “Liên kết cửa hàng”, có chữ hiển thị cùng tên. Không xóa/chuyển link, ID hoặc
+  hook hiện có. So inventory trước/sau:0 khác biệt ở link, control/form và id/data.
+- Hai test mới thất bại trước sửa, đạt sau sửa. Toàn bộ Node218/218 và
+  JUnit138/138 đạt,0 lỗi/skip; Maven test và clean package bằng17 thành công.
+- Chrome thật:21/21 ô ở390/768/1440 trên ba trang shop theo vai trò hợp lệ;
+  kiểm menu Enter/Tab/Escape, focus nhìn thấy và trở về summary, Enter vào link
+  cửa hàng, ID không trùng, không tràn ngang.0 pageerror/asset404/request ghi.
+  JSP/account của USER và ADMIN thực sự trả script v20261015.5. Quyền trang
+  admin-shop giữ khách302, USER403, ADMIN200. Hash55 bảng DB trước/sau giữ nguyên.
+- Tomcat QA8081 đã dọn; không dừng/khởi động Tomcat8080 hoặc đóng IDE của người dùng.
+  Mục mở lại VS Code và Run IntelliJ8080 đang chờ người dùng thực hiện/xác nhận;
+  không dùng kiểm QA8081 để thay cho bước này.
+
+Bằng chứng: `D:/Web-Pro/qa-evidence/phase11b/acceptance-20261016/` gồm baseline,
+hai regression test trước sửa, build/test cuối, browser-results.json, ảnh theo
+vai trò/viewport, markup-contracts.json và hash DB/WIP. Cấu hình Java17 cục bộ
+đã được sửa và kiểm bằng restart language server ở lượt trước; chưa sửa thêm
+cấu hình IDE trong lượt chốt này.
