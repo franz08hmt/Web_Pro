@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import vn.edu.webpro.robotlab.business.QuizRobotScore;
+import vn.edu.webpro.robotlab.business.LearningSummary;
 import vn.edu.webpro.robotlab.business.Robot;
 import vn.edu.webpro.robotlab.business.User;
 import vn.edu.webpro.robotlab.data.StatsDB;
@@ -42,13 +43,14 @@ public class LearningSummaryServlet extends HttpServlet {
 
         try {
             Map<String, Long> sessionCounts = StatsDB.countSessionsByStatusForUser(user.getId());
-            long totalSessions = sessionCounts.values().stream().mapToLong(Long::longValue).sum();
+            LearningSummary summary = new LearningSummary();
+            summary.summarizeSessions(sessionCounts);
             List<Robot> completedRobots = StatsDB.selectCompletedRobots(user.getId());
             List<QuizRobotScore> quizScores = StatsDB.selectQuizScoresByRobot(user.getId());
 
             request.setAttribute("user", user);
             request.setAttribute("sessionCounts", sessionCounts);
-            request.setAttribute("totalSessions", totalSessions);
+            request.setAttribute("totalSessions", summary.getTotalSessions());
             request.setAttribute("completedRobots", completedRobots);
             request.setAttribute("quizScores", quizScores);
         } catch (SQLException e) {
