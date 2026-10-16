@@ -176,3 +176,42 @@ hai regression test trước sửa, build/test cuối, browser-results.json, ả
 vai trò/viewport, markup-contracts.json và hash DB/WIP. Cấu hình Java17 cục bộ
 đã được sửa và kiểm bằng restart language server ở lượt trước; chưa sửa thêm
 cấu hình IDE trong lượt chốt này.
+
+### Xác nhận môi trường người dùng — 16/10/2026, sau khi Run IntelliJ
+
+Người dùng xác nhận đã mở lại VS Code và Run Tomcat8080. Kiểm tra trực tiếp
+bản đang chạy, chỉ GET/đọc file; không build vào target gốc, không đóng IDE,
+không dừng/redeploy server. Commit source được đối chiếu là `4fb451d`.
+
+| Hạng mục | Kết quả thực tế |
+| --- | --- |
+| Compiler dự án trong VS Code | source/compliance/target đều17; classpath JavaSE-17 |
+| Bytecode target/classes và test-classes |177 và26 class, toàn bộ major61 (Java17) |
+| Bytecode WEB-INF/classes đang deploy |177 class, toàn bộ major61 |
+| IntelliJ/Tomcat8080 |JDK17; ROOT.xml trỏ target/robot-assembly-lab |
+| HTTP index, cửa hàng, giỏ hàng, site-nav.js |4/4 trả200, byte khớp source |
+| JSP /architecture |200; script site-nav.js?v=20261015.5 |
+| Fragment JSP và HTML admin-shop đã deploy |Khớp byte source; không cần đăng nhập để đọc artifact cục bộ |
+| Chrome8080, khách, shop/giỏ |6/6 ô390/768/1440; catalog tải được, menu Enter/Tab/Escape đạt |
+| Điều hướng và lỗi trình duyệt |Một nav chính, nav cửa hàng riêng; không tràn ngang, không lỗi JS/asset404/request ghi |
+| Test sau Run |218/218 Node;138/138 JUnit,0 fail/skip; clean package JDK17 đạt |
+| Hash bảo vệ |10 WIP/chưa theo dõi cùng POM/settings workspace:12/12 giữ nguyên |
+
+Maven chạy vào thư mục `reopened-build` ngoài repo để không tác động artifact
+đang được8080 phục vụ. Node kiểm exploded tại target gốc vẫn đạt. Sau kiểm,
+Tomcat của người dùng tiếp tục chạy; không tạo runtime QA mới ở lượt xác nhận.
+
+Language server dùng JRE25 của extension để chạy công cụ; target của project
+vẫn17. PID language server không đổi so với trước xác nhận: đã kiểm được trạng
+thái sau khi người dùng mở cửa sổ, không coi đây là bằng chứng một lần khởi động
+lại hoàn toàn tiến trình language server. Việc restart/full compilation trước
+đó đã có bằng chứng riêng trong `ide-java17`. Lượt8080 này chỉ kiểm khách và
+JSP công khai; USER/ADMIN đã kiểm ở21 ô QA8081 nêu trên, không đăng nhập/ghi DB
+lại để mở rộng phạm vi. Giới hạn Firefox/Safari/cảm ứng thật/screen reader giữ nguyên.
+
+Bằng chứng bổ sung trong cùng thư mục nghiệm thu: `manual-verification.json`,
+ảnh `manual-8080-*`, `node-after-user-run.log`, `build-after-user-run.log` và
+Surefire XML trong `reopened-build/surefire-reports`. Không lưu cookie/token
+hay cấu hình DB trong báo cáo. Hai lỗi của bộ kiểm tra ngoài repo (chuẩn hóa
+URI workspace Windows và nhận URL có phần đường dẫn phiên do Tomcat thêm)
+đã được sửa ở runner; không thay source hoặc test dự án để bỏ qua kiểm chứng.

@@ -573,4 +573,15 @@ và bắt được lệch version/nav trùng tên trước sửa. Kết quả218
 0 lỗi/skip;21 ô Chrome qua390/768/1440 và bàn phím đạt;55 hash DB giữ nguyên.
 Đã dọn QA8081, phối hợp người dùng mở lại VS Code và Run IntelliJ8080 thật;
 chỉ đọc compiler/bytecode/HTTP sau khi người dùng thực hiện, không tự đóng IDE
-hoặc dừng Tomcat. Nếu chưa có xác nhận thì giữ mục này chưa nghiệm thu.
+hoặc dừng Tomcat.
+
+Người dùng đã xác nhận mở VS Code/Run IntelliJ8080 ngày16/10. Đã kiểm thực tế:
+compiler17/JavaSE-17;177+26 class target và177 class deploy đều major61;
+Tomcat8080 dùng JDK17, ROOT.xml đúng docBase.4 HTTP asset khớp byte source,
+JSP/architecture trả version20261015.5;6 ô Chrome khách390/768/1440 của shop/giỏ
+và bàn phím đạt. Node218/JUnit138,0 fail/skip và clean package17 chạy lại đạt;
+Maven dùng buildDirectory ngoài repo để không đụng target đang phục vụ.12 hash
+bảo vệ giữ nguyên; không ghi DB, không tự dừng server. Language server giữ PID
+cũ: kiểm được trạng thái sau mở cửa sổ, không tuyên bố vừa restart tiến trình.
+Xem mục xác nhận môi trường trong PHASE11B_REVIEW_FIX_QA_REPORT.md và evidence
+acceptance-20261016/manual-verification.json. Chưa push.

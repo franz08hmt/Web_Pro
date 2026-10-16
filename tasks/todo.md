@@ -340,7 +340,7 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] Test/build/HTTP/browser và đối chiếu byte, hash WIP/DB, tài liệu UTF-8.
 - [x] Dọn đúng runtime QA8081/8082; kiểm Maven test và npm test lại tại repo gốc.
 - [x] Xác nhận compiler17 sau Reload Projects/restart language server/Full Compilation; xem evidence ide-java17.
-- [ ] Quan sát lần Run/redeploy IntelliJ8080 tiếp theo; chưa tự chạy phiên người dùng.
+- [x] Người dùng Run IntelliJ8080; kiểm JDK17, docBase và byte HTTP ngày16/10; không tự can thiệp server.
 
 ### Chốt16/10/2026
 
@@ -348,5 +348,6 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] Ba trang shop chỉ có một nav chính, nav cửa hàng có tên riêng nhìn thấy được.
 - [x] Link/form/control/id/data không đổi;218 Node/138 JUnit và21 ô browser/keyboard đạt.
 - [x] Hash WIP/DB giữ nguyên, dọn QA8081; không tự can thiệp IDE/Tomcat8080.
-- [ ] Người dùng mở lại đúng workspace VS Code; kiểm lại compiler/runtime/bytecode.
-- [ ] Người dùng Run IntelliJ8080; đối chiếu byte source/menu/version qua HTTP thật.
+- [x] Sau xác nhận mở VS Code: compiler/runtime17,203 class target major61; PID language server giữ nguyên.
+- [x] Người dùng Run IntelliJ8080:177 class deploy major61, byte source/menu/version HTTP khớp;6 ô Chrome đạt.
+- [x] Sau Run:218 Node/138 JUnit,0 fail/skip; clean package17 ở thư mục riêng, giữ nguyên target đang phục vụ.
