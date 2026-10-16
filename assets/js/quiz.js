@@ -16,19 +16,84 @@
   const retryButton = document.querySelector("#quiz-retry");
   const historyStatusEl = document.querySelector("#quiz-history-status");
   const historyListEl = document.querySelector("#quiz-history-list");
+  const selectionEl = document.querySelector("#quiz-selection");
+  const loadRetry = document.querySelector("#quiz-load-retry");
+  const historySection = document.querySelector("#quiz-history");
 
-  if (!api || !robotId) {
-    statusEl.textContent = "Thiếu mẫu robot để làm bài. Hãy quay lại và chọn một mẫu robot.";
+  if (!api) {
+    robotNameEl.textContent = "Kiểm tra kiến thức";
+    statusEl.textContent = "Chưa tải được công cụ làm bài. Hãy tải lại trang.";
+    historySection.hidden = true;
     return;
+  }
+
+  async function showSelection() {
+    robotNameEl.textContent = "Chọn bài kiểm tra kiến thức";
+    document.title = "Chọn bài kiểm tra kiến thức | Robot Assembly Lab";
+    historySection.hidden = true;
+    historyStatusEl.textContent = "Chọn một mẫu để xem lịch sử của mẫu đó.";
+    selectionEl.hidden = false;
+    selectionEl.replaceChildren();
+    loadRetry.hidden = true;
+    statusEl.textContent = "Đang tải danh sách mẫu…";
+    try {
+      const models = await window.RobotContentApi.loadRobotOptions();
+      if (!models?.length) {
+        statusEl.textContent = "Chưa có mẫu robot để chọn bài kiểm tra.";
+        return;
+      }
+      try { await api.auth.me(); }
+      catch (error) {
+        statusEl.textContent = error.status === 401
+          ? "Đăng nhập để xem các bài kiểm tra hiện có và lưu kết quả của bạn."
+          : "Chưa xác minh được tài khoản. Hãy thử tải lại danh sách.";
+        const login = document.createElement("a");
+        login.href = "tai-khoan.html";
+        login.textContent = "Mở trang tài khoản";
+        selectionEl.append(login);
+        loadRetry.hidden = false;
+        return;
+      }
+      let failed = false;
+      // Reuse the existing read-only question API; its public JSON contains no answer key.
+      const cards = await Promise.all(models.map(async model => {
+        const card = document.createElement("article");
+        card.className = "quiz-question";
+        const name = document.createElement("h2");
+        name.textContent = model.name;
+        const state = document.createElement("p");
+        card.append(name, state);
+        try {
+          const data = await api.quiz.questions(model.id);
+          if (data.questions.length) {
+            state.textContent = `${data.questions.length} câu hỏi hiện có.`;
+            const link = document.createElement("a");
+            link.href = `kiem-tra.html?model=${encodeURIComponent(model.id)}`;
+            link.textContent = "Mở bài kiểm tra";
+            card.append(link);
+          } else state.textContent = "Mẫu này chưa có bài kiểm tra.";
+        } catch {
+          failed = true;
+          state.textContent = "Chưa xác nhận được bài kiểm tra. Hãy thử tải lại danh sách.";
+        }
+        return card;
+      }));
+      selectionEl.replaceChildren(...cards);
+      statusEl.textContent = "Chọn mẫu để mở bài; kết quả chỉ được lưu khi bạn nộp bài.";
+      loadRetry.hidden = !failed;
+    } catch {
+      statusEl.textContent = "Không tải được danh sách mẫu. Hãy thử lại.";
+      loadRetry.hidden = false;
+    }
   }
 
   async function loadRobotName() {
     try {
-      const models = (await window.RobotContentApi?.loadRobots()) || window.ROBOT_MODELS || [];
+      const models = (await window.RobotContentApi?.loadRobotOptions()) || [];
       const model = models.find((item) => item.id === robotId);
-      robotNameEl.textContent = model ? model.name : robotId;
+      robotNameEl.textContent = model ? model.name : "Bài kiểm tra kiến thức";
     } catch {
-      robotNameEl.textContent = robotId;
+      robotNameEl.textContent = "Bài kiểm tra kiến thức";
     }
   }
 
@@ -126,6 +191,9 @@
     statusEl.textContent = "Đang tải câu hỏi…";
     form.hidden = true;
     resultEl.hidden = true;
+    historySection.hidden = true;
+    historyStatusEl.textContent = "Lịch sử hiện khi bài kiểm tra được tải thành công.";
+    loadRetry.hidden = true;
     try {
       const data = await api.quiz.questions(robotId);
       if (data.questions.length === 0) {
@@ -135,10 +203,16 @@
       renderQuestions(data.questions);
       statusEl.textContent = "";
       form.hidden = false;
+      submitButton.disabled = false;
+      historySection.hidden = false;
+      void loadHistory();
     } catch (error) {
       statusEl.textContent = error.code === "AUTH_REQUIRED"
         ? "Đăng nhập để làm bài kiểm tra và lưu kết quả vào tài khoản."
-        : `Không thể tải câu hỏi. ${error.message}`;
+        : error.status === 422 || error.status === 404
+          ? "Không tìm thấy bài kiểm tra cho mẫu này. Hãy chọn lại bài."
+          : "Không thể tải câu hỏi. Hãy thử lại hoặc chọn bài khác.";
+      loadRetry.hidden = false;
     }
   }
 
@@ -168,7 +242,11 @@
     void loadQuiz();
   });
 
+  loadRetry.addEventListener("click", () => void (robotId ? loadQuiz() : showSelection()));
+  if (!robotId) {
+    await showSelection();
+    return;
+  }
   void loadRobotName();
   void loadQuiz();
-  void loadHistory();
 })();

@@ -91,12 +91,15 @@
 
     <div class="quiz-title">
         <span>Bài kiểm tra kiến thức</span>
-        <h1 id="quiz-robot-name">Đang tải…</h1>
+        <h1 id="quiz-robot-name">Kiểm tra kiến thức</h1>
     </div>
 </header>
 
 <main id="main-content" class="quiz-workspace" tabindex="-1">
     <p id="quiz-status" role="status" aria-live="polite">Đang tải câu hỏi…</p>
+    <p><a href="kiem-tra.html">Chọn lại bài kiểm tra</a></p>
+    <button id="quiz-load-retry" type="button" hidden>Thử tải lại</button>
+    <section id="quiz-selection" class="quiz-questions" aria-label="Các mẫu và bài kiểm tra hiện có" hidden></section>
 
     <form id="quiz-form" class="quiz-form" hidden>
         <div id="quiz-questions" class="quiz-questions"></div>
@@ -114,9 +117,9 @@
         </div>
     </section>
 
-    <section class="quiz-history">
+    <section id="quiz-history" class="quiz-history" hidden>
         <h2>Lịch sử làm bài của bạn cho mẫu này</h2>
-        <p id="quiz-history-status" role="status" aria-live="polite">Đang tải…</p>
+        <p id="quiz-history-status" role="status" aria-live="polite">Chọn bài để xem lịch sử.</p>
         <ul id="quiz-history-list"></ul>
     </section>
 </main>
@@ -124,7 +127,7 @@
 <script src="../assets/js/data.js?v=20261014.4"></script>
 <script src="../assets/js/content-api.js?v=20260921.1"></script>
 <script src="../assets/js/api.js?v=20261015.6"></script>
-<script src="../assets/js/quiz.js?v=20260924.1"></script>
+<script src="../assets/js/quiz.js?v=20261016.1"></script>
 
 </body>
 </html>
