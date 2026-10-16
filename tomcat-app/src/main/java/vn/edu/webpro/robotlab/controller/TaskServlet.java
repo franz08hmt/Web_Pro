@@ -95,6 +95,8 @@ public class TaskServlet extends HttpServlet {
                         "tasks",
                         PracticeTaskDB.selectTasks(
                                 user.getId(), false, TaskFormUtil.text(request, "state")));
+                request.setAttribute("taskListRecipients",
+                        PracticeTaskDB.selectListRecipients(user.getId(), TaskFormUtil.text(request, "state")));
                 forward(request, response, "task-list");
                 return;
             }

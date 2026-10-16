@@ -82,6 +82,7 @@ final class JspExpressionContractTest {
             Map.entry("evidence", TaskSubmission.class),
             Map.entry("quizQuestion", QuizQuestion.class),
             Map.entry("recipient", TaskRecipient.class),
+            Map.entry("taskListRecipient", TaskRecipient.class),
             Map.entry("taskReview", TaskReview.class),
             Map.entry("quizOption", QuizOption.class),
             Map.entry("currentReview", TaskReview.class),

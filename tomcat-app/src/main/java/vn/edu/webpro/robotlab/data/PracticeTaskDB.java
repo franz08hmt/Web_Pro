@@ -6,6 +6,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /** JDBC theo Ch12; mọi ghi nhiệm vụ khóa task trước recipient rồi round (Ch13). */
 public class PracticeTaskDB {
@@ -195,6 +197,85 @@ public class PracticeTaskDB {
                 tasks.add(mapTask(rs));
             }
             return tasks;
+        } finally {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
+
+    /** Metadata trạng thái danh sách; không dùng bản rút gọn này để nộp hoặc chấm bài. */
+    static TaskRecipient mapListRecipient(ResultSet rs) throws SQLException {
+        PracticeTask task = mapTask(rs);
+        TaskRecipient recipient = new TaskRecipient();
+        recipient.setId(rs.getLong("list_recipient_id"));
+        recipient.setTaskId(task.getId());
+        recipient.setUserId(rs.getLong("list_user_id"));
+        recipient.setTask(task);
+        long submissionId = rs.getLong("list_submission_id");
+        if (submissionId > 0) {
+            TaskSubmission submission = new TaskSubmission();
+            submission.setId(submissionId);
+            submission.setState(rs.getString("list_submission_state"));
+            submission.setLate(rs.getBoolean("list_is_late"));
+            long reviewId = rs.getLong("list_review_id");
+            if (reviewId > 0) {
+                TaskReview review = new TaskReview();
+                review.setId(reviewId);
+                review.setConclusion(rs.getString("list_conclusion"));
+                submission.getReviews().add(review);
+            }
+            recipient.setLatestSubmission(submission);
+        }
+        return recipient;
+    }
+
+    /** Một truy vấn theo owner, cùng thứ tự bài nộp/lần chấm cuối như trang chi tiết. */
+    public static Map<Long, TaskRecipient> selectListRecipients(long userId, String state)
+            throws SQLException {
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT t.*, r.name AS robot_name, tr.id AS list_recipient_id, "
+                    + "tr.user_id AS list_user_id, s.id AS list_submission_id, "
+                    + "s.state AS list_submission_state, s.is_late AS list_is_late, "
+                    + "rv.id AS list_review_id, rv.conclusion AS list_conclusion "
+                    + "FROM practice_tasks t JOIN robots r ON r.id=t.robot_id "
+                    + "JOIN task_recipients tr ON tr.task_id=t.id "
+                    + "LEFT JOIN (SELECT sx.recipient_id, MAX(sx.submission_no) AS submission_no "
+                    + "FROM task_submissions sx JOIN task_recipients own_submission "
+                    + "ON own_submission.id=sx.recipient_id WHERE own_submission.user_id = ? "
+                    + "GROUP BY sx.recipient_id) newest ON newest.recipient_id=tr.id "
+                    + "LEFT JOIN task_submissions s ON s.recipient_id=tr.id "
+                    + "AND s.submission_no=newest.submission_no "
+                    + "LEFT JOIN (SELECT rx.submission_id, MAX(rx.id) AS review_id "
+                    + "FROM task_reviews rx JOIN task_submissions reviewed ON reviewed.id=rx.submission_id "
+                    + "JOIN task_recipients own_review ON own_review.id=reviewed.recipient_id "
+                    + "WHERE own_review.user_id = ? GROUP BY rx.submission_id) last_review "
+                    + "ON last_review.submission_id=s.id LEFT JOIN task_reviews rv ON rv.id=last_review.review_id "
+                    + "WHERE tr.user_id = ? AND t.state <> 'DRAFT'";
+            if (state == null || state.isEmpty()) {
+                sql += " AND t.state <> 'ARCHIVED'";
+            } else {
+                sql += " AND t.state = ?";
+            }
+            sql += " ORDER BY t.id DESC";
+            ps = connection.prepareStatement(sql);
+            ps.setLong(1, userId);
+            ps.setLong(2, userId);
+            ps.setLong(3, userId);
+            if (state != null && !state.isEmpty()) {
+                ps.setString(4, state);
+            }
+            rs = ps.executeQuery();
+            Map<Long, TaskRecipient> recipients = new HashMap<>();
+            while (rs.next()) {
+                TaskRecipient recipient = mapListRecipient(rs);
+                recipients.put(recipient.getTaskId(), recipient);
+            }
+            return recipients;
         } finally {
             DBUtil.closeResultSet(rs);
             DBUtil.closePreparedStatement(ps);

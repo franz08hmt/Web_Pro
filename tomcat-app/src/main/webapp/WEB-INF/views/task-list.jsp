@@ -43,6 +43,22 @@
                         <c:url var="taskPersonalStatus" value="/tasks">
                             <c:param name="action" value="view"/><c:param name="id" value="${task.id}"/>
                         </c:url>
+                        <c:set var="taskListRecipient" value="${taskListRecipients[task.id]}"/>
+                        <c:choose>
+                            <c:when test="${not empty taskListRecipient}">
+                                <p>Trạng thái của em:
+                                    <span class="status-badge status-badge--info">
+                                        <c:out value="${taskListRecipient.statusLabel}"/>
+                                    </span>
+                                    <c:if test="${taskListRecipient.latestSubmission.late}">
+                                        <span class="status-badge status-badge--warning">Nộp muộn</span>
+                                    </c:if>
+                                </p>
+                            </c:when>
+                            <c:otherwise>
+                                <p>Mở nhiệm vụ để xem trạng thái hiện tại của em.</p>
+                            </c:otherwise>
+                        </c:choose>
                         <a href="<c:out value="${taskPersonalStatus}"/>">Mở nhiệm vụ và xem trạng thái của em</a>
                     </section>
                 </c:forEach>
