@@ -1,0 +1,11 @@
+<article class="dashboard-card">
+    <h3><c:out value="${dashboardCard.title}"/></h3>
+    <p><c:out value="${dashboardCard.summary}"/></p>
+    <c:url var="dashboardTarget" value="${dashboardCard.path}">
+        <c:if test="${not empty dashboardCard.parameterName}">
+            <c:param name="${dashboardCard.parameterName}" value="${dashboardCard.parameterValue}"/>
+        </c:if>
+        <c:if test="${not empty dashboardCard.model}"><c:param name="model" value="${dashboardCard.model}"/></c:if>
+    </c:url>
+    <a class="workspace-action-link" href="<c:out value="${dashboardTarget}"/>"><c:out value="${dashboardCard.action}"/></a>
+</article>

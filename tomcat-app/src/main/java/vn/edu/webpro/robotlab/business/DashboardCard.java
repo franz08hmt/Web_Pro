@@ -11,6 +11,7 @@ public class DashboardCard implements Serializable {
     private String parameterName = "";
     private String parameterValue = "";
     private String model = "";
+    private boolean secondary;
 
     /** Tạo bean rỗng. */
     public DashboardCard() {
@@ -45,4 +46,8 @@ public class DashboardCard implements Serializable {
     public String getModel() { return model; }
     /** Ghi Model. */
     public void setModel(String model) { this.model = model; }
+    /** Cho biết thẻ thuộc nhóm vật tư và đơn hàng. */
+    public boolean isSecondary() { return secondary; }
+    /** Ghi nhóm trình bày của thẻ. */
+    public void setSecondary(boolean secondary) { this.secondary = secondary; }
 }

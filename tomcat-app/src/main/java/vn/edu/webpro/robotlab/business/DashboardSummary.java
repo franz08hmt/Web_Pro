@@ -19,6 +19,26 @@ public class DashboardSummary implements Serializable {
     /** Ghi các thẻ khi cần khôi phục bean. */
     public void setCards(List<DashboardCard> cards) { this.cards = cards; }
 
+    /** Giữ thứ tự hành động học tập; không thay đổi danh sách thẻ gốc. */
+    public List<DashboardCard> getLearningCards() {
+        return cardsInGroup(false);
+    }
+
+    /** Các hành động vật tư và đơn hàng vẫn có đường vào riêng. */
+    public List<DashboardCard> getResourceCards() {
+        return cardsInGroup(true);
+    }
+
+    private List<DashboardCard> cardsInGroup(boolean secondary) {
+        List<DashboardCard> result = new ArrayList<>();
+        for (DashboardCard card : cards) {
+            if (card.isSecondary() == secondary) {
+                result.add(card);
+            }
+        }
+        return result;
+    }
+
     /** Thêm thẻ, luôn có trạng thái rỗng và đường đi thực. */
     public DashboardCard addCard(String title, String summary, String action, String path) {
         DashboardCard card = new DashboardCard();
@@ -115,13 +135,14 @@ public class DashboardSummary implements Serializable {
                 total += item.getQuantity();
             }
         }
-        addCard("Bộ linh kiện", kinds + " loại · " + total + " vật thể đang có.", "Xem bộ linh kiện", "/my-kit");
+        addCard("Bộ linh kiện", kinds + " loại · " + total + " vật thể đang có.",
+                "Xem bộ linh kiện", "/my-kit").setSecondary(true);
     }
 
     /** Giữ trạng thái chưa có đơn khác với một đơn có nhãn kết quả. */
     public void addOrderCard(List<ShopOrder> orders) {
         addCard("Đơn hàng gần nhất", orders.isEmpty() ? null : orders.get(0).getStatusLabel(),
-                "Xem đơn hàng", "/order-history");
+                "Xem đơn hàng", "/order-history").setSecondary(true);
     }
 
     /** Chỉ đếm nhiệm vụ đang mở và sắp đến hạn trong 72 giờ tiếp theo. */

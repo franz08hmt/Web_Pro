@@ -178,4 +178,20 @@ class DashboardSummaryTest {
         assertEquals("2 nhiệm vụ đang mở · 1 nhiệm vụ đến hạn trong 3 ngày tới.",
                 summary.taskSummary(tasks, now));
     }
+
+    @Test
+    void visualGroupsKeepEveryCardAndOriginalLearningOrder() {
+        DashboardSummary summary = new DashboardSummary();
+        assertEquals(0, summary.getLearningCards().size());
+        summary.addAssemblyCards(null, null, null, null);
+        summary.addKitCard(new ArrayList<KitItem>());
+        summary.addOrderCard(new ArrayList<ShopOrder>());
+        assertEquals(4, summary.getCards().size());
+        assertEquals(2, summary.getLearningCards().size());
+        assertEquals("Đang lắp ráp", summary.getLearningCards().get(0).getTitle());
+        assertEquals("Mẫu đã hoàn tất", summary.getLearningCards().get(1).getTitle());
+        assertEquals(2, summary.getResourceCards().size());
+        assertEquals("/my-kit", summary.getResourceCards().get(0).getPath());
+        assertEquals("/order-history", summary.getResourceCards().get(1).getPath());
+    }
 }

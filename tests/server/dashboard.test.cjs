@@ -12,7 +12,11 @@ test("dashboard reads owned data and uses the Servlet request/forward flow", () 
   }
   const jsp = read("tomcat-app/src/main/webapp/WEB-INF/views/dashboard.jsp");
   assert.doesNotMatch(jsp, /<%(?!@)|<fmt:|<fn:|<select\b/);
-  assert.match(jsp, /<c:out value="\$\{dashboardCard.summary\}"/);
+  assert.match(jsp, /<%@ include file="dashboard-card.jspf" %>/);
+  const card = read("tomcat-app/src/main/webapp/WEB-INF/views/dashboard-card.jspf");
+  assert.doesNotMatch(card, /<%(?!@)|<fmt:|<fn:|<select\b/);
+  assert.match(card, /<c:url/);
+  assert.match(card, /<c:out value="\$\{dashboardCard.summary\}"/);
   const db = read(java + "data/AssemblySessionDB.java");
   assert.match(db, /WHERE user_id = \? AND [\s\S]*LIMIT 1/);
 });

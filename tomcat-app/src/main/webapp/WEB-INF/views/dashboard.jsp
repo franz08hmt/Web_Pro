@@ -9,28 +9,28 @@
     <title>Bảng điều khiển | Robot Assembly Lab</title>
     <c:url var="dashboardCss" value="/assets/css/learning-workspace.css"><c:param name="v" value="20261006.5"/></c:url>
     <link rel="stylesheet" href="<c:out value="${dashboardCss}"/>">
+    <c:url var="dashboardLayoutCss" value="/assets/css/dashboard.css"><c:param name="v" value="20261016.1"/></c:url>
+    <link rel="stylesheet" href="<c:out value="${dashboardLayoutCss}"/>">
 </head>
-<body class="learning-workspace">
+<body class="learning-workspace workspace-page-dashboard">
     <%@ include file="workspace-header.jspf" %>
     <main id="workspace-main" class="workspace-content" tabindex="-1">
         <h1>Bảng điều khiển</h1>
         <p>Chào <c:out value="${user.fullName}"/>. Chọn một hành động để tiếp tục hành trình học của bạn.</p>
-        <div class="workspace-metrics">
-            <c:forEach var="dashboardCard" items="${dashboard.cards}">
-                <article class="workspace-metric">
-                    <h2><c:out value="${dashboardCard.title}"/></h2>
-                    <p><c:out value="${dashboardCard.summary}"/></p>
-                    <c:url var="dashboardTarget" value="${dashboardCard.path}">
-                        <c:if test="${not empty dashboardCard.parameterName}">
-                            <c:param name="${dashboardCard.parameterName}" value="${dashboardCard.parameterValue}"/>
-                        </c:if>
-                        <c:if test="${not empty dashboardCard.model}"><c:param name="model" value="${dashboardCard.model}"/></c:if>
-                    </c:url>
-                    <a class="workspace-action-link" href="<c:out value="${dashboardTarget}"/>">
-                        <c:out value="${dashboardCard.action}"/></a>
-                </article>
+        <h2>Tiếp tục học và thực hành</h2>
+        <div class="dashboard-grid">
+            <c:forEach var="dashboardCard" items="${dashboard.learningCards}">
+                <%@ include file="dashboard-card.jspf" %>
             </c:forEach>
         </div>
+        <section class="dashboard-resources" aria-label="Vật tư và đơn hàng">
+            <h2>Vật tư và đơn hàng</h2>
+            <div class="dashboard-grid">
+                <c:forEach var="dashboardCard" items="${dashboard.resourceCards}">
+                    <%@ include file="dashboard-card.jspf" %>
+                </c:forEach>
+            </div>
+        </section>
         <c:url var="accountSettings" value="/pages/tai-khoan.html"/>
         <p><a href="<c:out value="${accountSettings}"/>">Thông tin tài khoản, đổi mật khẩu và lịch sử lắp ráp</a></p>
     </main>
