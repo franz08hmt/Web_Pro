@@ -45,10 +45,13 @@ public class LearningSummaryServlet extends HttpServlet {
             Map<String, Long> sessionCounts = StatsDB.countSessionsByStatusForUser(user.getId());
             LearningSummary summary = new LearningSummary();
             summary.summarizeSessions(sessionCounts);
+            summary.summarizeActions(StatsDB.selectLearningProfileSessionStats(user.getId()),
+                    StatsDB.selectDashboardQuizCandidates(user.getId()));
             List<Robot> completedRobots = StatsDB.selectCompletedRobots(user.getId());
             List<QuizRobotScore> quizScores = StatsDB.selectQuizScoresByRobot(user.getId());
 
             request.setAttribute("user", user);
+            request.setAttribute("learningSummary", summary);
             request.setAttribute("sessionCounts", sessionCounts);
             request.setAttribute("totalSessions", summary.getTotalSessions());
             request.setAttribute("completedRobots", completedRobots);

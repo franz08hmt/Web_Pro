@@ -16,7 +16,9 @@
         <main class="workspace-content" id="workspace-main" tabindex="-1">
 
             <h1>Tổng kết học tập</h1>
-
+            <c:url var="summaryPrintTop" value="/learning-profile"/>
+            <p><a class="workspace-action-link" href="<c:out value="${summaryPrintTop}"/>">Mở hồ sơ bản in / PDF</a></p>
+            <p>Xem kết quả đã có tại đây; mở Bảng điều khiển để tiếp tục việc đang làm.</p>
 
             <div class="workspace-metrics">
                 <dl class="workspace-metric workspace-identity">
@@ -54,13 +56,28 @@
                     <div class="workspace-table" role="region" aria-label="Bảng dữ liệu có thể cuộn ngang" tabindex="0">
                         <table>
                             <caption>Mẫu robot đã từng lắp ráp xong ít nhất một lần</caption>
-                            <thead><tr><th scope="col">Mẫu robot</th><th scope="col">Độ khó</th><th scope="col">Mô tả</th></tr></thead>
+                            <thead><tr><th scope="col">Mẫu robot</th><th scope="col">Độ khó</th>
+                                <th scope="col">Mô tả</th><th scope="col">Xem lại và ôn tập</th></tr></thead>
                             <tbody>
                                 <c:forEach var="robot" items="${completedRobots}">
                                     <tr>
                                         <td><strong><c:out value="${robot.name}"/></strong></td>
                                         <td><c:out value="${robot.level}"/></td>
                                         <td><c:out value="${robot.summary}"/></td>
+                                        <td>
+                                            <c:if test="${not empty learningSummary.completedSessionIds[robot.id]}">
+                                                <c:url var="summaryReview" value="/assembly-review">
+                                                    <c:param name="session" value="${learningSummary.completedSessionIds[robot.id]}"/>
+                                                </c:url>
+                                                <a href="<c:out value="${summaryReview}"/>">Xem mẫu đã hoàn thiện</a>
+                                            </c:if>
+                                            <c:if test="${learningSummary.quizAvailable[robot.id]}">
+                                                <c:url var="summaryRobotQuiz" value="/pages/kiem-tra.html">
+                                                    <c:param name="model" value="${robot.id}"/>
+                                                </c:url>
+                                                <p><a href="<c:out value="${summaryRobotQuiz}"/>">Ôn tập kiến thức của mẫu</a></p>
+                                            </c:if>
+                                        </td>
                                     </tr>
                                 </c:forEach>
                             </tbody>
@@ -84,6 +101,7 @@
                                     <th scope="col">Điểm tốt nhất</th>
                                     <th scope="col">Điểm gần nhất</th>
                                     <th scope="col">Số lần làm bài</th>
+                                    <th scope="col">Ôn tập</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -93,6 +111,12 @@
                                         <td><c:out value="${score.bestScore}"/>/<c:out value="${score.totalQuestions}"/></td>
                                         <td><c:out value="${score.latestScore}"/>/<c:out value="${score.totalQuestions}"/></td>
                                         <td><c:out value="${score.attemptCount}"/></td>
+                                        <td>
+                                            <c:url var="summaryScoreQuiz" value="/pages/kiem-tra.html">
+                                                <c:param name="model" value="${score.robotId}"/>
+                                            </c:url>
+                                            <a href="<c:out value="${summaryScoreQuiz}"/>">Mở bài của mẫu</a>
+                                        </td>
                                     </tr>
                                 </c:forEach>
                             </tbody>
