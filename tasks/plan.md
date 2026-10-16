@@ -585,3 +585,34 @@ bảo vệ giữ nguyên; không ghi DB, không tự dừng server. Language ser
 cũ: kiểm được trạng thái sau mở cửa sổ, không tuyên bố vừa restart tiến trình.
 Xem mục xác nhận môi trường trong PHASE11B_REVIEW_FIX_QA_REPORT.md và evidence
 acceptance-20261016/manual-verification.json. Chưa push.
+
+## Đợt11c — Hành trình học tập và giao diện phụ (16/10/2026)
+
+M0: HEAD0280960 đúng nhánh tích hợp,6 WIP sửa dở và4 file chưa theo dõi;
+12 hash bảo vệ gồm POM/settings lưu ngoài Git tại qa-evidence/phase11c.
+Baseline218 Node,138 JUnit,0fail/skip; clean package17 dùng buildDirectory riêng.
+Tomcat8080 đang phục vụ target gốc: không build/redeploy vào đó. Tái hiện17 trang
+bằng Chrome/GET, menu→quiz thiếu model, dashboard7 thẻ;0 lỗi JS/request ghi.
+Hướng dẫn .agents cấp workspace thuộc LogiRoute/Python, không áp dụng công nghệ
+cho Robot Assembly Lab. Review là bằng chứng lịch sử, đã đọc lại source.
+
+- M1: quiz không model dùng loadRobotOptions (GET catalog nhẹ), kiểm bài bằng
+  GET questions hiện có, chỉ JSON công khai không đáp án. Không endpoint mới,
+  không tự tạo lượt, không lịch sử model rỗng; trạng thái khách/lỗi/rỗng rõ ràng.
+- M2: bean LearningSummary gom count bằng for, giữ attribute và dữ kiện cũ;
+  JUnit rỗng/nhiều trạng thái và guard cú pháp phủ file đã sửa.
+- M3: CSS riêng dashboard,2–3 cột/1 cột mobile; phân nhóm thẻ học và kit/đơn,
+  giữ hành động/dữ kiện từ DashboardSummary, không đổi CSS metric toàn cục.
+- M4: nối dây có neo bài/lịch sử, paging server theo owner/thứ tự ổn định;
+  chẩn đoán bớt khung và CTA rõ; tra cứu details giữ nguyên văn/filter/context.
+- M5: đọc TaskServlet/TaskRecipient; chi tiết có recipient nhưng danh sách chỉ
+  có tasks. Không suy diễn trạng thái bằng JSP hay chạm WIP; ghi giới hạn hoặc
+  xin duyệt phần GET WIP nếu cần trạng thái cá nhân ngay trên danh sách.
+- M6: giữ số liệu StatsDB; bean tổng kết chọn phiên hoàn tất theo owner từ
+  dữ kiện gộp hiện có, link review/quiz đúng model và bản in dễ thấy. Ghi nhận
+  nguy cơ MAX(score)/MAX(total_questions), không đổi định nghĩa điểm.
+- M7: chỉ đọc DB/HEX và browser để liệt kê dữ liệu QA công bố/cá nhân; không dọn.
+- M8: QA8081 riêng từ artifact mới, fixture ca biên không ghi DB;390/768/1440,
+  bàn phím và hành trình, cache/version, hash WIP/DB, hồi quy GET và build cuối.
+  Phân biệt commit sạch/working tree có WIP/artifact8080 cũ. Commit từng mốc;
+  không push. Báo cáo PHASE11C_LEARNING_JOURNEY_QA_REPORT.md ghi phần chờ duyệt.
