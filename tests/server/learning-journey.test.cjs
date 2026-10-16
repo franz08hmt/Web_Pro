@@ -23,3 +23,20 @@ test("wiring history filters its owner before deterministic database pagination"
   assert.match(servlet, /selectAttempts\(user.getId\(\), history.getPageSize\(\), history.getOffset\(\)\)/);
   assert.doesNotMatch(servlet, /subList\(/);
 });
+
+test("phase11c changed Java and views retain course syntax and line limits", () => {
+  const classes = ["business/LearningSummary", "business/DashboardSummary", "business/DashboardCard",
+    "business/WiringHistoryPage", "controller/LearningSummaryServlet", "controller/WiringServlet", "data/WiringDB",
+    "controller/ArchitectureServlet"];
+  for (const name of classes) {
+    const source = fs.readFileSync(path.join(root, java, name + ".java"), "utf8");
+    assert.doesNotMatch(source, /\.stream\(|::|\bswitch\s*\(|\bvar\s+\w+|java\.time|\bOptional\b|(?:List|Map)\.of\(/, name);
+    assert.ok(source.split(/\r?\n/).every(line => [...line].length <= 120), name);
+  }
+  for (const name of ["dashboard.jsp", "dashboard-card.jspf", "wiring-list.jsp", "diagnosis-list.jsp",
+    "task-list.jsp", "task-view.jsp", "learning-summary.jsp"]) {
+    const source = fs.readFileSync(path.join(root, "tomcat-app/src/main/webapp/WEB-INF/views", name), "utf8");
+    assert.doesNotMatch(source, /<%(?!@)|<fmt:|<fn:|<(?:select|option)\b/, name);
+    assert.ok(source.split(/\r?\n/).every(line => [...line].length <= 140), name);
+  }
+});

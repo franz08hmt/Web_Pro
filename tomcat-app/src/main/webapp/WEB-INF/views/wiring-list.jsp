@@ -97,7 +97,7 @@
             </c:forEach>
             <nav class="history-pagination" aria-label="Trang lịch sử nối dây">
                 <p>Trang <c:out value="${wiringHistory.page}"/>/<c:out value="${wiringHistory.totalPages}"/>
-                    · <c:out value="${wiringHistory.totalItems}"/> lượt; mỗi trang tối đa20 lượt.</p>
+                    · <c:out value="${wiringHistory.totalItems}"/> lượt; mỗi trang tối đa 20 lượt.</p>
                 <c:if test="${wiringHistory.hasPrevious}">
                     <c:url var="wiringPrevious" value="/wiring">
                         <c:param name="page" value="${wiringHistory.page - 1}"/>

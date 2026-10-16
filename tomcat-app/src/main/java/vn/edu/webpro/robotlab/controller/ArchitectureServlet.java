@@ -51,7 +51,7 @@ public class ArchitectureServlet extends HttpServlet {
                 + "c:if theo session, không bằng JavaScript.");
         add(items, "JavaBean",
                 "Quy tắc và trạng thái thẻ", "/account",
-                "tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DashboardSummary.java", 36, true,
+                "tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DashboardSummary.java", 56, true,
                 "Bean Serializable có constructor rỗng, private field và getter/setter; phân biệt điểm "
                 + "0 thật với chưa có lượt kiểm tra.");
         add(items, "HttpSession, phân quyền, session_version",
