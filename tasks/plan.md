@@ -629,3 +629,18 @@ clean package17. Chrome57 ô390/768/1440,16 kiểm hành trình/quyền,10 fixtu
 HTTP quiz/tra cứu trên8080 vẫn là bản cũ, không tự redeploy. Không tạo/nộp lượt,
 checkout hoặc sửa dữ liệu. Giới hạn thao tác ghi/live lịch sử>20/Firefox/Safari
 và M5 được ghi rõ trong PHASE11C_LEARNING_JOURNEY_QA_REPORT.md. Chưa push.
+
+### Bổ sung M5 sau duyệt riêng GET TaskServlet
+
+Đã sao lưu file/diff WIP và12 hash mới đầu lượt. TaskServlet chỉ thêm2 dòng
+setAttribute/gọi PracticeTaskDB.selectListRecipients(user.getId(), state).
+Query gộp theo owner lấy MAX(submission_no)/MAX(review.id), khớp thứ tự trang
+chi tiết; metadata chuyển vào TaskRecipient để dùng luật statusLabel hiện có.
+JSP chỉ c:out nhãn và cờ muộn, không suy từ điểm, không sửa POST/TaskFormUtil.
+
+39 kiểm browser đạt:2USER,19 nhãn khớp chi tiết,6 ô390/768/1440, filter/quyền/
+URL userId bị bỏ qua. Fixture JUnit có chưa nộp/chờ chấm/cần bổ sung/thiếu review/
+hai người cùng task.231 Node/149 JUnit,0 fail/skip, package17 đạt ở working tree
+và archive sạch. Commit source2b4e5fd: TaskServlet chỉ có2 dòng GET trong index,
+WIP3 dòng cũ còn ngoài commit, POST byte-identical.11 hash bảo vệ khác và55 hash
+bảng DB giữ nguyên. QA8081 riêng; không deploy hoặc dừng8080. Chưa push.

@@ -154,5 +154,6 @@ Mọi menu HTML/JSP đối chiếu fixture theo vai trò trong207ô; chi tiết 
 - `/wiring?page=N#wiring-history`:20 lượt/trang theo owner, thứ tự id giảm dần;
   trang trước/sau giữ robotId của catalog. Tra cứu mở chi tiết bằng details và
   giữ mẫu khi sang chẩn đoán. Không đổi route/API ghi hoặc quyền hiện có.
-- Trạng thái cá nhân có tại chi tiết nhiệm vụ. Danh sách chưa có dữ kiện người
-  nhận trong GET WIP, chỉ thêm link mở chi tiết; phần này chưa duyệt mở rộng.
+- Sau khi được duyệt bổ sung GET: danh sách nhiệm vụ hiện trạng thái cá nhân từ
+  TaskRecipient, tách trạng thái nhiệm vụ và cờ nộp muộn. Một truy vấn gộp theo
+  user lấy bài nộp mới nhất/lần chấm cuối; không suy trạng thái từ điểm trong JSP.

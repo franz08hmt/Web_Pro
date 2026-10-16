@@ -360,9 +360,12 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] M3: dashboard ưu tiên học, layout riêng, mobile/zoom200/empty DOM/long.
 - [x] M4: bài/lịch sử nối dây, chẩn đoán/tra cứu gọn, giữ dữ liệu và context.
 - [x] M5 phần JSP: chi tiết dùng trạng thái bean/cờ muộn; danh sách có link mở trạng thái.
-- [ ] M5 phần danh sách: chờ duyệt GET TaskServlet WIP để có dữ kiện người nhận, chưa triển khai.
+- [x] M5 phần danh sách: sau duyệt riêng GET, map TaskRecipient theo user, một query gộp;
+  19 nhãn khớp chi tiết của2 USER,6 ô viewport, không ghi DB. Chỉ stage hunk2 dòng GET.
 - [x] M6: tổng kết→review/quiz đúng mẫu/bản in; không đổi định nghĩa điểm.
 - [x] M7: browser/DB read-only/HEX, danh sách QA và đề xuất chờ quyết định; không dọn DB.
 - [x] M8:229 Node/144 JUnit ở working tree và commit sạch,57 ô Chrome/16 kiểm hành trình-quyền,
   10 ca browser fixture,27 smoke,3 form contract không đổi; hash12 file/55 bảng giữ nguyên.
 - [x] M8 runtime: chỉ chạy bản mới trên QA8081 rồi dọn;8080 không redeploy, không push.
+- [x] Bổ sung M5:231 Node/149 JUnit,0 fail/skip, build17 working tree/commit sạch;
+  WIP cũ/POST giữ nguyên byte khi bỏ2 dòng GET mới;11 hash còn lại và55 bảng giữ nguyên.

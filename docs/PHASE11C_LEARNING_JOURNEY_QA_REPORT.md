@@ -27,12 +27,13 @@ Giữ hai commit cache/menu đã được review; không schema, endpoint mới,
 |M2|LearningSummary tổng số phiên bằng for; Servlet giữ attribute cũ, chỉ gọi bean. Không đổi StatsDB hoặc công thức điểm.|
 |M3|Dashboard3/2/1 cột ở1440/768/390, thẻ học trước, kit/đơn thành nhóm phụ; giữ đủ7 thẻ và đích cũ. CSS riêng, không đổi metric toàn site.|
 |M4|Neo bài/lịch sử nối dây; count và LIMIT/OFFSET theo user_id, thứ tự id DESC,20 lượt/trang. Chẩn đoán bỏ khung form phụ, CTA chính trước link tra cứu. Tra cứu dùng details/summary, giữ nguyên văn và filter/context; chặn response cũ khi đổi lọc nhanh.|
-|M5|Chỉ JSP: phân biệt nhãn nhiệm vụ với trạng thái cá nhân tại chi tiết; cờ nộp muộn từ bean. Danh sách có link mở trạng thái của em. Trạng thái cá nhân ngay từng thẻ danh sách chưa triển khai: GET TaskServlet chỉ truyền tasks, file WIP chưa được duyệt sửa. Không SQL/suy diễn điểm trong JSP.|
+|M5|Ban đầu chỉ JSP chi tiết; sau khi được duyệt riêng GET đã hiện trạng thái cá nhân ngay từng thẻ danh sách từ TaskRecipient/query gộp theo owner. Cờ muộn tách riêng; không SQL/suy diễn điểm trong JSP. Xem mục bổ sung M5 và bằng chứng stage hunk ở cuối.|
 |M6|Nút bản in ở đầu tổng kết, link review từ phiên COMPLETED theo owner; quiz đúng model có dữ kiện câu hỏi/lượt cũ. Dùng truy vấn gộp có sẵn, không query mỗi dòng. LearningProfile không sửa.|
 |M7|Chỉ đọc DB/HEX và trình duyệt; danh sách QA cùng đề xuất bên dưới, không dọn/ẩn dữ liệu.|
 
-M5 đã gửi câu hỏi riêng về nhánh GET TaskServlet; chưa có phê duyệt thì giữ nguyên
-WIP. Phần JSP an toàn đã commit, không gọi việc gắn trạng thái trên danh sách là xong.
+Ở lần bàn giao fc81a96, M5 đã gửi câu hỏi về GET TaskServlet và còn chờ duyệt;
+chỉ phần JSP an toàn được commit. Bổ sung sau khi được duyệt có kết quả riêng
+ở cuối báo cáo, không thay bằng chứng của lần kiểm trước.
 
 ## Dữ liệu QA và định nghĩa số liệu — không tự xử lý
 
@@ -129,7 +130,7 @@ c:url và cấm scriptlet ở fragment; không bỏ/nới guard để ép xanh.
 |Nối dây→neo lịch sử→lượt đã có|USER lượt30 trả200; URL page quá cao vẫn có đường về trang hợp lệ|
 |Tra cứu theo mẫu→Space mở details→chẩn đoán|Giữ robotId=obstacle-avoider; chọn mục có robot riêng, không gán robot cho mục dùng chung|
 |Tổng kết→review/ôn tập/bản in|GET đúng mẫu/chủ; hồ sơ in vẫn /learning-profile, file WIP giữ hash|
-|Nhiệm vụ→trạng thái cá nhân|Trang chi tiết dùng TaskRecipient; không kiểm POST hoặc coi danh sách đã có trạng thái riêng|
+|Nhiệm vụ→trạng thái cá nhân|Lần fc81a96 chỉ kiểm chi tiết TaskRecipient; mục bổ sung M5 bên dưới kiểm thêm danh sách sau duyệt GET|
 |Quyền quản trị tại server|Khách302, USER403, ADMIN200; không đổi role/backend|
 |Chrome390/768/1440|57/57 ô: khách6, builder21, student21, ADMIN9; một H1, ID không trùng, menu Tab/Enter/Escape|
 |Dashboard|3/2/1 cột, đủ7 thẻ; nội dung dài/cỡ chữ lớn DOM fixture không tràn|
@@ -191,6 +192,65 @@ chuẩn hóa DOM form.action bị field action che; không sửa sản phẩm đ
 |M7|2d03773|docs(qa): record shared QA content and unchanged score semantics|
 |M8 source/guard|afa6ef2|fix(ux): guard learning journey syntax and refresh source references|
 
-Commit tài liệu nghiệm thu cuối được báo hash khi bàn giao. Phần chờ: trạng thái
-cá nhân trên danh sách nhiệm vụ (WIP), quyết định dữ liệu demo và deploy8080;
-không gọi toàn bộ đề xuất đã hoàn tất.
+Commit tài liệu nghiệm thu trước là fc81a96. Tại lần bàn giao đó còn chờ trạng
+thái cá nhân trên danh sách nhiệm vụ, quyết định dữ liệu demo và deploy8080.
+
+## Bổ sung M5 sau khi duyệt riêng GET TaskServlet — 16/10/2026
+
+Người dùng đã duyệt bổ sung duy nhất nhánh GET danh sách, giữ nguyên WIP và
+không stage cả TaskServlet. Đầu lượt HEADfc81a96, baseline229 Node/144 JUnit,
+0fail/skip, package JDK17 riêng đạt. Sao lưu TaskServlet nguyên byte cùng diff
+và12 hash đầu lượt mới tại `phase11c/task-status-followup`, ngoài Git.
+
+### Thay đổi và bảo vệ WIP
+
+- TaskServlet chỉ thêm2 dòng `setAttribute`/gọi
+  `PracticeTaskDB.selectListRecipients(user.getId(), state)` trước forward danh sách.
+  Không đọc userId từ URL, không tính nhãn ở Servlet hoặc JSP.
+- Giữ truy vấn danh sách nhiệm vụ cũ và thêm một query metadata trạng thái:
+  tổng2 truy vấn cố định, không tăng theo số nhiệm vụ. Các nhóm bài nộp/review
+  đều lọc user_id; chọn MAX(submission_no) và MAX(review.id), đúng thứ tự đọc
+  bài mới nhất/lần chấm cuối của trang chi tiết. State filter giữ semantics cũ.
+- Map theo taskId chứa TaskRecipient với task, bài nộp gần nhất và kết luận
+  hiện hành; `TaskRecipient.statusLabel` giữ nguyên luật. Không có bài thì bean
+  quyết định Chưa nộp/quá hạn; thiếu review vẫn theo nhãn Chờ chấm có sẵn.
+- JSP c:out nhãn cá nhân, tách trạng thái nhiệm vụ và cờ muộn từ `isLate` đã lưu.
+  Metadata này chỉ phục vụ danh sách, không dùng cho nộp/chấm; không tải lịch sử
+  từng nhiệm vụ hoặc đưa SQL/quy tắc điểm vào JSP.
+- Index được dựng bằng patch chỉ2 dòng GET, kiểm `git apply --cached --check`
+  và đối chiếu toàn bộ blob với HEAD cộng đúng hunk mới. Không git add TaskServlet.
+  Commit source `2b4e5fd` không chứa3 dòng WIP cũ; sau commit TaskServlet vẫn M
+  với đúng3 dòng thêm/3 dòng bớt có sẵn. Xóa riêng insertion trong bản đọc kiểm
+  thì khôi phục chính xác byte WIP đầu lượt, không thực hiện revert trên file thật.
+- POST byte-identical, TaskFormUtil không đổi;11 hash file bảo vệ/cấu hình còn
+  lại giữ nguyên. Không schema, dữ liệu công bố, rubric, quyền hay luật mới.
+
+### Kiểm chứng bổ sung
+
+| Kiểm | Kết quả |
+| --- | --- |
+|Hai regression Node trước sửa|2 fail tái hiện thiếu dữ kiện/hiển thị; đạt sau sửa|
+|Node toàn bộ|229→231,0fail/skip; working tree và archive sạch2b4e5fd cùng đạt|
+|JUnit toàn bộ|144→149,0fail/skip; test/clean package17 working tree và commit sạch đạt|
+|5 fixture JUnit ResultSet|Chưa nộp, chờ chấm, cần bổ sung+cờ muộn, thiếu review, hai user cùng task; chỉ bộ nhớ, không kết nối DB|
+|Hai USER thật|Builder15 nhiệm vụ và practice4;19/19 nhãn danh sách khớp trang chi tiết hiện có|
+|390/768/1440|6/6 ô đạt, một H1, không tràn, focus nhìn thấy, Enter mở đúng chi tiết|
+|URL userId của người khác|Bị bỏ qua, danh sách vẫn của session hiện tại|
+|Lọc OPEN/CLOSED/ARCHIVED/DRAFT|8 ca GET của2 USER đạt; DRAFT không lộ cho USER|
+|Quyền cũ|Khách302, ADMIN403, nhiệm vụ không thuộc người dùng404|
+|Ghi dữ liệu/lỗi JS|0 request ghi của trang,0 pageerror; chỉ đăng nhập tài khoản có sẵn|
+|DB|55/55 hash bảng trước/sau giữ nguyên, không tạo/nộp/chấm dữ liệu thử|
+|Artifact|QA8081 có15 nhãn cá nhân của builder;8080 vẫn0 nhãn, chưa deploy bản bổ sung|
+
+39 kiểm browser đạt. Trên dữ liệu thật builder có2 Chờ chấm,2 Cần bổ sung,
+3 Chưa nộp,1 Chưa nộp quá hạn,2 Chưa đạt và5 Đạt; practice có4 Chưa nộp.
+Đây là nhãn từ dữ liệu/luật cũ, không tính lại điểm. Không chạy POST nộp/chấm/
+nộp lại; các ca ghi giữ kiểm thử hiện có. Giới hạn Firefox/Safari, cảm ứng thật,
+screen reader và quyết định xử lý dữ liệu demo trước đó giữ nguyên.
+
+Bằng chứng ngoài Git ở `D:/Web-Pro/qa-evidence/phase11c/task-status-followup/`:
+backup/diff WIP, `get-only.patch`, `staging-proof.json`, `final-proof.json`,
+log Node/Maven/Surefire, `browser-results.json`, `owners.json`, ảnh hai USER
+theo viewport và hash DB/file trước/sau. Đã dọn đúng QA8081;8080 PID30024 giữ
+nguyên. Chưa push. M5 danh sách đã được triển khai và kiểm; phần còn chờ là
+quyết định dữ liệu demo/deploy8080, không còn chờ quyền sửa GET M5.

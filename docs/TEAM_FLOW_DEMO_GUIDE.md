@@ -954,5 +954,7 @@ chi tiết và bằng chứng nằm trong PHASE11B_REVIEW_FIX_QA_REPORT.md.
 
 Phân biệt lỗi giao diện đã sửa với dữ liệu demo: bài nối dây công bố7 và các
 nhiệm vụ QA vẫn còn, không ẩn theo tên. Báo cáo11c có danh sách và đề xuất DB
-demo riêng chờ duyệt. M5 chưa hiện trạng thái cá nhân ngay trên thẻ danh sách
-vì GET TaskServlet đang WIP; không trình bày phần đó là đã hoàn tất.
+demo riêng chờ duyệt. Bổ sung M5 đã được duyệt riêng nhánh GET: trên cùng một thẻ,
+chỉ rõ trạng thái nhiệm vụ, trạng thái của em và cờ nộp muộn; mở chi tiết đối chiếu.
+Hai tài khoản có thể khác trạng thái trên cùng nhiệm vụ, do dữ kiện và luật
+TaskRecipient tại server quyết định. Không thay đổi POST hoặc quy tắc chấm.
