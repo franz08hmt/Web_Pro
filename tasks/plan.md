@@ -791,3 +791,11 @@ DB 8080 chỉ có spec obstacle v1/v2; bốn mẫu còn lại chưa được tri
 
 Bằng chứng ngoài Git: D:/Web-Pro/qa-evidence/assembly-8080-20261017/.
 Không dừng 8080/8081, không đổi kết nối/IDE, không ghi DB nguồn trước gói duyệt.
+
+Kết quả tiếp quản: QA45 ca đường vào,53 lượt gắn thật và15 từ chối trên clone;
+hồi quy Xưởng/replay/quiz đạt. Người dùng đã duyệt triển khai8080 và duyệt riêng
+1 USER QA/5 phiên mới. Backup mới restore thử55 bảng; seed chỉ thêm4/43/43,
+mọi dòng cũ giữ nguyên. WAR sạch7af2d5f đã chạy trên8080 và53 lượt gắn thật,
+5 từ chối/15 viewport/reload/undo/complete đạt.253 Node/159 JUnit,0 fail/skip;
+44 hash bảo vệ và DB demo8081 không đổi. Có helper Stop/Start đúng runtime,
+không sửa cấu hình IDE; báo cáo docs/ASSEMBLY_8080_QA_REPORT.md. Không push.

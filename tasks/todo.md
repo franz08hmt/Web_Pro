@@ -417,8 +417,10 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] Clone đúng DB nguồn 55 bảng; tái hiện UI GROUP và lỗi 422 thiếu spec bốn mẫu.
 - [x] Seed trên clone: rollback dòng dữ liệu khi lỗi; chạy lại không đổi dữ liệu;
   chỉ thêm ba bảng spec/slot/orientation, không đổi bản PUBLISHED trước đó.
-- [ ] Đường vào DETAILED mặc định, giữ URL GROUP cũ và lỗi server rõ ràng.
-- [ ] Kéo-thả thật năm mẫu, camera/marker chiều cao, reload/undo/complete.
-- [ ] Ma trận UI, build sạch, hồi quy, báo cáo/gói duyệt 8080.
-- [ ] Người dùng duyệt gói triển khai đúng DB/artifact/context và fixture 8080.
-- [ ] Nghiệm thu UI/drag thật trên localhost:8080, bảo toàn WIP/dữ liệu cũ.
+- [x] Đường vào DETAILED mặc định, giữ URL GROUP cũ và lỗi server rõ ràng.
+- [x] Kéo-thả thật năm mẫu, camera/marker chiều cao, reload/undo/complete.
+- [x] Ma trận UI45 ca, build sạch253 Node/159 JUnit; hồi quy Xưởng/replay/quiz.
+- [x] Người dùng duyệt DB/artifact/restart8080 và riêng1 QA USER/5 phiên mới.
+- [x] Backup restore55 bảng, seed4/43/43; WAR sạch vào đúng8080, Stop/Start đạt.
+- [x] Nghiệm thu8080:53 gắn thật/5 từ chối/15 viewport; mọi dòng cũ và WIP nguyên.
+- [x] Báo cáo/hướng dẫn phân biệt8080/8081; dọn riêng QA8082, không push.

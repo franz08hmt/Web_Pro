@@ -1,5 +1,16 @@
 # Robot Assembly Lab
 
+## Cập nhật8080 — kéo-thả đủ5 mẫu (17/10/2026)
+
+Đã nghiệm thu trực tiếp `http://localhost:8080/pages/mau-robot.html` trên DB
+`robot_lab_content_test`: đường vào mặc định DETAILED, từng vật thể/điểm gắn/
+hướng được server kiểm tra; giữ URL GROUP lịch sử. Cả5 mẫu qua53 lần kéo-thả,
+reload/undo/hoàn tất. Có backup và giữ nguyên mọi dòng dữ liệu cũ/WIP.
+
+Đây là môi trường khác với `FINAL.ps1`/8081; không dùng lẫn tài khoản hoặc suy
+kết quả kiểm thử giữa hai cổng. Hướng dẫn chạy/dừng bản8080, bằng chứng253 Node/
+159 JUnit và giới hạn: [nghiệm thu8080](docs/ASSEMBLY_8080_QA_REPORT.md).
+
 ## Tích hợp luồng phụ của Nhi và Tuấn Anh — 12/10/2026
 
 - **Thư viện:** lọc theo mẫu robot, chọn số tài nguyên mỗi trang, phân trang và

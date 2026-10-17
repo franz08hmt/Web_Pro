@@ -1,8 +1,25 @@
 # Luồng demo và câu hỏi giảng viên
 
-## Trạng thái hiện hành — 17/10/2026
+## Cập nhật8080 sau nghiệm thu — 17/10/2026
 
-Ưu tiên mục này khi các ghi chú lịch sử bên dưới khác dữ liệu hiện tại.
+`http://localhost:8080/pages/mau-robot.html` đã nhận bản sửa đường vào DETAILED
+và marker theo màn hình, đã kiểm đủ5 mẫu bằng chuột, reload/undo/hoàn tất.
+DB làm việc `robot_lab_content_test`, không phải DB/tài khoản demo8081 dưới đây.
+Muốn xem luồng kéo-thả vừa chốt: đăng nhập USER8080 → chọn mẫu → chuẩn bị kit →
+vào3D → kéo vật thể/chọn hướng → hoàn tất. GROUP có ID cũ vẫn giữ dữ liệu cũ.
+
+Kịch bản ngắn: chọn cánh tay → gắn khung trước → cố gắn khớp khi thiếu cha để
+thấy server từ chối → lắp4 servo riêng đúng thứ tự → reload → hoàn tất/kết quả.
+Nhấn mạnh đây là mô hình học tập; hướng lắp không phải góc điều khiển servo.
+Không dùng5 phiên QA đã hoàn tất (44–48) làm phiên live mới.
+
+Hai sửa này **chưa triển khai lên8081** trong lượt hiện tại. Các mục8081 dưới
+đây mô tả môi trường độc lập đã chuẩn bị, không thay thế bằng chứng8080.
+Xem [báo cáo8080, quản lý runtime và giới hạn](ASSEMBLY_8080_QA_REPORT.md).
+
+## Môi trường demo8081 — 17/10/2026
+
+Ưu tiên mục này cho dữ liệu8081 khi các ghi chú lịch sử bên dưới khác dữ liệu.
 **Bản final đã áp dụng đủ5 mẫu kéo-thả trên DB demo riêng**, chạy tại
 http://127.0.0.1:8081. DB: `robot_lab_final_demo_20261016`. Không đổi Tomcat8080.
 WAR Java17 đã kiểm thử được giữ riêng, không phụ thuộc target/IDE đang sửa WIP.
