@@ -36,21 +36,24 @@ public final class JsonUtil {
         StringBuilder json = new StringBuilder("\"");
         for (int index = 0; index < value.length(); index++) {
             char character = value.charAt(index);
-            switch (character) {
-                case '\\' -> json.append("\\\\");
-                case '"' -> json.append("\\\"");
-                case '\b' -> json.append("\\b");
-                case '\f' -> json.append("\\f");
-                case '\n' -> json.append("\\n");
-                case '\r' -> json.append("\\r");
-                case '\t' -> json.append("\\t");
-                default -> {
-                    if (character < 0x20) {
-                        json.append(String.format("\\u%04x", (int) character));
-                    } else {
-                        json.append(character);
-                    }
-                }
+            if (character == '\\') {
+                json.append("\\\\");
+            } else if (character == '"') {
+                json.append("\\\"");
+            } else if (character == '\b') {
+                json.append("\\b");
+            } else if (character == '\f') {
+                json.append("\\f");
+            } else if (character == '\n') {
+                json.append("\\n");
+            } else if (character == '\r') {
+                json.append("\\r");
+            } else if (character == '\t') {
+                json.append("\\t");
+            } else if (character < 0x20) {
+                json.append(String.format("\\u%04x", (int) character));
+            } else {
+                json.append(character);
             }
         }
         return json.append('"').toString();

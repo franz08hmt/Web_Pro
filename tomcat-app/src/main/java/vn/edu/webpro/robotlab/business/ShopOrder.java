@@ -26,8 +26,11 @@ public class ShopOrder implements Serializable {
     }
 
     public BigDecimal calculateTotal() {
-        return items.stream().map(OrderItem::getLineTotalVnd)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal total = BigDecimal.ZERO;
+        for (OrderItem item : items) {
+            total = total.add(item.getLineTotalVnd());
+        }
+        return total;
     }
 
     public String getStatusLabel() {

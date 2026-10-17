@@ -117,6 +117,7 @@ public class AdminQuizServlet extends HttpServlet {
             List<String> rawOptions = JsonUtil.objectArrayField(body, "options");
             List<QuizOption> options = new ArrayList<>();
             int correctCount = 0;
+            boolean incompleteOption = false;
             for (int index = 0; index < rawOptions.size(); index++) {
                 String rawOption = rawOptions.get(index);
                 QuizOption option = new QuizOption();
@@ -126,6 +127,9 @@ public class AdminQuizServlet extends HttpServlet {
                 option.setCorrect(JsonUtil.booleanField(rawOption, "isCorrect"));
                 option.setOptionOrder(index + 1);
                 if (option.isCorrect()) correctCount++;
+                if (option.getId().isEmpty() || option.getLabel().isEmpty()) {
+                    incompleteOption = true;
+                }
                 options.add(option);
             }
             question.setOptions(options);
@@ -133,7 +137,7 @@ public class AdminQuizServlet extends HttpServlet {
             if (!ValidationUtil.isSlug(question.getId()) || !RobotDB.robotExists(question.getRobotId())
                     || question.getPrompt().isEmpty() || question.getExplanation().isEmpty()
                     || options.size() < MIN_OPTIONS || options.size() > MAX_OPTIONS || correctCount != 1
-                    || options.stream().anyMatch(o -> o.getId().isEmpty() || o.getLabel().isEmpty())) {
+                    || incompleteOption) {
                 sendInvalid(response);
                 return;
             }

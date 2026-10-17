@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import vn.edu.webpro.robotlab.business.QuestionMissRate;
+import vn.edu.webpro.robotlab.business.LearningSummary;
 import vn.edu.webpro.robotlab.business.QuizRobotAggregate;
 import vn.edu.webpro.robotlab.business.RobotPopularity;
 import vn.edu.webpro.robotlab.business.User;
@@ -52,7 +53,9 @@ public class AdminStatsServlet extends HttpServlet {
 
         try {
             Map<String, Long> sessionCounts = StatsDB.countAllSessionsByStatus();
-            long totalSessions = sessionCounts.values().stream().mapToLong(Long::longValue).sum();
+            LearningSummary summary = new LearningSummary();
+            summary.summarizeSessions(sessionCounts);
+            long totalSessions = summary.getTotalSessions();
             long totalLearners = StatsDB.countLearners();
             long activeLearners = StatsDB.countActiveLearners();
             List<RobotPopularity> popularRobots = StatsDB.selectPopularRobots(TOP_ROBOTS_LIMIT);

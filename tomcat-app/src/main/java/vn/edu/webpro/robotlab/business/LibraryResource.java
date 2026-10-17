@@ -1,13 +1,10 @@
 package vn.edu.webpro.robotlab.business;
 
 import java.io.Serializable;
-import java.util.Set;
 import vn.edu.webpro.robotlab.util.JsonUtil;
 
 /** Tài nguyên thư viện; robotId rỗng (null) nghĩa là dùng chung cho mọi robot. */
 public class LibraryResource implements Serializable {
-    private static final Set<String> TYPES = Set.of("image", "document", "link");
-
     private String id;
     private String robotId;
     private String title;
@@ -82,7 +79,7 @@ public class LibraryResource implements Serializable {
     }
 
     public static boolean isValidType(String type) {
-        return TYPES.contains(type);
+        return type.equals("image") || type.equals("document") || type.equals("link");
     }
 
     public String toJson() {

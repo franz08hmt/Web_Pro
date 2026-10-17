@@ -1,13 +1,10 @@
 package vn.edu.webpro.robotlab.business;
 
 import java.io.Serializable;
-import java.util.Set;
 import vn.edu.webpro.robotlab.util.JsonUtil;
 
 /** Mô hình robot trong danh mục — JavaBean theo Chapter 6 slide 6. */
 public class Robot implements Serializable {
-    private static final Set<String> LEVELS = Set.of("Cơ bản", "Trung bình", "Nâng cao");
-
     private String id;
     private String name;
     private String level;
@@ -117,7 +114,7 @@ public class Robot implements Serializable {
     }
 
     public static boolean isValidLevel(String level) {
-        return LEVELS.contains(level);
+        return level.equals("Cơ bản") || level.equals("Trung bình") || level.equals("Nâng cao");
     }
 
     public String toJson() {

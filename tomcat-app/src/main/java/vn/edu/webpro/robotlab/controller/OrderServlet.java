@@ -64,18 +64,18 @@ public class OrderServlet extends HttpServlet {
     }
 
     private void sendCheckoutConflict(HttpServletResponse response, String reason) throws IOException {
-        String code = switch (reason == null ? "" : reason) {
-            case "cart-empty" -> "CART_EMPTY";
-            case "product-unavailable" -> "PRODUCT_UNAVAILABLE";
-            case "order-total-out-of-range" -> "ORDER_TOTAL_LIMIT";
-            default -> "STOCK_UNAVAILABLE";
-        };
-        String message = switch (code) {
-            case "CART_EMPTY" -> "Giỏ hàng đang trống.";
-            case "PRODUCT_UNAVAILABLE" -> "Một sản phẩm trong giỏ đã ngừng bán.";
-            case "ORDER_TOTAL_LIMIT" -> "Tổng đơn vượt giới hạn dữ liệu.";
-            default -> "Tồn kho vừa thay đổi; hãy kiểm tra lại giỏ hàng.";
-        };
+        String code = "STOCK_UNAVAILABLE";
+        String message = "Tồn kho vừa thay đổi; hãy kiểm tra lại giỏ hàng.";
+        if ("cart-empty".equals(reason)) {
+            code = "CART_EMPTY";
+            message = "Giỏ hàng đang trống.";
+        } else if ("product-unavailable".equals(reason)) {
+            code = "PRODUCT_UNAVAILABLE";
+            message = "Một sản phẩm trong giỏ đã ngừng bán.";
+        } else if ("order-total-out-of-range".equals(reason)) {
+            code = "ORDER_TOTAL_LIMIT";
+            message = "Tổng đơn vượt giới hạn dữ liệu.";
+        }
         ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT, code, message);
     }
 }
