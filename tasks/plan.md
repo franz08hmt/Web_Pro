@@ -669,3 +669,71 @@ WAR sạch trong TEAM_FLOW_DEMO_GUIDE; cập nhật báo cáo11c/todo. Chỉ com
 liệu, không gom WIP. Chờ người dùng tự deploy8080 hoặc quyết định giữ bản cũ;
 chờ chọn dữ liệu demo hiện tại có kiểm soát hoặc phương án DB riêng.
 Không tạo DB/dữ liệu, không dọn QA, không sửa M5. Không push.
+
+## Tập dượt riêng và ôn vấn đáp — 17/10/2026
+
+Người dùng yêu cầu thực hiện bước tiếp theo trên DB demo đã dựng ở Chặng 1.
+Giữ WAR sạch đã nghiệm thu, Java17/Servlet-JSP Model 2 và toàn bộ WIP;
+không sửa source, IDE, .env hay Tomcat8080. Chỉ chạy QA8081 do runner sở hữu.
+
+1. Chụp hash dữ liệu phiên1/2, nhiệm vụ1, quiz luyện tập1 và file được bảo vệ.
+2. Tạo tối đa một nhiệm vụ A giao hai USER và một phiên lắp mới của Tài.
+   Công bố → hoàn tất phiên mới → quiz TASK đúng vòng → nộp → ADMIN phản hồi.
+   Chỉ ghi qua UI/API sẵn có; SQL chỉ đọc. Không lặp POST khi kết quả chưa rõ.
+3. Đối chiếu trạng thái hai người, dữ liệu dành live, DB cũ và WIP; dọn QA riêng.
+4. Cập nhật tài liệu demo/ôn tập bằng file:dòng đã đọc; phân biệt JSON API với
+   Servlet forward JSP. Chốt phát triển, chuyển sang hỏi từng câu vấn đáp.
+   Không push; không tạo thêm chức năng hoặc đổi luật chấm.
+
+Kết quả tạm17/10: đã tạo/công bố nhiệm vụ2. POST tạo phiên cho Tài trả lại
+phiên2 đang mở, runner dừng trước mọi thao tác vào phiên live.12 snapshot
+dành live/dự phòng và44 hash bảo vệ khớp; DB cũ55/55 bảng khớp. Chưa hoàn tất
+tập dượt; cần duyệt chuyển người thực hiện sang USER3 trên nhiệm vụ2 đã có,
+giữ Tài làm người đối chiếu chưa nộp. Không sửa luật create-or-resume hay API.
+Bằng chứng ngoài Git: qa-evidence/final-rehearsal-stage2-20261017/RESULTS.md.
+
+## Đồng nhất lắp chi tiết cả 5 mẫu — 17/10/2026
+
+Yêu cầu mới của người dùng: bốn mẫu còn lại cũng kéo thả từng vật thể như
+obstacle-avoider. Chặng tập dượt đã hoàn tất trên USER3 (phiên3, nhiệm vụ2,
+quiz2:7/7, bài nộp1,95/100); không lặp hoặc dùng phiên live để QA tính năng mới.
+
+### Đặc tả và ranh giới
+
+- Thêm spec v1 cho line-follower, mini-arm, line-obstacle, servo-scout qua seed
+  cộng thêm; không sửa schema/spec obstacle-avoider/phiên GROUP cũ/điểm.
+- Từng vật thể có slot/cha/hướng rời rạc; quantity4 servo là4 vật thể riêng.
+  Tọa độ lấy từ ASSEMBLY_3D_CONFIG hiện có, góc nền bù hướng để không quay hai lần.
+  Đây là mô hình học tập giản lược, không khẳng định lắp cơ khí/điện thực tế.
+- Dùng nguyên AssemblyLayout/AssemblyPlacementDB, CSRF/owner/version/transaction.
+  Java17/Servlet/JSP Model2/JDBC; không thêm thư viện, DAO hay Service.
+- Phiên mới chọn spec PUBLISHED. Phiên GROUP đang có hiển thị hành động rõ
+  tạo/tiếp tục phiên DETAILED riêng; không tự đổi/xóa/dừng phiên cũ.
+  POST mở rộng tùy chọn newDetailedSession=true; mặc định giữ create-or-resume cũ.
+  Server khóa user, dùng lại phiên DETAILED đang mở để không tạo trùng khi bấm lại.
+- Chỉ chạy seed/QA trên DB thử cô lập mới; không seed DB cũ hoặc DB demo final,
+  không đổi .env/IDE/8080 hay sáu file WIP và bốn tài liệu cá nhân.
+
+### Thứ tự và kiểm chứng
+
+1. Test RED: tất cả seed khớp kit, parent không chu kỳ, tọa độ/góc khớp config.
+2. Seed4 mẫu + test GREEN; API tạo phiên riêng + UI chuyển tiếp phiên cũ + test.
+3. JDK17 Maven/npm toàn bộ; WAR/source sạch trong thư mục QA riêng, không target gốc.
+4. DB QA riêng: cả5 mẫu tạo DETAILED; sai loại/hướng/thiếu cha bị từ chối;
+   gắn/tháo/undo/refresh/hoàn tất và replay; pointer kéo thực + keyboard, mobile.
+5. Tài liệu cài đặt/giới hạn, báo cáo bằng chứng, commit từng nhóm rõ ràng;
+   không push hoặc chuyển8080 khi chưa được yêu cầu.
+
+Lệnh: npm test; mvn -f tomcat-app/pom.xml
+ -Drobotlab.buildDirectory=D:/Web-Pro/qa-evidence/all-models-20261017/build clean package
+(JAVA_HOME trỏ JDK17 trong tiến trình). Chạy test tập trung bằng node --test
+tests/server/all-models-placement.test.cjs. Dùng apply_patch, chỉ stage đường dẫn riêng.
+
+Kết quả:234 Node/149 JUnit,0 fail/skip, build archive sạch không WIP. QA8082
+trên DB riêng xác minh cả5 mẫu và4 phiên GROUP cũ,15 ô responsive,5 kéo chuột
+thật +5 gắn bằng Enter/reload. Runtime riêng đã dừng/dọn, không lỗi runtime.
+DB demo final và44 hash file bảo vệ khớp. DB cũ hiện52/55 bảng khớp mốc14:56;
+3 bảng phiên tăng bởi hoạt động USER7 lúc16:19 (phiên41/42/43), trước lúc dựng
+DB QA mới. Không có tài khoản QA mới trong DB cũ. Chỉ đọc để báo cáo, không
+hoàn nguyên dữ liệu này hoặc quy kết người thao tác khi chưa có audit log.
+Chưa seed/deploy vào môi trường trình bày; xem README và báo cáo toàn bộ mẫu.

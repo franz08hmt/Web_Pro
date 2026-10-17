@@ -380,3 +380,25 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] Kịch bản3–5 phút +7 câu vấn đáp + file:dòng + cờ ghi DB, hướng dẫn Run/redeploy.
 - [ ] Người dùng cập nhật8080; sau xác nhận đối chiếu asset/quiz/dashboard/nhãn nhiệm vụ trên8080.
 - [ ] Người dùng chốt dữ liệu demo hiện tại có kiểm soát hoặc phương án DB riêng.
+
+## Tập dượt riêng và ôn vấn đáp — 17/10/2026
+
+- [x] Chụp mốc dữ liệu dành live, WIP/cấu hình và DB cũ trước tập dượt.
+- [x] Một nhiệm vụ A riêng, một phiên mới, quiz TASK đúng vòng, nộp và chấm một lần.
+- [x] Xác minh hai USER, responsive, dữ liệu dự phòng/live và WIP giữ nguyên.
+- [ ] Cập nhật hướng dẫn demo, bản đồ code và câu hỏi vấn đáp đúng Model 2.
+- [x] Dừng/dọn QA8081 riêng; không đổi8080, không sửa source, không push.
+- [x] Tạo/công bố nhiệm vụ2 riêng; dừng khi API trả lại phiên2 dành live.
+- [x] Đối chiếu12 snapshot dành live,44 hash file,51 bảng demo ngoài phạm vi ghi;
+  DB cũ55/55 bảng khớp. Chưa tạo phiên/quiz TASK/bài nộp/lần chấm mới.
+- [x] Người dùng duyệt dùng USER3 tiếp tục nhiệm vụ2, giữ nguyên phiên1/2 của Tài.
+
+## Kéo thả toàn bộ mẫu — 17/10/2026
+
+- [x] Đặc tả/test RED seed4 mẫu, kit/cha/góc tương thích config.
+- [x] Seed cộng thêm + kiểm GREEN; không đổi spec/phiên cũ.
+- [x] API mở phiên DETAILED riêng, chống tạo trùng; UI hướng dẫn GROUP cũ.
+- [x] npm/Maven JDK17; QA DB cô lập, cả5 mẫu, sai/đúng/undo/refresh/replay.
+- [x] Đối chiếu WIP/DB thật/DB demo; cập nhật README/API/demo/report; không push.
+- [ ] DB/Tomcat trình bày: backup/chọn DB → seed cộng thêm → deploy WAR mới;
+  chưa tự áp dụng vào DB cũ, DB demo final hoặc cấu hình8080 của người dùng.

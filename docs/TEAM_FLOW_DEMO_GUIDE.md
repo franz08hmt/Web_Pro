@@ -1,5 +1,42 @@
 # Luồng demo và câu hỏi giảng viên
 
+## Trạng thái hiện hành — 17/10/2026
+
+Ưu tiên mục này khi các ghi chú lịch sử bên dưới khác dữ liệu hiện tại.
+DB demo riêng là `robot_lab_final_demo_20261016`; chưa chuyển Tomcat8080.
+Phiên1 của Tài là dự phòng COMPLETED10/10; phiên2 dành live IN_PROGRESS9/10;
+nhiệm vụ1 dành live vẫn DRAFT. Không dùng ba bản ghi này để tập dượt.
+
+Chặng2 **đã hoàn tất** sau khi người dùng duyệt dùng USER3: nhiệm vụ2 OPEN,
+USER3 hoàn tất phiên3, quiz TASK2 đạt7/7, nộp bài1 và nhận phản hồi95/100.
+USER2 vẫn Chưa nộp. Không thực hiện lại trên các ID này khi tập dượt lần khác.
+POST tạo phiên cùng mẫu của Tài thực tế tiếp tục phiên2, nên đã dừng trước mọi
+thao tác sửa phiên; toàn bộ dữ liệu live/dự phòng được giữ nguyên.
+
+Điểm cần biết khi demo: `AssemblySessionServlet.java:78` gọi
+`AssemblySessionDB.selectOpenSession` (`AssemblySessionDB.java:299`).
+HTTP201 ở API create-or-resume không bảo đảm ID mới; luôn đối chiếu ID trả về.
+Không sửa luật nghiệp vụ chỉ để tạo dữ liệu trình bày.
+
+Không công bố nhiệm vụ1 hoặc hoàn tất phiên2 trước lượt live đã thống nhất.
+Lượt tập dượt này dùng WAR sạch2ff67f1 trên QA8081; không đổi source hay8080.
+
+### Cập nhật tính năng toàn bộ mẫu (bản QA mới, chưa thay bản demo final)
+
+Yêu cầu mới17/10: cả5 mẫu đều hỗ trợ lắp từng vật thể ở phiên DETAILED.
+Bản mới được kiểm riêng trên QA8082/DB `robot_lab_all_models_qa_20261017`;
+không suy kết quả QA sang DB/Tomcat demo chưa nạp seed hoặc chưa deploy WAR.
+11 vật thể dò đường;10 tránh vật cản;8 cánh tay mini (4 servo riêng);
+12 dò line kết hợp tránh vật cản;12 quét hướng tránh vật cản.
+
+Nếu chọn phiên GROUP cũ: giải thích đây là dữ liệu được bảo toàn → bấm
+Mở phiên kéo-thả riêng → chuẩn bị kit của phiên mới → vào3D → gắn từng vật thể.
+Không nói mỗi mẫu có một engine riêng: tất cả dùng cùng Servlet, XxxDB và
+AssemblyLayout; khác biệt nằm ở spec/slot/parent/orientations trong MySQL.
+Hướng0/90/180/270 là quy ước tư thế lắp mô hình, không phải lệnh điều khiển servo.
+Trình bày tọa độ và hình khối là mô hình học tập giản lược; không mô phỏng dung
+sai cơ khí, điện, firmware hay xác nhận lắp đúng robot thật.
+
 ## Luồng phụ của Nhi và Tuấn Anh — 12/10/2026
 
 1. **Nhi:** mở Thư viện, chọn mẫu robot và số tài nguyên/trang; demo chuyển
