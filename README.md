@@ -429,6 +429,11 @@ http://127.0.0.1:8081 (khác môi trường8080). Mở bằng PowerShell:
 Tài khoản, mật khẩu qua helper cục bộ, URL phiên và lưu ý bảo toàn dữ liệu xem
 [hướng dẫn final hiện hành](docs/TEAM_FLOW_DEMO_GUIDE.md). Không cần sửa .env hoặc IDE.
 
+Launcher đã được hardening để phục hồi runtime mồ côi sau khi xác minh cấu hình,
+PID/argfile và checksum; runtime còn sống nhưng unhealthy sẽ được giữ nguyên để
+kiểm tra. Không tự xóa thư mục runtime hoặc chạy prepare/seed khi mở web.
+Xem [nghiệm thu hardening và WAR chờ duyệt triển khai](docs/FINAL_HARDENING_QA_REPORT.md).
+
 Khi IntelliJ/Tomcat đang dùng target, có thể build riêng bằng JDK17:
 `mvn -f tomcat-app/pom.xml -Drobotlab.buildDirectory=D:/Web-Pro/qa-evidence/phase8/final-build clean package`.
 Tham số tùy chọn; build thông thường vẫn dùng `tomcat-app/target`.
