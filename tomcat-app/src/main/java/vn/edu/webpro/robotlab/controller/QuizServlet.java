@@ -142,7 +142,14 @@ public class QuizServlet extends HttpServlet {
             sendNotFound(response);
             return;
         }
-        QuizAttempt attempt = QuizAttemptDB.selectAttempt(Long.parseLong(rawId), user.getId());
+        long attemptId;
+        try {
+            attemptId = Long.parseLong(rawId);
+        } catch (NumberFormatException e) {
+            sendNotFound(response);
+            return;
+        }
+        QuizAttempt attempt = QuizAttemptDB.selectAttempt(attemptId, user.getId());
         if (attempt == null) {
             sendNotFound(response);
             return;
