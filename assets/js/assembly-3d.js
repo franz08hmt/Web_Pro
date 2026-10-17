@@ -581,7 +581,13 @@
     }
     const sphere = box.getBoundingSphere(new THREE.Sphere());
     cameraState.target.copy(sphere.center);
-    cameraState.radius = THREE.MathUtils.clamp(sphere.radius * 3.3, 4.6, 10.5);
+    if (placementView) {
+      const halfVertical = camera.fov * Math.PI / 360;
+      const halfHorizontal = Math.atan(Math.tan(halfVertical) * camera.aspect);
+      cameraState.radius = Math.max(4.6, sphere.radius / Math.sin(Math.min(halfVertical, halfHorizontal)) * 1.08);
+    } else {
+      cameraState.radius = THREE.MathUtils.clamp(sphere.radius * 3.3, 4.6, 10.5);
+    }
     updateCamera();
   }
 
@@ -745,7 +751,7 @@
 
   function zoomCamera(delta) {
     const from = cameraState.radius;
-    const to = THREE.MathUtils.clamp(from + delta, 3.4, 10);
+    const to = THREE.MathUtils.clamp(from + delta, 3.4, placementView ? 40 : 10);
     tween(260, (ratio) => {
       cameraState.radius = from + (to - from) * ratio;
       updateCamera();
@@ -786,7 +792,8 @@
     });
     renderer.domElement.addEventListener("wheel", (event) => {
       event.preventDefault();
-      cameraState.radius = THREE.MathUtils.clamp(cameraState.radius + event.deltaY * 0.006, 3.4, 10);
+      cameraState.radius = THREE.MathUtils.clamp(cameraState.radius + event.deltaY * 0.006, 3.4,
+        placementView ? 40 : 10);
       updateCamera();
     }, { passive: false });
   }
@@ -798,6 +805,7 @@
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
+    if (placementView && !replayMode) focusRobot();
   }
 
   function syncFullscreenState() {
@@ -901,6 +909,7 @@
           setSyncStatus(unsynced ? "Chưa đồng bộ; hãy thử lại hoặc tải lại." : "Mô hình đọc từ dữ liệu server.",
             unsynced ? "loading" : "saved");
           if (next.status === "COMPLETED") showCompletionResult(false);
+          if (!busy && !unsynced) focusRobot();
           updateCompleteAvailability();
         }
       });
@@ -908,9 +917,7 @@
     placementView.sync(layout);
     setCompleteStatus(layout.status === "COMPLETED" ? "Phiên đã hoàn tất, chỉ xem mô hình đã lưu."
       : "Nhấn Kiểm tra mô hình để xem các vật thể còn thiếu trước khi hoàn tất.");
-    cameraState.target.set(0, .8, 1.5);
-    cameraState.radius = 10;
-    updateCamera();
+    focusRobot();
   }
 
   checkButton?.addEventListener("click", async () => {

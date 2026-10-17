@@ -302,6 +302,24 @@ window.createAssemblyPlacementView = function (options) {
     return true;
   }
 
+  function findPreviewSlot(event) {
+    const rect = canvas.getBoundingClientRect();
+    let nearest = null;
+    let distance = 28;
+    // Chọn marker trên màn hình để phân biệt các điểm cùng x/z nhưng khác độ cao.
+    for (const slot of layout.spec.slots) {
+      const marker = markers.get(String(slot.id));
+      if (!marker) continue;
+      const screen = marker.getWorldPosition(new THREE.Vector3()).project(camera);
+      if (screen.z < -1 || screen.z > 1) continue;
+      const x = rect.left + (screen.x + 1) * rect.width / 2;
+      const y = rect.top + (1 - screen.y) * rect.height / 2;
+      const d = Math.hypot(event.clientX - x, event.clientY - y);
+      if (d < distance) { distance = d; nearest = slot; }
+    }
+    return nearest;
+  }
+
   function pointerMove(event) {
     if (!drag || event.pointerId !== drag.pointerId) return false;
     ray(event);
@@ -309,12 +327,7 @@ window.createAssemblyPlacementView = function (options) {
       root.worldToLocal(point);
       drag.object.position.set(THREE.MathUtils.clamp(point.x, -6, 6), .9,
         THREE.MathUtils.clamp(point.z, -5, 6));
-      let nearest = null;
-      let distance = .9;
-      for (const slot of layout.spec.slots) {
-        const d = Math.hypot(point.x - slot.x, point.z - slot.z);
-        if (d < distance) { distance = d; nearest = slot; }
-      }
+      const nearest = findPreviewSlot(event);
       selectedSlot = nearest ? String(nearest.id) : null;
       previewOrientation();
       highlight(selectedSlot, 0xfbbf24);
