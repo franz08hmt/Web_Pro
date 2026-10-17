@@ -332,14 +332,10 @@ async function setupAssembly() {
     let restoreError = false;
     const inputs = [...checklist.querySelectorAll("input[data-component-id]")];
     if (!sessionApi) {
-      if (requestedSessionId) {
-        inputs.forEach((input) => { input.disabled = true; });
-        if (resetButton) resetButton.disabled = true;
-        if (start3DButton) start3DButton.hidden = true;
-        updateProgress(false, "Không thể mở phiên đã chọn vì API phiên chưa sẵn sàng.");
-        return;
-      }
-      updateProgress(false, "Tiến độ đang được lưu trên trình duyệt này.");
+      inputs.forEach((input) => { input.disabled = true; });
+      if (resetButton) resetButton.disabled = true;
+      updateProgress(false, "Không thể mở phiên lắp ráp vì API phiên chưa sẵn sàng. Hãy tải lại trang.");
+      if (start3DButton) start3DButton.hidden = true;
       return;
     }
 
@@ -348,7 +344,7 @@ async function setupAssembly() {
     try {
       const session = requestedSessionId
         ? await sessionApi.get(requestedSessionId)
-        : await sessionApi.createOrResume(modelSelect.value);
+        : await sessionApi.createDetailed(modelSelect.value);
       if (revision !== selectionRevision) return;
       if (session.robotId !== modelSelect.value) {
         throw new Error("Phiên này không thuộc mẫu robot đã chọn.");
@@ -364,10 +360,10 @@ async function setupAssembly() {
       }
     } catch (error) {
       if (revision !== selectionRevision) return;
-      restoreError = Boolean(requestedSessionId);
+      restoreError = Boolean(requestedSessionId) || error.code !== "AUTH_REQUIRED";
       const message = error.code === "AUTH_REQUIRED"
         ? (restoreError ? "Đăng nhập để mở đúng phiên đã chọn." : "Đăng nhập để lưu tiến độ trên tài khoản; hiện đang lưu trên trình duyệt này.")
-        : (restoreError ? `Không thể mở phiên đã chọn. ${error.message}` : `Không thể đồng bộ tiến độ; đang dùng dữ liệu trên trình duyệt. ${error.message}`);
+        : `Không thể mở phiên lắp ráp. ${error.message}`;
       updateProgress(false, message);
       if (restoreError && start3DButton) start3DButton.hidden = true;
     } finally {

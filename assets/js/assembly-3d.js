@@ -209,14 +209,8 @@
       return;
     }
     if (!sessionApi) {
-      if (requestedSessionId) {
-        setPartInputsDisabled(true);
-        setSyncStatus("Không thể mở phiên đã chọn vì API phiên chưa sẵn sàng.", "error");
-        updateCompleteAvailability();
-        return;
-      }
-      if (window.THREE && window.createAssemblyPart) restoreVisualAssembly(readStoredIds(visualStorageKey));
-      setSyncStatus(contentWarning || "Tiến độ linh kiện đang được lưu trên trình duyệt này.", "local");
+      setPartInputsDisabled(true);
+      setSyncStatus("Không thể mở phiên lắp ráp vì API phiên chưa sẵn sàng. Hãy tải lại trang.", "error");
       updateCompleteAvailability();
       return;
     }
@@ -226,10 +220,17 @@
     try {
       let session = requestedSessionId
         ? await sessionApi.get(requestedSessionId)
-        : await sessionApi.createOrResume(model.id);
+        : await sessionApi.createDetailed(model.id);
 
       if (session.robotId !== model.id) {
         throw new Error("Phiên này không thuộc mẫu robot đã chọn.");
+      }
+      if (session.assemblyMode === "DETAILED" && session.status === "PREPARING") {
+        const url = new URL("lap-rap.html", window.location.href);
+        url.searchParams.set("model", session.robotId);
+        url.searchParams.set("session", session.id);
+        window.location.replace(url.href);
+        return;
       }
       if (session.status === "READY") {
         session = await sessionApi.updateStatus(session.id, "IN_PROGRESS");
@@ -263,7 +264,7 @@
       }
     } catch (error) {
       activeSession = null;
-      const canUseLocal = !requestedSessionId && !detailedRequested;
+      const canUseLocal = !requestedSessionId && error.code === "AUTH_REQUIRED";
       setPartInputsDisabled(canUseLocal ? false : true);
       if (canUseLocal && window.THREE && window.createAssemblyPart) {
         restoreVisualAssembly(readStoredIds(visualStorageKey));
@@ -271,8 +272,8 @@
       const message = error.code === "AUTH_REQUIRED" && canUseLocal
         ? "Đăng nhập để lưu trên tài khoản; hiện tiến độ được lưu trên trình duyệt này."
         : canUseLocal
-          ? `Không thể đồng bộ tài khoản; đang lưu trên trình duyệt. ${error.message}`
-          : `Không thể mở phiên đã chọn. ${error.message}`;
+          ? `Đây là bản xem trước trên trình duyệt; chưa được server lưu. ${error.message}`
+          : `Không thể mở phiên lắp ráp. ${error.message}`;
       setSyncStatus(canUseLocal ? contentWarning || message : message, canUseLocal ? "local" : "error");
       updateCompleteAvailability();
     }

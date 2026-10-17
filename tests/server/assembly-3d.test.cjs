@@ -128,7 +128,7 @@ test("3D assembly loads live content and persists visual assembly through the se
     "Dữ liệu và API client phải được tải trước controller 3D"
   );
   assert.match(assemblySource, /RobotContentApi\.loadRobots\(\)/);
-  assert.match(assemblySource, /sessionApi\.createOrResume\(model\.id\)/);
+  assert.match(assemblySource, /sessionApi\.createDetailed\(model\.id\)/);
   assert.match(assemblySource, /sessionApi\.updateStatus\([^,]+,\s*"IN_PROGRESS"\)/);
 });
 

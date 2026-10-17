@@ -20,7 +20,7 @@ test("assembly preparation loads content and session clients before its controll
 
 test("assembly preparation restores and persists component IDs through the session API", () => {
   assert.match(source, /RobotContentApi\.loadRobots/);
-  assert.match(source, /sessionApi\.createOrResume/);
+  assert.match(source, /sessionApi\.createDetailed/);
   assert.match(source, /sessionApi\.setComponentPrepared/);
   assert.match(source, /data-component-id/);
   assert.match(source, /AUTH_REQUIRED/);
