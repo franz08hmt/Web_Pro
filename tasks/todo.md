@@ -400,5 +400,13 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] API mở phiên DETAILED riêng, chống tạo trùng; UI hướng dẫn GROUP cũ.
 - [x] npm/Maven JDK17; QA DB cô lập, cả5 mẫu, sai/đúng/undo/refresh/replay.
 - [x] Đối chiếu WIP/DB thật/DB demo; cập nhật README/API/demo/report; không push.
-- [ ] DB/Tomcat trình bày: backup/chọn DB → seed cộng thêm → deploy WAR mới;
-  chưa tự áp dụng vào DB cũ, DB demo final hoặc cấu hình8080 của người dùng.
+- [x] DB demo final đã backup/restore thử → seed cộng thêm → WAR mới riêng8081;
+  không áp dụng vào DB làm việc hoặc cấu hình8080 của người dùng.
+
+## Triển khai vào demo final — 17/10/2026
+
+- [x] Backup private + restore thử54 bảng vào DB mới, đối chiếu hash.
+- [x] Seed đúng DB demo, chỉ4/43/43 dòng mới ở3 bảng; dữ liệu cũ/live nguyên vẹn.
+- [x] WAR bất biến + Tomcat riêng8081, smoke3 vai trò; không đổi8080/.env/IDE.
+- [x] Chuẩn bị4 phiên USER B0/N, không điểm/bài nộp/lần chấm mới.
+- [x] Hướng dẫn mở/dừng/demo, backup/rollback, WIP hash và commit tài liệu; không push.

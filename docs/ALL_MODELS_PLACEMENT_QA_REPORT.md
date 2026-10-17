@@ -83,3 +83,41 @@ Một lệnh Maven PowerShell chưa quote tham số -D bị tách sai trước k
 
 Đây là kiểm tra ràng buộc tư thế lắp giản lược; không đo dung sai, kiểm đấu điện,
 mô phỏng động học hay bảo đảm robot thật vận hành an toàn. Không đổi rubric điểm.
+
+## Triển khai đã duyệt lên DB demo final — 17/10/2026
+
+Người dùng giao chọn phương án tốt nhất cho final. Chọn DB demo riêng thay vì
+DB làm việc; bản final mới đang chạy localhost8081, không đổi8080/.env/IDE.
+Không sửa source ứng dụng trong lượt triển khai này; dùng nguyên artifact đã QA.
+
+- Backup MySQL trong private ACL ngoài Git (198821 byte), restore thử vào
+  robot_lab_final_restorecheck_20261017 mới. Hash dữ liệu54/54 bảng khớp DB nguồn.
+  Không restore đè, không xóa DB cũ hoặc DB restore-check.
+- Nạp đúng seed từ commit a5e5409 bằng runtime DB login hiện có: thêm4 spec,
+ 43 slot và43 hướng. Chỉ3 bảng này đổi;51 bảng khác khớp hash trước/sau seed.
+- WAR SHA256 `7fb5b374ffa668a25f5556c8d838d0145bc7b36fa14c35408df9e2d90d0b4dff`.
+  Giải nén chính WAR vào thư mục artifact riêng;352 file khớp byte archive.
+  Thư mục Maven exploded ban đầu không có META-INF/MANIFEST.MF (WAR tự sinh);
+  đã giữ thư mục đó làm đầu vào đóng gói và dùng bản giải nén WAR, không vá ứng dụng.
+- Tomcat9/JDK17 riêng127.0.0.1:8081; runtime DB login chỉ DML trên DB demo;
+  không cấp thêm quyền hoặc tạo tài khoản website mới. Credential vẫn trong DPAPI.
+-44 smoke/check mới đạt: guest/USER/ADMIN, kiểm quyền server, phiếu dự phòng,
+  dữ liệu live, quiz/nhiệm vụ/tổng kết/nối dây/chẩn đoán,6 tài nguyên HTTP khớp byte,
+ 4 giao diện model có khay vật thể/4 lựa chọn hướng;12 ô390/768/1440 không tràn ngang.
+- USER3 được chuẩn bị4 phiên hữu ích cho trình bày qua API/UI:4 dò đường0/11,
+ 5 cánh tay0/8,6 kết hợp0/12,7 quét hướng0/12. Không placement/event/quiz/bài nộp/
+  lần chấm mới. Bước chuẩn bị này thêm4 sessions,32 session_components và43 instances.
+-14 nhóm snapshot phiên1–3, task/recipient/round/submission/review/quiz/answers
+  khớp trước triển khai. Tài vẫn9/10, backup10/10, task1 DRAFT; rehearsal95/100 giữ nguyên.
+-44 file bảo vệ khớp mốc đầu lượt triển khai, kể cả10 WIP/cá nhân. Đây là mốc
+  mới sau thay đổi workspace.xml đã báo ở lượt trước, không phủ nhận sai lệch lịch sử đó.
+- Stop/Start runtime riêng đã thử thành công; log không SEVERE/JasperException.
+  Runtime mới được để chạy cho người dùng; không tự khởi động cùng Windows.
+
+Hướng dẫn mở/đăng nhập/dừng và URL từng phiên ở đầu TEAM_FLOW_DEMO_GUIDE.
+Lệnh gọn ngoài Git: `D:/Web-Pro/FINAL.ps1`. Script không tự chép mật khẩu khi mở
+web; chỉ các lệnh MatKhau... do người dùng chủ động chạy mới dùng clipboard.
+Evidence/state/manifest/backup/artifact: `D:/Web-Pro/qa-evidence/final-deploy-all-models-20261017/`.
+Chỉ smoke khi đưa bản mới lên demo, không nhận là kiểm lại Firefox/Safari, cảm ứng,
+screen reader hay toàn bộ POST cũ.234 Node/149 JUnit và kiểm kéo thật kế thừa
+từ đúng artifact QA trước đó; không cộng vào số44 như kiểm mới.

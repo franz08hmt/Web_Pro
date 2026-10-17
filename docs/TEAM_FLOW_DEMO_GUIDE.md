@@ -3,7 +3,82 @@
 ## Trạng thái hiện hành — 17/10/2026
 
 Ưu tiên mục này khi các ghi chú lịch sử bên dưới khác dữ liệu hiện tại.
-DB demo riêng là `robot_lab_final_demo_20261016`; chưa chuyển Tomcat8080.
+**Bản final đã áp dụng đủ5 mẫu kéo-thả trên DB demo riêng**, chạy tại
+http://127.0.0.1:8081. DB: `robot_lab_final_demo_20261016`. Không đổi Tomcat8080.
+WAR Java17 đã kiểm thử được giữ riêng, không phụ thuộc target/IDE đang sửa WIP.
+
+### Mở và đăng nhập (PowerShell)
+
+```powershell
+& 'D:\Web-Pro\FINAL.ps1' -Lenh Mo
+```
+
+Nếu máy vừa khởi động lại: bật MySQL trước, rồi chạy lệnh trên. Script chỉ
+mở/khởi động runtime final đã xác định; không dừng tiến trình khác đang dùng8081.
+
+| Vai trò | Email | Dùng để |
+| --- | --- | --- |
+| Tài / USER2 | final-tai@robotlab.test | Luồng chính, phiên2 live9/10 và phiên1 dự phòng |
+| Học viên / USER3 | final-learner@robotlab.test |4 mẫu mới kéo-thả, phiên4–7 |
+| ADMIN | final-admin@robotlab.test | Nhiệm vụ/nhận xét, không lắp bằng tài khoản ADMIN |
+
+Mật khẩu không ghi trong tài liệu. Chỉ khi cần đăng nhập, chạy đúng một lệnh
+sau để đưa mật khẩu tương ứng vào clipboard, dán vào form rồi xóa clipboard:
+
+```powershell
+& 'D:\Web-Pro\FINAL.ps1' -Lenh MatKhauTai
+# Hoặc -Lenh MatKhauHocVien / -Lenh MatKhauAdmin
+& 'D:\Web-Pro\FINAL.ps1' -Lenh XoaClipboard
+```
+
+Mật khẩu gốc vẫn ở DPAPI vault cục bộ theo user Windows/máy hiện tại.
+Không gửi vào chat, terminal hoặc commit; không coi chép XML sang máy khác là
+đã chuyển được mật khẩu. Nếu bật lịch sử clipboard, xóa mục tương ứng trong Win+V.
+
+### Các màn hình đã chuẩn bị sẵn
+
+Đăng nhập đúng tài khoản trước khi mở URL dưới đây. Không đoán/chuyển userId trên URL.
+
+| Người dùng | Mẫu / mục đích | URL | Dữ liệu trước lượt live |
+| --- | --- | --- | --- |
+| Tài | Tránh vật cản live | http://127.0.0.1:8081/pages/lap-rap-3d.html?model=obstacle-avoider&session=2 |9/10, thiếu cảm biến |
+| Tài | Kết quả dự phòng | http://127.0.0.1:8081/assembly-review?session=1 |COMPLETED10/10 |
+| Học viên | Dò đường | http://127.0.0.1:8081/pages/lap-rap-3d.html?model=line-follower&session=4 |0/11 |
+| Học viên | Cánh tay mini | http://127.0.0.1:8081/pages/lap-rap-3d.html?model=mini-arm&session=5 |0/8,4 servo riêng |
+| Học viên | Dò line + tránh vật cản | http://127.0.0.1:8081/pages/lap-rap-3d.html?model=line-obstacle&session=6 |0/12 |
+| Học viên | Quét hướng tránh vật cản | http://127.0.0.1:8081/pages/lap-rap-3d.html?model=servo-scout&session=7 |0/12 |
+
+Phiên4–7 đã chuẩn bị kit và ở IN_PROGRESS, chưa gắn vật thể, chưa hoàn tất.
+Không dùng các phiên dành live để luyện lại nhiều lần. Các tương tác sau khi
+bạn mở web là dữ liệu thật; Stop/Start không tự đặt lại phiên hoặc điểm.
+
+Kịch bản3–5 phút: Bản đồ môn học → đăng nhập Tài → phiên2 → chọn cảm biến,
+thử hướng0° rồi sửa180° → hoàn tất → trang hoàn thiện → chỉ code Servlet/
+JavaBean/JDBC/JSP. Chỉ công bố nhiệm vụ1 khi chủ động bắt đầu nhánh demo nhiệm vụ;
+không công bố trước rồi hoàn tất phiên2 trong lượt kiểm thử.
+
+Nếu cần cho thấy mẫu khác: đăng xuất Tài → đăng nhập Học viên → cánh tay phiên5,
+gắn khung trước,4 servo lần lượt theo quan hệ cha–con. Không nhầm hướng lắp
+0/90/180/270 với góc điều khiển servo thực tế.
+
+### Dừng / khởi động lại và quay về bản cũ
+
+```powershell
+& 'D:\Web-Pro\FINAL.ps1' -Lenh Dung
+& 'D:\Web-Pro\FINAL.ps1' -Lenh Mo
+```
+
+Stop đã được kiểm chỉ dừng đúng PID/argfile của runtime final và dọn file kết nối
+tạm; Start tạo lại dưới private ACL. Cần đăng nhập lại sau restart. Không dùng
+helper runtime-start Chặng1 cũ để mở bản final mới. Không có tự khởi động cùng Windows.
+
+Backup trước triển khai đã restore thử đủ54 bảng vào DB riêng, không đè DB đang
+dùng. Backup private và WAR cũ vẫn giữ ở qa-evidence ngoài Git. Quay về môi trường
+làm việc: dừng bản final, dùng cấu hình8080 cũ; không cần restore/drop DB demo.
+Nếu rollback WAR, giữ các spec/phiên đã có dữ liệu; không xóa seed đã được tham chiếu.
+
+### Dữ liệu chính được bảo toàn
+
 Phiên1 của Tài là dự phòng COMPLETED10/10; phiên2 dành live IN_PROGRESS9/10;
 nhiệm vụ1 dành live vẫn DRAFT. Không dùng ba bản ghi này để tập dượt.
 
@@ -21,11 +96,13 @@ Không sửa luật nghiệp vụ chỉ để tạo dữ liệu trình bày.
 Không công bố nhiệm vụ1 hoặc hoàn tất phiên2 trước lượt live đã thống nhất.
 Lượt tập dượt này dùng WAR sạch2ff67f1 trên QA8081; không đổi source hay8080.
 
-### Cập nhật tính năng toàn bộ mẫu (bản QA mới, chưa thay bản demo final)
+### Cập nhật tính năng toàn bộ mẫu (đã áp dụng vào demo final)
 
 Yêu cầu mới17/10: cả5 mẫu đều hỗ trợ lắp từng vật thể ở phiên DETAILED.
-Bản mới được kiểm riêng trên QA8082/DB `robot_lab_all_models_qa_20261017`;
-không suy kết quả QA sang DB/Tomcat demo chưa nạp seed hoặc chưa deploy WAR.
+Bản mới được kiểm riêng trên QA8082/DB `robot_lab_all_models_qa_20261017`, rồi
+backup, nạp seed vào DB demo và triển khai WAR riêng8081. Smoke trên bản final
+có44 kiểm đạt,12 ô viewport;51 bảng không đổi trong bước seed. Không suy kết quả
+này sang8080 hoặc DB làm việc chưa áp dụng.
 11 vật thể dò đường;10 tránh vật cản;8 cánh tay mini (4 servo riêng);
 12 dò line kết hợp tránh vật cản;12 quét hướng tránh vật cản.
 

@@ -740,3 +740,28 @@ Chưa seed/deploy vào môi trường trình bày; xem README và báo cáo toà
 
 Audit cuối sau commit:43/44 hash bảo vệ khớp, `.idea/workspace.xml` thay đổi
 ngoài patch; không stage/restore cấu hình IDE.10/10 file WIP/cá nhân vẫn nguyên.
+
+## Áp dụng bản toàn bộ mẫu vào demo final — 17/10/2026
+
+Người dùng giao chọn phương án tốt nhất cho final: chọn DB demo riêng,
+không đụng DB làm việc. Không thay Java17/Servlet-JSP Model2/JDBC hoặc luật chấm.
+
+1. Chụp hash54 bảng demo + phiên1/2/nhiệm vụ1/quiz đã chuẩn bị và file bảo vệ.
+2. Backup trong thư mục private ngoài Git, khôi phục thử vào DB tên riêng mới;
+   đối chiếu54 bảng trước khi áp dụng. Không restore đè DB đang có.
+3. Nạp đúng seed cộng thêm đã commit bằng runtime DB login hiện có. Chỉ3 bảng
+   spec/slot/orientation được thêm4/43/43;51 bảng còn lại phải giữ nguyên hash.
+4. Dùng WAR Java17 đã QA có checksum; copy thành artifact demo bất biến riêng,
+   chạy Tomcat riêng127.0.0.1:8081. Không đổi8080/.env/IDE/target gốc.
+5. Smoke guest/USER/ADMIN, tài nguyên khớp artifact và dữ liệu live không đổi.
+   Chuẩn bị4 phiên0/N cho USER B qua API/UI thật để mở được các mẫu mới;
+   không hoàn tất hoặc ghi điểm, không dùng tài khoản QA mới trong DB demo.
+6. Ghi URL, Start/Stop và tài khoản demo (không mật khẩu) vào tài liệu hiện có.
+   Giữ backup/WAR cũ để quay lại; không drop/restore dữ liệu hay push tự động.
+
+Kết quả: backup198821 byte restore54/54 bảng khớp; seed chỉ3 bảng với4/43/43
+dòng mới,51 bảng còn lại giữ nguyên. WAR nguyên checksum,352 file giải nén khớp.
+Demo mới8081 có44 kiểm/12 viewport đạt. USER3 có4 phiên4–7 ở0/N;14 nhóm dữ liệu
+cũ/live/rehearsal và44 file bảo vệ khớp mốc đầu lượt. Stop/Start đã thử; để runtime
+chạy phục vụ người dùng, không thay8080 hoặc tự khởi động cùng Windows.
+Lệnh mở nhanh D:/Web-Pro/FINAL.ps1 -Lenh Mo; tài liệu hiện hành ở đầu hướng dẫn demo.

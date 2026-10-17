@@ -423,6 +423,12 @@ Muốn dùng ở Tomcat đang chạy phải triển khai WAR mới **và** nạp
 Tomcat đó kết nối; chỉ sửa file SQL trong Git không làm DB tự cập nhật.
 Xem [báo cáo toàn bộ mẫu](docs/ALL_MODELS_PLACEMENT_QA_REPORT.md).
 
+Trên laptop hiện tại, bản final đã nạp seed trên DB demo riêng và chạy tại
+http://127.0.0.1:8081 (khác môi trường8080). Mở bằng PowerShell:
+`& 'D:\Web-Pro\FINAL.ps1' -Lenh Mo`; dừng bằng `-Lenh Dung`.
+Tài khoản, mật khẩu qua helper cục bộ, URL phiên và lưu ý bảo toàn dữ liệu xem
+[hướng dẫn final hiện hành](docs/TEAM_FLOW_DEMO_GUIDE.md). Không cần sửa .env hoặc IDE.
+
 Khi IntelliJ/Tomcat đang dùng target, có thể build riêng bằng JDK17:
 `mvn -f tomcat-app/pom.xml -Drobotlab.buildDirectory=D:/Web-Pro/qa-evidence/phase8/final-build clean package`.
 Tham số tùy chọn; build thông thường vẫn dùng `tomcat-app/target`.
