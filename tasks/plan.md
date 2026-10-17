@@ -737,3 +737,6 @@ DB demo final và44 hash file bảo vệ khớp. DB cũ hiện52/55 bảng khớ
 DB QA mới. Không có tài khoản QA mới trong DB cũ. Chỉ đọc để báo cáo, không
 hoàn nguyên dữ liệu này hoặc quy kết người thao tác khi chưa có audit log.
 Chưa seed/deploy vào môi trường trình bày; xem README và báo cáo toàn bộ mẫu.
+
+Audit cuối sau commit:43/44 hash bảo vệ khớp, `.idea/workspace.xml` thay đổi
+ngoài patch; không stage/restore cấu hình IDE.10/10 file WIP/cá nhân vẫn nguyên.

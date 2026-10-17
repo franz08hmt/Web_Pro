@@ -55,6 +55,12 @@ AssemblyLayout; Servlet nhận request/kiểm session-CSRF, XxxDB khóa và lưu
  0 tài khoản qa-all-models-a/b trong DB cũ. Không suy là lỗi feature hoặc tự
   rollback hoạt động có thể của người dùng; chưa có audit log xác định người thao tác.
 
+Đối chiếu cuối sau commit:43/44 hash còn khớp, riêng `.idea/workspace.xml`
+đã đổi trong lúc làm việc. File này không nằm trong patch, không được runner
+ghi/sao chép vào repo, không stage/commit; chưa đủ dữ kiện quy kết nguồn thay đổi.
+Không khôi phục file cấu hình IDE vì có thể ghi đè trạng thái hiện tại của người dùng.
+Sáu file WIP và bốn tài liệu cá nhân vẫn khớp10/10; DB demo final giữ nguyên.
+
 Runner, state, ảnh và artifact nằm ngoài Git:
 `D:/Web-Pro/qa-evidence/all-models-20261017/`.
 Chưa kiểm Firefox/Safari, cảm ứng thật, screen reader hoặc vật lý robot thật.
