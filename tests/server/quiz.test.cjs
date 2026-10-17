@@ -66,7 +66,9 @@ test("historical attempt answers are snapshotted at submission time, not re-join
 
 test("quiz history and detail endpoints are scoped to the logged-in user", () => {
   assert.match(quizServlet, /QuizAttemptDB\.selectAttempts\(user\.getId\(\), robotId/);
-  assert.match(quizServlet, /QuizAttemptDB\.selectAttempt\(Long\.parseLong\(rawId\), user\.getId\(\)\)/);
+  assert.match(quizServlet, /attemptId = Long\.parseLong\(rawId\)/);
+  assert.match(quizServlet, /catch \(NumberFormatException e\)\s*\{\s*sendNotFound\(response\);\s*return;/);
+  assert.match(quizServlet, /QuizAttemptDB\.selectAttempt\(attemptId, user\.getId\(\)\)/);
   assert.match(quizAttemptDB, /FROM quiz_attempts WHERE id = \? AND user_id = \?/);
 });
 
