@@ -765,3 +765,29 @@ Demo mới8081 có44 kiểm/12 viewport đạt. USER3 có4 phiên4–7 ở0/N;14
 cũ/live/rehearsal và44 file bảo vệ khớp mốc đầu lượt. Stop/Start đã thử; để runtime
 chạy phục vụ người dùng, không thay8080 hoặc tự khởi động cùng Windows.
 Lệnh mở nhanh D:/Web-Pro/FINAL.ps1 -Lenh Mo; tài liệu hiện hành ở đầu hướng dẫn demo.
+
+## Sửa đường vào và kéo-thả đúng môi trường 8080 — 17/10/2026
+
+Baseline 01b1f2b, nhánh integration/fullstack-v2; giữ hardening và 10 file WIP/cá nhân.
+8080 JDK17/context / dùng target của IntelliJ, JNDI nối robot_lab_content_test;
+8081 dùng artifact riêng và robot_lab_final_demo_20261016. Không suy DB từ .env.
+DB 8080 chỉ có spec obstacle v1/v2; bốn mẫu còn lại chưa được triển khai spec.
+Đường mặc định createOrResume có thể lấy GROUP cũ; lỗi server còn fallback local.
+
+1. Hash bảo vệ, snapshot chỉ đọc, baseline archive sạch/JDK17/Node. Clone đúng
+   DB nguồn thành robot_lab_assembly_entry_20261017, login runtime chỉ DML trên clone.
+2. Kiểm seed all-models trên clone: rollback khi lỗi, chạy hai lần, đối chiếu kit/
+   cha/hướng; không sửa spec đã công bố hoặc tự seed lúc mở trang.
+3. Chỉ main.js/assembly-3d.js đổi đường bắt đầu mặc định sang createDetailed;
+   giữ get(session) cho URL lịch sử, contract createOrResume cũ và nút GROUP.
+   API lỗi phải dừng rõ, chỉ khách AUTH_REQUIRED được xem trước local.
+4. Kiểm/sửa điểm thả theo hình chiếu marker thay vì chỉ mặt phẳng x/z, căn camera
+   chứa khay và điểm gắn; dùng chung placement view, không đổi luật server.
+5. Test trước/sau và UI năm mẫu: fresh/GROUP/DETAILED/cả hai/session cũ/catalog/
+   chuẩn bị/direct3D/nút GROUP. Thả chuột thật → placements → layout → reload;
+   kiểm sai/đúng, undo/hoàn tất, owner/CSRF/version, 390/768/1440 và hồi quy hardening.
+6. Build snapshot commit sạch; trình gói duyệt DB/artifact/backup/rollback/fixture
+   và redeploy đúng 8080 một lần. Chưa có duyệt thì chỉ báo QA đạt/chờ triển khai.
+
+Bằng chứng ngoài Git: D:/Web-Pro/qa-evidence/assembly-8080-20261017/.
+Không dừng 8080/8081, không đổi kết nối/IDE, không ghi DB nguồn trước gói duyệt.

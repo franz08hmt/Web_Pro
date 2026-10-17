@@ -410,3 +410,15 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] WAR bất biến + Tomcat riêng8081, smoke3 vai trò; không đổi8080/.env/IDE.
 - [x] Chuẩn bị4 phiên USER B0/N, không điểm/bài nộp/lần chấm mới.
 - [x] Hướng dẫn mở/dừng/demo, backup/rollback, WIP hash và commit tài liệu; không push.
+
+## Sửa kéo-thả và triển khai đúng 8080 — 17/10/2026
+
+- [x] Xác minh runtime/JNDI, snapshot WIP; baseline sạch 237 Node/159 JUnit.
+- [x] Clone đúng DB nguồn 55 bảng; tái hiện UI GROUP và lỗi 422 thiếu spec bốn mẫu.
+- [x] Seed trên clone: rollback dòng dữ liệu khi lỗi; chạy lại không đổi dữ liệu;
+  chỉ thêm ba bảng spec/slot/orientation, không đổi bản PUBLISHED trước đó.
+- [ ] Đường vào DETAILED mặc định, giữ URL GROUP cũ và lỗi server rõ ràng.
+- [ ] Kéo-thả thật năm mẫu, camera/marker chiều cao, reload/undo/complete.
+- [ ] Ma trận UI, build sạch, hồi quy, báo cáo/gói duyệt 8080.
+- [ ] Người dùng duyệt gói triển khai đúng DB/artifact/context và fixture 8080.
+- [ ] Nghiệm thu UI/drag thật trên localhost:8080, bảo toàn WIP/dữ liệu cũ.
