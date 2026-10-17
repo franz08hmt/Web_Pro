@@ -311,6 +311,7 @@ async function setupAssembly() {
 
   function applySession(session, notice) {
     activeSession = session;
+    window.dispatchEvent(new CustomEvent("robotlab:assembly-session", { detail: session }));
     if (resetButton) {
       const label = [...resetButton.childNodes].find(node => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
       if (label) label.textContent = session.assemblyMode === "DETAILED" ? "Tháo vật thể đã gắn" : "Đặt lại tiến độ";
@@ -327,6 +328,7 @@ async function setupAssembly() {
   async function restoreSession() {
     const revision = ++selectionRevision;
     activeSession = null;
+    window.dispatchEvent(new CustomEvent("robotlab:assembly-session", { detail: null }));
     let restoreError = false;
     const inputs = [...checklist.querySelectorAll("input[data-component-id]")];
     if (!sessionApi) {

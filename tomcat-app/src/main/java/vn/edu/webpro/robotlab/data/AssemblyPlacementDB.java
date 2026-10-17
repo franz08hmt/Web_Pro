@@ -20,6 +20,11 @@ import vn.edu.webpro.robotlab.util.AssemblyPlacementException;
 public class AssemblyPlacementDB {
     /** Tạo phiên và kit trong cùng transaction; không chuyển đổi phiên cũ. */
     public static long createSession(long userId, String robotId) throws SQLException {
+        return createSession(userId, robotId, false);
+    }
+
+    /** Yêu cầu tường minh phiên chi tiết; bấm lại dùng phiên chi tiết đang mở của chính user. */
+    public static long createSession(long userId, String robotId, boolean detailedOnly) throws SQLException {
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection connection = pool.getConnection();
         boolean original = true;
@@ -30,11 +35,38 @@ public class AssemblyPlacementDB {
             original = connection.getAutoCommit();
             connection.setAutoCommit(false);
             started = true;
+            // Cùng thứ tự user → spec ở cả hai lối tạo, tránh đảo khóa với FK user của INSERT.
+            ps = connection.prepareStatement("SELECT id FROM users WHERE id = ? FOR UPDATE");
+            ps.setLong(1, userId);
+            rs = ps.executeQuery();
+            if (!rs.next()) {
+                throw new IllegalArgumentException("User không tồn tại.");
+            }
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            if (detailedOnly) {
+                ps = connection.prepareStatement("SELECT id FROM assembly_sessions WHERE user_id = ? "
+                        + "AND robot_id = ? AND assembly_mode = 'DETAILED' "
+                        + "AND status IN ('PREPARING', 'READY', 'IN_PROGRESS') ORDER BY id DESC LIMIT 1");
+                ps.setLong(1, userId);
+                ps.setString(2, robotId);
+                rs = ps.executeQuery();
+                if (rs.next()) {
+                    long existingId = rs.getLong(1);
+                    connection.commit();
+                    return existingId;
+                }
+                DBUtil.closeResultSet(rs);
+                DBUtil.closePreparedStatement(ps);
+            }
             ps = connection.prepareStatement("SELECT id FROM assembly_specs WHERE robot_id = ? "
                     + "AND state = 'PUBLISHED' ORDER BY version_no DESC LIMIT 1 FOR UPDATE");
             ps.setString(1, robotId);
             rs = ps.executeQuery();
             long specId = rs.next() ? rs.getLong(1) : 0;
+            if (detailedOnly && specId == 0) {
+                throw new IllegalArgumentException("Mẫu này chưa có cấu hình lắp chi tiết được công bố.");
+            }
             DBUtil.closeResultSet(rs);
             DBUtil.closePreparedStatement(ps);
             ps = connection.prepareStatement("INSERT INTO assembly_sessions "

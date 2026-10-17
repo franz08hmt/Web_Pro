@@ -68,14 +68,23 @@ public class AssemblySessionServlet extends HttpServlet {
             if (handlePlacement(request, response, user)) {
                 return;
             }
-            String robotId = JsonUtil.stringField(JsonUtil.readBody(request.getReader(), MAX_BODY), "robotId");
+            String body = JsonUtil.readBody(request.getReader(), MAX_BODY);
+            String robotId = JsonUtil.stringField(body, "robotId");
             if (!ValidationUtil.isSlug(robotId) || !RobotDB.robotExists(robotId)) {
                 ResponseUtil.sendError(response, HTTP_UNPROCESSABLE_ENTITY,
                         "VALIDATION_ERROR", "Robot không tồn tại hoặc dữ liệu không hợp lệ.");
                 return;
             }
 
-            AssemblySession session = AssemblySessionDB.selectOpenSession(user.getId(), robotId);
+            boolean newDetailedSession = body.contains("\"newDetailedSession\"")
+                    && JsonUtil.booleanField(body, "newDetailedSession");
+            AssemblySession session;
+            if (newDetailedSession) {
+                long id = AssemblyPlacementDB.createSession(user.getId(), robotId, true);
+                session = AssemblySessionDB.selectSession(id, user.getId());
+            } else {
+                session = AssemblySessionDB.selectOpenSession(user.getId(), robotId);
+            }
             if (session == null) {
                 long id = AssemblySessionDB.insert(user.getId(), robotId);
                 session = AssemblySessionDB.selectSession(id, user.getId());

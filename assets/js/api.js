@@ -90,6 +90,11 @@
   });
 
   const assemblySessions = Object.freeze({
+    async createDetailed(robotId) {
+      return (await request("/assembly-sessions", {
+        method: "POST", csrf: true, body: { robotId, newDetailedSession: true }
+      })).data;
+    },
     async createOrResume(robotId) {
       return (await request("/assembly-sessions", {
         method: "POST",

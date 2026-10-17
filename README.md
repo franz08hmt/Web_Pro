@@ -392,6 +392,37 @@ server xác thực và lưu. Phiên GROUP cũ và robot chưa có spec dùng lu�
 Hoàn tất chỉ khi JavaBean kiểm đủ10/10; không mô phỏng vật lý/điện/firmware.
 Xem [QA Đợt8](docs/PHASE8_ASSEMBLY_QA_REPORT.md).
 
+#### Kéo-thả đủ 5 mẫu — 17/10/2026
+
+Sau hai seed obstacle-avoider ở trên, chạy thêm
+`database/seed-assembly-spec-all-models.sql` trên **đúng database đã chọn**.
+Không cần migration mới; seed chỉ thêm4 spec v1/43 slot/hướng, chạy lại không sửa
+bản đã có. Nên backup DB và kiểm SQL trên DB thử trước; không tăng quyền tài khoản web.
+
+| Mẫu | Số vật thể phải gắn |
+| --- | ---: |
+| Robot dò đường | 11 |
+| Robot tránh vật cản | 10 |
+| Cánh tay robot mini | 8 (4 servo riêng) |
+| Robot dò line kết hợp tránh vật cản | 12 |
+| Robot quét hướng tránh vật cản | 12 |
+
+Đăng nhập → chọn mẫu → chuẩn bị đủ linh kiện → vào3D → kéo vật thể tới điểm gắn,
+Q/E hoặc nút xoay90°, hoặc chọn vật thể/slot/hướng rồi Gắn bằng bàn phím.
+Server kiểm loại, hướng, cha và version; màu xanh chỉ sau khi server chấp nhận.
+Đây là góc đặt mô hình rời rạc, **không phải góc điều khiển servo**, mô phỏng điện
+hay chứng nhận an toàn của robot thật.
+
+Phiên GROUP cũ không chuyển đổi hoặc chấm lại. Nút **Mở phiên kéo-thả riêng** ở
+trang chuẩn bị/3D mở hoặc tiếp tục phiên DETAILED của đúng tài khoản; vẫn phải
+chuẩn bị bộ kit ở phiên mới. Tải lại sau khi lỗi mạng có thể bấm lại, không tạo
+thêm phiên DETAILED nếu đã có phiên đang mở. Bản khách vẫn là xem trước cục bộ,
+không phải bằng chứng lắp ráp đã được server xác nhận.
+
+Muốn dùng ở Tomcat đang chạy phải triển khai WAR mới **và** nạp seed trên DB mà
+Tomcat đó kết nối; chỉ sửa file SQL trong Git không làm DB tự cập nhật.
+Xem [báo cáo toàn bộ mẫu](docs/ALL_MODELS_PLACEMENT_QA_REPORT.md).
+
 Khi IntelliJ/Tomcat đang dùng target, có thể build riêng bằng JDK17:
 `mvn -f tomcat-app/pom.xml -Drobotlab.buildDirectory=D:/Web-Pro/qa-evidence/phase8/final-build clean package`.
 Tham số tùy chọn; build thông thường vẫn dùng `tomcat-app/target`.

@@ -404,6 +404,19 @@ PUT visual-parts; không dùng component_id hoặc phần trăm client để ho�
 Robot có spec PUBLISHED dùng DETAILED khi tạo mới; mode/spec cố định sau đó.
 Spec archived không dùng để tạo phiên mới; phiên đã tham chiếu vẫn đọc/lắp tiếp.
 
+17/10/2026: POST `/api/assembly-sessions` nhận thêm boolean tùy chọn
+`newDetailedSession`. Bỏ qua hoặc false: giữ nguyên hành vi create-or-resume cũ
+(có thể trả GROUP). True: mở/tiếp tục DETAILED riêng của user trong HttpSession,
+không đổi bất kỳ phiên GROUP nào. Khóa dòng users trong transaction để hai yêu
+cầu true đồng thời dùng một phiên DETAILED đang mở; không lấy user_id từ client.
+Nếu chưa có spec PUBLISHED và không có DETAILED đang mở thì422 VALIDATION_ERROR,
+không tạo phiên GROUP để giả thành chi tiết. Trả201 cùng cấu trúc session hiện có;
+ID có thể là phiên được tiếp tục, không được suy số bản ghi mới từ HTTP201.
+Vẫn bắt buộc USER + header CSRF, no-store; không đổi endpoint/mã lỗi cũ.
+
+Seed `seed-assembly-spec-all-models.sql` thêm v1 cho4 mẫu còn lại:11/8/12/12 slot,
+không tự chuyển đổi phiên cũ và không ảnh hưởng spec v1/v2 obstacle-avoider.
+
 200 accepted:true có data layout và unchanged/transitioned. Retry đúng vị trí/hướng
 trả unchanged:true, không tăng version; hai complete chỉ một transitioned:true.
 422 accepted:false có code/message/instanceId/slotId và error theo API cũ.

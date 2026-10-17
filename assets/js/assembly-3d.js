@@ -236,6 +236,7 @@
       }
 
       activeSession = session;
+      window.dispatchEvent(new CustomEvent("robotlab:assembly-session", { detail: session }));
       detailedRequested = session.assemblyMode === "DETAILED";
       if (detailedRequested) {
         await restoreDetailed();
