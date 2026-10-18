@@ -91,7 +91,11 @@ public class DesignPageServlet extends HttpServlet {
                         draft.setName(request.getParameter("name"));
                         draft.setGoalCode(request.getParameter("goalCode"));
                         draft.setSource(request.getParameter("source"));
-                        DesignDB.create(user.getId(), draft, DesignFormUtil.quantities(request, items));
+                        long createdDesignId = DesignDB.create(user.getId(), draft,
+                                DesignFormUtil.quantities(request, items));
+                        response.sendRedirect(request.getContextPath()
+                                + "/pages/xuong-thiet-ke.html?design=" + createdDesignId);
+                        return;
                     }
                 } else {
                     throw new IllegalArgumentException(

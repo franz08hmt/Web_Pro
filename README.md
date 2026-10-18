@@ -495,7 +495,8 @@ Không nâng quyền ứng dụng; dùng tài khoản cài đặt được cấp
 
 Vào Tài khoản → Bộ linh kiện của tôi hoặc Thiết kế của tôi. Bộ linh kiện có thể nhập
 từ đơn CONFIRMED của chính mình; bấm lại không cộng trùng. Tạo thiết kế từ kit hoặc
-thư viện, chọn mục tiêu → vào Xưởng → gắn/xoay/hoàn tác → Kiểm tra → Hồ sơ thiết kế/In.
+thư viện, chọn mục tiêu → tạo snapshot → vào ngay phòng 3D đúng thiết kế →
+gắn/xoay/hoàn tác → Kiểm tra → Hồ sơ thiết kế/In.
 Giới hạn20 thiết kế,30 vật thể/thiết kế,10/loại và đúng một khung nền. arm-frame và
 mini-gripper có hình3D nhưng chưa hỗ trợ kiểm chứng. Đổi kit không đổi snapshot thiết kế.
 Phòng lắp mẫu cũ và spec v1/v2 giữ nguyên. Kết quả/giới hạn QA: [báo cáo Đợt10](docs/PHASE10_DESIGN_QA_REPORT.md).

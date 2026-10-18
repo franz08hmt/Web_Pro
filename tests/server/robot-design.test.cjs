@@ -100,6 +100,58 @@ test("design creation snapshots quantities under owner lock and mutations keep o
   assert.match(servlet, /getRequestDispatcher\(url\)\.forward/);
 });
 
+test("successful creation opens its committed design and validation errors preserve the form", () => {
+  const base = "tomcat-app/src/main/java/vn/edu/webpro/robotlab/";
+  const db = read(base + "data/DesignDB.java");
+  const servlet = read(base + "controller/DesignPageServlet.java");
+  assert.match(servlet, /long createdDesignId = DesignDB\.create\(user\.getId\(\), draft,/);
+  assert.match(servlet, /sendRedirect\(request\.getContextPath\(\)\s*\+\s*\"\/pages\/xuong-thiet-ke\.html\?design=\"\s*\+\s*createdDesignId\)/);
+  assert.match(servlet, /catch \(IllegalArgumentException e\) \{\s*response\.setStatus\(422\);\s*request\.setAttribute\(\"designError\", e\.getMessage\(\)\);/s);
+  assert.match(servlet, /getRequestDispatcher\(url\)\.forward\(request, response\)/);
+
+  const form = read("tomcat-app/src/main/webapp/WEB-INF/views/design-form.jsp");
+  assert.match(form, /role=\"alert\"/);
+  assert.match(form, /value=\"<c:out value='\$\{designDraft\.name\}'\/>\"/);
+  assert.match(form, /designGoal\.code eq designDraft\.goalCode/);
+  assert.match(form, /\$\{designDraft\.fromKit\}/);
+  assert.match(form, /\$\{kitItem\.inputValue\}/);
+  const formUtil = read(base + "util/DesignFormUtil.java");
+  assert.ok(formUtil.indexOf("item.setInputValue(input);") < formUtil.indexOf("if (codes == null"));
+
+  const createStart = db.indexOf("public static long create(");
+  const createEnd = db.indexOf("/** Đổi tên/xóa", createStart);
+  const createMethod = db.slice(createStart, createEnd);
+  assert.match(createMethod, /connection\.commit\(\);\s*return id;/);
+  assert.match(createMethod, /connection\.rollback\(\)/);
+
+  const room = read("assets/js/design-room.js");
+  assert.match(room, /sync\(requireLayout\(await api\(base \+ \"\/layout\"\)\)\)/);
+  assert.match(room, /createAssemblyPlacementView/);
+  assert.doesNotMatch(room, /api\(.*components/);
+
+  const placementDb = read(base + "data/DesignPlacementDB.java");
+  assert.match(placementDb, /setInstances\(DesignDB\.readInstances\(connection, id, userId\)\)/);
+  assert.match(db, /for \(int n = 1; n <= quantities\.get\(component\); n\+\+\)/);
+  assert.match(db, /WHERE d\.id = \? AND d\.user_id = \?/);
+  assert.match(read(base + "controller/DesignApiServlet.java"), /selectLayout\(id, user\.getId\(\)\)/);
+});
+
+test("design room explains entry, WebGL, API, and malformed saved-layout failures", () => {
+  const room = read("assets/js/design-room.js");
+  assert.match(room, /Thiếu mã thiết kế/);
+  assert.match(room, /Mã thiết kế không hợp lệ/);
+  assert.match(room, /Không tải được thư viện 3D/);
+  assert.match(room, /Trình duyệt.*WebGL/);
+  assert.match(room, /Không tìm thấy thiết kế.*quyền/);
+  assert.match(room, /Không thể đọc bố cục.*không hợp lệ/);
+  assert.match(room, /function requireLayout\(payload\)/);
+  assert.match(room, /response\.status === 401/);
+  assert.match(room, /response\.status === 403/);
+  assert.match(room, /response\.status === 404/);
+  assert.match(room, /response\.status === 503/);
+  assert.match(room, /webglcontextlost/);
+});
+
 test("workshop reuses placement view with string mount ids and keeps all writes owner scoped and CSRF protected", () => {
   const base = "tomcat-app/src/main/java/vn/edu/webpro/robotlab/";
   const db = read(base + "data/DesignPlacementDB.java");

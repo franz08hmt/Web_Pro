@@ -490,7 +490,7 @@ trước/Bước sau là tương tác trình bày; reduced-motion chỉ bấm t�
 | GET /my-kit | HttpSession | JSP13 linh kiện, lượng owner, hỗ trợ và link shop |
 | POST /my-kit | action=save/import, csrfToken; componentId lặp, quantity_{id} | lỗi422 trên form, thành công302 PRG |
 | GET /designs | action=new/rename/delete tùy form; id khi đổi/xóa | JSP danh sách/form owner |
-| POST /designs | action=create/rename/delete, csrfToken; name/goalCode/source, componentId/quantity | tạo snapshot;302 PRG; KIT vượt lượng422 |
+| POST /designs | action=create/rename/delete, csrfToken; name/goalCode/source, componentId/quantity | create commit rồi302 tới phòng3D bằng ID vừa tạo; rename/delete về danh sách; validation422 giữ form |
 | GET /design-sheet?id=… | HttpSession | JSP bản vẽ/BOM/trình tự/kết quả, không ghi |
 | GET /api/designs/{id}/layout | HttpSession | data layout, luật phiên bản, instances/placements/version, check hoặc null |
 | POST /api/designs/{id}/placements | instanceId, slotId dạng host:mount, orientation, expectedLayoutVersion | data layout đã lưu |
@@ -517,6 +517,11 @@ componentId có trong snapshot. Client chỉ chọn/gửi ý định, server ki�
 `check.items` có layer/label/message cho người học; không hiển thị enum. Kết quả
 chỉ có khi bố cục đã CHECKED; mọi thao tác đổi bố cục xóa check cũ. Thiết kế lưu
 rule_set_id, không lấy luật mới nhất để tính lại thiết kế cũ.
+
+POST tạo thiết kế lấy ID do `DesignDB.create` trả về sau commit rồi chuyển thẳng
+đến `/pages/xuong-thiet-ke.html?design=<id>`. Phòng3D chỉ tải layout đã lưu qua
+GET owner-scoped; reload không tạo thiết kế mới. Validation thất bại rollback
+transaction, trả 422 và render lại tên, mục tiêu, nguồn cùng số lượng đã nhập.
 
 Luật Xưởng v2 sửa riêng góc nền rear-bay/front-top về0 do v1 bù góc hai lần;
 battery/sensor của spec v2 có nền≈0, hướng Y90/Y180 được view cộng đúng một lần.

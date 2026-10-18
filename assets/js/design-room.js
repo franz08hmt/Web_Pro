@@ -11,8 +11,20 @@
   let stopped = false;
   let latest;
   const THREE = window.THREE;
-  if (!id || !THREE || !window.createAssemblyPlacementView) {
-    status.textContent = "Không thể mở mô hình. Hãy về danh sách thiết kế hoặc tải lại trang.";
+  function showError(message) {
+    status.textContent = message;
+    status.dataset.state = "error";
+  }
+  if (!id) {
+    showError("Thiếu mã thiết kế. Hãy mở thiết kế từ danh sách thiết kế của bạn.");
+    return;
+  }
+  if (!/^[1-9][0-9]{0,18}$/.test(id)) {
+    showError("Mã thiết kế không hợp lệ. Hãy mở thiết kế từ danh sách của bạn.");
+    return;
+  }
+  if (!THREE || !window.createAssemblyPlacementView) {
+    showError("Không tải được thư viện 3D. Hãy kiểm tra kết nối rồi tải lại phòng thiết kế.");
     return;
   }
   async function api(path, method = "GET", body) {
@@ -24,10 +36,21 @@
         headers: {"Content-Type": "application/json", ...(method === "GET" ? {} : {"X-CSRF-Token": token})},
         body: body === undefined ? undefined : JSON.stringify(body)
       });
-      const payload = await response.json();
+      const payload = await response.json().catch(() => null);
       if (!response.ok) {
-        const error = new Error(payload.error?.message || "Không thể thực hiện thao tác.");
-        error.status = response.status; error.code = payload.error?.code; throw error;
+        let message = payload?.error?.message || "Không thể thực hiện thao tác.";
+        if (response.status === 401) message = "Phiên đăng nhập không còn hiệu lực. Hãy đăng nhập lại.";
+        if (response.status === 403) message = "Yêu cầu bị từ chối. Hãy tải lại trang rồi thử lại.";
+        if (response.status === 404) {
+          message = "Không tìm thấy thiết kế hoặc bạn không có quyền sử dụng thiết kế này.";
+        }
+        if (response.status === 503) message = "Dữ liệu tạm chưa sẵn sàng. Vui lòng thử lại sau.";
+        const error = new Error(message);
+        error.status = response.status; error.code = payload?.error?.code; throw error;
+      }
+      if (!payload || typeof payload !== "object") {
+        const error = new Error("Máy chủ trả về dữ liệu không hợp lệ. Hãy tải lại phòng thiết kế.");
+        error.status = response.status; error.code = "INVALID_RESPONSE"; throw error;
       }
       return payload;
     } catch (error) {
@@ -36,10 +59,49 @@
       unavailable.status = 0; throw unavailable;
     } finally { clearTimeout(timeout); }
   }
+  function requireLayout(payload) {
+    const layout = payload && payload.data;
+    if (!layout || String(layout.designId) !== id || !layout.name || !layout.goalLabel
+        || !Number.isInteger(layout.layoutVersion) || layout.layoutVersion < 1
+        || !layout.spec || !Array.isArray(layout.spec.slots) || !Array.isArray(layout.instances)
+        || layout.instances.length === 0 || !Array.isArray(layout.placements)) {
+      throw new Error("Không thể đọc bố cục thiết kế vì dữ liệu máy chủ trả về không hợp lệ.");
+    }
+    const instanceIds = new Set();
+    for (const item of layout.instances) {
+      const instanceId = item && String(item.id);
+      if (!instanceId || !/^[1-9][0-9]{0,18}$/.test(instanceId) || !item.componentId
+          || instanceIds.has(instanceId)) {
+        throw new Error("Không thể đọc bố cục thiết kế vì dữ liệu máy chủ trả về không hợp lệ.");
+      }
+      instanceIds.add(instanceId);
+    }
+    const slotIds = new Set();
+    for (const slot of layout.spec.slots) {
+      if (!slot || !slot.id || !Number.isFinite(Number(slot.x)) || !Number.isFinite(Number(slot.y))
+          || !Number.isFinite(Number(slot.z))) {
+        throw new Error("Không thể đọc bố cục thiết kế vì dữ liệu máy chủ trả về không hợp lệ.");
+      }
+      slotIds.add(String(slot.id));
+    }
+    for (const placement of layout.placements) {
+      if (!placement || !instanceIds.has(String(placement.instanceId))
+          || !slotIds.has(String(placement.slotId)) || !/^Y(0|90|180|270)$/.test(placement.orientation)) {
+        throw new Error("Không thể đọc bố cục thiết kế vì dữ liệu máy chủ trả về không hợp lệ.");
+      }
+    }
+    return layout;
+  }
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0b1014);
   const camera = new THREE.PerspectiveCamera(42, 1, .1, 150);
-  const renderer = new THREE.WebGLRenderer({antialias: true});
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({antialias: true});
+  } catch (error) {
+    showError("Trình duyệt hoặc thiết bị hiện không khởi tạo được WebGL cho mô hình 3D.");
+    return;
+  }
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -47,6 +109,10 @@
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.15;
   renderer.domElement.setAttribute("aria-label", "Mô hình thiết kế robot 3D");
+  renderer.domElement.addEventListener("webglcontextlost", event => {
+    event.preventDefault();
+    showError("Kết nối WebGL bị gián đoạn. Hãy tải lại phòng thiết kế để tiếp tục.");
+  });
   stage.append(renderer.domElement);
   const root = new THREE.Group(); scene.add(root);
   scene.add(new THREE.AmbientLight(0xffffff, .8));
@@ -94,11 +160,13 @@
     cameraUpdate();
   }
   function sync(layout) {
+    layout = requireLayout({data: layout});
     latest = layout;
     const sheet = document.getElementById("design-sheet-link");
     sheet.href = "../design-sheet?id=" + encodeURIComponent(layout.designId); sheet.hidden = false;
     document.getElementById("design-name").textContent = layout.name;
     status.textContent = `${layout.statusLabel} · ${layout.goalLabel} · luật phiên bản ${layout.ruleVersion}.`;
+    delete status.dataset.state;
     view.sync(layout);
     focusModel();
     showCheck(layout);
@@ -120,16 +188,19 @@
   }
   const base = "designs/" + encodeURIComponent(id);
   view = window.createAssemblyPlacementView({THREE, camera, root, canvas: renderer.domElement, panel,
-    onAttach: async (item, slot, orientation, version) => (await api(base + "/placements", "POST", {
+    onAttach: async (item, slot, orientation, version) => requireLayout(await api(base + "/placements", "POST", {
       instanceId: Number(item), slotId: slot, orientation, expectedLayoutVersion: version
-    })).data,
-    onDetach: async (item, version) => (await api(base + "/placements/" + encodeURIComponent(item)
-      + "?expectedLayoutVersion=" + version, "DELETE")).data,
-    onUndo: async version => (await api(base + "/undo", "POST", {expectedLayoutVersion: version})).data,
-    onReload: async () => { try { sync((await api(base + "/layout")).data); } catch (e) { status.textContent = e.message; } },
+    })),
+    onDetach: async (item, version) => requireLayout(await api(base + "/placements/" + encodeURIComponent(item)
+      + "?expectedLayoutVersion=" + version, "DELETE")),
+    onUndo: async version => requireLayout(await api(base + "/undo", "POST", {expectedLayoutVersion: version})),
+    onReload: async () => { try { sync(requireLayout(await api(base + "/layout"))); }
+      catch (e) { showError(e.message); } },
     onChange: layout => {
       if (layout) {
+        layout = requireLayout({data: layout});
         latest = layout; status.textContent = layout.statusLabel + " · " + layout.goalLabel; showCheck(layout);
+        delete status.dataset.state;
         if (framedVersion !== layout.layoutVersion) { framedVersion = layout.layoutVersion; focusModel(); }
       }
     }
@@ -139,8 +210,8 @@
   document.getElementById("design-check").addEventListener("click", async event => {
     if (!latest) return;
     event.currentTarget.disabled = true;
-    try { sync((await api(base + "/check", "POST", {expectedLayoutVersion: latest.layoutVersion})).data); }
-    catch (error) { status.textContent = error.message; }
+    try { sync(requireLayout(await api(base + "/check", "POST", {expectedLayoutVersion: latest.layoutVersion}))); }
+    catch (error) { showError(error.message); }
     finally { document.getElementById("design-check").disabled = !latest.canEdit; }
   });
   canvas.addEventListener("pointerdown", event => {
@@ -167,7 +238,7 @@
   draw();
   window.addEventListener("pagehide", () => { stopped = true; cancelAnimationFrame(animation); view.dispose(); renderer.dispose(); });
   (async () => {
-    try { const me = await api("auth/me"); token = me.csrfToken; sync((await api(base + "/layout")).data); }
-    catch (error) { status.textContent = error.message; }
+    try { const me = await api("auth/me"); token = me.csrfToken; sync(requireLayout(await api(base + "/layout"))); }
+    catch (error) { showError(error.message); }
   })();
 })();
