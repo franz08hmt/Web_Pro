@@ -9,8 +9,8 @@
         <title>Hồ sơ thiết kế robot | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/design.css?v=20261014.1">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/assembly-review.css?v=20261014.2">
-        <script src="${pageContext.request.contextPath}/assets/js/assembly-review.js?v=20261014.1" defer></script>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/assembly-review.css?v=20261018.1">
+        <script src="${pageContext.request.contextPath}/assets/js/assembly-review.js?v=20261018.1" defer></script>
     </head>
     <body class="learning-workspace design-workspace assembly-review">
         <%@ include file="workspace-header.jspf" %>

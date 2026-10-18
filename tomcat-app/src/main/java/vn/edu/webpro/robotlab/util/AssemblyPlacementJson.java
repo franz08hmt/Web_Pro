@@ -62,6 +62,15 @@ public final class AssemblyPlacementJson {
 
     /** Serialize pose/hướng được phép hiển thị và vật thể của phiên owner. */
     public static String layout(AssemblyLayout layout) {
+        return layout(layout, false);
+    }
+
+    /** Payload xem kết quả: dữ kiện của phiên, không token hoặc công cụ sửa bố cục. */
+    public static String reviewLayout(AssemblyLayout layout) {
+        return layout(layout, true);
+    }
+
+    private static String layout(AssemblyLayout layout, boolean reviewOnly) {
         StringBuilder slots = new StringBuilder("[");
         for (AssemblySlot slot : layout.getSpec().getSlots()) {
             if (slots.length() > 1) {
@@ -99,13 +108,17 @@ public final class AssemblyPlacementJson {
                     .append(",\"placedAt\":").append(JsonUtil.quote(placed.getPlacedAt())).append('}');
         }
         placements.append(']');
-        return "{\"sessionId\":" + JsonUtil.quote(Long.toString(layout.getSessionId()))
+        String identity = "{\"sessionId\":" + JsonUtil.quote(Long.toString(layout.getSessionId()))
                 + ",\"mode\":" + JsonUtil.quote(layout.getMode()) + ",\"status\":" + JsonUtil.quote(layout.getStatus())
-                + ",\"layoutVersion\":" + layout.getLayoutVersion() + ",\"canEdit\":" + layout.isCanEdit()
-                + ",\"unchanged\":" + layout.isUnchanged() + ",\"transitioned\":" + layout.isTransitioned()
-                + ",\"spec\":{\"id\":" + JsonUtil.quote(Long.toString(layout.getSpec().getId()))
+                + ",\"layoutVersion\":" + layout.getLayoutVersion();
+        String objects = ",\"spec\":{\"id\":" + JsonUtil.quote(Long.toString(layout.getSpec().getId()))
                 + ",\"versionNo\":" + layout.getSpec().getVersionNo() + ",\"slots\":" + slots + "}"
-                + ",\"instances\":" + instances + ",\"placements\":" + placements
+                + ",\"instances\":" + instances + ",\"placements\":" + placements;
+        if (reviewOnly) {
+            return identity + objects + "}";
+        }
+        return identity + ",\"canEdit\":" + layout.isCanEdit() + ",\"unchanged\":" + layout.isUnchanged()
+                + ",\"transitioned\":" + layout.isTransitioned() + objects
                 + ",\"report\":" + report(layout.check()) + "}";
     }
 }

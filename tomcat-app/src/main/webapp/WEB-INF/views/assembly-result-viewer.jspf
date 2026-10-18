@@ -1,0 +1,26 @@
+<%@ page pageEncoding="UTF-8" %>
+<c:choose>
+    <c:when test="${not empty reviewLayoutJson}">
+        <div class="assembly-result-viewer no-print">
+            <h3>Mô hình em đã lắp — Phiên #<c:out value="${session.id}" /></h3>
+            <p>Phiên bản spec: <c:out value="${reviewSpecVersion}" />. Chỉ xem bố cục cuối đã lưu của phiên này.</p>
+            <div id="assembly-result-data" hidden><c:out value="${reviewLayoutJson}" /></div>
+            <div id="assembly-result-stage" aria-describedby="assembly-result-status"></div>
+            <p id="assembly-result-status" role="status">Trình xem cần JavaScript và WebGL.
+                Nếu chưa hiển thị được, hãy xem bản vẽ 2D và phiếu bên dưới.</p>
+            <div class="review-links" role="group" aria-label="Góc nhìn mô hình đã lắp">
+                <button type="button" data-result-camera="in" disabled>Phóng to</button>
+                <button type="button" data-result-camera="out" disabled>Thu nhỏ</button>
+                <button type="button" data-result-camera="center" disabled>Căn giữa</button>
+            </div>
+            <noscript><p>JavaScript đang tắt. Bản vẽ 2D, nhật ký và phiếu kết quả vẫn xem được bên dưới.</p></noscript>
+        </div>
+    </c:when>
+    <c:when test="${session.detailed}">
+        <p>Chưa đủ dữ liệu bố cục cuối để hiển thị đúng mô hình của phiên này.
+            Bạn vẫn có thể xem các thông tin kết quả và phiếu còn lưu bên dưới.</p>
+    </c:when>
+    <c:otherwise>
+        <p>Phiên lắp theo nhóm cũ không lưu vị trí và hướng của từng vật thể để dựng lại chính xác mô hình đã lắp.</p>
+    </c:otherwise>
+</c:choose>

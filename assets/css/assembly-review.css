@@ -1,4 +1,8 @@
 .assembly-review .review-links { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.assembly-review .assembly-result-viewer { min-width: 0; }
+.assembly-review #assembly-result-stage { width: 100%; height: clamp(320px, 52vw, 560px); background: #151b1f; }
+.assembly-review #assembly-result-stage canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.assembly-review #assembly-result-stage canvas:focus-visible { outline: 3px solid #ffa871; outline-offset: -3px; }
 .assembly-review .review-links a, .assembly-review button { min-height: 44px; padding: 10px 14px; }
 .assembly-review section { margin-block: 32px; scroll-margin-top: 120px; }
 .assembly-review .review-facts { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; }

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
@@ -29,6 +30,30 @@ public class AssemblyReview implements Serializable {
 
     /** Tạo JavaBean rỗng theo quy ước môn học. */
     public AssemblyReview() {
+    }
+
+    /** Chỉ trình bày bố cục cuối của chính phiên và spec đã ghim; không sửa lịch sử. */
+    public boolean canDisplayLayout(AssemblyLayout layout) {
+        if (session == null || !session.isCompleted() || !session.isDetailed() || layout == null
+                || layout.getSessionId() != session.getId() || !"COMPLETED".equals(layout.getStatus())
+                || !"DETAILED".equals(layout.getMode()) || layout.getSpec() == null
+                || layout.getSpec().getId() <= 0 || layout.getSpec().getId() != session.getSpecId()
+                || layout.getInstances().isEmpty() || layout.getInstances().size() != layout.getPlacements().size()) {
+            return false;
+        }
+        HashSet<Long> instances = new HashSet<>();
+        HashSet<Long> slots = new HashSet<>();
+        for (AssemblyPlacement placed : layout.getPlacements()) {
+            AssemblySlot slot = layout.getSpec().findSlot(placed.getSlotId());
+            if (slot == null || layout.findInstance(placed.getInstanceId()) == null
+                    || !instances.add(placed.getInstanceId()) || !slots.add(placed.getSlotId())
+                    || !Double.isFinite(slot.getX()) || !Double.isFinite(slot.getY()) || !Double.isFinite(slot.getZ())
+                    || !Double.isFinite(slot.getRx()) || !Double.isFinite(slot.getRy())
+                    || !Double.isFinite(slot.getRz())) {
+                return false;
+            }
+        }
+        return layout.check().isComplete();
     }
 
     /** Đọc dữ kiện robot. */

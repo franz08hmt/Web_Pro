@@ -20,6 +20,7 @@ import vn.edu.webpro.robotlab.data.RobotDB;
 import vn.edu.webpro.robotlab.data.QuizAttemptDB;
 import vn.edu.webpro.robotlab.data.QuizQuestionDB;
 import vn.edu.webpro.robotlab.util.SessionUtil;
+import vn.edu.webpro.robotlab.util.AssemblyPlacementJson;
 import vn.edu.webpro.robotlab.business.AssemblyEvent;
 import vn.edu.webpro.robotlab.business.AssemblyInstance;
 import vn.edu.webpro.robotlab.business.WiringExercise;
@@ -69,11 +70,18 @@ public class AssemblyReviewPageServlet extends HttpServlet {
             throws SQLException {
         AssemblySession session = review.getSession();
         AssemblyDrawing drawing = new AssemblyDrawing();
+        AssemblyLayout layout = null;
         if (session.isDetailed()) {
-            AssemblyLayout layout = AssemblyPlacementDB.selectLayout(session.getId(), userId);
-            drawing.build(layout);
-            review.setCorrectCount(layout.check().getCorrectCount());
-            review.setRequiredCount(layout.check().getRequiredCount());
+            layout = AssemblyPlacementDB.selectLayout(session.getId(), userId);
+            if (layout != null && layout.getSpec() != null) {
+                drawing.build(layout);
+                review.setCorrectCount(layout.check().getCorrectCount());
+                review.setRequiredCount(layout.check().getRequiredCount());
+            }
+            if (review.canDisplayLayout(layout)) {
+                request.setAttribute("reviewLayoutJson", AssemblyPlacementJson.reviewLayout(layout));
+                request.setAttribute("reviewSpecVersion", layout.getSpec().getVersionNo());
+            }
         } else {
             int count = RobotDB.selectRobotComponents(session.getRobotId()).size();
             review.setCorrectCount(count);
@@ -90,12 +98,11 @@ public class AssemblyReviewPageServlet extends HttpServlet {
             }
         }
         AssemblyEvent most = review.getMostFrequentLearningError();
-        if (most != null && session.isDetailed()) {
-            AssemblyLayout contextLayout = AssemblyPlacementDB.selectLayout(session.getId(), userId);
+        if (most != null && layout != null) {
             String componentId = "";
             for (AssemblyEvent event : review.getEvents()) {
                 if (most.getReasonCode().equals(event.getReasonCode())) {
-                    for (AssemblyInstance item : contextLayout.getInstances()) {
+                    for (AssemblyInstance item : layout.getInstances()) {
                         if (item.getId() == event.getInstanceId()) {
                             componentId = item.getComponentId();
                             break;

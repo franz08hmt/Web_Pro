@@ -9,7 +9,8 @@
         <title>Hoàn thiện mẫu robot | Robot Assembly Lab</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/server-view.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/learning-workspace.css?v=20261006.5">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/assembly-review.css?v=20261014.4">
+        <c:url var="reviewStyle" value="/assets/css/assembly-review.css"><c:param name="v" value="20261018.1"/></c:url>
+        <link rel="stylesheet" href="<c:out value='${reviewStyle}'/>">
     </head>
     <body class="learning-workspace assembly-review">
         <%@ include file="workspace-header.jspf" %>
@@ -73,11 +74,12 @@
                     </nav>
                     <section id="review-model">
                         <h2>Mẫu hoàn chỉnh</h2>
+                        <%@ include file="assembly-result-viewer.jspf" %>
                         <c:if test="${not empty assemblyReview.imagePath}">
                             <figure>
                                 <img src="${pageContext.request.contextPath}/assets/<c:out value='${assemblyReview.imagePath}'/>"
                                      alt="Ảnh mẫu: <c:out value='${robot.name}'/>" width="1024" height="1024">
-                                <figcaption>Ảnh mẫu sản phẩm hoàn chỉnh để đối chiếu.</figcaption>
+                                <figcaption>Ảnh tham khảo — mẫu sản phẩm trong danh mục để đối chiếu.</figcaption>
                             </figure>
                         </c:if>
                         <c:choose>
@@ -203,6 +205,17 @@
             </c:choose>
         </main>
         <%@ include file="workspace-footer.jspf" %>
-        <script src="${pageContext.request.contextPath}/assets/js/assembly-review.js?v=20261014.1" defer></script>
+        <c:if test="${not empty reviewLayoutJson}">
+            <c:url var="reviewThree" value="/assets/vendor/three/three.min.js"/>
+            <c:url var="reviewParts" value="/assets/js/assembly-3d-parts.js"><c:param name="v" value="20261018.1"/></c:url>
+            <c:url var="reviewViewer" value="/assets/js/assembly-result-viewer.js">
+                <c:param name="v" value="20261018.1"/>
+            </c:url>
+            <script src="<c:out value='${reviewThree}'/>" defer></script>
+            <script src="<c:out value='${reviewParts}'/>" defer></script>
+            <script src="<c:out value='${reviewViewer}'/>" defer></script>
+        </c:if>
+        <c:url var="reviewScript" value="/assets/js/assembly-review.js"><c:param name="v" value="20261018.1"/></c:url>
+        <script src="<c:out value='${reviewScript}'/>" defer></script>
     </body>
 </html>
