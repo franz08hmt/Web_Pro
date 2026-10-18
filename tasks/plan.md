@@ -799,3 +799,22 @@ mọi dòng cũ giữ nguyên. WAR sạch7af2d5f đã chạy trên8080 và53 lư
 5 từ chối/15 viewport/reload/undo/complete đạt.253 Node/159 JUnit,0 fail/skip;
 44 hash bảo vệ và DB demo8081 không đổi. Có helper Stop/Start đúng runtime,
 không sửa cấu hình IDE; báo cáo docs/ASSEMBLY_8080_QA_REPORT.md. Không push.
+## Xem mô hình đúng phiên ngay trên trang hoàn thiện — 18/10/2026
+
+Mốc nguồn ccf06ee (source 7af2d5f); giữ nguyên sáu WIP và bốn file cá nhân.
+Servlet đã lấy layout bằng session/user và spec_id của phiên. Tọa độ slot là
+tuyệt đối; góc Y cuối = slot.ry + hướng đã lưu, không cộng lại góc cha.
+
+1. Test trước cho payload an toàn, đúng spec/placement và renderer chỉ đọc.
+2. Tái sử dụng layout đã nạp, serializer, Three.js cục bộ và createAssemblyPart;
+   truyền JSON qua request attribute → c:out trong HTML ẩn → textContent.
+3. Thêm viewer camera chỉ đọc trước ảnh tham khảo, fallback GROUP/thiếu layout/
+   JavaScript/WebGL; giữ SVG, nhật ký, replay, phiếu, quiz và bản in.
+4. Build snapshot sạch JDK17 ngoài repo; kiểm năm mẫu trên DB clone QA sẵn có,
+   owner/ID, pose so với phòng lắp, lifecycle, responsive, network và hash DB.
+5. Báo cáo và gói triển khai; không tự triển khai/restart 8080/8081, không push.
+
+Bằng chứng: D:/Web-Pro/qa-evidence/assembly-review-3d-20261018/.
+Baseline snapshot: 159 JUnit đạt; Node trước package 252 đạt/1 skip artifact
+chưa dựng; chạy lại sau package để kiểm đầy đủ, không sửa/nới test.
+

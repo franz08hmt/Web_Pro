@@ -424,3 +424,11 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] Backup restore55 bảng, seed4/43/43; WAR sạch vào đúng8080, Stop/Start đạt.
 - [x] Nghiệm thu8080:53 gắn thật/5 từ chối/15 viewport; mọi dòng cũ và WIP nguyên.
 - [x] Báo cáo/hướng dẫn phân biệt8080/8081; dọn riêng QA8082, không push.
+## Mô hình 3D đúng phiên trong trang hoàn thiện — 18/10/2026
+
+- [x] M0: khảo sát owner/spec/pose, snapshot WIP và baseline sạch ngoài repo.
+- [ ] M1: test tái hiện thiếu viewer và khóa dữ liệu đúng phiên.
+- [ ] M2: Servlet → payload escape → JSP → viewer camera chỉ đọc, fallback.
+- [ ] M3: kiểm năm mẫu và đối chiếu pose phòng lắp, responsive/lifecycle.
+- [ ] M4: full test/package, hash DB/WIP, tài liệu và gói triển khai chờ duyệt.
+
