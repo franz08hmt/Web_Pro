@@ -227,3 +227,24 @@ không tuyên bố đã kiểm thao tác bấm Run IDE hoặc sửa cấu hình 
 **Trạng thái hiện tại: đã triển khai và kiểm mô hình kết quả năm mẫu trên
 localhost:8080.** Các giới hạn lịch sử GROUP/spec cũ ở vòng QA vẫn được giữ nguyên,
 không biến thành tuyên bố đã kiểm live. Không push; Git chỉ còn WIP/untracked cũ.
+
+## Xác minh sau khi người dùng Run IntelliJ — 18/10/2026
+
+Runtime helper PID20012 đã dừng an toàn để giải phóng 8080 và JMX1099. Người dùng
+sau đó bấm Run thành công; PID32144 giữ cả hai cổng, không dùng argfile helper.
+Kiểm JVM/JNDI: Java17.0.19, đúng CATALINA_BASE/docBase trên và DB làm việc cũ.
+179 class production đều major61, không có class Java25 trong artifact đang chạy.
+
+Năm review44–48 hiện canvas và10/11/8/12/12 placements của đúng phiên, no-store;
+không lỗi JS/request ghi nghiệp vụ sau đăng nhập. Health200. JS/CSS viewer khớp
+nội dung candidate khi chuẩn hóa CRLF/LF; byte khác do kiểu xuống dòng.
+
+**Phân biệt artifact:** file WAR vẫn giữ checksum sạch nhưng thư mục exploded
+đã được IntelliJ build lại. Đối chiếu `WEB-INF/views/learning-profile.jsp` cho thấy
+khớp WIP hiện tại, khác bản sạch; nhiều class cũng khác byte. Vì vậy không gọi
+runtime Run IDE này là WAR sạch đã nghiệm thu, dù viewer chạy đúng.
+Run configuration đang dùng `robot-assembly-lab-tomcat:war exploded`, context `/`,
+Before launch bật BuildArtifacts cho chính artifact này. Không sửa cấu hình đó
+trong lượt xác minh; muốn pin External Source WAR sạch cần người dùng duyệt riêng.
+Mười file bảo vệ vẫn giữ hash. Bằng chứng: `INTELLIJ_RUN_VERIFICATION.json` ở thư
+mục triển khai ngoài repo. Không dùng helper Stop cũ để can thiệp PID của IDE.
