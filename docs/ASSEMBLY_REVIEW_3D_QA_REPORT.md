@@ -1,5 +1,11 @@
 # Mô hình đúng phiên ngay trên trang hoàn thiện — 18/10/2026
 
+**Cách chạy hiện tại:** chỉ dùng **Tomcat 9.0.120** trong IntelliJ, context `/`,
+JDK17, Build/BuildArtifacts như ban đầu. Cấu hình thêm “Tomcat Final WAR” đã bỏ
+theo yêu cầu người dùng; các mục về cấu hình đó bên dưới chỉ là lịch sử.
+Lần Run mới nhất đã kiểm năm mô hình trên `http://localhost:8080/`; chi tiết ở
+mục “Chốt một cấu hình Run duy nhất” cuối báo cáo. Không chạy helper Start cùng IDE.
+
 ## Phạm vi và bản nguồn
 
 Nhánh `integration/fullstack-v2`, đầu lượt `ccf06ee` (source trước sửa `7af2d5f`).
@@ -249,7 +255,7 @@ trong lượt xác minh; muốn pin External Source WAR sạch cần người d�
 Mười file bảo vệ vẫn giữ hash. Bằng chứng: `INTELLIJ_RUN_VERIFICATION.json` ở thư
 mục triển khai ngoài repo. Không dùng helper Stop cũ để can thiệp PID của IDE.
 
-## Chốt Run riêng “Tomcat Final WAR” — 18/10/2026
+## Lịch sử Run riêng “Tomcat Final WAR” — đã thay bằng một Run duy nhất
 
 Người dùng duyệt chọn cách chạy phù hợp cho final. Đã tạo cấu hình cục bộ
 `.idea/runConfigurations/Tomcat_Final_WAR.xml`, Git bỏ qua; không commit XML IDE.
@@ -281,13 +287,49 @@ backup cấu hình và logging nằm trong private giới hạn ACL. Không ch�
 suite vì source/WAR không đổi: kết quả259 Node/163 JUnit thuộc chính WAR này.
 Đây là kiểm mới bằng Run IDE thật, không kế thừa kết luận từ helper hay QA8082.
 
-Dùng **Tomcat Final WAR khi demo**, Run cũ khi phát triển. Chỉ chạy một cấu hình
-cùng lúc vì cùng cổng8080/JMX1099. Chỉnh source/WIP không tự cập nhật WAR Final;
-muốn đổi bản final cần build sạch, kiểm và thay artifact có kiểm soát.
-Hoàn tác cấu hình: Stop Final, chọn Run phát triển cũ; file Final có thể bỏ riêng
-nếu không dùng nữa, không cần phục hồi toàn workspace hoặc DB. Không dùng helper
-ngoài IDE để dừng process này. Không sửa global settings.
+Phương án hai cấu hình này đã được người dùng yêu cầu bỏ. Không áp dụng hướng
+dẫn chọn Final khi demo nữa; cách chạy hiện tại là cấu hình duy nhất bên dưới.
 
 **Trạng thái chốt: IntelliJ Run Final đã chạy đúng WAR sạch và kiểm đạt trên
 localhost:8080.** Giữ server của IDE chạy, không còn chờ bước Run này. Các giới hạn
 kiểm live GROUP/spec lịch sử ở phần trước vẫn được ghi đúng phạm vi. Chưa push.
+
+## Chốt một cấu hình Run duy nhất — 18/10/2026
+
+Theo yêu cầu người dùng, đã bỏ XML Run Final cục bộ và giữ nguyên Run
+**Tomcat 9.0.120** với Make/BuildArtifacts, artifact
+`robot-assembly-lab-tomcat:war exploded`, context `/`, runtime `temurin-17`.
+Đã sao lưu workspace và XML bị bỏ trong thư mục private ngoài Git. Không đổi
+source, DB/JNDI, cấu hình global hoặc mười file được bảo vệ.
+
+Process Final cũ vẫn giữ 1099/8080 sau khi bỏ cấu hình; đã xác minh đúng runtime
+đó và dừng qua cơ chế shutdown. Sau khi hai cổng trống, người dùng Run lại cấu
+hình duy nhất. Không tạo thêm profile hoặc dùng helper Start thay Run IntelliJ.
+
+| Kiểm mới trên Run duy nhất | Kết quả |
+|---|---|
+| RunManager và shared config | Một Tomcat: `Tomcat 9.0.120`; không còn XML Final |
+| Runtime lúc kiểm | PID29596 giữ cả 8080/1099; Java17.0.19; 179 class major61 |
+| Artifact thực tế | `tomcat-app/target/robot-assembly-lab`, do IntelliJ build từ working tree |
+| Kết nối | Giữ DB `robot_lab_content_test`, context `/`; không thay kết nối |
+| HTTP assets | JS viewer/review và CSS review khớp byte source hiện tại |
+| Phiên44–48 | 10/11/8/12/12 vật thể; geometry thật, instance/slot/hướng/pose khớp layout API |
+| Xem và tải lại | Camera bằng phím, nút zoom/căn giữa, reload đạt cả năm mẫu |
+| Responsive | 15 ô 390/768/1440px không tràn ngang; có ảnh desktop/mobile năm mẫu |
+| Quyền và cache | Chủ phiên200/no-store; đổi sang phiên30 khác chủ404; khách302 |
+| Khi xem sau đăng nhập | 0 request ghi nghiệp vụ, 0 lỗi JS chưa xử lý; health200 |
+| WIP | 10/10 hash khớp đầu lượt; không stage hoặc sửa file bảo vệ |
+
+Bằng chứng: `D:/Web-Pro/qa-evidence/single-tomcat-run-20261018/`, gồm
+`SINGLE_RUN_ACCEPTANCE.json`, ảnh năm mẫu, hash trước/sau và backup private.
+Không chạy SQL hoặc thao tác ghi nghiệp vụ ở lượt chốt này; không lấy kiểm GET
+để tuyên bố đã kiểm lại toàn bộ luồng ghi hoặc hash toàn DB. Không tác động8081.
+
+Run duy nhất build source đang mở, bao gồm WIP có sẵn của người dùng. WIP được
+giữ nguyên và không đưa vào commit. Artifact này được kiểm trực tiếp như trên;
+không gọi nó là WAR sạch `92f7954`. WAR sạch giữ ngoài repo làm bản lưu, không
+còn cấu hình Run riêng. Kết quả259 Node/163 JUnit là vòng kiểm source sạch trước
+đó, không phải lần chạy test mới trên working tree; lượt này không sửa app source.
+
+**Trạng thái hiện tại: một Run Tomcat 9.0.120 đã chạy và kiểm năm mô hình kết quả
+trên localhost:8080.** Giữ server IDE đang chạy. Không push; không mở rộng chức năng.

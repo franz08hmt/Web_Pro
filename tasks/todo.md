@@ -444,3 +444,10 @@ docs/ASSEMBLY_REVIEW_3D_QA_REPORT.md. Không push.
   từ WIP; WAR92f7954/351 file/179 class major61 khớp. Năm mô hình/15 viewport,
   camera/reload/quyền đạt trên8080;0 mutation/lỗi JS. Run phát triển vẫn giữ nguyên.
 
+- [x] Thay phương án hai Run theo yêu cầu: chỉ còn Tomcat 9.0.120, giữ Build/BuildArtifacts
+  và JDK17; đã bỏ cấu hình Final thêm vào, có backup ngoài Git.
+- [x] Người dùng Run cấu hình duy nhất: kiểm năm mô hình44–48/pose/reload/camera,
+  15 viewport, owner/no-store; asset HTTP khớp byte source,179 class major61.
+- [x] Không mutation nghiệp vụ/lỗi JS khi xem;10 hash WIP/untracked nguyên,
+  không sửa DB/JNDI/8081. Bằng chứng single-tomcat-run-20261018 ngoài repo.
+

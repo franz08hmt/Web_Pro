@@ -840,3 +840,13 @@ Người dùng đã Run đúng Final; PID39896/base riêng, descriptor WAR sạc
 đạt trên8080,0 mutation/lỗi JS và10 hash bảo vệ nguyên. Giữ IDE server chạy.
 Bằng chứng final-war-run-config-20261018 ngoài repo; XML IDE ignored, không push.
 
+Chốt lại theo yêu cầu chỉ một Run: bỏ cấu hình Final thêm vào, giữ nguyên
+Tomcat 9.0.120/Make/BuildArtifacts/context / và JDK17 như ban đầu. Sau khi dừng
+đúng runtime Final cũ giữ cổng1099/8080, người dùng Run cấu hình duy nhất.
+Kiểm mới PID29596/Java17.0.19/179 class major61, asset HTTP khớp byte source;
+phiên44–48 đủ10/11/8/12/12 vật thể, pose khớp API, reload/camera/quyền và15
+viewport đạt,0 mutation nghiệp vụ/lỗi JS.10 hash bảo vệ nguyên. Không đổi DB/JNDI,
+không chạy lại full test vì không sửa app source. Run dùng working tree hiện tại;
+WAR sạch chỉ lưu dự phòng, không còn Run Final riêng. Bằng chứng
+single-tomcat-run-20261018 ngoài repo; hướng dẫn hai Run phía trên đã được thay thế.
+
