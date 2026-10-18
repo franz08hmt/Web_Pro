@@ -850,3 +850,23 @@ không chạy lại full test vì không sửa app source. Run dùng working tre
 WAR sạch chỉ lưu dự phòng, không còn Run Final riêng. Bằng chứng
 single-tomcat-run-20261018 ngoài repo; hướng dẫn hai Run phía trên đã được thay thế.
 
+## Ôn final theo hành trình và rà luồng hiện tại — 18/10/2026
+
+Đầu lượt3da7296/integration/fullstack-v2; giữ10 file WIP/untracked bằng SHA256
+ngoài repo. Không sửa source ứng dụng, DB, cấu hình hoặc dừng Tomcat8080.
+Archive commit sạch riêng: Java17.0.19/Maven3.9.15, test và clean package;
+259 Node/163 JUnit đạt,0 fail/skip. Runtime8080 được kiểm riêng trên working tree
+IntelliJ, không gọi đó là WAR sạch của archive.
+
+Rà HTTP/browser khách, hai USER và ADMIN; kiểm đường menu → quiz, dashboard,
+tổng kết/hồ sơ, nối dây, chẩn đoán, nhiệm vụ, catalog/cửa hàng và quyền.
+Kiểm đọc review/phiếu/replay năm mẫu; giữ DB cũ, không tạo/nộp/chấm/checkout
+để làm đẹp dữ liệu. Phân biệt test tự động, kiểm đọc mới và kiểm ghi lịch sử.
+
+Rút TEAM_FLOW_DEMO_GUIDE thành script chính có vấn đáp ngay từng đoạn và code
+file:dòng. Giữ ON_TAP_VAN_DAP_CUOI_KY để tra cứu sâu; bỏ bài ôn giữa kỳ độc lập
+JavaMail/JPA khỏi repo và link README, có backup private ngoài Git. Giữ báo cáo QA,
+ERD/API/kiến trúc vì còn làm bằng chứng/nguồn tra cứu, không xóa để mất lịch sử.
+Không thêm comment Java chỉ để ghi số bước; các method đã có chú thích đủ rõ.
+Không push. Bằng chứng mới: qa-evidence/final-study-20261018 ngoài repo.
+

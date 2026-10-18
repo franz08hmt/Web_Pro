@@ -227,3 +227,89 @@ vòng for; AdminStats gọi LearningSummary để tổng hợp dữ kiện. Serv
 **Vì sao launcher không chỉ kiểm PID?** PID có thể được dùng lại. Cần đối chiếu
 command/argfile, executable, thời điểm tạo, cổng, cấu hình và checksum artifact;
 trường hợp chưa rõ phải từ chối, không tự giết process hoặc seed dữ liệu.
+
+## Rà soát để ôn và trình bày final — 18/10/2026
+
+Đây là lượt kiểm mới sau `3da7296`, không thay thế hoặc sửa số liệu lịch sử bên trên.
+Không sửa source ứng dụng, luật, schema, dữ liệu hoặc IDE/Tomcat.
+Kịch bản trình bày đang dùng: [TEAM_FLOW_DEMO_GUIDE.md](TEAM_FLOW_DEMO_GUIDE.md).
+
+### Source, build và runtime được phân biệt
+
+| Bản | Kiểm mới |
+|---|---|
+| Archive sạch từ `3da7296` | JDK17.0.19/Maven3.9.15; `mvn -q test`, `mvn -q clean package` và `npm test` đạt |
+| JUnit của archive | 163 tests; 0 failure/error/skip |
+| Node của archive | 259 pass; 0 fail/skip |
+| Node tại working tree | 259 pass; 0 fail/skip; không build/clean target của IDE |
+| WAR mới chỉ build, không deploy | `qa-evidence/final-study-20261018/clean-source/tomcat-app/target/robot-assembly-lab.war` |
+| WAR SHA256 | `3dbd0dd7c6c9c75add994a4c936bd292495ed5e665c4c5487014050e08c66481` |
+| Runtime kiểm trình duyệt | `http://localhost:8080/`, PID29596, Java17.0.19; cấu hình duy nhất Tomcat9.0.120 |
+| DB thực tế từ runtime | `robot_lab_content_test`, không suy từ `.env`;8081 không có listener lúc kiểm |
+
+Run IntelliJ đang build working tree có WIP theo lựa chọn người dùng. Không gọi
+runtime này là WAR sạch mới build; không thay artifact, restart hoặc đổi kết nối.
+Không tạo thêm cấu hình Run. Các sửa trước đó và renderer hiện tại được giữ nguyên.
+
+### Hành trình đã kiểm đọc thật trên8080
+
+132 lượt HTTP theo khách/hai USER/ADMIN đều đúng kỳ vọng;90 ô giao diện ở
+390/768/1440px có một H1, không tràn ngang. Không có pageerror hoặc request ghi
+nghiệp vụ sau đăng nhập trong hai runner. Đăng nhập là POST xác thực được phép,
+không tính nó thành thao tác ghi nghiệp vụ lắp/nộp/chấm/mua.
+
+| Nhóm | Bằng chứng kiểm mới |
+|---|---|
+| Menu/quyền | Enter/Escape mở/đóng nhóm; khách redirect trang riêng, USER/admin403, ADMIN/bài luyện USER403 |
+| Quiz | Menu → trang không model →5 lựa chọn thật → mở bài đúng model, có câu hỏi; không nộp |
+| Linh kiện | Canonical query/hash và hash cũ đều cuộn/focus tới L298N sau khi cuộn mượt kết thúc |
+| Tra cứu | Mở details bằng Space; trang lọc/điều hướng vẫn dùng API hiện có |
+| Dashboard/tổng kết | Hai USER đọc dữ liệu riêng; từ tổng kết mở kết quả đã lưu và hồ sơ in200 |
+| Lắp ráp/kết quả | Review/phiếu/replay của phiên44–48:10/11/8/12/12 placements, có canvas; bấm Bước sau replay |
+| Lịch sử spec/GROUP | USER sở hữu mở phiên30 vẫn spec v1/10 placements; phiên16 GROUP200, không giả canvas kết quả |
+| Nối dây | Mở lịch sử có sẵn → lượt30 đúng chủ200; không bắt đầu/lưu/nộp lượt mới |
+| Chẩn đoán | Mở lịch sử → kết quả lượt13 đúng chủ200; không thực hiện phép kiểm hoặc kết luận mới |
+| Nhiệm vụ | Danh sách → chi tiết nhiệm vụ23 của USER200; không công bố/nộp/chấm |
+| Xưởng/kit/cửa hàng | Các trang danh sách/bộ kit/shop/giỏ/đơn và quản trị tương ứng đạt HTTP/quyền/viewport; không tạo hoặc mua |
+| Hardening quiz | ID overflow `9999999999999999999` trả404 cho cả hai USER, không500 |
+
+Lần đo đầu deep link chạy ngay khi CSS smooth scroll còn diễn ra nên ghi false;
+runner bổ sung đợi đích thực sự nằm trong viewport, kiểm lại canonical/hash cũ
+ở cả hai USER đạt6 ca. Không coi lỗi thời điểm của harness là bug ứng dụng và
+không sửa code để che kết quả đó. Giữ cả bằng chứng ban đầu và kiểm lại.
+
+### Giới hạn và dữ liệu cần giữ nguyên
+
+- Chưa chạy lại các thao tác ghi trọn luồng trên8080: tạo/gắn/undo/hoàn tất,
+  nộp quiz, nối dây/chẩn đoán, Xưởng, giỏ/checkout, nhiệm vụ/chấm/nộp lại.
+  Các luật có test tự động và bằng chứng QA clone trước đây; không gọi đó là
+  kiểm ghi mới trên runtime này. Không dùng phiên live/dự phòng làm fixture.
+- USER builder không có link hồ sơ thiết kế để mở trong lượt kiểm này; không
+  tạo thiết kế cho đủ bảng. Phần hồ sơ Xưởng tham chiếu test và QA lịch sử.
+- Catalog nối dây vẫn có bài `[UI-QA]` với HTML escape thành chữ, chuỗi dài và
+  đoạn bị mất dấu; nhiệm vụ riêng có `[QA]/[QA-B]`. Đây là dữ liệu sẵn có,
+  không phải JavaScript chạy HTML hoặc lỗi UTF-8 toàn trang. Không sửa/xóa/ẩn.
+  Khi trình bày chọn bài chính thức theo mẫu; muốn danh mục sạch cần quyết định
+  dữ liệu/DB demo riêng, không thể giải quyết chỉ bằng đổi tài khoản.
+- Không kiểm lại mọi lần tải lỗi, thiết bị cảm ứng hoặc trình đọc màn hình.
+  Không kết luận toàn website không còn lỗi hay mọi source đều đúng mọi slide.
+
+Hash dữ liệu55/55 bảng ở DB runtime trước/sau audit giữ nguyên; không chạy SQL
+ghi.10/10 file WIP/untracked giữ hash đầu lượt. Server IDE vẫn chạy; không tạo
+runtime QA mới để phải dọn, không tác động8081 và không push.
+
+Bằng chứng ngoài Git: `D:/Web-Pro/qa-evidence/final-study-20261018/`, gồm
+`audit-results.json`, `journey-results.json`, ảnh, log build/test và hash bảo vệ.
+Các file chứa dữ kiện cũ dùng đăng nhập chỉ backup trong private giới hạn ACL;
+không ghi mật khẩu vào tài liệu demo mới.
+
+### Tài liệu giữ và bỏ
+
+Đã rút TEAM_FLOW_DEMO_GUIDE từ lịch sử nhiều đợt thành một script theo hành trình,
+có câu vấn đáp tại từng bước và file:dòng đã đối chiếu. ON_TAP_VAN_DAP_CUOI_KY
+giữ làm phần tra cứu sâu. README trỏ đúng script và chỉ một cấu hình Tomcat.
+Bỏ ON_TAP_GIUA_KY_WEB_2026 khỏi repo: bài ôn độc lập chứa JavaMail/JPA dễ gây nhầm
+với tính năng đồ án; backup private ngoài Git. Giữ API/ERD/ARCHITECTURE/SITE_MAP,
+báo cáo QA và lịch sử tasks vì vẫn là nguồn đối chiếu, không xóa bằng chứng đã dùng.
+Không thêm comment Java để đánh số thuyết trình: các method chính đã có chú thích
+và script trỏ trực tiếp đến chúng. Không thay đổi kiến trúc để phục vụ trình bày.

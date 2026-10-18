@@ -451,3 +451,13 @@ docs/ASSEMBLY_REVIEW_3D_QA_REPORT.md. Không push.
 - [x] Không mutation nghiệp vụ/lỗi JS khi xem;10 hash WIP/untracked nguyên,
   không sửa DB/JNDI/8081. Bằng chứng single-tomcat-run-20261018 ngoài repo.
 
+## Ôn final và rà luồng hiện tại — 18/10/2026
+
+- [x] Snapshot10 file bảo vệ; xác minh HEAD, Java17 và Tomcat8080 thực tế.
+- [x] Build sạch ngoài repo: Maven test/clean package,259 Node/163 JUnit,0 fail/skip.
+- [x] Rà132 HTTP và90 viewport; menu/quiz/quyền, các trang phụ, không ghi nghiệp vụ.
+- [x] Xem kết quả/phiếu/replay5 mẫu; phiên spec v1 và GROUP lịch sử còn đọc được.
+- [x] Rút script demo có vấn đáp/code file:dòng; README và tài liệu vấn đáp trỏ đúng bản.
+- [x] Bỏ tài liệu giữa kỳ độc lập; giữ báo cáo QA/kiến trúc/API/ERD cần đối chiếu.
+- [ ] Luồng ghi mới trên8080 không chạy lại: không tạo phiên/nộp/chấm/checkout vào dữ liệu đang dùng.
+
