@@ -461,3 +461,8 @@ docs/ASSEMBLY_REVIEW_3D_QA_REPORT.md. Không push.
 - [x] Bỏ tài liệu giữa kỳ độc lập; giữ báo cáo QA/kiến trúc/API/ERD cần đối chiếu.
 - [ ] Luồng ghi mới trên8080 không chạy lại: không tạo phiên/nộp/chấm/checkout vào dữ liệu đang dùng.
 
+- [x] Theo yêu cầu thời lượng15–20 phút: thay bản ngắn bằng script18 phút+2 phút
+  vấn đáp; đủ thao tác/lời nói/câu hỏi/file:dòng cho từng chặng chính và phụ.
+- [x] Thêm checklist dữ liệu demo, tách USER/ADMIN bằng context, bảng hướng spec v2,
+  điều kiện bằng chứng nhiệm vụ và phương án rút còn15 phút; không sửa app/WIP/DB.
+

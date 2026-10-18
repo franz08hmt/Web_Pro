@@ -870,3 +870,13 @@ ERD/API/kiến trúc vì còn làm bằng chứng/nguồn tra cứu, không xóa
 Không thêm comment Java chỉ để ghi số bước; các method đã có chú thích đủ rõ.
 Không push. Bằng chứng mới: qa-evidence/final-study-20261018 ngoài repo.
 
+Điều chỉnh script theo thời lượng người dùng xác nhận:15–20 phút cho cả nhóm,
+không dùng bản5–6 phút làm script chính. TEAM_FLOW_DEMO_GUIDE nay có lịch18 phút
+và2 phút vấn đáp;10 chặng theo hành trình, thao tác cụ thể, lời nói nguyên đoạn,
+câu chuyển, vấn đáp tại chỗ và file:dòng. Phòng lắp có ca sai loại/hướng/thiếu cha,
+gắn thật, undo/reload/hoàn tất; phần kết quả đủ4 mục; Xưởng và các luồng phụ có
+phần thao tác/lời nói riêng. Phân biệt quiz PRACTICE/TASK và điều kiện công bố
+trước bằng chứng; không hướng dẫn lấy bài luyện để giả điểm nhiệm vụ.
+Chỉ sửa tài liệu, kiểm link/code anchor và hash WIP; không chạy ghi DB hoặc
+nhận kết quả kiểm cũ là lượt test mới. Bằng chứng demo-script-20m-20261018 ngoài Git.
+

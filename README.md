@@ -2,7 +2,7 @@
 
 ## Ôn và trình bày final
 
-- Bắt đầu với [kịch bản demo5–6 phút, vấn đáp ngay từng đoạn và file:dòng](docs/TEAM_FLOW_DEMO_GUIDE.md).
+- Bắt đầu với [kịch bản demo15–20 phút, vấn đáp ngay từng đoạn và file:dòng](docs/TEAM_FLOW_DEMO_GUIDE.md).
 - Khi cô hỏi sâu, dùng [tài liệu vấn đáp theo code](docs/ON_TAP_VAN_DAP_CUOI_KY.md).
 - Luồng chính: **chọn mẫu → lắp từng vật thể có server kiểm chứng → xem mô hình đã lưu,
   quy trình, phiếu kết quả → quiz**. Xưởng thiết kế là nhánh tự chọn linh kiện và kiểm tương thích.
