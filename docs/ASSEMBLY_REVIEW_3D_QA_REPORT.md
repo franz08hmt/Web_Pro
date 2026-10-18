@@ -4,7 +4,8 @@
 
 Nhánh `integration/fullstack-v2`, đầu lượt `ccf06ee` (source trước sửa `7af2d5f`).
 Không thay schema, API cũ, spec công bố, luật lắp hoặc dữ liệu lịch sử.
-Không triển khai/restart 8080/8081. Cả hai cổng không lắng nghe lúc khảo sát.
+Vòng QA ban đầu không triển khai/restart 8080/8081; cả hai cổng không lắng nghe
+lúc khảo sát. Lần triển khai 8080 được duyệt sau đó ghi ở phụ lục cuối báo cáo.
 
 Trước sửa, `/assembly-review` có ảnh catalog, SVG và link replay nhưng chưa có
 canvas kết quả. Bốn test Node mới thất bại trước khi thêm viewer; log giữ ngoài Git.
@@ -141,7 +142,7 @@ Sau Run: kiểm byte HTTP JS/CSS, cache version, owner/404/no-store, review năm
 artifact/descriptor đã backup; không restore DB vì thay đổi này không ghi DB.
 Rollback cũng phải phối hợp nếu người dùng đang chạy IDE. Không sửa IDE/global.
 
-Trạng thái: **code và QA viewer đạt; triển khai 8080/8081 còn chờ duyệt**.
+Trạng thái tại commit `087aeab`: **code và QA viewer đạt; triển khai còn chờ duyệt**.
 Các kiểm live lịch sử nêu trên còn giới hạn, không đánh dấu “đạt toàn bộ”. Chưa push.
 
 ## Git bàn giao
@@ -165,3 +166,64 @@ Sau khi commit tài liệu, phần chưa commit chỉ còn đúng WIP/untracked 
 ?? docs/TAI_.docx
 ?? docs/TAI_.pdf
 ```
+
+## Triển khai 8080 được duyệt — 18/10/2026
+
+Người dùng đã duyệt phối hợp triển khai riêng lên 8080. Không thay source ứng
+dụng, không build lại từ WIP; dùng nguyên WAR `92f7954` và checksum đã kiểm ở trên.
+259 Node/163 JUnit là kết quả của đúng artifact này ở vòng build trước; lượt
+triển khai không chạy lại suite để tạo số kiểm mới, chỉ kiểm runtime/HTTP/browser.
+
+| Mục | Kết quả vừa xác minh |
+|---|---|
+| URL/context | `http://localhost:8080/`, context `/`, health 200 |
+| Runtime | JDK17, Tomcat9, CATALINA_BASE cấu hình IntelliJ hiện có; PID 20012 lúc nghiệm thu |
+| JNDI/DB | Giữ nguyên ROOT.xml và DB `robot_lab_content_test`; kiểm URL JNDI hiệu lực và property JVM |
+| Artifact | 351 file khớp candidate sạch; WAR SHA256 `610440ea6656890768d90ee4f3838a7d4b5ba5ef3d0f85b8f798a0bbdbc1e386` |
+| Backup | 350 file artifact trước đối chiếu hash; WAR trước SHA256 `fba465cfed2d0c67874714a5ae30a1f57137a209c8e6ef3323d765b898c30cde` |
+| Cấu hình | ROOT.xml/server.xml giữ nguyên byte; không sửa IDE/global/.env hoặc DB connection |
+| Tài nguyên HTTP | JS viewer/review/parts và CSS review khớp byte candidate; trang JSP mới hiện đúng khung |
+| Quyền | Chủ phiên 200/no-store; đổi sang phiên 30 của người khác 404, không payload; khách 302 đăng nhập; overflow 404 |
+| Không ghi khi xem | 150 GET sau đăng nhập, 0 request ghi nghiệp vụ, 0 lỗi JS chưa xử lý |
+| Dữ liệu/WIP | Toàn bộ 55 bảng DB làm việc và 54 bảng DB demo cùng 10 file bảo vệ giữ hash |
+| 8081 | Không có listener trước/sau; không khởi động, dừng hay đổi artifact/config |
+
+| Mẫu trên 8080 | Phiên đã có | Spec thực tế | Vật thể | Camera/reload/390–768–1440 |
+|---|---:|---|---:|---|
+| Tránh vật cản | 44 | id2/v2 | 10 | Đạt |
+| Dò đường | 45 | id3/v1 | 11 | Đạt |
+| Cánh tay mini | 46 | id4/v1 | 8, gồm 4 servo riêng | Đạt |
+| Dò line + tránh vật cản | 47 | id5/v1 | 12 | Đạt |
+| Quét hướng tránh vật cản | 48 | id6/v1 | 12 | Đạt |
+
+Mỗi object được đối chiếu instanceId/slotId/orientation và pose với layout server
+của đúng phiên. Canvas có triangle thật, không phải ảnh thay thế. Xoay chuột,
+Enter/Space trên nút zoom, căn giữa, reload và phiếu đều hoạt động; không tạo phiên.
+Không chạy lại seed, không sửa hoặc hoàn tất thêm dữ liệu để kiểm.
+
+Bằng chứng mới, tách khỏi QA8082:
+`D:/Web-Pro/qa-evidence/assembly-review-3d-deploy-8080-20261018/`.
+`ACCEPTANCE.json`/`results.json` có thông số, hash và network; ảnh năm mẫu desktop/
+mobile là `*-1440.png`, `*-390.png`. Backup artifact/descriptor và argfile nằm
+trong `private/` giới hạn ACL, ngoài Git; cache JSP cũ cũng được giữ để quay lui.
+Không xóa backup trước khi người dùng chốt. Không restore DB khi quay lui artifact.
+
+**Cách đang chạy:** khởi động bằng argfile từ cấu hình runtime IntelliJ đã xác
+minh, không bấm nút Run của IDE. 8080 được giữ chạy sau bàn giao. Khi muốn dùng
+Run IntelliJ, dừng đúng runtime hiện tại trước để tránh hai process tranh cổng:
+
+```powershell
+& 'D:\Web-Pro\qa-evidence\assembly-review-3d-deploy-8080-20261018\run.ps1' -Operation status
+& 'D:\Web-Pro\qa-evidence\assembly-review-3d-deploy-8080-20261018\run.ps1' -Operation stop
+```
+
+Helper xác minh PID/executable/creation time/argfile/chủ cổng shutdown; không kill
+process lạ. `-Operation start` chỉ dùng khi runtime này đã dừng và checksum/config
+còn đúng. Không chạy Start đồng thời Run IntelliJ. Không dùng helper ngày17 với
+checksum cũ. Hướng dẫn backup/quay lui chi tiết ở `OPERATIONS.md` cùng thư mục.
+Run IDE có thể build từ cây WIP nên phải kiểm lại artifact/HTTP sau Run; lượt này
+không tuyên bố đã kiểm thao tác bấm Run IDE hoặc sửa cấu hình IDE.
+
+**Trạng thái hiện tại: đã triển khai và kiểm mô hình kết quả năm mẫu trên
+localhost:8080.** Các giới hạn lịch sử GROUP/spec cũ ở vòng QA vẫn được giữ nguyên,
+không biến thành tuyên bố đã kiểm live. Không push; Git chỉ còn WIP/untracked cũ.

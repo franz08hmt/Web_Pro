@@ -431,7 +431,8 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 - [x] M2: Servlet → payload escape → JSP → viewer camera chỉ đọc, fallback.
 - [x] M3: kiểm năm mẫu và đối chiếu pose phòng lắp, responsive/lifecycle.
 - [x] M4: full test/package, hash DB/WIP, tài liệu và gói triển khai chờ duyệt.
-- [ ] Triển khai 8080/8081: chưa được duyệt, không tự thay artifact/khởi động.
+- [x] Triển khai 8080 theo duyệt riêng: backup, WAR sạch, 5 phiên đã có,
+  15 viewport/camera/reload/owner/no-store, DB/WIP giữ nguyên; 8081 không đổi.
 
 259 Node/163 JUnit đạt; 74 kiểm browser/HTTP trên WAR sạch 92f7954.
 640 request GET sau đăng nhập, không mutation nghiệp vụ; 55/55/54 bảng của

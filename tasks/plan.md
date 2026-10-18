@@ -825,3 +825,11 @@ Hash ba DB và 10 file bảo vệ giữ nguyên. WAR major61, QA8082 đã dọn.
 Gói triển khai và các giới hạn live lịch sử: docs/ASSEMBLY_REVIEW_3D_QA_REPORT.md.
 Chưa triển khai 8080/8081; không push. Không mở rộng sửa module khác.
 
+Sau đó người dùng duyệt riêng triển khai8080: xác minh đúng CATALINA_BASE/JNDI,
+backup350 file/WAR/descriptor, đặt351 file candidate sạch92f7954 và khởi động
+bằng cấu hình runtime đã có (không bấm Run IDE). Năm phiên44–48 hiện đúng mô hình,
+15 viewport/camera/reload/phiếu đạt;150 GET,0 mutation/lỗi JS.55/54 bảng DB và10
+file bảo vệ giữ hash; descriptor/server.xml không đổi,8081 nguyên trạng.
+Đang giữ8080 chạy; helper Status/Stop/Start và bằng chứng trong
+qa-evidence/assembly-review-3d-deploy-8080-20261018 ngoài repo. Không push.
+
