@@ -1,1189 +1,201 @@
-# Luồng demo và câu hỏi giảng viên
+# Kịch bản trình bày Robot Assembly Lab — bản dùng để tập nói
 
-## Cập nhật8080 sau nghiệm thu — 17/10/2026
+Mở website bằng cấu hình duy nhất **Tomcat 9.0.120**, tại `http://localhost:8080/`.
+Không mở helper Start cùng IntelliJ. Dùng USER để thực hành; ADMIN để giao/chấm nhiệm vụ.
+Các bước bấm dưới đây dành cho người trình bày, không phải log đã chạy test ghi dữ liệu.
 
-`http://localhost:8080/pages/mau-robot.html` đã nhận bản sửa đường vào DETAILED
-và marker theo màn hình, đã kiểm đủ5 mẫu bằng chuột, reload/undo/hoàn tất.
-DB làm việc `robot_lab_content_test`, không phải DB/tài khoản demo8081 dưới đây.
-Muốn xem luồng kéo-thả vừa chốt: đăng nhập USER8080 → chọn mẫu → chuẩn bị kit →
-vào3D → kéo vật thể/chọn hướng → hoàn tất. GROUP có ID cũ vẫn giữ dữ liệu cũ.
-
-Kịch bản ngắn: chọn cánh tay → gắn khung trước → cố gắn khớp khi thiếu cha để
-thấy server từ chối → lắp4 servo riêng đúng thứ tự → reload → hoàn tất/kết quả.
-Nhấn mạnh đây là mô hình học tập; hướng lắp không phải góc điều khiển servo.
-Không dùng5 phiên QA đã hoàn tất (44–48) làm phiên live mới.
-
-Hai sửa này **chưa triển khai lên8081** trong lượt hiện tại. Các mục8081 dưới
-đây mô tả môi trường độc lập đã chuẩn bị, không thay thế bằng chứng8080.
-Xem [báo cáo8080, quản lý runtime và giới hạn](ASSEMBLY_8080_QA_REPORT.md).
+## Chuẩn bị trước buổi trình bày
 
-## Môi trường demo8081 — 17/10/2026
+- Đăng nhập đúng USER trên8080, mở sẵn danh mục, một phiên thực hành của mình và một kết quả đã hoàn tất của mình.
+- Muốn demo hoàn tất nhanh: tự chuẩn bị một phiên còn thiếu chi tiết cuối. Không giả trạng thái/điểm trong DB.
+- Nếu chưa có phiên gần hoàn tất, demo gắn sai/đúng trên phiên thực hành rồi mở kết quả có sẵn;
+  nói rõ đó là kết quả đã lưu, không nhận vừa lắp xong toàn bộ.
+- Không dùng ID của tài khoản khác. Lấy link kết quả từ Bảng điều khiển/Kết quả học tập của chính tài khoản.
+- Chỉ chọn bài nối dây/tình huống chính thức. DB làm việc còn bài QA công bố và nhiệm vụ thử;
+  đổi tài khoản không loại được bài QA dùng chung. Không tự xóa hoặc giấu dữ liệu.
+- Code: mở tên file dưới mỗi đoạn, `Ctrl+G` đến dòng ghi kèm. Số dòng đối chiếu ngày18/10/2026;
+  nếu source thay đổi, tìm đúng tên method. Không học thuộc số dòng hoặc số slide.
 
-Ưu tiên mục này cho dữ liệu8081 khi các ghi chú lịch sử bên dưới khác dữ liệu.
-**Bản final đã áp dụng đủ5 mẫu kéo-thả trên DB demo riêng**, chạy tại
-http://127.0.0.1:8081. DB: `robot_lab_final_demo_20261016`. Không đổi Tomcat8080.
-WAR Java17 đã kiểm thử được giữ riêng, không phụ thuộc target/IDE đang sửa WIP.
-
-### Mở và đăng nhập (PowerShell)
-
-```powershell
-& 'D:\Web-Pro\FINAL.ps1' -Lenh Mo
-```
-
-Nếu máy vừa khởi động lại: bật MySQL trước, rồi chạy lệnh trên. Script chỉ
-mở/khởi động runtime final đã xác định; không dừng tiến trình khác đang dùng8081.
-
-| Vai trò | Email | Dùng để |
-| --- | --- | --- |
-| Tài / USER2 | final-tai@robotlab.test | Luồng chính, phiên2 live9/10 và phiên1 dự phòng |
-| Học viên / USER3 | final-learner@robotlab.test |4 mẫu mới kéo-thả, phiên4–7 |
-| ADMIN | final-admin@robotlab.test | Nhiệm vụ/nhận xét, không lắp bằng tài khoản ADMIN |
-
-Mật khẩu không ghi trong tài liệu. Chỉ khi cần đăng nhập, chạy đúng một lệnh
-sau để đưa mật khẩu tương ứng vào clipboard, dán vào form rồi xóa clipboard:
-
-```powershell
-& 'D:\Web-Pro\FINAL.ps1' -Lenh MatKhauTai
-# Hoặc -Lenh MatKhauHocVien / -Lenh MatKhauAdmin
-& 'D:\Web-Pro\FINAL.ps1' -Lenh XoaClipboard
-```
-
-Mật khẩu gốc vẫn ở DPAPI vault cục bộ theo user Windows/máy hiện tại.
-Không gửi vào chat, terminal hoặc commit; không coi chép XML sang máy khác là
-đã chuyển được mật khẩu. Nếu bật lịch sử clipboard, xóa mục tương ứng trong Win+V.
-
-### Các màn hình đã chuẩn bị sẵn
-
-Đăng nhập đúng tài khoản trước khi mở URL dưới đây. Không đoán/chuyển userId trên URL.
-
-| Người dùng | Mẫu / mục đích | URL | Dữ liệu trước lượt live |
-| --- | --- | --- | --- |
-| Tài | Tránh vật cản live | http://127.0.0.1:8081/pages/lap-rap-3d.html?model=obstacle-avoider&session=2 |9/10, thiếu cảm biến |
-| Tài | Kết quả dự phòng | http://127.0.0.1:8081/assembly-review?session=1 |COMPLETED10/10 |
-| Học viên | Dò đường | http://127.0.0.1:8081/pages/lap-rap-3d.html?model=line-follower&session=4 |0/11 |
-| Học viên | Cánh tay mini | http://127.0.0.1:8081/pages/lap-rap-3d.html?model=mini-arm&session=5 |0/8,4 servo riêng |
-| Học viên | Dò line + tránh vật cản | http://127.0.0.1:8081/pages/lap-rap-3d.html?model=line-obstacle&session=6 |0/12 |
-| Học viên | Quét hướng tránh vật cản | http://127.0.0.1:8081/pages/lap-rap-3d.html?model=servo-scout&session=7 |0/12 |
-
-Phiên4–7 đã chuẩn bị kit và ở IN_PROGRESS, chưa gắn vật thể, chưa hoàn tất.
-Không dùng các phiên dành live để luyện lại nhiều lần. Các tương tác sau khi
-bạn mở web là dữ liệu thật; Stop/Start không tự đặt lại phiên hoặc điểm.
-
-Kịch bản3–5 phút: Bản đồ môn học → đăng nhập Tài → phiên2 → chọn cảm biến,
-thử hướng0° rồi sửa180° → hoàn tất → trang hoàn thiện → chỉ code Servlet/
-JavaBean/JDBC/JSP. Chỉ công bố nhiệm vụ1 khi chủ động bắt đầu nhánh demo nhiệm vụ;
-không công bố trước rồi hoàn tất phiên2 trong lượt kiểm thử.
-
-Nếu cần cho thấy mẫu khác: đăng xuất Tài → đăng nhập Học viên → cánh tay phiên5,
-gắn khung trước,4 servo lần lượt theo quan hệ cha–con. Không nhầm hướng lắp
-0/90/180/270 với góc điều khiển servo thực tế.
-
-### Dừng / khởi động lại và quay về bản cũ
-
-```powershell
-& 'D:\Web-Pro\FINAL.ps1' -Lenh Dung
-& 'D:\Web-Pro\FINAL.ps1' -Lenh Mo
-```
-
-Stop đã được kiểm chỉ dừng đúng PID/argfile của runtime final và dọn file kết nối
-tạm; Start tạo lại dưới private ACL. Cần đăng nhập lại sau restart. Không dùng
-helper runtime-start Chặng1 cũ để mở bản final mới. Không có tự khởi động cùng Windows.
-
-Backup trước triển khai đã restore thử đủ54 bảng vào DB riêng, không đè DB đang
-dùng. Backup private và WAR cũ vẫn giữ ở qa-evidence ngoài Git. Quay về môi trường
-làm việc: dừng bản final, dùng cấu hình8080 cũ; không cần restore/drop DB demo.
-Nếu rollback WAR, giữ các spec/phiên đã có dữ liệu; không xóa seed đã được tham chiếu.
-
-### Dữ liệu chính được bảo toàn
-
-Phiên1 của Tài là dự phòng COMPLETED10/10; phiên2 dành live IN_PROGRESS9/10;
-nhiệm vụ1 dành live vẫn DRAFT. Không dùng ba bản ghi này để tập dượt.
-
-Chặng2 **đã hoàn tất** sau khi người dùng duyệt dùng USER3: nhiệm vụ2 OPEN,
-USER3 hoàn tất phiên3, quiz TASK2 đạt7/7, nộp bài1 và nhận phản hồi95/100.
-USER2 vẫn Chưa nộp. Không thực hiện lại trên các ID này khi tập dượt lần khác.
-POST tạo phiên cùng mẫu của Tài thực tế tiếp tục phiên2, nên đã dừng trước mọi
-thao tác sửa phiên; toàn bộ dữ liệu live/dự phòng được giữ nguyên.
-
-Điểm cần biết khi demo: `AssemblySessionServlet.java:78` gọi
-`AssemblySessionDB.selectOpenSession` (`AssemblySessionDB.java:299`).
-HTTP201 ở API create-or-resume không bảo đảm ID mới; luôn đối chiếu ID trả về.
-Không sửa luật nghiệp vụ chỉ để tạo dữ liệu trình bày.
-
-Không công bố nhiệm vụ1 hoặc hoàn tất phiên2 trước lượt live đã thống nhất.
-Lượt tập dượt này dùng WAR sạch2ff67f1 trên QA8081; không đổi source hay8080.
-
-### Cập nhật tính năng toàn bộ mẫu (đã áp dụng vào demo final)
-
-Yêu cầu mới17/10: cả5 mẫu đều hỗ trợ lắp từng vật thể ở phiên DETAILED.
-Bản mới được kiểm riêng trên QA8082/DB `robot_lab_all_models_qa_20261017`, rồi
-backup, nạp seed vào DB demo và triển khai WAR riêng8081. Smoke trên bản final
-có44 kiểm đạt,12 ô viewport;51 bảng không đổi trong bước seed. Không suy kết quả
-này sang8080 hoặc DB làm việc chưa áp dụng.
-11 vật thể dò đường;10 tránh vật cản;8 cánh tay mini (4 servo riêng);
-12 dò line kết hợp tránh vật cản;12 quét hướng tránh vật cản.
-
-Nếu chọn phiên GROUP cũ: giải thích đây là dữ liệu được bảo toàn → bấm
-Mở phiên kéo-thả riêng → chuẩn bị kit của phiên mới → vào3D → gắn từng vật thể.
-Không nói mỗi mẫu có một engine riêng: tất cả dùng cùng Servlet, XxxDB và
-AssemblyLayout; khác biệt nằm ở spec/slot/parent/orientations trong MySQL.
-Hướng0/90/180/270 là quy ước tư thế lắp mô hình, không phải lệnh điều khiển servo.
-Trình bày tọa độ và hình khối là mô hình học tập giản lược; không mô phỏng dung
-sai cơ khí, điện, firmware hay xác nhận lắp đúng robot thật.
-
-## Luồng phụ của Nhi và Tuấn Anh — 12/10/2026
-
-1. **Nhi:** mở Thư viện, chọn mẫu robot và số tài nguyên/trang; demo chuyển
-   trang nếu dữ liệu có đủ. Chỉ file seed bổ sung không làm dữ liệu xuất hiện
-   trên máy mới: cần chạy seed tùy chọn sau khi kiểm đúng database.
-2. **Tuấn Anh:** USER mở Luyện chẩn đoán → Lịch sử chẩn đoán, xem mã lượt,
-   điểm và thời gian, rồi mở lại kết quả. Người chưa luyện thấy trạng thái rỗng.
-3. Chỉ ra luồng thư viện: `library-api.js` → `LibraryResourceServlet` →
-   `LibraryResourceDB`/PreparedStatement → `library_resources` → JSON → DOM.
-4. Chỉ ra luồng lịch sử: `DiagnosisServlet` lấy user từ HttpSession →
-   `DiagnosisDB` đọc lượt PRACTICE đã nộp → `DiagnosisHistoryItem` dùng luật
-   điểm của `DiagnosisAttempt`, `DiagnosisHistoryPage` giới hạn trang →
-   `setAttribute`/`forward` → `diagnosis-history.jsp` với `c:out`/`c:forEach`.
-
-**Sao điểm lịch sử không tính bằng SQL hoặc JSP?** Luật chấm chỉ ở JavaBean,
-hai trang dùng cùng getter; lớp DB chỉ đọc các dữ kiện đã lưu. Lịch sử không
-thay đổi điểm hay bằng chứng TASK. Các ngày dùng Date/SimpleDateFormat theo slide.
-
-**Sao merge không tự chạy seed?** Code/seed đi theo Git nhưng dữ liệu MySQL
-thuộc từng máy. Tích hợp không tự sửa dữ liệu đang có; seed chỉ thêm tài nguyên
-qua INSERT IGNORE khi chủ database quyết định chạy.
-
-## Chẩn đoán và Mẫu B bám slide nào? (Đợt 6, chặng 2)
-
-Node/JUnit là công cụ kiểm chứng lúc phát triển, không thay kiến trúc môn học.
-Ứng dụng mới chạy bằng Servlet/JSP/JDBC trên Tomcat, dùng form khi tắt JavaScript.
-
-| Phần triển khai | Chapter / slide | File |
-| --- | --- | --- |
-| Model 2, Servlet → bean → XxxDB → JSP | Ch2 slide 4–5, 20 | `DiagnosisServlet`, `AdminDiagnosisServlet`, `DiagnosisDB`, các bean `Diagnosis*` |
-| `@WebServlet` | Ch5 slide 10–11 | Hai Servlet chẩn đoán |
-| GET/POST, getParameter, checkbox getParameterValues | Ch5 slide 12–17 | Hai Servlet, `DiagnosisFormUtil`, `TaskServlet` |
-| Hidden action rẽ nhánh | Ch2 slide 9; Ch12 slide 40–44 | Form JSP và dispatcher Servlet |
-| setAttribute, String url, forward | Ch5 slide 22–24; Ch12 slide 42–44 | Hai Servlet chẩn đoán |
-| Redirect sau POST (PRG) | Ch5 slide 25–26 | start/check/conclude và quản lý tình huống |
-| HttpSession lấy user và kiểm token form | Ch7 slide 10–12 | `SessionUtil`, các Servlet |
-| JavaBean ctor rỗng, get/set, Serializable | Ch6 slide 4–6 | `DiagnosisScenario/Check/Option/Attempt`, các bean nhiệm vụ |
-| Luật trong bean, vòng for/if như Cart | Ch9 slide 32–33 | `DiagnosisScenario`, `DiagnosisAttempt`, `TaskRubric`, `TaskRecipient` |
-| Getter định dạng NumberFormat | Ch9 slide 28–31 | Điểm/display trong `DiagnosisAttempt`, `TaskSubmission` |
-| Date, SimpleDateFormat/TimeZone | Ch10 slide 6 | `TaskRubric`, ngày lượt và quan sát |
-| EL, empty/and/or/not, boolean getter | Ch6 slide 7–9; Ch8 slide 5–11, 32–35 | Các JSP chẩn đoán và nhiệm vụ |
-| c:out chống XSS | Ch9 slide 7–8 | Mọi chữ DB và người dùng trong JSP |
-| c:forEach, c:if, c:choose/when/otherwise | Ch9 slide 11, 17–19 | Các JSP mới/sửa |
-| Hidden/radio/checkbox, textarea | Ch7 slide 35–36; Ch12 slide 24 | Form biên soạn cố định bốn ô, chọn nguyên nhân/biện pháp, chấm |
-| PreparedStatement, XxxDB static, pool, DBUtil/finally | Ch12 slide 18–20, 32–38, 45–53 | `DiagnosisDB`, `PracticeTaskDB`, `TaskSubmissionDB` |
-| Transaction commit/rollback, khóa dòng | Ch13 slide 29–34 (khái niệm); mẫu `CartDB`/`AssemblySessionDB`/`TaskSubmissionDB` | Bắt đầu TASK, kết luận, confirm bài |
-
-BigDecimal/HALF_UP được prompt cho phép để làm tròn chính xác. FOR UPDATE là
-mẫu triển khai đã có trong repo, không khẳng định slide chứa đúng câu SQL này.
-Không dùng stream/lambda/switch/java.time trong code ứng dụng mới/sửa.
-Guard kiểm cả cú pháp và giới hạn Java 120/JSP 140 ký tự.
-
-### Kịch bản demo chẩn đoán và nhiệm vụ B
-
-1. ADMIN → **Quản lý tình huống chẩn đoán**: mở seed hoặc tạo nháp (bốn ô mỗi
-   nhóm, bỏ ô trống), xem trước không tạo lượt, công bố. Muốn sửa bản công bố
-   phải nhân bản; bản mới chỉ công bố khi đủ điều kiện.
-2. USER → **Luyện chẩn đoán**: chọn tình huống, chọn một phép kiểm tra để thấy
-   quan sát vừa được server ghi nhận. Bấm lại không cộng điểm. Chọn nguyên nhân
-   và xử lý, kết luận; khi đó mới thấy đúng/sai, giải thích và phép còn thiếu.
-3. ADMIN tạo nhiệm vụ B, robot và tình huống PUBLISHED cùng robot, giao USER,
-   hạn tương lai. Nếu demo bằng phiên hoàn thành cũ, bật cho phép bằng chứng cũ
-   trong nháp. Xem trước rồi công bố.
-4. USER làm quiz nhiệm vụ; bấm **Bắt đầu chẩn đoán cho nhiệm vụ này**, kết luận,
-   chọn phiên COMPLETED của mình, viết ba đoạn giải thích → xem trước → nộp.
-   Điểm tự động hiển thị /80, chưa chấm không hiển thị /100.
-5. ADMIN mở bài: xem snapshot và quá trình chẩn đoán, chọn **Cần bổ sung**,
-   ghi phản hồi. USER vòng 2 có thể dùng lại lượt cũ nếu chưa bắt đầu lượt mới,
-   hoặc bắt đầu và phải kết luận xong lượt mới. Nộp lại → ADMIN chấm đạt nếu đủ
-   ngưỡng. Lịch sử giữ cả hai vòng và nguồn dùng lại.
-6. Minh họa quyền trên màn hình: USER chỉ có link luyện/nhiệm vụ của tôi; ADMIN
-   có link quản lý. USER mở URL quản lý nhận 403; mở lượt người khác nhận 404.
-   ADMIN chỉ xem quá trình chẩn đoán của bài nộp, không làm lượt hay nộp bài.
-
-### Năm tình huống chính thức
-
-| ID / Robot | Phép cần thiết | Nguyên nhân đúng | Biện pháp đúng |
-| --- | --- | --- | --- |
-| 6101 / obstacle-avoider | Đầu nối động cơ trái; tín hiệu/nguồn L298N | Đầu nối động cơ trái lỏng | Ngắt nguồn, siết lại đầu nối và thử hai bánh |
-| 6102 / obstacle-avoider | Số đo/chân HC-SR04; điều kiện ngưỡng trong chương trình | Ngưỡng 100 cm thay vì yêu cầu 20 cm | Sửa ngưỡng, thử vật gần và xa hơn 20 cm |
-| 6103 / line-follower | Vị trí cảm biến; dây OUT/nguồn | Cảm biến lắp ngoài vùng đọc | Chỉnh độ cao, thử cả vạch và nền |
-| 6104 / mini-arm | Nguồn servo; tín hiệu/GND | Đầu nối VCC servo bị tuột | Ngắt nguồn, nối lại nguồn riêng và thử góc nhỏ |
-| 6105 / line-obstacle | Hai tín hiệu cảm biến; thứ tự nhánh điều khiển | Dò line được ưu tiên trước tránh vật cản | Ưu tiên xử lý vật cản, kiểm lại các tình huống phối hợp |
-
-Mỗi seed có ba phép (hai cần thiết), ba nguyên nhân, ba biện pháp và đúng một
-đáp án mỗi nhóm. `DiagnosisTest` đọc chính file seed rồi kiểm luật công bố.
-guide_id chỉ gắn nếu guide tương ứng tồn tại và cùng robot hoặc chung; chạy lại
-INSERT IGNORE không sửa guide hay nội dung bản đã có.
-
-### Vì sao chỉ đo “Thu thập đủ quan sát cần thiết”?
-
-Điểm quá trình = 4 × số phép cần thiết đã chọn / tổng phép cần thiết. Phép không
-liên quan và chọn lặp không cộng. Chỉ số này không đánh giá số thao tác ít nhất
-hay thứ tự tối ưu, nên không gọi là “chọn phép kiểm tra tối ưu”.
-
-### Vì sao lượt chẩn đoán gắn ngay khi bắt đầu, còn quiz khi nộp?
-
-Chọn phép đã tạo hoạt động và mở dữ kiện. Gắn ngay giữ một quá trình cố định
-của vòng, không cho bỏ lượt để đổi lượt khác. Quiz chỉ lưu khi đủ câu trả lời
-hợp lệ; mở rồi bỏ dở không tạo lượt. Vòng sau đã bắt đầu chẩn đoán thì phải kết
-luận lượt đó, không được quay lại dùng bài trước để bỏ qua quá trình đang dở.
-
-### Quan sát có phải phép đo robot thật? Đây có phải thi kín?
-
-Quan sát là dữ liệu mô phỏng của tình huống, không lấy telemetry robot. Hướng
-dẫn công khai và lượt luyện cho thấy đáp án sau kết luận; đây là đánh giá quá
-trình có tài liệu tham khảo, không phải thi kín. Lượt PRACTICE không dùng để
-nộp bài; lượt TASK và snapshot xác định quá trình nào đã được đánh giá.
-Đề quiz có thể thay đổi giữa đợt như chặng 1; lượt và snapshot cũ giữ nguyên.
-
-### Vì sao dùng radio thay select?
-
-Bảng kỹ thuật chặng 2 cho phép radio/checkbox, không có select. Các form mới và
-form nhiệm vụ được sửa dùng radio, chạy không cần JS. Đây là ngoại lệ HTML mẫu
-A ở form ADMIN: nội dung, giá trị field, điểm và luật vẫn giữ nguyên; xem bảng
-diff cụ thể trong [báo cáo QA](PHASE6C_QA_REPORT.md).
-
-### Transaction và khóa dòng tránh tranh chấp thế nào?
-
-Bắt đầu TASK khóa task → recipient → round; nếu đã có ID thì trả đúng lượt đó.
-Conclude chỉ khóa lượt của mình. Confirm theo thứ tự nhiệm vụ cũ và đọc lượt
-chẩn đoán thường, không khóa ngược. UNIQUE slot/log/submission bổ sung bảo vệ.
-Hai request thật đã kiểm cho ba thao tác: chỉ một lượt/một kết luận/một bài.
-
-### Vì sao phải dùng điểm chẩn đoán chưa làm tròn để tính B?
-
-Ví dụ quiz 6/7 và chẩn đoán 8/10: 30 + 6/7 × 25 + 8/10 × 25 = 71,4 sau một
-lần HALF_UP. Điểm /10 trên màn hình chỉ định dạng; nếu dùng số đã làm tròn
-này để nhân trọng số, tổng có thể lệch 0,1. Điểm tự động đã lưu dùng cho chấm
-và so ngưỡng; điểm thành phần có getter riêng, JSP không tự tính.
-
-## Nhiệm vụ thực hành bám slide nào? (Đợt 6, chặng 1)
-
-| Phần triển khai | Chapter / slide | File |
-| --- | --- | --- |
-| Model 2: Servlet → JavaBean → XxxDB → JSP | Ch2 slide 4–5, 20 | `TaskServlet`, `AdminTaskServlet`, `AdminTaskReviewServlet`, `PracticeTaskDB`, `TaskSubmissionDB` |
-| Mapping `@WebServlet` | Ch5 slide 10–11 | Ba Servlet nhiệm vụ |
-| Form GET/POST, `getParameter`, checkbox `getParameterValues` | Ch5 slide 12–17 | `AdminTaskServlet`, `TaskServlet`, `TaskFormUtil` |
-| Hidden `action` để rẽ nhánh | Ch2 slide 9; Ch12 slide 40–44 | Ba Servlet và form JSP |
-| `setAttribute`, `String url`, forward | Ch5 slide 22–24; Ch12 slide 42–44 | Ba Servlet |
-| Redirect sau POST (PRG) | Ch5 slide 25–26 | Ba Servlet |
-| Danh tính/CSRF từ `HttpSession` | Ch7 slide 10–12 | `SessionUtil` |
-| JavaBean có ctor rỗng, getter/setter, Serializable | Ch6 slide 4–6 | `PracticeTask`, `TaskRecipient`, `TaskRound`, `TaskSubmission`, `TaskReview`, `TaskRubric` |
-| Luật nghiệp vụ trong bean, vòng for/if như Cart | Ch9 slide 32–33 | `PracticeTask`, `TaskRecipient`, `TaskReview`, `TaskRubric` |
-| Getter định dạng điểm bằng NumberFormat | Ch9 slide 28–31 | Getter display trong `TaskSubmission`, `TaskReview`; formatter `TaskRubric` |
-| Date + SimpleDateFormat thuộc họ DateFormat | Ch10 slide 6 | `TaskRubric`, `TaskFormUtil` |
-| EL, empty/and/or/not, getter boolean | Ch6 slide 7–9; Ch8 slide 5–11, 32–35 | `task-*.jsp`, `admin-task-*.jsp` |
-| c:out, c:forEach, c:if, c:choose | Ch9 slide 7–8, 11, 17–19 | Các JSP nhiệm vụ |
-| Hidden field, textarea | Ch7 slide 35–36; Ch12 slide 24 | Form quiz/nộp/xem trước/chấm |
-| PreparedStatement, ConnectionPool, DBUtil, XxxDB static/finally | Ch12 slide 18–20, 32–38, 45–53 | `PracticeTaskDB`, `TaskSubmissionDB`, phần mở rộng `QuizAttemptDB`/`UserDB` |
-| Transaction commit/rollback và khóa dòng | Ch13 slide 29–34 (khái niệm transaction), mẫu repo `CartDB`/`AssemblySessionDB` | Lưu quiz của vòng, xác nhận nộp, lưu chấm |
-
-Số slide lấy từ bảng đối chiếu trong prompt Đợt 6. `SELECT ... FOR UPDATE` là
-cách triển khai khóa dòng theo mẫu đã có trong repo, không khẳng định slide có
-đúng câu SQL này. BigDecimal/HALF_UP được prompt cho phép để lưu và so ngưỡng
-chính xác. Node/JUnit chỉ kiểm tra trong lúc phát triển; ứng dụng chạy trên Tomcat.
-
-### Kịch bản demo nhiệm vụ
-
-1. Đăng nhập ADMIN → Tài khoản → **Quản lý nhiệm vụ** → tạo nháp mẫu A, chọn
-   robot có quiz, hạn tương lai, chọn hai USER bằng checkbox; xem trước rồi công bố.
-2. USER → Tài khoản → **Nhiệm vụ của tôi** → mở nhiệm vụ; làm quiz nhiệm vụ.
-   Lượt hợp lệ đầu tiên của vòng được chốt. Quiz luyện tập cũ không thay lượt này.
-3. Hoàn tất robot qua luồng lắp ráp hiện có; chọn phiên của mình, viết ba đoạn
-   giải thích → xem trước (điểm tự động /80) → xác nhận.
-4. ADMIN mở bài nộp, chọn mức giải thích và **Cần bổ sung**, ghi cần cải thiện /
-   hướng làm lại. USER thấy vòng 2; dùng lại phiên hợp lệ, dùng quiz vòng trước
-   hoặc làm một lượt cho vòng mới, xem trước rồi nộp lại.
-5. ADMIN chấm **Đạt yêu cầu** khi tổng đủ ngưỡng; xem điểm từng vòng và lịch sử.
-   Thử sửa một lần chấm: phải có lý do; vòng kế tiếp đã hoạt động thì bị chặn.
-6. Minh họa quyền: USER không có link quản lý; mở `/admin-tasks` nhận 403.
-   USER không được giao nhiệm vụ mở id đó nhận 404. ADMIN không có form nộp.
-
-Mặc định không dùng phiên trước mốc vòng 1. Nếu dùng dữ liệu demo cũ để bảo vệ,
-ADMIN cần bật **Cho phép phiên lắp ráp hoàn thành trước vòng 1** ngay khi tạo nháp.
-Mỗi nhiệm vụ có chính sách muộn riêng; không tự thay đổi khi đã công bố.
-
-### Vì sao chỉ tính lượt quiz đầu tiên của vòng?
-
-Để bài nộp gắn với một lần kiểm tra xác định. `task_rounds.quiz_attempt_id` được
-chốt trong transaction, chỉ khi toàn bộ câu trả lời hợp lệ. Mở rồi bỏ dở hoặc
-gửi thiếu câu không tạo lượt. Vòng sau có thể làm lượt mới hoặc dùng lại lượt
-của bài nộp trước; trang xem trước ghi nguồn rõ ràng.
-
-### Transaction và FOR UPDATE dựa vào đâu?
-
-Ch13 slide 29–34 giải thích transaction; repo đã có mẫu commit/rollback trong
-CartDB và AssemblySessionDB. Ở đây khóa nhiệm vụ, người được giao và vòng giúp
-kiểm điều kiện và ghi kết quả cùng một transaction. UNIQUE(round_id) là lớp
-bảo vệ bổ sung: hai request xác nhận chỉ tạo một bài, request còn lại có thông báo.
-
-### Vì sao dùng form và hidden token thay API JSON?
-
-Form GET/POST, hidden action và forward/redirect là luồng cô dạy. Hidden
-csrfToken được so với token trong HttpSession; thiếu/sai trả 403. Token API qua
-header X-CSRF-Token vẫn giữ nguyên. Hidden field không đáng tin: server chỉ
-nhận ID nguồn và nội dung giải thích, tự đọc lại bằng chứng và tính điểm.
-
-### Đây có phải thi kín không? Nếu đổi đề giữa đợt thì sao?
-
-Đây là đánh giá quá trình có tài liệu tham khảo, không phải thi kín. Người học
-vẫn có thể xem quiz luyện tập. Nếu ADMIN đổi câu hỏi giữa đợt thì vòng mới đọc đề
-hiện hành; lượt đã chốt và bài đã nộp giữ snapshot cũ. Chặng 1 chưa đóng băng đề
-cho toàn bộ nhiệm vụ.
-
-### Mẫu B và chẩn đoán lỗi ở đâu?
-
-Chặng 2 đã triển khai ở phần đầu tài liệu. Chặng 1 giữ rubric A cố định
-40/40/20; B dùng 30/25/25/20. Hai mẫu có cùng năm mức giải thích 0/5/10/15/20
-và không có màn hình sửa trọng số.
-
-Bằng chứng và giới hạn QA: [PHASE6_QA_REPORT.md](PHASE6_QA_REPORT.md).
-
-
-Tài liệu chỉ tập trung vào luồng đã tích hợp: dữ liệu → Servlet → giao diện →
-phiên lắp ráp → phòng 3D. Bảng đối chiếu từng lớp với số slide nằm ở
-[ARCHITECTURE.md](ARCHITECTURE.md). Đây là ứng dụng Java Servlet/JSP chạy trong
-Tomcat và một WAR; JavaScript gọi API cùng origin, không phải serverless/BaaS.
-
-## Kết luận đối chiếu yêu cầu ban đầu
-
-| Nội dung cô hỏi | Mức đáp ứng trong code | Bằng chứng nên mở |
-| --- | --- | --- |
-| Controller và client/server kết nối | Đạt: `fetch` → URL mapping `@WebServlet` → JSON response | `assets/js/api.js`, `AuthServlet.java`, `ResponseUtil.java` |
-| Request/response | Đạt: servlet đọc body/query/session và trả status + JSON; trang JSP dùng forward | `AuthServlet.java`, `RobotServlet.java`, `ComponentCatalogPageServlet.java` |
-| Cấu trúc theo kiến thức Servlet/JSP | Đạt về mô hình: JavaBean, Servlet, JSP/EL/JSTL, lớp `XxxDB`, JDBC | [ARCHITECTURE.md](ARCHITECTURE.md) và các source được dẫn dưới đây |
-| Database | Đạt: schema/seed, migration, ERD, PreparedStatement, pool và đóng tài nguyên | `database/`, `docs/erd.md`, `ConnectionPool.java`, `DBUtil.java` |
-| Đăng nhập/phân quyền | Đã kiểm tra end-to-end trên DB demo cục bộ: đăng ký/đăng nhập, HttpSession, USER/ADMIN, CSRF và chặn `/admin-stats` bằng 403 với USER | `AuthServlet.java`, `SessionUtil.java`, `UserDB.java`, `AdminUserServlet.java`, `database/migrations/004_account_session_version.sql` |
-| Lắp ráp từng bước | Danh sách hướng dẫn đọc theo thứ tự nằm ở `pages/lap-rap.html` (ngoài phòng 3D), có chủ đích không đưa checkbox từng bước vào phòng 3D | Backend vẫn có API `/steps` cho mục đích dạy Servlet/JSP; UI hiện tại không gọi `setStepStatus()` |
-| Hoàn tất thực hành + phiếu kết quả | Đạt: server tự đối chiếu `session_visual_parts` với `robot_components` trước khi ghi `COMPLETED`, không tin dữ liệu client | `AssemblySessionDB.completeSession()`, `AssemblyReceiptPageServlet.java` |
-| Hiệu ứng ăn mừng | Đạt: chỉ bắn khi vừa chuyển sang `COMPLETED` trong lượt bấm hiện tại, tôn trọng `prefers-reduced-motion` | `assets/js/confetti.js`, `assets/js/assembly-3d.js` |
-| Bài kiểm tra kiến thức | Đạt: server chấm từ `quiz_options.is_correct`, lưu bản chụp để không đổi kết quả cũ | `QuizAttemptDB.submitAttempt()`, `QuizServlet.java` |
-| Tra cứu lỗi lắp ráp | Seed cơ sở có 14 tình huống; seed đợt 3 thêm 6 tình huống cho hai robot mới (tổng 20 sau khi nạp đủ seed) | `TroubleshootingServlet.java`, `TroubleshootingGuideDB.java`, `database/seed-troubleshooting-phase3.sql` |
-| Tổng kết và thống kê | Đạt: số liệu tính bằng `GROUP BY`/`COUNT DISTINCT` trực tiếp trong SQL, có trạng thái "chưa có dữ liệu" | `StatsDB.java`, `LearningSummaryServlet.java`, `AdminStatsServlet.java` |
-| Hồ sơ học tập cá nhân có thể in | Model 2 (Ch2/4–5, 20); Servlet forward (Ch5/22–24); `HttpSession` (Ch7/10–12); JavaBean và vòng for (Ch6/4–6, Ch9/28–33); Date/DateFormat (Ch10/6); EL/JSTL chống XSS (Ch8/5–8, 32–35; Ch9/7–8, 11, 17–19); JDBC (Ch12/18–20, 32–38, 45–53); trang chỉ đọc/no-store, trình duyệt in A4/PDF | `LearningProfileServlet.java` | `LearningProfile`; `RobotDB`; `StatsDB` | `learning-profile.jsp` | Đọc `robots`, `assembly_sessions`, `quiz_attempts`, `robot_components`, `components`; không thêm bảng |
-| Cửa hàng mô phỏng | Catalog công khai; giỏ/đơn theo session; admin CRUD; checkout server tính giá và khóa tồn trong transaction; không thanh toán thật | `ShopServlet`, `CartServlet`, `OrderServlet`, `AdminShopServlet`; `ShopProductDB`, `CartDB`, `OrderDB`; migration `008_shop_cart_orders.sql` |
-
-Lưu ý: repository hiện không chứa bộ slide gốc, nên các số chương/slide trong
-`ARCHITECTURE.md` đang đối chiếu theo ghi chú môn học đã có trong dự án/cuộc trao
-đổi; trước buổi bảo vệ hãy mở slide của cô để xác nhận lại số slide chính xác.
-Đây là giới hạn kiểm chứng tài liệu, không phải thiếu cấu trúc Servlet/JSP trong code.
-
-### Database demo đã kiểm tra (28/09/2026)
-
-DB cục bộ được kiểm tra qua `/api/health`: `status=ok`, `database=connected`; có đủ
-các migration `001`–`007`, bao gồm cột `users.session_version`. Không chạy lại các
-migration đã ghi nhận. Nếu dùng một DB khác, kiểm tra `schema_migrations` trước;
-chỉ nhờ chủ DB chạy migration còn thiếu bằng tài khoản được cấp quyền, không dùng
-tài khoản ứng dụng để `ALTER`.
-
-Các tài khoản dưới đây là dữ liệu demo đã tạo trên một DB cục bộ, không có seed
-khôi phục tài khoản trong repo và không bảo đảm đăng nhập được trên DB khác.
-Lần QA Đợt 5 trước ghi nhận API từ chối mật khẩu được ghi ở đây; lần kiểm chứng
-ngày 04/10/2026 đã đăng nhập thành công cả bốn trên Tomcat QA/MySQL hiện tại.
-Trước buổi bảo vệ vẫn phải kiểm tra trên đúng instance đang dùng. Cả bốn được tạo
-qua `POST /api/auth/register`; role ADMIN được cấp sau đó bằng một câu `UPDATE`
-có điều kiện và tăng `session_version` để vô hiệu hóa phiên cũ. Đăng ký công khai
-luôn tạo role USER, không gửi role từ trình duyệt.
-
-| Email | Quyền | Dữ liệu lịch sử để trình bày |
-| --- | --- | --- |
-| `ral-demo-admin@robotlab.test` | ADMIN | Dự kiến xem `/admin-stats`; không có dữ liệu thực hành riêng |
-| `ral-demo-builder@robotlab.test` | USER | Đã hoàn tất Robot dò đường; có 3 lượt kiểm tra, mỗi mẫu robot một lượt (7/7) |
-| `ral-demo-practice@robotlab.test` | USER | Phiên Robot tránh vật cản ở `PREPARING`, đã chuẩn bị 4/8 nhóm linh kiện |
-| `ral-demo-student@robotlab.test` | USER | Có một lượt kiểm tra Cánh tay robot mini (7/7) |
-
-Mật khẩu demo chung: `RobotLabDemo#2026` (chỉ áp dụng ba USER; ADMIN đã được chủ
-tài khoản đổi mật khẩu và được kiểm chứng riêng ngày 05/10/2026). Đây là thông tin đăng nhập thử nghiệm,
-không dùng ngoài demo/không dùng cho người thật; đổi hoặc xóa các tài khoản này
-trước khi đưa một bản sao database lên môi trường công khai. Mật khẩu DB thật
-không nằm trong tài liệu này hay trong Git.
-
-## Bảng đối chiếu: chức năng → kiến thức môn học → code
-
-Trả lời trực tiếp câu "chức năng này xây từ đâu trong code?" cho năm chức năng
-mới thêm vào đồ án.
-
-| Chức năng | Kiến thức môn học minh họa | Servlet | JavaBean / XxxDB | JSP | Bảng database |
-| --- | --- | --- | --- | --- | --- |
-| Nhiệm vụ thực hành và đánh giá (Đợt 6 chặng 1) | Form/action/PRG Ch5/12–26; session Ch7/10–12; bean Ch6/4–6, Ch9/28–33; EL/JSTL Ch8/5–11, 32–35, Ch9/7–8, 11, 17–19; JDBC Ch12/18–20, 32–38, 45–53; transaction Ch13/29–34 | `TaskServlet`, `AdminTaskServlet`, `AdminTaskReviewServlet` | Sáu bean nhiệm vụ; `PracticeTaskDB`, `TaskSubmissionDB`, overload `QuizAttemptDB` | `task-*.jsp`, `admin-task-*.jsp` | Năm bảng migration 009, nguồn `assembly_sessions`/`quiz_attempts` |
-| Chẩn đoán tương tác (Đợt 6 chặng 2) | Model 2 Ch2/4–5,20; form/action/session Ch5/10–26, Ch7/10–12; bean/Cart Ch6/4–6, Ch9/32–33; EL/JSTL Ch8/32–35, Ch9/7–8,11,17–19; JDBC Ch12/18–20,32–38,45–53 | `DiagnosisServlet`, `AdminDiagnosisServlet` | Bốn bean `Diagnosis*`, `DiagnosisDB` | `diagnosis-*.jsp`, `admin-diagnosis-*.jsp` | Năm bảng diagnosis của migration 010 |
-| Nhiệm vụ mẫu B và bằng chứng chẩn đoán | Getter định dạng Ch9/28–31; form/radio Ch5/12–17, Ch7/35–36; transaction Ch13/29–34 + mẫu repo | Các Servlet nhiệm vụ | `TaskRubric`, `TaskSubmission`, `TaskRound`, `TaskRecipient`; `PracticeTaskDB`, `TaskSubmissionDB` | Các JSP nhiệm vụ | Liên kết/snapshot nullable trên ba bảng 009; nguồn diagnosis_attempts |
-| 1. Hoàn tất thực hành + phiếu kết quả | Server-side validation (không tin client); atomic UPDATE tránh race condition; Servlet→JSP forward | `AssemblySessionServlet` (đổi trạng thái), `AssemblyReceiptPageServlet` (phiếu kết quả) | `AssemblySession.canCompleteAssembly()`; `AssemblySessionDB.completeSession()` | `assembly-receipt.jsp` | `assembly_sessions` (cột `completed_at`), `session_visual_parts`, `robot_components` |
-| 2. Bài kiểm tra kiến thức | Chấm điểm ở server, không tin client; snapshot dữ liệu lịch sử; JDBC transaction nhiều bảng | `QuizServlet` (làm bài), `AdminQuizServlet` (quản trị) | `QuizQuestion.isCorrectOption()`; `QuizAttemptDB.submitAttempt()` | *(API JSON, JS dựng giao diện — không dùng JSP)* | `quiz_questions`, `quiz_options`, `quiz_attempts`, `quiz_attempt_answers` |
-| 3. Tra cứu lỗi lắp ráp | Nội dung công khai đọc từ MySQL; lọc/tìm bằng `PreparedStatement` tham số hóa | `TroubleshootingServlet` (công khai), `AdminTroubleshootingServlet` (quản trị) | `TroubleshootingGuide`; `TroubleshootingGuideDB` | *(API JSON)* | `troubleshooting_guides` |
-| 4. Hiệu ứng ăn mừng | Sự kiện phía client gắn với xác nhận server, không phải hiệu ứng trang trí độc lập | *(không có endpoint riêng — dùng lại `PATCH /api/assembly-sessions/{id}`)* | — | — | — |
-| 5. Tổng kết và thống kê | `GROUP BY`/`COUNT DISTINCT` để tránh đếm trùng; phân quyền xem dữ liệu tổng hợp | `LearningSummaryServlet` (cá nhân), `AdminStatsServlet` (quản trị, chỉ ADMIN) | `QuizRobotScore`, `RobotPopularity`, `QuizRobotAggregate`, `QuestionMissRate`; `StatsDB` | `learning-summary.jsp`, `admin-stats.jsp` | Đọc tổng hợp từ `assembly_sessions`, `quiz_attempts`, `quiz_attempt_answers`, `users` |
-| 6. Hồ sơ học tập cá nhân có thể in | Model 2 (Ch2/4–5, 20); request attribute/forward (Ch5/22–24, Ch12/42–44); session (Ch7/10–12); bean có luật nghiệp vụ và getter định dạng (Ch6/4–6, Ch9/28–33); ngày giờ (Ch10/6); EL/JSTL (Ch8/5–8, 32–35; Ch9/7–8, 11, 17–19); PreparedStatement/pool/DBUtil (Ch12/18–20, 32–38, 45–53) | `LearningProfileServlet` | `LearningProfile`, `ProfileRobotEntry`, `ProfileSkill`; `RobotDB`, `StatsDB` | `learning-profile.jsp` | `robots`, `assembly_sessions`, `quiz_attempts`, `robot_components`, `components` (chỉ đọc) |
-
-## Hồ sơ học tập bám slide nào?
-
-Bảng dưới đã đối chiếu với nội dung slide Chapter 2, 5, 6, 7, 8, 9, 10, 12.
-Mở code theo cột cuối để giải thích mẫu đã học.
-Thứ tự thực thi cụ thể: Servlet lấy user từ session, đọc dữ kiện qua XxxDB,
-đặt dữ kiện vào JavaBean, gọi `buildProfile()`, setAttribute và forward tới JSP.
-
-| Phần trong Đợt 5 | Chapter / slide | File |
-| --- | --- | --- |
-| Model 2: servlet → bean → XxxDB → JSP | Ch2 slide 4–5, 20 | LearningProfileServlet, LearningProfile, StatsDB/RobotDB, learning-profile.jsp |
-| `@WebServlet("/learning-profile")` | Ch5 slide 10–11 | LearningProfileServlet |
-| `setAttribute` + `String url` + `getRequestDispatcher(url).forward` | Ch5 slide 22–24; Ch12 slide 42–44 | LearningProfileServlet |
-| Khách chưa đăng nhập → `sendRedirect` | Ch5 slide 25–26 | LearningProfileServlet |
-| Lấy user từ `HttpSession` | Ch7 slide 10–12 | SessionUtil |
-| JavaBean (ctor rỗng, get/set, Serializable) | Ch6 slide 4–6 | LearningProfile, ProfileRobotEntry, ProfileSessionStat, ProfileQuizAttempt, ProfileSkill (5 bean) |
-| Getter định dạng sẵn trong bean (`getXxxDisplay`) | Ch9 slide 28–31 | LearningProfile, ProfileRobotEntry |
-| Luật nghiệp vụ trong lớp business, duyệt bằng vòng `for` | Ch9 slide 32–33 (Cart) | LearningProfile |
-| Ngày giờ: `Date` + `DateFormat`/`SimpleDateFormat` | Ch10 slide 6 | LearningProfile |
-| `StringBuilder` | Ch12 slide 29 | LearningProfile |
-| EL `${profile.fullName}`, thuộc tính bean | Ch6 slide 7–9; Ch8 slide 5–8 | learning-profile.jsp |
-| EL `empty`, `or`, `==/eq` | Ch8 slide 32–35 | learning-profile.jsp |
-| `c:out` chống XSS | Ch9 slide 7–8 | learning-profile.jsp |
-| `c:forEach` / `c:if` / `c:choose` | Ch9 slide 11, 17–19 | learning-profile.jsp |
-| `PreparedStatement`, ConnectionPool, XxxDB static, `DBUtil` | Ch12 slide 18–20, 32–38, 45–53 | StatsDB, RobotDB |
-
-`ArrayList` theo Ch9 slide 32; `Map`/`HashMap` theo Ch8 slide 8 và Ch18 slide 21.
-Không gọi collection factory hay xử lý collection bằng stream/lambda trong
-code ứng dụng Đợt 5. SQL vẫn giữ nguyên; `getTimestamp()` chuyển sang `Date`
-bằng `getTime()`, bean so sánh `Date` rồi định dạng theo `Asia/Ho_Chi_Minh`.
-Giá trị Date thiếu là null, hiển thị "Chưa có dữ liệu" và xếp cũ nhất khi so
-sánh; cùng ngày giờ vẫn dùng mã lượt/mã phiên để phân định như trước.
-
-CSS A4 và `window.print()` giữ nguyên từ Đợt 5, là phần giao diện/in của trình
-duyệt; không gán cho chúng một số slide Java không có trong bảng đối chiếu.
-Node/JUnit là công cụ kiểm tra lúc phát triển, không phải runtime backend.
-Các chỗ code cũ ngoài Đợt 5 còn dùng kỹ thuật chưa có trong bảng được liệt kê
-ở [báo cáo quét Đợt 5b](PHASE5B_SLIDE_AUDIT.md); chưa refactor chúng.
-
-## Phân công
-
-Từ Đợt 1 đến Đợt 7 và phần giao diện, các chức năng được chia theo vai trò ban đầu (bảng dưới).
-Theo cập nhật ngày 07/10/2026, cửa hàng, giỏ hàng và đơn mô phỏng thuộc Tài.
-Mỗi người phụ trách trọn luồng chức năng của mình từ trình duyệt đến bảng MySQL.
-
-| Thành viên | Vai trò ban đầu | Mảng sở hữu hiện tại | File nên mở |
-| --- | --- | --- | --- |
-| Nhi | Database, dữ liệu robot/linh kiện/bước/thư viện, CRUD nội dung | **Dữ liệu và nội dung**: lớp dữ liệu, schema/migration/seed, catalog, quiz, tra cứu lỗi, tổng kết và thống kê | `database/schema.sql`, `database/seed.sql`, `ConnectionPool`, `RobotDB`, `ComponentDB`, `QuizAttemptDB`, `StatsDB`, `Admin*Servlet.java` |
-| Tuấn Anh | Phòng 3D, dựng linh kiện, camera và thao tác lắp ráp | **Tương tác và thực hành**: phòng 3D, chẩn đoán lỗi, phòng nối dây và hỗ trợ, giao diện đáp ứng | `assembly-3d*.js`, `lap-rap-3d.html`, `wiring.js`, `WiringServlet`, `DiagnosisServlet` |
-| Tài | Servlet/Tomcat, đăng nhập, session, phân quyền, phiên lắp ráp, tích hợp client-server, giao diện dùng chung | **Nền tảng và phiên học tập**: auth/CSRF/filter, phiên lắp ráp và phiếu kết quả, nhiệm vụ thực hành, hồ sơ học tập, khung giao diện JSP, cửa hàng/giỏ hàng/đơn mô phỏng | `AuthServlet`, `SessionUtil`, `AssemblySessionServlet`, `TaskServlet`, `LearningProfileServlet`, `workspace-header.jspf`, `CartServlet`, `OrderServlet`, `CartDB`, `OrderDB` |
-
-## Kịch bản demo ngắn
-
-1. Chạy Tomcat và mở `/api/health`; chỉ `"database":"connected"` — kết nối lấy từ
-   connection pool khai báo trong `META-INF/context.xml`.
-2. Mở `/components` — trang do servlet dựng sẵn ở server. Xem source trang
-   (Ctrl+U) để thấy bảng HTML đã có đủ dữ liệu, không có JavaScript nào gọi API.
-   Đây là câu trả lời trực tiếp cho "setAttribute và forward nằm ở đâu".
-3. Mở trang robot; DevTools Network cho thấy `GET /api/robots`. Chọn
-   `line-obstacle` hoặc `servo-scout`, mở sơ đồ dây và danh sách linh kiện để
-   đối chiếu dữ liệu DB. Hai mẫu mới được thêm bằng seed, không cần controller
-   hoặc endpoint mới.
-4. Trong code, đi theo `RobotServlet → RobotDB → ConnectionPool → MySQL`.
-5. Đăng ký/đăng nhập; mở `/api/auth/me`, giải thích `JSESSIONID`, `HttpSession`
-   và CSRF token. `UserDB.insert` ghi cứng role `user` cho mọi tài khoản đăng ký.
-   Để demo nhanh, dùng các tài khoản trong bảng **Database demo đã kiểm tra**.
-6. Mở `/account` — servlet đọc `User` từ `HttpSession`, đặt vào request rồi
-   forward sang `account.jsp`. `SessionUtil.getCurrentUser` đối chiếu database
-   trước khi tin role trong phiên; chưa đăng nhập thì bị chuyển về trang đăng nhập.
-7. Ở `/pages/lap-rap.html`, chọn robot và tick linh kiện; tiến độ chuẩn bị được lưu
-   trong phiên tài khoản qua API (hoặc local storage khi chưa đăng nhập/API lỗi).
-   Quy trình lắp ráp bên dưới là danh sách hướng dẫn đọc theo thứ tự, không phải
-   checkbox tiến độ từng bước.
-8. Vào phòng 3D, lắp/gỡ part; panel chỉ chứa linh kiện. Part được đồng bộ qua
-   `visual-parts`; reload trang để chứng minh trạng thái 3D được khôi phục. Nút
-   toàn màn hình nằm trên thanh công cụ của phòng 3D; bấm lại hoặc dùng `Esc` để
-   thoát. Checklist quy trình chỉ còn ở trang lắp ráp bên ngoài, không đưa vào 3D.
-   Quay lại trang chuẩn bị và bấm **Đặt lại tiến độ** để xóa checklist, trạng thái
-   part 3D và đưa phiên đang làm về `PREPARING` trong một thao tác.
-9. Đăng nhập admin, CRUD một nội dung rồi mở lại `/components` để thấy dữ liệu
-   mới xuất hiện ngay trong HTML do server dựng. Mở `/pages/admin-users.html`
-   để chỉ cách admin đổi role người khác; tài khoản thường bị API từ chối 403.
-10. Mở `/architecture` để tóm tắt lại toàn bộ luồng.
-
-### Demo năm chức năng mới (Chức năng 1–5)
-
-11. Vào phòng 3D, lắp đủ mọi nhóm linh kiện tới 100% — nút **Hoàn tất lắp ráp**
-    tự mở khóa. Mở DevTools Network trước khi bấm để thấy `PATCH
-    /api/assembly-sessions/{id}` với body `{"status":"COMPLETED"}`. Bấm nút, xem
-    hiệu ứng confetti (Chức năng 4) và bấm **Xem kết quả** để mở `/assembly-receipt`
-    — trang JSP hiển thị đúng robot, thời điểm bắt đầu/hoàn tất và danh sách linh
-    kiện đã lắp, không có JavaScript nào tính lại các số liệu này.
-12. Để chứng minh server không tin client: mở Console, gọi thẳng
-    `RobotAssemblyApi.assemblySessions.updateStatus(idPhienChuaLapDu, "COMPLETED")`
-    trên một phiên mới lắp một phần — nhận lỗi `409 ASSEMBLY_INCOMPLETE`.
-13. Mở `/pages/kiem-tra.html?model=line-follower`, làm bài và nộp — điểm hiện ra
-    ngay kèm giải thích từng câu. Vào `/pages/admin-quiz.html`, sửa nội dung một
-    câu hỏi vừa làm, quay lại lịch sử bài kiểm tra cũ để chỉ ra điểm/giải thích cũ
-    không đổi (đọc từ bản chụp `quiz_attempt_answers`, không JOIN ngược
-    `quiz_questions`).
-14. Mở `/pages/tra-cuu-loi.html`, lọc theo mẫu robot và từ khóa triệu chứng —
-    không cần đăng nhập. Mở `/pages/admin-troubleshooting.html` để chỉ cách
-    admin thêm/sửa một tình huống.
-15. Đăng nhập tài khoản có lịch sử, mở `/learning-summary` — chỉ số phiên/điểm
-    kiểm tra của đúng tài khoản này. Đăng nhập admin, mở `/admin-stats` — số
-    liệu toàn hệ thống tính bằng `GROUP BY`; thử truy cập bằng tài khoản thường
-    để nhận `403`.
-16. Chọn `line-obstacle`: giải thích hai cảm biến line đọc trạng thái trái/phải,
-    HC-SR04 đo khoảng cách, rồi chương trình ưu tiên dừng/né trước khi tìm lại
-    vạch. Mở tab linh kiện/bước và lần lượt xem hai endpoint
-    `GET /api/robots/{id}/components` và `/steps` trong Network.
-17. Chọn `servo-scout`: chỉ ra SG90 quay đầu HC-SR04 để so sánh khoảng trống;
-    đối chiếu D3 (tín hiệu servo), D11/D12 (TRIG/ECHO), D5–D10 (L298N) và
-    GND chung. Bản build thực tế cần nguồn bàn DC 9V đủ dòng (ngoài BOM): giao
-    dải theo datasheet XL4015 (8–36V) và Uno (7–12V); hộp pin 4AA 6V chỉ cấp
-    `Vs` động cơ, không cấp XL4015 hay `VIN` Arduino. Đo đầu ra 5.0V và kiểm tra
-    jumper 5V-EN theo đúng module trước khi nối. Hai mẫu này có quiz và ba tình
-    huống tra cứu lỗi riêng. Tham khảo [datasheet XL4015 của XLSEMI](https://www.xlsemi.com/datasheet/XL4015-EN.pdf),
-    [đặc tính nguồn Arduino Uno R3](https://store.arduino.cc/products/arduino-uno-rev3)
-    và [datasheet L298 của ST](https://www.st.com/resource/en/datasheet/cd00000240.pdf).
-18. Cửa hàng mô phỏng: đăng nhập USER, mở `/pages/cua-hang.html`, thêm linh kiện
-    vào giỏ, đổi số lượng rồi xem tổng tạm tính. Trong Network chỉ
-    `PUT /api/cart/items/{id}` gửi quantity + CSRF; `POST /api/orders` không gửi
-    giá/tổng/user ID. Response trả mã đơn và tổng do server tính; mở
-    `/order-history` xem snapshot. Nói rõ đây không phải thanh toán thật. Với
-    ADMIN, mở `/pages/admin-shop.html`, sửa giá demo rồi ngừng bán; catalog ẩn
-    sản phẩm nhưng đơn cũ vẫn giữ tên/giá tại thời điểm đặt.
-19. Chuẩn bị trước một tài khoản đăng nhập được trên DB hiện tại. Nếu tài khoản
-    demo cũ bị từ chối, đăng ký tài khoản mới ở `/pages/tai-khoan.html` bằng mật
-    khẩu tự chọn; hoàn tất ít nhất một mẫu qua luồng chuẩn bị → lắp ráp 3D →
-    phiếu kết quả, rồi nộp một bài quiz. Không sửa dữ liệu hay mật khẩu tài khoản
-    demo cũ chỉ để buổi trình bày chạy được. Đăng ký mới chỉ có quyền USER;
-    phần demo ADMIN cần một tài khoản ADMIN đã được xác thực riêng.
-    Mở `/learning-profile` bằng tài khoản đã chuẩn bị: chỉ ra danh mục đủ năm mẫu,
-    số liệu của session hiện tại, trạng thái/quiz/kỹ năng có căn cứ; dùng In / Lưu
-    PDF, chọn A4 và nên tắt **Đầu trang và chân trang**. Kiểm tra mục Kỹ năng
-    giữ tiêu đề/caption cùng bảng; số trang CSS tùy hỗ trợ trình duyệt. Nếu cần
-    bật lại đầu/chân trang để có số trang, chấp nhận ngày giờ/tiêu đề/URL do
-    trình duyệt thêm vào. So sánh cùng tài khoản ở `/learning-summary`; nếu lịch sử
-    quiz có mẫu số thay đổi, giải thích rằng hồ sơ chọn đúng lượt theo tỷ lệ
-    `score/total_questions`, còn trang tổng kết cũ giữ nguyên cách tổng hợp trước.
-
-## Câu hỏi thường gặp
-
-### "Dự án chia tầng thế nào?"
-
-Đúng Model 2 của Chapter 2 slide 5: model là business object (`business/`), view
-là HTML/JSP, controller là servlet (`controller/`), data access layer là các lớp
-`XxxDB` (`data/`). Tên lớp `UserDB`, `ConnectionPool`, `DBUtil` giữ giống slide
-Chapter 12.
-
-### "Sao không có tầng Service hay DAO?"
-
-Vì slide không dùng hai tầng đó. Giống `EmailListServlet` (Chapter 12 slide
-42-44), servlet tự lấy tham số, kiểm tra hợp lệ rồi gọi `UserDB`. Luật nghiệp vụ
-nằm trong chính business object — ví dụ `AssemblySession.canChangeStatusTo()`,
-`User.canChangeRoleOf()` — như lớp `Cart` của sách tự có `addItem/removeItem`.
-
-### "User có phải JavaBean không?"
-
-Có, đủ ba quy tắc ở Chapter 6 slide 6: constructor không tham số, get/set cho mọi
-biến private, `implements Serializable`. `JavaBeanRulesTest` kiểm tra tự động mọi
-lớp trong `business/`, thiếu một quy tắc là build báo lỗi.
-
-### "Controller ở đâu?"
-
-Các lớp có `@WebServlet` trong `tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller`.
-Ví dụ `RobotServlet` cho `/api/robots`; `AccountPageServlet` forward tới JSP.
-
-### "Client và server kết nối như nào?"
-
-`assets/js/content-api.js` và `assets/js/api.js` dùng `fetch()` gửi HTTP tới
-`/api`. Tomcat ánh xạ URL tới servlet qua `@WebServlet`. Servlet trả JSON UTF-8;
-JavaScript đọc `response.json()` và cập nhật trang. Cùng một WAR trên Tomcat phục
-vụ các JSP/HTML và endpoint API; trình duyệt không kết nối MySQL.
-
-Ví dụ dễ chỉ trên màn hình: `api.js → POST /api/auth/login` gửi JSON
-`{email,password}`; `AuthServlet.doPost()` xác thực qua `UserDB` rồi trả HTTP 200
-với `{data:{user}}` và cookie `JSESSIONID`. Request `/api/auth/me` tiếp theo gửi
-cookie đó; response có `{data:{user},csrfToken}`. Với thao tác ghi, client gửi
-thêm `X-CSRF-Token`; status và JSON response được tạo ở Servlet qua `ResponseUtil`.
-
-### "Request và response nằm ở đâu?"
-
-Trong `doGet`, `doPost`, `doPut`, `doDelete` của servlet. `HttpServletRequest`
-cung cấp tham số, đường dẫn, thân request, header và session;
-`HttpServletResponse` nhận mã trạng thái, content type và nội dung qua `ResponseUtil`.
-Ví dụ mở `AuthServlet.doPost()` cho login/register và `ResponseUtil.sendJson()` /
-`sendError()` để chỉ đúng chỗ tạo response thành công/lỗi.
-
-### "Database đi qua lớp nào?"
-
-Chỉ các lớp trong `data/` viết SQL. Mỗi method làm đúng bốn bước như slide 45-51:
-lấy `Connection` từ `ConnectionPool`, tạo `PreparedStatement` với tham số `?`,
-chạy câu lệnh, rồi trong `finally` gọi `DBUtil.closeResultSet`,
-`DBUtil.closePreparedStatement` và `pool.freeConnection`. Mở `UserDB` hoặc
-`RobotDB` để chỉ.
-
-### "Connection pool cấu hình ở đâu?"
-
-`tomcat-app/src/main/webapp/META-INF/context.xml`, giống slide 34. Tomcat tạo pool
-tên `jdbc/robotlab`; `ConnectionPool` tra JNDI `java:/comp/env/jdbc/robotlab`.
-User/password lấy từ VM options (`-DDB_USER=...`) nên không bị commit lên Git.
-
-### "JSP được dùng ở đâu?"
-
-Bốn trang, đều đặt JSP dưới `WEB-INF` để mọi request bắt buộc đi qua servlet:
-
-| URL | Servlet | Dữ liệu đưa sang JSP |
-| --- | --- | --- |
-| `/robots` | `RobotCatalogPageServlet` | `List<Robot>` đọc qua `RobotDB` |
-| `/components` | `ComponentCatalogPageServlet` | `List<Component>`, có phân trang |
-| `/account` | `AccountPageServlet` | `User` lấy từ `HttpSession` |
-| `/architecture` | `ArchitectureServlet` | Vài chuỗi minh họa kiến trúc |
-| `/order-history` | `OrderHistoryServlet` | Danh sách `ShopOrder` của user, gồm snapshot `OrderItem` |
-
-### "Sao vừa có /components vừa có /api/components?"
-
-Cùng dùng `ComponentDB` và JavaBean `Component`, chỉ khác view: `/components` trả
-HTML dựng sẵn ở server theo kiểu Servlet/JSP truyền thống; `/api/components` trả
-JSON cho JavaScript của các trang trong `pages/`.
-
-### "Đăng nhập lưu ở đâu? Mật khẩu lưu thế nào?"
-
-`SessionUtil.startSession` tạo `HttpSession`; Tomcat gửi cookie `JSESSIONID`.
-Session lưu JavaBean `User` và CSRF token. Cột `users.password_hash` chỉ chứa hash
-PBKDF2 có salt do `PasswordUtil` tạo, không lưu mật khẩu gốc.
-
-### "Dữ liệu khởi nguồn từ đâu?"
-
-`database/seed.sql` là dữ liệu mẫu cho MySQL. Khi chạy đầy đủ, nguồn chính là
-MySQL qua servlet. `assets/js/data.js` chỉ là bản dự phòng để giao diện vẫn có nội
-dung minh họa khi API chưa sẵn sàng.
-
-### "Quy trình bước lắp ráp đang được lưu thế nào?"
-
-Trên trang chuẩn bị, `main.js` dựng danh sách `model.steps` thành hướng dẫn tĩnh;
-checkbox được đồng bộ hiện tại là checkbox linh kiện. Backend đã có
-`PUT /api/assembly-sessions/{id}/steps/{stepId}`, nhưng giao diện chưa gọi endpoint
-này. Trong phòng 3D, panel hiển thị part và tiến độ lắp/gỡ part, không hiển thị
-danh sách bước. Nói đúng ranh giới này để không khẳng định tính năng UI chưa có.
-
-### "Phòng 3D lấy mô hình ở đâu?"
-
-Three.js nằm cục bộ tại `assets/vendor/three`. Hình học được dựng bằng code trong
-`assembly-3d-parts.js`, không tải file mô hình bên ngoài. `assembly-3d.js` lưu part
-đã lắp qua `/api/assembly-sessions/{id}/visual-parts/{componentId}`.
-
-### "Tại sao không chạy index.html trực tiếp?"
-
-File HTML chỉ là view. Đăng nhập, `HttpSession`, servlet và JDBC chỉ hoạt động khi
-WAR được deploy trên Tomcat. Cấu hình Tomcat dùng application context `/` vì giao
-diện gọi `/api` cùng origin.
-
-### "Sao không tin luôn phần trăm hoàn thành mà trình duyệt tính sẵn?"
-
-Vì trình duyệt là thứ người dùng kiểm soát được — họ có thể sửa JavaScript hoặc
-gọi thẳng API bằng tay. `AssemblySessionDB.completeSession()` chỉ ghi
-`COMPLETED` khi chính câu `UPDATE` đó tự đối chiếu `session_visual_parts` với
-`robot_components` và thấy đủ; điều kiện nằm ngay trong `WHERE` nên việc kiểm
-tra và ghi xảy ra atomic, hai request gần đồng thời (double-click) không thể
-tạo hai kết quả khác nhau.
-
-### "Sao bài kiểm tra không lưu thẳng câu hỏi mà phải lưu 'bản chụp'?"
-
-Vì `quiz_questions`/`quiz_options` là nội dung admin có thể sửa sau này. Nếu
-lịch sử đọc trực tiếp từ hai bảng đó, sửa một câu hỏi sẽ vô tình đổi cả điểm số
-và giải thích của những người đã làm bài trước đó. `quiz_attempt_answers` lưu
-nguyên văn câu hỏi/lựa chọn tại đúng thời điểm nộp bài, nên lịch sử luôn đúng
-với những gì người dùng thực sự đã thấy lúc làm bài.
-
-### "Số liệu ở trang thống kê có đáng tin không?"
-
-Có — mọi con số đọc trực tiếp bằng `GROUP BY`/`COUNT DISTINCT` ngay trong câu
-SQL của `StatsDB`, không cộng dồn thủ công ở Java (tránh đếm trùng khi có
-JOIN). Không có số liệu giả nào được chèn vào để biểu đồ đẹp hơn; khi chưa đủ
-dữ liệu, trang hiện rõ thông báo "chưa có dữ liệu" thay vì bảng trống hoặc số 0
-gây hiểu nhầm.
-
-### "Giá và tổng đơn có thể bị sửa ở trình duyệt không?"
-
-Không. Browser chỉ gửi mã sản phẩm và số lượng cho cart; checkout gửi body rỗng.
-`OrderDB.checkout()` đọc giá/tồn từ MySQL trong transaction, khóa hàng cần
-thiết, tự tính tổng rồi giảm kho và tạo snapshot. Sửa con số trên DevTools không
-đổi được giá lưu vào đơn. Đây là đơn mô phỏng, không kết nối cổng thanh toán.
-
-### "Sao hồ sơ không lưu thành bảng riêng?"
-
-Hồ sơ là bản xem trước chỉ đọc, dựng từ `robots`, `assembly_sessions`,
-`quiz_attempts` và quan hệ linh kiện đã có. Không lưu thêm bản sao có thể lệch
-với tiến độ thật; nút in dùng chức năng in/lưu PDF sẵn có của trình duyệt.
-
-### "Sao hồ sơ có thể khác trang tổng kết?"
-
-Hai trang đọc cùng các bảng của đúng tài khoản. Hồ sơ áp dụng định nghĩa đã công
-bố: lượt tốt nhất là tỷ lệ `score/total_questions` cao nhất, hòa thì lấy lượt
-mới hơn và giữ đúng tổng câu của lượt đó. Trang tổng kết cũ vẫn giữ nguyên cách
-tổng hợp `MAX(score)` và `MAX(total_questions)` độc lập; dữ liệu lịch sử có mẫu
-số thay đổi có thể làm hai cách hiển thị
-khác nhau. Hồ sơ cũng là tài liệu in tĩnh, không hiện email hay giải thích kiến
-trúc dài như trang tổng kết.
-
-### "Tình trạng chung được xác định thế nào?"
-
-Ưu tiên mẫu đã hoàn thành, rồi phiên đang thực hiện, rồi phiên đã dừng. Nếu chỉ
-có lượt quiz thì ghi "Chưa hoàn thành mẫu nào"; chỉ ghi "Chưa có dữ liệu" khi
-không có phiên hay lượt quiz. Điểm và căn cứ kỹ năng vẫn tuân theo dữ liệu thực
-tế, không suy ra đã lắp ráp từ việc làm quiz.
-
-### "Vì sao bản in giữ mã phiên?"
-
-Mã phiên lắp ráp dùng để đối chiếu căn cứ hoàn thành với phiếu kết quả, đúng
-đặc tả hồ sơ. Đây không phải ID người dùng; hồ sơ không in email, quyền hay
-thông tin xác thực của tài khoản.
-
-### "Vì sao dùng SimpleDateFormat mà không phải DateFormat.getDateInstance?"
-
-`SimpleDateFormat` là lớp con của `DateFormat`, cùng họ định dạng ngày giờ ở
-Ch10 slide 6. Hồ sơ cần đúng mẫu `dd/MM/yyyy` hoặc `dd/MM/yyyy HH:mm`, cùng múi
-giờ Việt Nam; `getDateInstance()` dùng kiểu định dạng theo locale nên không
-chốt được mẫu này. Bean tạo formatter mới mỗi lần gọi hàm định dạng, giống
-cách tạo `NumberFormat` trong getter ở Ch9 slides 28–31, rồi đặt TimeZone
-`Asia/Ho_Chi_Minh`. Không lưu formatter trong static field vì formatter này
-không an toàn khi nhiều request dùng chung.
-
-### "Vì sao có BigDecimal?"
-
-`BigDecimal` là lớp Java cổ điển để giữ phép tính thập phân và làm tròn
-`RoundingMode.HALF_UP` chính xác. Bean duyệt từng robot bằng vòng for, cộng
-bằng `.add(...)`, chia số mẫu có quiz, không dùng reduce/stream. Test kiểm cả
-trường hợp 12.5% phải thành 13%, trung bình nhiều mẫu và không có quiz. Đây là
-lựa chọn độ chính xác được prompt Đợt 5b cho phép; không khẳng định slide có
-ví dụ riêng về BigDecimal.
-
-### "Vì sao JSP không tự so sánh trạng thái?"
-
-Luật nằm trong business object theo tinh thần Cart/LineItem ở Ch9 slides
-28–33: `ProfileRobotEntry.isCompleted()`, `isInProgress()`, `isStopped()` trả
-kết quả boolean. JSP chỉ dùng `${profileRobot.completed}` hoặc `or` để chọn
-khối trình bày bằng `c:choose`, không biết chuỗi trạng thái trong database.
-`getStatusKey()` và `getStatusLabel()` vẫn được giữ cho code hiện có.
-
-## Chuỗi file nên mở khi bảo vệ
-
-```text
-assets/js/content-api.js
-→ controller/RobotServlet.java
-→ data/RobotDB.java  (ConnectionPool, PreparedStatement, DBUtil)
-→ business/Robot.java  (JavaBean)
-→ database/schema.sql
-```
-
-Với tài khoản và phiên lắp ráp:
-
-```text
-assets/js/api.js
-→ controller/AuthServlet.java / controller/AssemblySessionServlet.java
-→ util/SessionUtil.java  (HttpSession)
-→ data/UserDB.java / data/AssemblySessionDB.java
-→ business/User.java / business/AssemblySession.java
-→ MySQL
-```
-
-Khi cô hỏi request/response, mở theo chuỗi ngắn này:
-
-```text
-assets/js/api.js (fetch + JSON + cookie/CSRF)
-→ controller/AuthServlet.java (doPost/doGet)
-→ util/ResponseUtil.java (HTTP status + JSON)
-→ util/SessionUtil.java (HttpSession/JSESSIONID)
-```
-
-## Phòng nối dây bám slide nào? (Đợt 7, chặng 1)
-
-| Phần | Chapter/slide | Code |
-| --- | --- | --- |
-| Model 2 request → Servlet → XxxDB → JavaBean → JSP | Ch2/4–5,20 | WiringServlet, AdminWiringServlet, WiringDB, Wiring* |
-| JavaBean ctor rỗng/get/set/Serializable | Ch6/4–6 | Sáu bean Wiring* |
-| Luật chuẩn hóa/chấm/công bố trong bean; vòng for/if | Ch9/32–33 Cart | WiringExercise, WiringGrade, WiringAttempt |
-| @WebServlet/getParameter/setAttribute/String url/forward/PRG | Ch5/10–17,22–26; Ch12/42–44 | Hai Servlet nối dây |
-| HttpSession và token form hidden | Ch7/10–12,35–36 | SessionUtil; wiring forms |
-| EL/JSTL c:out, if, choose, forEach | Ch8/5–11,32–35; Ch9/7–8,11,17–19 | wiring-*.jsp/admin-wiring-*.jsp |
-| JDBC PreparedStatement/pool/DBUtil/finally | Ch12/18–20,32–38,45–53 | WiringDB |
-| Transaction và khóa dòng | Ch13/29–34 khái niệm; mẫu CartDB | Khóa bài → lượt, version, atomic submit |
-| Getter NumberFormat/SimpleDateFormat riêng mỗi lần | Ch9/28–31; Ch10/6 DateFormat | WiringGrade/WiringAttempt |
-
-BigDecimal/HALF_UP được yêu cầu để tránh sai số điểm; không tuyên bố slide
-có ví dụ riêng về công thức nối dây. SVG và kéo thả chỉ là view phụ trợ;
-giảng viên xem luồng form POST → Servlet → WiringDB → WiringExercise.grade
-→ WiringGrade.calculate → lưu → JSP c:out. Tắt JS vẫn trình bày đủ luồng này.
-
-| Chức năng | Kiến thức | Servlet | Bean/XxxDB | JSP | Bảng |
-| --- | --- | --- | --- | --- | --- |
-| Lưu/nộp/chấm nối dây | Model2/session/form/JDBC/transaction | WiringServlet | WiringAttempt/Exercise/Grade, WiringDB | wiring-play/result/list | wiring_attempts, wiring_attempt_connections và bài |
-| Biên soạn/công bố/lưu trữ bài | Quyền ADMIN/form/JavaBean/JDBC | AdminWiringServlet | WiringExercise, WiringDB | admin-wiring-form/view/list | wiring_exercises, wiring_terminals, wiring_rules |
-
-### Demo nối sai → giải thích → luyện lại
-
-1. ADMIN xem bài mẫu, xem trước chỉ đọc; nhân bản để sửa, bản công bố bị khóa.
-2. USER mở Thực hành nối dây, bắt đầu line-follower. Nối đúng D5–ENA và nối
-   sai một cặp; lưu, tải lại để thấy dây đã lưu và phiên bản mới.
-3. Nộp để chấm: chỉ server tính C/W/M/N và điểm, bảng chỉ rõ cặp sai/thiếu.
-4. Luyện lại tạo nháp mới, dùng sơ đồ tham khảo bên ngoài, sửa/lưu/nộp.
-5. Hai tab cùng nháp: lưu tab thứ nhất; tab cũ bị yêu cầu tải lại, không mất dây.
-
-### Vì sao đây không phải mô phỏng điện hay thi kín?
-
-Bài chỉ so cặp trực tiếp đã biên soạn; không tính dòng/điện áp/jumper/robot thật,
-không chấm mọi sơ đồ điện tương đương. Tài liệu tham khảo vẫn công khai. Nguồn
-GND dùng chung có nhiều dây và hai cảm biến cùng loại có ID riêng.
-Hai mẫu không bổ sung Vs/đầu ra động cơ còn thiếu trong robots.wiring cũ;
-phạm vi mô phỏng in rõ trên bài. Căn cứ chân tại WIRING_DESIGN.md.
-
-### Vì sao không phòng nhóm hoặc đổi Mẫu A/B?
-
-Lượt nối dây có một owner; hỗ trợ Admin–User là chặng riêng sau review, không
-chia quyền sửa sơ đồ. Điểm nối dây độc lập với nhiệm vụ/rubric A/B để không
-đổi hành vi đã nghiệm thu. Hỗ trợ không đồng nghĩa đạt yêu cầu nối dây.
-
-## Hỗ trợ nối dây bám slide nào? (Đợt 7, chặng 2)
-
-| Phần | Chapter/slide | Code |
-| --- | --- | --- |
-| Model 2 Servlet → XxxDB → JavaBean → JSP | Ch2/4–5,20 | WiringSupportServlet, AdminWiringSupportServlet, WiringSupportDB |
-| JavaBean ctor rỗng, get/set, Serializable | Ch6/4–6 | WiringSupportRequest, WiringSupportMessage |
-| Luật trạng thái/version trong bean, vòng for/if | Ch9/32–33 Cart | Request.requireCurrent/applyMessage/close; Message.capture |
-| @WebServlet, form/action/getParameter/PRG/forward | Ch5/10–17,22–26; Ch12/42–44 | Hai Servlet hỗ trợ |
-| HttpSession, hidden token | Ch7/10–12,35–36 | SessionUtil, wiring-support forms |
-| EL/JSTL c:out/if/choose/forEach | Ch8/5–11,32–35; Ch9/7–8,11,17–19 | wiring-support-list/new/view.jsp |
-| StringBuilder dựng bản chụp | Ch12/29 | WiringSupportMessage.capture |
-| Date/SimpleDateFormat (cùng họ DateFormat) | Ch10/6 | WiringSupportMessage.getCreatedAtDisplay |
-| PreparedStatement, pool, DBUtil/finally | Ch12/18–20,32–38,45–53 | WiringSupportDB; overload WiringDB.selectAttempt |
-| Transaction/khoá dòng theo mẫu có sẵn | Ch13/29–34 khái niệm; CartDB | Khóa bài → lượt → yêu cầu; version + UNIQUE |
-
-| Chức năng | Kiến thức | Servlet | Bean/XxxDB | JSP | Bảng |
-| --- | --- | --- | --- | --- | --- |
-| Hỏi/phản hồi/cập nhật/giải quyết hỗ trợ | Model2/session/form/bean/JDBC/transaction | WiringSupportServlet, AdminWiringSupportServlet | WiringSupportRequest/Message, WiringSupportDB | wiring-support-list/new/view | wiring_support_requests, wiring_support_messages |
-
-### Demo User hỏi → Admin phản hồi → cập nhật → đóng
-
-1. USER lưu nháp nối dây, mở “Gửi câu hỏi hỗ trợ”; bản xem trước là dữ liệu đã lưu.
-2. Viết câu hỏi, chọn đầu nối liên quan nếu cần, gửi; server chụp version/nhãn/dây/trạng thái.
-3. ADMIN mở Quản lý hỗ trợ nối dây, xem bản chụp và SVG, phản hồi; không có nút sửa dây/điểm.
-4. USER sửa và lưu lượt gốc, gửi tiếp với checkbox bản chụp mới. Tin/bản chụp cũ vẫn hiện.
-5. USER đánh dấu đã giải quyết hỗ trợ; không đổi kết quả chấm. Form cũ của Admin bị từ chối.
-6. Có thể tắt JavaScript và thực hiện cùng các form trên, không cần chat realtime.
-
-**Vì sao bản chụp không lấy sơ đồ client?** Sơ đồ đang kéo chưa lưu không phải dữ liệu
-đã ghi nhận. Server khóa lượt, đọc trên cùng kết nối và INSERT bản chụp riêng cho từng tin.
-
-**Vì sao dùng version và UNIQUE?** Version từ chối phản hồi/đóng khi đã có tin mới;
-UNIQUE cột sinh cùng transaction ngăn hai yêu cầu hoạt động/lượt, kể cả bấm đồng thời.
-Cột sinh là ràng buộc MySQL hỗ trợ tính toàn vẹn; không chứa luật chấm.
-
-**Đã giải quyết hỗ trợ có đồng nghĩa đạt bài không?** Không. Hỗ trợ và chấm là hai trạng
-thái riêng. ADMIN không sửa dây/điểm và không nộp thay. Không có phòng nhóm, không đổi Mẫu A/B.
-
-## Đợt 8 — Demo lắp ráp có kiểm chứng (Tài, 4–5 phút)
-
-1. USER chọn Robot tránh vật cản, chuẩn bị kit và vào3D. Phiên mới có spec
-   gồm10 vật thể, trong đó hai động cơ và hai bánh là bốn ID riêng.
-2. Chọn bánh → điểm mạch Arduino → Gắn: server từ chối, đỏ và giải thích sai loại.
-3. Gắn khung, động cơ rồi bánh đúng điểm/hướng: xanh chỉ sau response đã lưu.
-4. Gắn một bánh: bánh thứ hai vẫn ở khay, tiến độ chưa đủ10/10.
-5. Reload: vị trí/hướng được dựng từ dữ liệu server, không từ localStorage.
-6. Hoàn tất khi còn thiếu: server từ chối; Kiểm tra mô hình liệt kê điểm còn trống.
-7. Gắn đủ → Hoàn tất → ăn mừng → Xem kết quả JSP: vật thể/điểm/hướng và phiên bản.
-8. Mở code: assembly-3d.js → api.js → AssemblySessionServlet → AssemblyLayout
-   và AssemblyPlacementDB → response → dựng3D → AssemblyReceiptPageServlet/JSP.
-
-Nếu khó kéo, chọn vật thể/điểm/hướng bằng radio và nút Gắn; Space/Enter,
-Q/E hoặc nút xoay90°, Escape hủy. Cảm ứng dùng cùng ý định, không chấm ở JS.
-Tách linh kiện chỉ quan sát; lái thử chỉ sau COMPLETED và không phải firmware.
-Nối dây là phòng riêng, không có dây3D hoặc mô phỏng điện trong đợt này.
-
-| Chức năng | Kiến thức áp dụng | Servlet | Bean/XxxDB | View | Bảng |
-| --- | --- | --- | --- | --- | --- |
-| Tải kit/điểm gắn | GET, HttpSession, JDBC | AssemblySessionServlet | AssemblyLayout/AssemblyPlacementDB | lap-rap-3d.html | specs, slots, orientations, instances, placements |
-| Gắn/tháo | JSON request, CSRF, transaction | AssemblySessionServlet | validateAttach/validateDetach, AssemblyPlacementDB | assembly-3d-placement.js | placements, sessions.layout_version |
-| Kiểm/hoàn tất | JavaBean, FOR UPDATE, idempotency | AssemblySessionServlet | check/validateChange, AssemblyPlacementDB |3D + phiếu | placements, sessions.status/completed_at |
-| Phiếu | setAttribute, forward, EL/JSTL, c:out | AssemblyReceiptPageServlet | AssemblyLayout/AssemblyCheckReport | assembly-receipt.jsp | dữ kiện đã lưu của phiên |
-
-**Vì sao xanh mới là đã lưu?** JS chỉ gửi ý định; Servlet kiểm truy cập, bean kiểm luật,
-JDBC commit rồi response mới cho phép UI báo xanh. Lỗi mạng giữ vàng và nút thử lại/tải lại.
-
-**Khác tick nhóm cũ thế nào?** GROUP chỉ lưu một component_id cho cả nhóm.
-DETAILED lưu instance_no và ID cho từng động cơ/bánh, gắn vào slot có cha/hướng.
-Không lấy một bánh để tính đủ hai; không chuyển đổi hoặc chấm lại phiên GROUP cũ.
-
-**Vì sao không mô phỏng vật lý?** Chỉ kiểm vị trí rời rạc theo bài mẫu; không kiểm
-va chạm, lực, điện hoặc firmware. Phiếu không xác nhận robot thật vận hành an toàn.
-
-**Có thay điểm nhiệm vụ không?** Không. COMPLETED vẫn là bằng chứng lắp ráp;
-Mẫu A40/40/20 và B30/25/25/20 giữ nguyên. Không có thang điểm cơ khí mới.
-
-**Hai tab thì sao?** Khóa phiên, kiểm expectedLayoutVersion, rồi ghi và tăng version
-trong một transaction. Tab cũ nhận409 tải lại; complete retry không ghi timestamp lần nữa.
-
-### Đợt 8b — demo xoay trước khi gắn
-
-Chạy seed v2 sau v1. Chỉ phiên mới dùng v2; không dùng phiên30/31 để demo sửa.
-Gắn khung0° → chọn động cơ trái/điểm động cơ trái0° → bị từ chối có tên.
-Dùng E hoặc nút Xoay phải90° → Gắn → server lưu, xanh. Cảm biến cần180°.
-Reload thấy hướng đã lưu; gắn đủ10/10 → hoàn tất và xem phiếu.
-Tư thế đúng đầu tiên trùng v1 vì ry nền đã bù góc; hướng khác được hỗ trợ
-không có nghĩa mô phỏng điện hoặc xác nhận robot thật an toàn.
-Y90/Y270 là quy ước hướng lắp đối xứng trái/phải của mô hình 3D giản lược;
-hình khối động cơ không mô phỏng chính xác chiều trục. Khi demo, giải thích
-đây là kiểm quy ước hướng của bài mẫu, không phải kiểm chiều trục động cơ thật.
-
-| Điểm gắn | Hướng chấp nhận | Căn cứ bài mẫu |
-| --- | --- | --- |
-| Khung | 0° | Nền cố định |
-| Động cơ trái / phải | 90° / 270° | Quy ước trái/phải của mô hình giản lược, bù tư thế v1 |
-| Hai bánh | 0°,180° | Bánh đối xứng |
-| Arduino | 0° | Giữ tư thế cổng USB của v1 |
-| L298N | 0°,180° | Hàng ốc có thể quay hai phía |
-| Hộp pin | 90°,270° | Nằm ngang ở đuôi xe |
-| Bánh tự do | 0°,90°,180°,270° | Xoay mọi hướng |
-| Cảm biến | 180° | Hai mắt giữ hướng trước của v1 |
-
-## Đợt 9 — demo sau khi hoàn tất (Tài)
-
-1. USER chọn Robot tránh vật cản, chuẩn bị kit rồi vào phiên chi tiết mới v2.
-2. Gắn khung0°. Gắn động cơ trái0° bị từ chối; xoay90° rồi gắn đúng.
-3. Bấm **Hoàn tác** hoặc Ctrl+Z: tháo lần gắn vừa được chấp nhận. Gắn lại; có thể
-   demo đổi hướng L298N0°→180°→undo về0°. Không dùng Ctrl+Z khi đang gõ nội dung.
-4. Lắp đủ10/10, kiểm tra rồi hoàn tất. Ăn mừng chỉ sau server ghi hoàn tất thật.
-5. **Xem kết quả** mở trang hoàn thiện: ảnh chính thức và hai bản vẽ giản lược;
-   bước chuẩn và trình tự đã làm/số lần cần sửa; phiếu/in; kiểm tra kiến thức.
-6. Mở **Xem lại quá trình3D**, bấm Phát/Tạm dừng hoặc từng bước. Quan sát động cơ
-   được gắn rồi hoàn tác và gắn lại. Mở Network: chỉ GET, phiên đã lưu không đổi.
-7. Quay lại trang hoàn thiện, **Làm bài kiểm tra** mở quiz đúng mẫu. Kết quả quiz
-   tốt nhất/gần nhất đọc từ bài đã nộp của mình; không cộng thêm điểm nhiệm vụ.
-8. **Thực hành lại** đi qua luồng tạo phiên cũ, giữ mọi kết quả cũ. GROUP/phiên cũ
-   vẫn có ảnh/bước/phiếu/quiz, thông báo rõ khi chưa có nhật ký hoặc bản vẽ chi tiết.
-
-| Chức năng | Kiến thức thể hiện | Servlet | Bean / JDBC | View | Bảng |
-| --- | --- | --- | --- | --- | --- |
-| Trang hoàn thiện | doGet, HttpSession, setAttribute, forward, EL/JSTL | AssemblyReviewPageServlet | AssemblyReview, AssemblyDrawing, XxxDB đọc owner | assembly-review.jsp, assembly-drawing.jspf | robots, assembly_steps, sessions, placements, events, quiz_attempts |
-| Nhật ký | PreparedStatement, cùng Connection, commit/rollback | AssemblySessionServlet | AssemblyEvent / AssemblyEventDB / AssemblyPlacementDB | Trình tự và thống kê lỗi | assembly_events |
-| Hoàn tác | POST JSON, CSRF, version, khóa phiên, luật instance method | AssemblySessionServlet | AssemblyLayout.validateUndo, AssemblyEventDB.selectUndoTarget | Nút Hoàn tác / Ctrl+Z | events + placements + sessions.layout_version |
-| Phát lại | GET response JSON, view chỉ đọc, dọn timer | AssemblySessionServlet | AssemblyEventDB owner-scoped | assembly-3d-replay.js | events ACCEPTED |
-| Kiểm tra kiến thức | Đọc tham số model, kết quả theo owner | QuizServlet hiện có | QuizAttemptDB, luật quiz cũ | kiem-tra.html / quiz.js | quiz_questions, quiz_attempts |
-
-**Vì sao nhật ký cùng transaction?** Không thể báo đã gắn mà thiếu lịch sử hoặc có
-lịch sử gắn dù placement rollback. Một commit ghi cả thao tác, version và sự kiện.
-
-**Hoàn tác có giống xóa nhật ký không?** Không. Ghi thêm UNDO tham chiếu sự kiện gốc;
-server kiểm lại luật. RESET tạo rào, không undo thao tác trước lần đặt lại.
-
-**Vì sao dùng JSP cho tổng kết?** Đây là màn hình đọc: Servlet lấy dữ kiện từ DB,
-đặt request attribute và forward; EL/getter/JSTL hiển thị, không chấm ở trình duyệt.
-
-**Bản vẽ/phát lại có chứng minh robot thật hoạt động?** Không. Hai phép chiếu và hình
-khối chỉ minh họa; không mô phỏng điện, firmware, lực hay chính xác chiều trục động cơ.
-Y90/Y270 vẫn là quy ước trái/phải của mô hình3D giản lược đã chốt ở Đợt8b.
-
-Đối chiếu kiến thức ở bảng bằng tên chủ đề; không ghi số slide khi chưa trích/xác minh
-được nội dung Word nhúng trong pptx. Phòng3D không có panel bước/checkbox; các bước
-chuẩn nằm ở trang ngoài và trang hoàn thiện. MẫuA/B, nối dây, hỗ trợ, shop không đổi luật.
-
-## Demo Xưởng thiết kế — 3 phút (Tài)
-
-1. Tài khoản → Bộ linh kiện của tôi: chỉ13 loại dựng3D; hai linh kiện chưa có luật
-   được ghi rõ. Nhập từ đơn đã mua; bấm lại không cộng trùng nhờ GREATEST của tổng
-   số CONFIRMED owner (cap10), giữ lượng manual cao hơn. Không trừ kho lần nữa.
-2. Thiết kế của tôi → Tạo: mục tiêu tránh vật cản, nguồn kit hoặc thư viện; chọn
-   một khung, hai động cơ/hai bánh, Arduino, L298N, pin, bánh tự do, HC-SR04.
-   Nguồn kit không vượt số đang có, thư viện cho mô phỏng trước khi mua.
-3. Vào Xưởng: gắn khung → bánh vào mặt trên bị từ chối có tên → gắn động cơ trái
-   sai hướng bị từ chối → chọn90° gắn được → gắn bánh vào trục. Kéo vật thể không
-   xoay camera; kéo nền xoay góc nhìn. Có radio/nút thay cho kéo.
-4. Hoàn tác rồi gắn lại; reload vẫn có vật thể. Lắp đủ → Kiểm tra thiết kế: đọc ba
-   lớp cơ khí/vai trò/cấu hình. Tháo L298N rồi kiểm lại sẽ cần sửa. arm-frame luôn
-   chưa hỗ trợ, không nhận đúng chỉ vì có hình3D.
-5. Hồ sơ: hai hình chiếu, bảng chú giải, BOM số cần/đang có/thiếu/link shop,
-   trình tự cha trước con, kết luận gần nhất, lưu ý ngắt nguồn; In/Lưu PDF.
-
-Giới hạn: tự thiết kế trong bộ được hỗ trợ, không kiểm mọi linh kiện mua ngoài đời.
-Không mô phỏng điện/dòng, vật lý, firmware; hình khối không chứng nhận chiều trục
-hay khả năng vận hành thật. Luật motor-driver là kiểm cấu hình cơ bản; tài liệu
-nhà sản xuất vẫn cần khi lắp thật. Thiết kế riêng không làm bằng chứng nhiệm vụ.
-
-| Chức năng | Kiến thức | Servlet | Bean/XxxDB | View/bảng |
-| --- | --- | --- | --- | --- |
-| Kit, nhập đơn | POST/getParameterValues/CSRF/PRG/transaction | MyKitServlet | KitItem/UserKitDB | my-kit.jsp; user_kit_items, orders/items/products |
-| Tạo/đổi/xóa | Form/session/owner/snapshot | DesignPageServlet | RobotDesign/DesignDB | design-list/form.jsp; robot_designs/instances |
-| Gắn/tháo/undo | JSON request/response, transaction/version | DesignApiServlet | DesignLayout/DesignPlacementDB/DesignEventDB | xuong-thiet-ke.html; placements/events |
-| Kiểm tra | Luật instance JavaBean | DesignApiServlet | DesignCheck/DesignPlacementDB | JSON → textContent; designs/events |
-| Hồ sơ/in | setAttribute/forward/EL/JSTL | DesignSheetServlet | DesignSheet/AssemblyDrawing/DesignPlacementDB | design-sheet.jsp/drawing.jspf; snapshot owner |
-
-Căn cứ cấu hình: [ST L298](https://www.st.com/en/motor-drivers/l298.html) có hai cầu
-điều khiển; [Arduino — servo](https://docs.arduino.cc/learn/electronics/servo-motors/)
-giải thích nhu cầu nguồn riêng tùy tải. Đây là căn cứ cho luật/cảnh báo giản lược,
-không phải kiểm điện hoặc bảo đảm robot thật hoạt động.
-
-Demo hiện dùng luật Xưởng v2: seed v2 chạy sau v1. Thiết kế QA7 tránh vật cản
-lắp10/10, pin ở rear-bay chọn90°, HC-SR04 ở front-top chọn180°. Hai góc nền bằng0,
-không bù lần nữa; hình khớp spec v2 phòng mẫu. Thiết kế QA8 quét lắp11/11, servo
-ở front-top/0°, cảm biến trên horn/180°; cảnh báo nguồn servo5V riêng vẫn hiển thị.
-Mẫu servo-scout hiện sensor ry=0 (không khai báo), khác hướng180° của obstacle;
-Xưởng theo obstacle đã kiểm8b và không sửa servo-scout. Tọa độ servo/sensor Xưởng
-cũng khác mẫu servo-scout:1.02/1.77 ở z−.92 so với .82/1.42 và z−.92/−1.14.
-Đây là đối chiếu có ghi giới hạn, không tuyên bố giống toàn bộ servo-scout.
-
-Thiết kế v1 hiện cảnh báo: tạo mới để dùng luật sửa; không tự chuyển các thiết kế
-1/2/4 sang v2. Đơn QA2 mua Arduino giữ nguyên vì OrderServlet/OrderDB không có
-luồng hủy hoàn kho; không sửa SQL tồn kho hoặc thêm chức năng hủy trong đợt này.
-
-## Đợt 11 — Điều hướng theo hành trình
-
-Bắt đầu từ **/architecture — Bản đồ môn học**. Trình bày chức năng trước:
-
-1. “Website giúp học lắp robot: chọn mẫu, tự lắp và nhận giải thích khi sai,
-   hoàn tất để xem lại sản phẩm/quy trình/phiếu rồi kiểm tra kiến thức.” Mở Mẫu robot.
-2. Đăng nhập USER. Bảng điều khiển có dữ liệu thật: tiếp tục phiên hoặc mở kết quả.
-   Mở phòng lắp mẫu đã chuẩn bị; gắn sai hướng → đọc lý do và thông tin linh kiện;
-   sửa đúng → hoàn tác → lắp đủ → hoàn tất. Giữ giới hạn mô phỏng đã nêu ở các đợt trước.
-3. Trang hoàn thiện có ảnh, bản vẽ/quy trình/phiếu/quiz; nối tiếp sang bài nối dây
-   của đúng mẫu hoặc tra cứu hướng dẫn. Phát lại chỉ đọc, không gửi API ghi.
-4. Xưởng: mở thiết kế → kiểm tra → hồ sơ có bản vẽ/BOM/trình tự. Bấm thêm phần
-   thiếu vào giỏ, đọc thông báo; bấm lại không cộng trùng. Dừng ở giỏ, không checkout.
-5. Kết quả học tập → Bản in/PDF; Tài khoản HTML vẫn có đổi hồ sơ/mật khẩu/lịch sử.
-6. Đổi sang ADMIN để quản trị nội dung, bài luyện, nhiệm vụ/chấm, cửa hàng/thống kê.
-   Không dùng ADMIN để trình bày route luyện tập USER; menu đã phản ánh quyền đó.
-
-Khi cô hỏi kiến thức: quay /architecture, chọn chủ đề và chỉ đúng file:dòng.
-Nói theo chuỗi **request → Servlet/session/token → JavaBean → XxxDB → response → JSP**.
-Không đọc tên chương/slide chưa xác minh. Ví dụ form thêm giỏ minh họa getParameter,
-CSRF, transaction, forward/redirect và PRG rõ ràng; ẩn menu không thay kiểm quyền.
-
-## Đợt 11b — trình bày liên kết và trách nhiệm xử lý
-
-Dùng USER để mở bài nối dây/chẩn đoán; ADMIN dùng đúng trang quản trị. Các nút
-luyện tập trong nội dung chờ xác thực server, còn link thông tin linh kiện và
-tra cứu là tài liệu công khai. Từ tra cứu, bấm linh kiện liên quan: danh mục
-phải focus đúng thẻ sau khi tải xong, kể cả link hash cũ/dữ liệu dự phòng.
-Từ catalog/hồ sơ thiết kế, link cửa hàng đọc đúng SKU kể cả SKU ngoài trang1;
-GET không thêm vào giỏ. Ca21SKU dùng fixture browser, không seed thêm dữ liệu.
-
-Nói về dashboard: Servlet nhận request/session và đọc dữ kiện đúng chủ qua
-XxxDB. DashboardSummary chọn hành động, gợi ý quiz và cộng kit; request.setAttribute
-chuyển bean sang JSP để EL/JSTL hiển thị. Điểm0 thật khác chưa làm quiz. Truy vấn
-gộp tránh N+1, thiết kế gần nhất có LIMIT1.
-
-Trước demo, clean package bằng JDK17 và kiểm bản HTTP khớp artifact. Metadata
-VS Code từng đặt compiler25 dù POM/IntelliJ là17; không chữa bằng nâng Java.
-Không kết luận Tomcat lỗi source khi nó còn dùng artifact cũ. Tình trạng IDE/QA
-chi tiết và bằng chứng nằm trong PHASE11B_REVIEW_FIX_QA_REPORT.md.
-
-## Đợt11c — trình bày hành trình học, không tạo dữ liệu QA mới
-
-1. Từ Bảng điều khiển, chỉ thẻ tiếp tục lắp và mẫu đã hoàn tất; kit/đơn hàng ở
-   nhóm phụ. Mở kết quả có sẵn của chính tài khoản, tránh chép số phiên người khác.
-2. Mở menu Luyện tập → Kiểm tra kiến thức. Trang không model cho chọn bài có
-   câu hỏi đã được API xác nhận; chọn mẫu rồi mới xem câu hỏi. Mở trang chưa tạo
-   lượt; nộp bài mới ghi kết quả. Không nộp thử vào DB demo trong lượt QA chỉ đọc.
-3. Sang Nối dây → Lịch sử của tôi → mở lượt đã có. Tra cứu theo mẫu → mở triệu
-   chứng bằng bàn phím → Luyện chẩn đoán cùng mẫu. Chỉ giải thích nút bắt đầu,
-   không bấm nếu chưa được phép tạo lượt trong buổi kiểm chứng.
-4. Tổng kết → mẫu hoàn thiện/ôn tập đúng model → Hồ sơ bản in/PDF. Nhiệm vụ có
-   nhãn trạng thái nhiệm vụ; mở chi tiết xem trạng thái cá nhân và cờ nộp muộn.
-
-Phân biệt lỗi giao diện đã sửa với dữ liệu demo: bài nối dây công bố7 và các
-nhiệm vụ QA vẫn còn, không ẩn theo tên. Báo cáo11c có danh sách và đề xuất DB
-demo riêng chờ duyệt. Bổ sung M5 đã được duyệt riêng nhánh GET: trên cùng một thẻ,
-chỉ rõ trạng thái nhiệm vụ, trạng thái của em và cờ nộp muộn; mở chi tiết đối chiếu.
-Hai tài khoản có thể khác trạng thái trên cùng nhiệm vụ, do dữ kiện và luật
-TaskRecipient tại server quyết định. Không thay đổi POST hoặc quy tắc chấm.
-
-## Kịch bản final 3–5 phút — chốt sau Đợt11c
-
-**Trình bày chức năng trước, chỉ mở code khi giải thích cách thực hiện.** Dùng
-USER để học/thực hành; ADMIN chỉ dùng cho phần quản trị nếu cô hỏi thêm.
-Không đọc mật khẩu khi trình bày. URL dưới đây tính từ context `/`.
-
-Trước buổi trình bày, người demo tự chuẩn bị một phiên của mình: Robot tránh
-vật cản, DETAILED/spec v2, đã gắn9/10 và còn cảm biến trong khay. Chuẩn bị này
-có ghi DB, chưa được agent tự thực hiện trong lượt nghiệm thu chỉ đọc. Nếu
-chưa chuẩn bị, dùng kết quả có sẵn từ dashboard; không lấy số phiên tài khoản khác.
-
-| Thời gian / trang / quyền | Lời trình bày và thao tác | Kết quả cần thấy / có ghi DB? | Code mở khi cô hỏi |
-| --- | --- | --- | --- |
-| 0:00–0:25; `/architecture`, khách | “Web giúp người học chọn mẫu, tự lắp, nhận giải thích khi sai và xem lại kết quả để học tiếp. Đây là mô hình giản lược, không mô phỏng điện, vật lý hay firmware.” Mở Mẫu robot. | Thấy mẫu và đường vào lắp; chỉ đọc. | [ArchitectureServlet:18](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/ArchitectureServlet.java#L18) |
-| 0:25–0:50; `/account`, USER | “Dashboard đưa em về phiên đang làm hoặc mẫu đã hoàn tất.” Mở phiên9/10 đã chuẩn bị của chính mình. | Đúng robot/owner; mở lại phiên đã có chỉ đọc. Bắt đầu phiên mới có ghi DB. | [AccountPageServlet:45](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AccountPageServlet.java#L45), [DashboardSummary:56](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DashboardSummary.java#L56) |
-| 0:50–2:00; `pages/lap-rap-3d.html?model=obstacle-avoider&session=…`, USER | “Em chọn cảm biến, chọn điểm phía trước, thử0°. Server từ chối và nêu lý do; em xoay180°, gắn lại thì được xác nhận. Một vật thể là một chiếc riêng, không tick cả nhóm.” Sau khi đủ10/10, bấm hoàn tất. | Sai có giải thích; đúng được lưu; server kiểm đủ rồi khóa phiên. **Gắn sai/đúng và hoàn tất đều có thể ghi DB/nhật ký.** | [api.js:152](../assets/js/api.js#L152) → [AssemblySessionServlet:405](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblySessionServlet.java#L405) → [AssemblyLayout:232](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L232) → [AssemblyPlacementDB:137](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L137) |
-| 2:00–3:00; `/assembly-review?session=…`, USER/chủ phiên | “Hoàn tất không kết thúc việc học: em xem mẫu2D, bản vẽ của mình, bước chuẩn và trình tự đã làm, phiếu kết quả, rồi làm quiz đúng mẫu.” Bấm các neo và mở phiếu. | Bốn phần tổng kết; bản vẽ/phiếu đúng phiên. Chỉ đọc; phát lại cũng chỉ đọc. Phiên cũ chưa có nhật ký được thông báo rõ. | [AssemblyReviewPageServlet:35](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L35), [assembly-review.jsp:69](../tomcat-app/src/main/webapp/WEB-INF/views/assembly-review.jsp#L69) |
-| 3:00–3:30; menu → `pages/kiem-tra.html`, USER | “Chức năng phụ phục vụ việc học: từ menu em chọn bài, hoặc từ kết quả mở thẳng quiz của mẫu vừa lắp.” Chọn Robot tránh vật cản, chưa nộp bài. | Bộ chọn → đúng câu hỏi/model, không để “Đang tải…” vô hạn. Xem/chọn không tạo lượt; nộp mới ghi kết quả. | [quiz.js:30](../assets/js/quiz.js#L30) |
-| 3:30–4:30; quay code đang mở sẵn | “Trình duyệt gửi request; Servlet lấy user từ session và kiểm token/tham số. XxxDB đọc dữ kiện trong transaction, gọi luật JavaBean rồi lưu thao tác được chấp nhận. Response trả layout để3D dựng lại. Trang tổng kết dùng setAttribute, forward và JSP/EL/JSTL để hiện HTML.” | Chỉ đọc code; chỉ đúng lệnh đang giải thích, không đọc cả file. | Các tab trong bảng và7 câu dưới đây. |
-
-Nếu cô muốn xem thêm Xưởng: `/designs` → thiết kế của mình → phòng3D →
-`/design-sheet?id=…`. Nói rõ tự thiết kế trong bộ linh kiện được hỗ trợ,
-không thay thế kiểm tra lắp thật và không dùng làm bằng chứng hoàn thành mẫu.
-GET hồ sơ chỉ đọc; Gắn/Hoàn tác/Kiểm tra và thêm vật tư vào giỏ là thao tác ghi.
-Không checkout để minh họa liên kết giữa các chức năng.
-
-### Bảy câu vấn đáp ngắn, chỉ thẳng code
-
-1. **Servlet làm gì?** Nhận request, kiểm session/quyền/token và tham số, gọi
-   phần xử lý rồi trả response. Chỉ `handlePlacement` ở
-   [AssemblySessionServlet:405](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblySessionServlet.java#L405).
-2. **JavaBean chứa luật nào?** `validateAttach` kiểm đúng vật thể, điểm gắn,
-   hướng, bộ phận cha và version; client không tự chấm. Mở
-   [AssemblyLayout:232](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L232).
-3. **Forward khác redirect/PRG?** Forward chuyển cùng request và attribute sang
-   JSP: [AssemblyReviewPageServlet:53](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L53),
-   [forward:65](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L65).
-   Form thêm vật tư POST xử lý xong redirect sang GET giỏ, tránh tải lại gửi lại
-   POST: [DesignCartServlet:34](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/DesignCartServlet.java#L34),
-   [redirect:44](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/DesignCartServlet.java#L44).
-4. **User từ đâu?** Từ HttpSession, được đối chiếu session_version; userId trong
-   URL không đổi owner. Mở [SessionUtil:47](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java#L47)
-   và [owner query:234](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/PracticeTaskDB.java#L234).
-   Ẩn menu không thay thế kiểm quyền ở server.
-5. **JDBC/pool/đóng tài nguyên ở đâu?** JNDI cung cấp DataSource;
-   [ConnectionPool:42](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ConnectionPool.java#L42)
-   lấy kết nối. [AssemblyPlacementDB:200](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L200)
-   dùng PreparedStatement, bind tham số; [finally:258](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L258)
-   đóng qua DBUtil và trả kết nối. Transaction commit/rollback bảo vệ bố cục/nhật ký.
-6. **Vì sao JSP chỉ trình bày?** Servlet đã nạp bean, JSP dùng EL/JSTL lặp/điều
-   kiện và c:out để hiển thị an toàn; không đặt SQL hoặc chấm đúng/sai trong view.
-   Mở [assembly-review.jsp:96](../tomcat-app/src/main/webapp/WEB-INF/views/assembly-review.jsp#L96).
-7. **Hai nhãn nhiệm vụ khác nhau thế nào?** Nháp/mở/đóng là trạng thái nhiệm vụ;
-   chưa nộp/chờ chấm/cần bổ sung/đạt/chưa đạt là trạng thái của người được giao.
-   Bean đọc bài nộp/lần chấm, không đoán từ điểm; cờ nộp muộn hiển thị riêng.
-   Mở [TaskRecipient:106](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/TaskRecipient.java#L106)
-   và [task-list.jsp:46](../tomcat-app/src/main/webapp/WEB-INF/views/task-list.jsp#L46).
-
-### Run/redeploy bản final an toàn
-
-Artifact đã kiểm từ commit sạch `2ff67f1`, không gồm WIP:
-`D:/Web-Pro/qa-evidence/final-demo-11c-20261016/clean-source/tomcat-app/target/robot-assembly-lab.war`.
-Checksum và nguồn build nằm trong `artifact-manifest.json` cùng thư mục bằng chứng.
-WAR giữ template JNDI `${DB_*}` của repo; không nhúng `.env` hoặc giá trị DB local.
-
-Tại lần chốt16/10, IntelliJ ROOT.xml vẫn trỏ tới
-`D:/Web-Pro/robot-engine-website/tomcat-app/target/robot-assembly-lab`,8080 là bản cũ.
-Không Maven clean package vào target này khi Tomcat/IDE đang dùng.
-
-Người dùng tự Stop cấu hình Tomcat đang chạy trong IntelliJ, sau đó có thể dùng
-Deployment → External Source → WAR sạch trên, application context `/`.
-Không để hai deployment cùng context `/`; ghi lại lựa chọn cũ trước khi đổi để
-có thể chọn lại. Giữ JDK17, VM options DB_* và cấu hình còn lại. Không chọn lại
-artifact build từ working tree rồi gọi đó là commit sạch: sáu WIP vẫn chưa được duyệt.
-Người dùng tự Run; agent chỉ đối chiếu HTTP sau khi nhận xác nhận đã deploy.
-Đây là hướng dẫn, chưa phải ghi nhận thao tác triển khai đã xảy ra.
-
-Sau Run cần kiểm byte JS/CSS/cache version, menu → bộ chọn quiz, dashboard3/2/1
-và nhãn cá nhân trên nhiệm vụ. HTTP200 hoặc trình duyệt còn cache không đủ kết luận.
-Trạng thái triển khai/dataset cập nhật tại mục chốt final trong báo cáo11c.
-## Xem ngay mô hình vừa lắp — 18/10/2026
-
-Tại `/assembly-review?session=…`, đăng nhập chủ phiên đã hoàn tất: chỉ vào khung
-**Mô hình em đã lắp — Phiên #…**, đối chiếu phiên bản spec. Kéo để xoay camera,
-bấm Phóng to/Thu nhỏ/Căn giữa rồi tải lại: bố cục cuối giữ nguyên. Đây là thao tác
-chỉ đọc, không tạo phiên hoặc ghi placements. Ảnh phía dưới là **Ảnh tham khảo**;
-SVG dành đối chiếu/in; nút phát lại riêng cho trình tự đã làm, không thay bố cục cuối.
-
-Khi cô hỏi nguồn dữ kiện: mở
-[AssemblyReviewPageServlet:76](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L76),
-[AssemblyReview:36](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyReview.java#L36),
-[assembly-result-viewer.jspf:6](../tomcat-app/src/main/webapp/WEB-INF/views/assembly-result-viewer.jspf#L6)
-và [assembly-result-viewer.js:44](../assets/js/assembly-result-viewer.js#L44).
-Servlet kiểm owner, XxxDB đọc spec đã ghim; JavaBean kiểm dữ kiện; JSP c:out JSON;
-JavaScript chỉ dựng hình và điều khiển camera. Không mô phỏng điện/vật lý.
-Phiên GROUP cũ không có pose từng vật thể nên không giả dựng kết quả lịch sử.
-Xem trạng thái triển khai và giới hạn kiểm tại `ASSEMBLY_REVIEW_3D_QA_REPORT.md`.
+**Cách nói:** chỉ đọc phần “Nói”; phần “Cô hỏi” là câu trả lời khi được hỏi, không đọc hết.
+Phần chính khoảng5–6 phút nếu có phiên chuẩn bị sẵn. Nếu cô chỉ cho3 phút, ưu tiên mục1–4;
+mục5–7 mở theo câu hỏi, không chạy qua từng menu để kể danh sách tính năng.
+
+## 1. Website phục vụ ai, làm việc gì? — 20 giây
+
+**Màn hình:** Trang chủ → Học → Mẫu robot (`/pages/mau-robot.html`). Chỉ đọc.
+
+**Nói:** “Thưa cô, website của nhóm em giúp người mới học lắp robot từ các linh kiện.
+Luồng chính là chọn mẫu, tự lắp từng vật thể, nhận giải thích khi lắp sai và xem lại sản phẩm đã lưu.
+Sau đó người học xem quy trình, phiếu kết quả và làm bài kiểm tra của mẫu vừa học.
+Khi muốn tự chọn cấu hình, người học chuyển sang Xưởng thiết kế để kiểm tra tương thích và xuất hồ sơ lắp.”
+
+**Cô hỏi: Có phải mô phỏng robot thật không?**
+“Dạ, đây là mô hình học tập với luật lắp ghép và cấu hình cơ bản. Website không mô phỏng điện,
+vật lý hay firmware, nên kết quả không thay thế kiểm tra thực tế khi lắp robot thật.”
+
+**Cô hỏi: Chức năng chính là bán linh kiện hay làm quiz?**
+“Dạ, chính là học lắp ráp có kiểm chứng và xem lại kết quả của mình. Quiz kiểm tra kiến thức sau khi lắp;
+cửa hàng hỗ trợ chuẩn bị vật tư, không phải mục đích chính của website.”
+
+## 2. Chọn mẫu → chuẩn bị → tự lắp, sai được giải thích — 90 giây
+
+**Bấm:** USER chọn **Tránh vật cản → Lắp mẫu này**, chuẩn bị linh kiện, vào phòng3D.
+Mở phiên thực hành của mình. Việc bắt đầu/chuẩn bị/gắn có ghi DB.
+
+**Nói:** “Em chọn một mẫu cụ thể. Phần chuẩn bị xác nhận bộ linh kiện;
+đánh dấu đủ bộ không có nghĩa là đã lắp xong. Trong phòng3D, mỗi động cơ, bánh xe hoặc servo là một vật thể riêng.
+Em phải kéo từng vật thể tới điểm gắn và chọn đúng hướng.”
+
+**Thao tác minh họa:** Gắn khung trước. Thử động cơ trái hướng0°, xem thông báo từ chối;
+xoay90° bằng nút hoặc Q/E rồi kéo-thả vào điểm gắn. Chỉ đọc là thành công khi server đã nhận.
+Nếu khung đã gắn sẵn, không lắp lại khung để minh họa.
+
+**Nói:** “Hướng này bị từ chối. Khi em sửa đúng hướng, server mới lưu.
+Server kiểm loại linh kiện, điểm gắn, hướng và bộ phận cha; giao diện không tự chấm đúng.”
+
+**Cô hỏi: Kiểm ở JavaScript có đủ không?**
+“Dạ không. JavaScript nhận thao tác và gửi yêu cầu. Servlet kiểm đăng nhập, token và tham số;
+JavaBean kiểm luật từ bố cục/spec đã lưu. XxxDB chỉ ghi kết quả hợp lệ trong transaction.”
+
+**Mở code khi hỏi:**
+
+- [AssemblySessionServlet.java:434](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblySessionServlet.java#L434): CSRF;
+  [dòng466](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblySessionServlet.java#L466): nhận ý định gắn.
+- [AssemblyLayout.java:232](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L232), `validateAttach`:
+  kiểm phiên/version, loại linh kiện, hướng và cha. `validateDetach` ở dòng268 chặn tháo cha còn con.
+- [AssemblyPlacementDB.java:169](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L169), `change`:
+  một connection/transaction, đọc có khóa, gọi bean rồi lưu placement và event.
+
+**Cô hỏi: Năm mẫu có đều kéo-thả không?**
+“Dạ, cả năm mẫu có phiên lắp chi tiết. Khay lấy số vật thể từ dữ liệu từng mẫu;
+ví dụ cánh tay mini có bốn servo riêng. Phiên nhóm cũ vẫn giữ lịch sử, không bị đổi thành phiên chi tiết.”
+
+**Cô hỏi: Góc90°/270° có chứng minh trục động cơ quay đúng cơ khí không?**
+“Dạ, đó là quy ước lắp trái/phải của mô hình3D giản lược. Hình khối động cơ không mô phỏng chính xác chiều trục.”
+
+## 3. Sửa thao tác → hoàn tất do server xác nhận — 30 giây
+
+**Bấm:** Gắn một chi tiết lá → **Hoàn tác** → gắn lại. Nếu phiên đã chuẩn bị gần xong, lắp chi tiết cuối và **Hoàn tất**.
+Đây là thao tác ghi DB; không làm trên phiên dự phòng đã hoàn tất.
+
+**Nói:** “Em có thể hoàn tác thao tác vừa làm, nhưng server vẫn kiểm lại quan hệ cha–con.
+Chỉ khi đủ các điểm bắt buộc và bố cục hợp lệ thì server mới xác nhận hoàn tất.
+Tải lại trang vẫn đọc được bố cục đã lưu.”
+
+**Cô hỏi: Hai tab cùng sửa có ghi đè nhau không?**
+“Client gửi expectedLayoutVersion. Server khóa và so với phiên bản hiện tại;
+nếu tab đã cũ thì trả xung đột để tải lại, không ghi đè âm thầm.”
+
+**Chỉ code:** [AssemblyLayout.java:245](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L245)
+và [AssemblyPlacementDB.java:181](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L181).
+Khóa và lọc chủ ở [AssemblyPlacementDB.java:308](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L308).
+Kiểm toàn bộ điểm bắt buộc ở [AssemblyLayout.java:312](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L312), `check`.
+
+## 4. Hoàn tất rồi người học nhận được gì? — 60 giây
+
+**Bấm:** **Xem kết quả** → `/assembly-review?session=...`. Nếu mở kết quả dự phòng, nói rõ từ đầu.
+Xoay/zoom mô hình, chỉ bốn phần, mở link quiz đúng mẫu. Xem kết quả/đề bài là đọc;
+chỉ khi bấm **Nộp bài** quiz mới ghi điểm.
+
+**Nói:** “Sau khi hoàn tất, em xem ngay mô hình của chính phiên vừa lưu, không phải mô hình mặc định theo tên robot.
+Ảnh bên dưới chỉ là ảnh tham khảo. Trang có bốn phần: mẫu hoàn chỉnh, quy trình lắp,
+phiếu kết quả và kiểm tra kiến thức. Quy trình gồm bước chuẩn và thứ tự em thực sự đã làm;
+em còn có thể mở phát lại để xem quá trình. Quiz dẫn đúng mẫu này để học tiếp.”
+
+**Cô hỏi: Làm sao biết đó là kết quả của em?**
+“Servlet lấy user từ session, đọc phiên theo cả id và user_id. Layout lấy spec_id gắn với phiên,
+các instance và placements cuối đã lưu; không lấy spec mới nhất rồi tự dựng lại.”
+
+**Mở code:** [AssemblyReviewPageServlet.java:40](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L40),
+đọc chủ ở dòng46; đọc layout ở dòng76; payload qua request attribute ở dòng87 và forward ở dòng66.
+[AssemblyReview.java:36](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyReview.java#L36)
+kiểm dữ kiện đủ để hiển thị.
+
+**Cô hỏi: JSP làm gì? JavaScript có sửa kết quả không?**
+“JSP trình bày dữ kiện bằng EL/JSTL. JSON đi qua c:out trong phần tử HTML ẩn;
+JavaScript đọc textContent, dựng hình theo từng placement và chỉ điều khiển camera.
+GET xem lại không gắn/tháo hoặc chấm lại.”
+
+**Mở code:** [assembly-result-viewer.jspf:7](../tomcat-app/src/main/webapp/WEB-INF/views/assembly-result-viewer.jspf#L7),
+[assembly-result-viewer.js:43](../assets/js/assembly-result-viewer.js#L43): tọa độ/góc đã lưu;
+[assembly-review.jsp:75](../tomcat-app/src/main/webapp/WEB-INF/views/assembly-review.jsp#L75): include phần hiển thị.
+
+**Cô hỏi: Quiz ai chấm?**
+“Server đọc câu hỏi/lựa chọn hợp lệ rồi chấm. Client không gửi điểm để được tin là đúng.”
+[QuizServlet.java:62](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/QuizServlet.java#L62)
+nhận POST, gọi `QuizAttemptDB.submitAttempt` ở dòng87;
+[QuizQuestion.java:95](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/QuizQuestion.java#L95)
+kiểm đáp án. Mở đề không phải nộp bài.
+
+## 5. Từ lắp theo mẫu sang tự thiết kế — 45 giây
+
+**Màn hình:** Học → **Xưởng thiết kế** (`/designs`), chọn linh kiện/mục tiêu,
+mở phòng lắp; **Kiểm tra thiết kế** → **Hồ sơ thiết kế**. Tạo/gắn/kiểm có ghi DB;
+chỉ mở một hồ sơ có sẵn là đọc. Không cần tạo thiết kế mới nếu thời gian ngắn.
+
+**Nói:** “Nếu người học có bộ linh kiện khác, Xưởng cho tự thiết kế trong bộ linh kiện được hỗ trợ kiểm chứng.
+Server kiểm điểm gắn và ba lớp: lắp ghép cơ khí, đủ vai trò theo mục tiêu, tương thích cấu hình cơ bản.
+Ví dụ động cơ DC cần mạch điều khiển, số động cơ không được vượt số kênh điều khiển.
+Linh kiện chưa có luật được báo chưa hỗ trợ, không mặc định đúng.
+Hồ sơ có bản vẽ2D, danh sách vật tư và phần còn thiếu, trình tự lắp, kết quả kiểm và lưu ý an toàn.”
+
+**Cô hỏi: Tự thiết kế đạt thì có tính hoàn thành một mẫu chính thức không?**
+“Dạ không. Đây là thiết kế riêng theo mục tiêu/luật tương thích giản lược,
+không thay bằng chứng hoàn thành mẫu chính thức và không chứng nhận điện hay cơ khí ngoài đời.”
+
+**Mở code:** [DesignLayout.java:91](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DesignLayout.java#L91),
+`validateAttach`; [DesignCheck.java:65](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DesignCheck.java#L65),
+`evaluate`; [DesignSheetServlet.java:21](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/DesignSheetServlet.java#L21)
+đọc đúng chủ và chuyển dữ kiện sang JSP. Luật có phiên bản, thiết kế cũ giữ phiên bản đã dùng.
+
+## 6. Chức năng phụ phục vụ luồng chính thế nào? — 30 giây, chọn một ví dụ
+
+**Nói:** “Các chức năng phụ được nối với việc học lắp ráp: xem thông tin linh kiện khi chưa hiểu,
+tra cứu khi gặp lỗi, luyện nối dây/chẩn đoán để hiểu thêm về cấu hình, rồi xem kết quả học tập.
+Giảng viên giao nhiệm vụ, người học nộp bằng chứng và nhận phản hồi.
+Bộ linh kiện và cửa hàng giúp chuẩn bị vật tư cho thiết kế; cửa hàng hiện là mô phỏng.”
+
+**Bấm minh họa một đường:** từ thông báo sai → **Xem thông tin linh kiện** hoặc từ mẫu → **Bài nối dây**.
+Nếu chọn tra cứu: lọc đúng robot → mở chi tiết → luyện chẩn đoán khi có bài tương ứng.
+Không bấm mọi module để thay cho việc trình bày một hành trình.
+
+**Cô hỏi: Tra cứu khác luyện chẩn đoán/nối dây thế nào?**
+“Tra cứu cho đọc hướng dẫn. Bài luyện có lượt làm, dữ liệu thao tác và server phản hồi/chấm theo luật bài.”
+[WiringExercise.java:314](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/WiringExercise.java#L314), `grade`.
+
+**Cô hỏi: Nhiệm vụ đang mở có nghĩa em đã đạt không?**
+“Dạ không. Đang mở là trạng thái nhiệm vụ; Chưa nộp/Chờ chấm/Cần bổ sung/Đạt/Chưa đạt là trạng thái cá nhân.
+Kết luận lấy từ bài nộp và lần chấm, không suy từ một điểm trên trình duyệt.”
+[TaskRecipient.java:106](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/TaskRecipient.java#L106), `statusLabel`.
+Luyện tự do không tự thành điểm nhiệm vụ; làm quiz nhiệm vụ từ đúng vòng trong chi tiết nhiệm vụ.
+
+## 7. Nếu cô yêu cầu chỉ kiến thức môn học — 60 giây
+
+**Nói:** “Nhóm dùng Java17, Servlet/JSP trên Tomcat9 và JDBC/MySQL.
+Với trang kết quả, request vào Servlet; Servlet kiểm session, gọi XxxDB lấy dữ kiện,
+JavaBean kiểm/tổng hợp, setAttribute rồi forward tới JSP. Với phòng3D, Servlet trả JSON,
+JavaScript dựng giao diện tương tác; việc kiểm đúng/sai vẫn ở server.”
+
+| Cô hỏi | Trả lời ngắn và chỗ mở code |
+|---|---|
+| Servlet nhận form ở đâu? | [MyKitServlet.java:32](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/MyKitServlet.java#L32) là `doPost`; đọc `getParameter` dòng55. `getParameterValues` cho nhiều checkbox: [AdminTaskServlet.java:52](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AdminTaskServlet.java#L52). |
+| forward khác redirect? | Forward chuyển tới JSP trong cùng request, giữ attribute: [AssemblyReviewPageServlet.java:66](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L66). Lưu form thành công rồi redirect GET là PRG: [MyKitServlet.java:63](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/MyKitServlet.java#L63); refresh không gửi lại POST đó. |
+| JavaBean là gì? | [AssemblyLayout.java:9](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L9): Serializable, field private, constructor rỗng/getter/setter; `validateAttach` chứa luật. Bean không đọc request hoặc tự gọi JDBC. |
+| User lấy từ URL à? | Không. [SessionUtil.java:47](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java#L47) đọc HttpSession và kiểm session_version; [dòng82](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java#L82) kiểm ADMIN ở server. Ẩn menu không thay kiểm quyền. |
+| JDBC/pool nằm đâu? | [ConnectionPool.java:28](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ConnectionPool.java#L28) lookup JNDI; `getConnection` dòng42. [UserDB.java:129](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/UserDB.java#L129) PreparedStatement/bind/ResultSet; `finally` đóng và trả connection. [DBUtil.java:20](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/DBUtil.java#L20) đóng statement. |
+| CSRF khác đăng nhập? | Session xác định ai; quyền xác định được làm gì; CSRF kiểm request ghi mang token đúng. Form dùng hidden token ở [my-kit.jsp](../tomcat-app/src/main/webapp/WEB-INF/views/my-kit.jsp); API dùng X-CSRF-Token. |
+| Vì sao JSP không tự tính đúng/sai? | JSP là view, dùng getter/EL/JSTL để trình bày. Luật ở JavaBean và server; trình duyệt có thể bị sửa nên không tin điểm/mode/role client gửi. |
+
+Nếu cô hỏi sâu hơn: mở [file vấn đáp đầy đủ](ON_TAP_VAN_DAP_CUOI_KY.md).
+Không khẳng định mọi cú pháp cũ trong repo đều là nội dung slide; không bịa số chương/slide.
+
+## Tập ngay trong 10 phút
+
+1. Hai phút: nói mục1 và nêu đúng một đường đi chính, không đọc tên toàn bộ menu.
+2. Ba phút: tự bấm thao tác sai → giải thích → sửa đúng; nói ai quyết định và ai lưu.
+3. Hai phút: mở kết quả, chỉ mô hình đúng phiên và đủ bốn phần; phân biệt ảnh tham khảo/replay.
+4. Ba phút: tự trả lời “user lấy đâu?”, “bean kiểm gì?”, “JDBC chỗ nào?”, “forward hay redirect?”.
+   Mỗi câu mở đúng một file và method làm bằng chứng.
+
+Nếu chưa nhớ, trả lời theo dữ liệu: **người dùng bấm gì → request gửi gì → Servlet nào nhận →
+bean/XxxDB xử lý gì → response trả gì → người dùng thấy gì**. Không đọc thuộc tên package thay cho giải thích chức năng.

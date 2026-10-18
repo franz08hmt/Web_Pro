@@ -1,5 +1,16 @@
 # Robot Assembly Lab
 
+## Ôn và trình bày final
+
+- Bắt đầu với [kịch bản demo5–6 phút, vấn đáp ngay từng đoạn và file:dòng](docs/TEAM_FLOW_DEMO_GUIDE.md).
+- Khi cô hỏi sâu, dùng [tài liệu vấn đáp theo code](docs/ON_TAP_VAN_DAP_CUOI_KY.md).
+- Luồng chính: **chọn mẫu → lắp từng vật thể có server kiểm chứng → xem mô hình đã lưu,
+  quy trình, phiếu kết quả → quiz**. Xưởng thiết kế là nhánh tự chọn linh kiện và kiểm tương thích.
+- Chạy bằng cấu hình duy nhất **Tomcat 9.0.120**, Java17, context `/`, tại `http://localhost:8080/`.
+  Không chạy helper Start cùng IntelliJ.8081 là môi trường riêng, không suy kết quả giữa hai cổng.
+- Tài liệu kiến trúc/API/ERD là nguồn tra cứu; các báo cáo QA giữ làm bằng chứng lịch sử,
+  số test/runtime trong mỗi báo cáo chỉ thuộc lần kiểm ghi ở đó.
+
 ## Cập nhật8080 — kéo-thả đủ5 mẫu (17/10/2026)
 
 Đã nghiệm thu trực tiếp `http://localhost:8080/pages/mau-robot.html` trên DB
@@ -315,7 +326,7 @@ WHERE email = 'admin@example.com';
   `ArrayList`/`HashMap`; ngày giờ dùng `Date` và `SimpleDateFormat` tạo riêng mỗi
   lần theo giờ Việt Nam. JSP nhận các getter boolean trạng thái, Servlet dùng
   `String url` + forward theo slide. Xem bảng chương/slide và Hỏi–Đáp trong
-  [hướng dẫn demo](docs/TEAM_FLOW_DEMO_GUIDE.md#hồ-sơ-học-tập-bám-slide-nào).
+  [hướng dẫn demo và mở code](docs/TEAM_FLOW_DEMO_GUIDE.md).
 
 ## Kiểm tra
 
@@ -353,7 +364,6 @@ Bảng phân công chi tiết, luồng code và câu hỏi dự kiến theo từ
 - [ERD](docs/erd.md)
 - [Luồng demo và câu hỏi giảng viên](docs/TEAM_FLOW_DEMO_GUIDE.md)
 - [Ôn tập vấn đáp cuối kỳ (một file duy nhất: kiến thức chapter, luồng code, phân công, câu hỏi–đáp)](docs/ON_TAP_VAN_DAP_CUOI_KY.md)
-- [Ôn kiểm tra code giữa kỳ (MVC, JavaMail Chapter 14)](docs/ON_TAP_GIUA_KY_WEB_2026.md)
 
 ## Phòng thực hành nối dây (Đợt 7, chặng 1)
 

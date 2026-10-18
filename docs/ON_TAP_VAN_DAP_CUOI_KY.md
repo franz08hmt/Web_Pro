@@ -1,5 +1,11 @@
 # Ôn tập vấn đáp cuối kỳ — đọc kiến thức ngay trong code
 
+**Để tập trình bày ngay:** mở [kịch bản final hiện tại](TEAM_FLOW_DEMO_GUIDE.md).
+File đó đi theo hành trình người học, có lời nói, câu hỏi tại từng bước và file:dòng
+đã đối chiếu ngày18/10/2026. File này giữ làm phần tra cứu sâu theo chủ đề/thành viên;
+các trích đoạn cũ bên dưới cần tìm thêm tên method nếu source đã dịch dòng.
+Không dùng bài ôn JavaMail/JPA của bài tập độc lập làm bằng chứng tính năng Robot Assembly Lab.
+
 Đối chiếu source ngày 07/10/2026. Đây là tài liệu để **đọc, chỉ code và giải thích chức năng**,
 ưu tiên phần của Huỳnh Minh Tài: request/response, đăng nhập–session–quyền,
 phiên lắp ráp–phiếu kết quả, nhiệm vụ A/B, hồ sơ học tập và cửa hàng/giỏ hàng/đơn mô phỏng.
