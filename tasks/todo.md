@@ -427,8 +427,15 @@ slides`, không push; AGENT_HANDOFF.md tiếp tục untracked.
 ## Mô hình 3D đúng phiên trong trang hoàn thiện — 18/10/2026
 
 - [x] M0: khảo sát owner/spec/pose, snapshot WIP và baseline sạch ngoài repo.
-- [ ] M1: test tái hiện thiếu viewer và khóa dữ liệu đúng phiên.
-- [ ] M2: Servlet → payload escape → JSP → viewer camera chỉ đọc, fallback.
-- [ ] M3: kiểm năm mẫu và đối chiếu pose phòng lắp, responsive/lifecycle.
-- [ ] M4: full test/package, hash DB/WIP, tài liệu và gói triển khai chờ duyệt.
+- [x] M1: test tái hiện thiếu viewer và khóa dữ liệu đúng phiên.
+- [x] M2: Servlet → payload escape → JSP → viewer camera chỉ đọc, fallback.
+- [x] M3: kiểm năm mẫu và đối chiếu pose phòng lắp, responsive/lifecycle.
+- [x] M4: full test/package, hash DB/WIP, tài liệu và gói triển khai chờ duyệt.
+- [ ] Triển khai 8080/8081: chưa được duyệt, không tự thay artifact/khởi động.
+
+259 Node/163 JUnit đạt; 74 kiểm browser/HTTP trên WAR sạch 92f7954.
+640 request GET sau đăng nhập, không mutation nghiệp vụ; 55/55/54 bảng của
+clone QA/DB8080/DB demo không đổi, 10 file bảo vệ giữ hash. QA8082 đã dọn.
+Giới hạn GROUP COMPLETED/lịch sử spec cũ chỉ kiểm bean/fixture; chi tiết tại
+docs/ASSEMBLY_REVIEW_3D_QA_REPORT.md. Không push.
 

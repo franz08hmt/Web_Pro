@@ -818,3 +818,10 @@ Bằng chứng: D:/Web-Pro/qa-evidence/assembly-review-3d-20261018/.
 Baseline snapshot: 159 JUnit đạt; Node trước package 252 đạt/1 skip artifact
 chưa dựng; chạy lại sau package để kiểm đầy đủ, không sửa/nới test.
 
+Kết quả: baseline sau package 253 Node/159 JUnit; bản sửa sạch 92f7954 đạt
+259 Node/163 JUnit, không fail/skip. Năm phiên QA92–96 hiện 10/11/8/12/12 vật thể,
+khớp pose với phòng lắp; 74 kiểm browser/HTTP, 640 GET và không mutation nghiệp vụ.
+Hash ba DB và 10 file bảo vệ giữ nguyên. WAR major61, QA8082 đã dọn.
+Gói triển khai và các giới hạn live lịch sử: docs/ASSEMBLY_REVIEW_3D_QA_REPORT.md.
+Chưa triển khai 8080/8081; không push. Không mở rộng sửa module khác.
+

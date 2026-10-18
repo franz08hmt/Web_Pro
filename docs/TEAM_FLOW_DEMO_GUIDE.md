@@ -1170,3 +1170,20 @@ Người dùng tự Run; agent chỉ đối chiếu HTTP sau khi nhận xác nh�
 Sau Run cần kiểm byte JS/CSS/cache version, menu → bộ chọn quiz, dashboard3/2/1
 và nhãn cá nhân trên nhiệm vụ. HTTP200 hoặc trình duyệt còn cache không đủ kết luận.
 Trạng thái triển khai/dataset cập nhật tại mục chốt final trong báo cáo11c.
+## Xem ngay mô hình vừa lắp — 18/10/2026
+
+Tại `/assembly-review?session=…`, đăng nhập chủ phiên đã hoàn tất: chỉ vào khung
+**Mô hình em đã lắp — Phiên #…**, đối chiếu phiên bản spec. Kéo để xoay camera,
+bấm Phóng to/Thu nhỏ/Căn giữa rồi tải lại: bố cục cuối giữ nguyên. Đây là thao tác
+chỉ đọc, không tạo phiên hoặc ghi placements. Ảnh phía dưới là **Ảnh tham khảo**;
+SVG dành đối chiếu/in; nút phát lại riêng cho trình tự đã làm, không thay bố cục cuối.
+
+Khi cô hỏi nguồn dữ kiện: mở
+[AssemblyReviewPageServlet:76](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L76),
+[AssemblyReview:36](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyReview.java#L36),
+[assembly-result-viewer.jspf:6](../tomcat-app/src/main/webapp/WEB-INF/views/assembly-result-viewer.jspf#L6)
+và [assembly-result-viewer.js:44](../assets/js/assembly-result-viewer.js#L44).
+Servlet kiểm owner, XxxDB đọc spec đã ghim; JavaBean kiểm dữ kiện; JSP c:out JSON;
+JavaScript chỉ dựng hình và điều khiển camera. Không mô phỏng điện/vật lý.
+Phiên GROUP cũ không có pose từng vật thể nên không giả dựng kết quả lịch sử.
+Xem trạng thái triển khai và giới hạn kiểm tại `ASSEMBLY_REVIEW_3D_QA_REPORT.md`.

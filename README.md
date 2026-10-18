@@ -533,3 +533,11 @@ sau đó `npm test` tại repo. Tránh để compiler IDE khác phiên bản ghi
 `tomcat-app/target/robot-assembly-lab`; XML artifact exploded2 riêng không chứng
 minh đang được phục vụ. Bằng chứng source/commit/artifact/HTTP và giới hạn:
 docs/PHASE11B_REVIEW_FIX_QA_REPORT.md.
+### Xem mô hình của chính phiên trên trang hoàn thiện
+
+Phiên DETAILED đã hoàn tất có khung 3D chỉ đọc ngay trong `/assembly-review`:
+xoay camera, phóng to/thu nhỏ, căn giữa. Dữ kiện lấy từ spec/placements của phiên,
+không từ mẫu mặc định; ảnh catalog ghi rõ Ảnh tham khảo. GROUP cũ giữ lịch sử,
+không giả dựng vị trí/hướng chưa được lưu. SVG 2D vẫn là phương án in/dự phòng.
+Không cần migration/seed/dependency mới. Gói WAR và trạng thái chờ triển khai:
+[báo cáo QA](docs/ASSEMBLY_REVIEW_3D_QA_REPORT.md).

@@ -1198,3 +1198,30 @@ quyết định nhãn theo luật đã có;
 [task-list.jsp:46](../tomcat-app/src/main/webapp/WEB-INF/views/task-list.jsp#L46)
 chỉ c:out nhãn, không suy Đạt/Cần bổ sung từ điểm. Chưa có bài nộp vẫn do bean
 phân biệt Chưa nộp và quá hạn; cờ nộp muộn là dữ kiện riêng của bài nộp.
+## Mô hình kết quả ngay trong trang hoàn thiện — 18/10/2026
+
+**Vì sao đây là mô hình của đúng phiên?**
+[Servlet:46](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L46)
+đọc phiên theo id và user từ session; XxxDB đọc spec_id đã ghim cùng placements,
+không chọn spec mới nhất theo robot. [AssemblyReview:36](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyReview.java#L36)
+kiểm dữ kiện trước khi cho hiển thị, kể cả phiên bản spec cũ.
+
+**JSP có tự dựng hoặc chấm lại mô hình không?**
+Không. [Fragment:6](../tomcat-app/src/main/webapp/WEB-INF/views/assembly-result-viewer.jspf#L6)
+dùng EL/JSTL và c:out trong div ẩn. JavaScript đọc textContent, JSON.parse và dùng
+bộ hình khối sẵn có. Luật nghiệp vụ vẫn ở JavaBean; Servlet chỉ điều phối.
+
+**Vì sao kéo mô hình tại đây không đổi kết quả?**
+[Viewer:54](../assets/js/assembly-result-viewer.js#L54) chỉ đổi camera, không có
+API mutation/gắn/tháo. GET xem lại không tăng version, thêm event hay sửa DB.
+Khi rời trang, [dispose:67](../assets/js/assembly-result-viewer.js#L67) dọn tài nguyên WebGL/listener.
+
+**Ảnh tham khảo, mô hình kết quả và replay khác gì?**
+Ảnh tham khảo là ảnh catalog. Mô hình kết quả dựng ngay từ placements cuối của
+phiên. Replay dùng nhật ký để xem lại trình tự và có trang riêng. GROUP cũ không
+lưu tọa độ/hướng nên chỉ giữ ảnh, lịch sử và phiếu, không giả mô hình chính xác.
+
+**Tắt JavaScript hoặc in thì còn xem được gì?**
+Servlet đã dựng nội dung JSP nên vẫn đọc kết quả/nhật ký/phiếu và SVG 2D; khi in
+ẩn canvas/công cụ. JSON qua c:out trong HTML thường giúp dữ liệu chứa ký tự đặc
+biệt không trở thành mã thực thi; không chèn JSON thô vào script.
