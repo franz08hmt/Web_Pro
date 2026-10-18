@@ -880,3 +880,20 @@ trước bằng chứng; không hướng dẫn lấy bài luyện để giả đ
 Chỉ sửa tài liệu, kiểm link/code anchor và hash WIP; không chạy ghi DB hoặc
 nhận kết quả kiểm cũ là lượt test mới. Bằng chứng demo-script-20m-20261018 ngoài Git.
 
+## Comment kiến thức cạnh code trình bày — 18/10/2026
+
+Theo yêu cầu người dùng, thêm65 comment ngắn tại40 file được script dẫn:
+Java/JavaScript dùng //, JSP dùng comment HTML hợp lệ không hiện thành chữ trên UI.
+Giải thích request/parameter, session/role/CSRF, JavaBean, JDBC, transaction,
+forward/PRG, EL/JSTL và ranh giới renderer/server; không đổi luật hoặc luồng xử lý.
+Đã cập nhật tham chiếu dòng trong script/ôn tập và metadata Bản đồ môn học;
+JS đổi nội dung có tăng cache version tại các nơi nạp.
+
+Người dùng duyệt thêm comment ở hai WIP TaskServlet/ConnectionPool qua câu trả lời
+“file nào cần comment thông tin sau 2 dấu gạch chéo thì cho thông tin vào đó”.
+Đã backup byte/diff đầu lượt ngoài Git; chỉ đưa patch thêm // trên bản HEAD vào
+index, giữ nguyên phần WIP trong working tree. Tám file bảo vệ còn lại không sửa.
+Kiểm bỏ riêng comment mới phải thu lại đúng byte ban đầu; không stage nguyên
+hai file WIP. Build/test trên snapshot index sạch ngoài repo, không ghi target IDE.
+Bằng chứng: qa-evidence/code-comments-20261018 ngoài repo; không push/deploy/restart.
+

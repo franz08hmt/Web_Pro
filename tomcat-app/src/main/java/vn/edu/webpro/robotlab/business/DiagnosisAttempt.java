@@ -30,6 +30,7 @@ public class DiagnosisAttempt implements Serializable {
 
     /** Chốt lựa chọn và điểm từ nhật ký server, không nhận danh sách đã kiểm tra từ form. */
     public void conclude(long causeId, long actionId) {
+        // Kết luận dựa trên quan sát đã ghi; client không tự đặt điểm cho lượt chẩn đoán.
         if (!canConclude() || scenario == null) {
             throw new IllegalArgumentException("Lượt đã chốt hoặc không hợp lệ.");
         }

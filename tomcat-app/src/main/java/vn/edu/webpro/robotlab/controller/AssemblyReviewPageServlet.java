@@ -38,6 +38,7 @@ public class AssemblyReviewPageServlet extends HttpServlet {
         response.setHeader("Cache-Control", "no-store");
         try {
             User user = SessionUtil.getCurrentUser(request);
+            // Session xác định chủ; không tin userId hoặc role do client cung cấp.
             if (user == null) {
                 response.sendRedirect(request.getContextPath() + "/pages/tai-khoan.html");
                 return;
@@ -64,6 +65,7 @@ public class AssemblyReviewPageServlet extends HttpServlet {
         }
         String url = "/WEB-INF/views/assembly-review.jsp";
         getServletContext().getRequestDispatcher(url).forward(request, response);
+        // Forward dùng cùng request/response; JSP trong WEB-INF đọc được các attribute vừa đặt.
     }
 
     private void prepareCompleted(HttpServletRequest request, AssemblyReview review, long userId)
@@ -74,6 +76,7 @@ public class AssemblyReviewPageServlet extends HttpServlet {
         if (session.isDetailed()) {
             try {
                 layout = AssemblyPlacementDB.selectLayout(session.getId(), userId);
+                // Đọc spec_id và final placements của phiên, không thay bằng spec mới nhất theo robotId.
             } catch (SQLException e) {
                 request.setAttribute("reviewLayoutWarning",
                         "Tạm chưa đọc được bố cục cuối của phiên này. Các thông tin còn lưu được giữ bên dưới.");
@@ -85,6 +88,7 @@ public class AssemblyReviewPageServlet extends HttpServlet {
             }
             if (review.canDisplayLayout(layout)) {
                 request.setAttribute("reviewLayoutJson", AssemblyPlacementJson.reviewLayout(layout));
+                // Dữ kiện chỉ xem chuyển qua request; JSP escape trong HTML, JavaScript đọc textContent.
                 request.setAttribute("reviewSpecVersion", layout.getSpec().getVersionNo());
             }
         } else {

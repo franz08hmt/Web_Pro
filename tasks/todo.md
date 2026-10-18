@@ -466,3 +466,7 @@ docs/ASSEMBLY_REVIEW_3D_QA_REPORT.md. Không push.
 - [x] Thêm checklist dữ liệu demo, tách USER/ADMIN bằng context, bảng hướng spec v2,
   điều kiện bằng chứng nhiệm vụ và phương án rút còn15 phút; không sửa app/WIP/DB.
 
+- [x] Thêm comment kiến thức ngắn cạnh code theo yêu cầu, không thay câu lệnh nghiệp vụ.
+- [x] Cập nhật code file:dòng và cache-busting JS; chỉ stage comment được duyệt ở
+  TaskServlet/ConnectionPool, giữ nguyên các sửa WIP có sẵn và8 file bảo vệ khác.
+

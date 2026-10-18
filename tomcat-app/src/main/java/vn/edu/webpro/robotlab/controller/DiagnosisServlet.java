@@ -93,6 +93,7 @@ public class DiagnosisServlet extends HttpServlet {
     /** Ghi phép kiểm tra hoặc kết luận sau khi kiểm token; dùng PRG sau thành công. */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // Servlet nhận action; dữ kiện và luật chẩn đoán được xử lý tại lớp data và bean.
         request.setCharacterEncoding("UTF-8");
         try {
             User user = user(request, response);

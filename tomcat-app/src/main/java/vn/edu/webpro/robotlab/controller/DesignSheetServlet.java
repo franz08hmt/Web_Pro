@@ -20,6 +20,7 @@ public class DesignSheetServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // GET đọc hồ sơ đúng owner, đặt bean vào request rồi forward; không tự kiểm và ghi lại.
         response.setHeader("Cache-Control", "no-store");
         try {
             User user = SessionUtil.getCurrentUser(request);

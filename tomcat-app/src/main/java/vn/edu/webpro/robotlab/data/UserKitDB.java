@@ -128,6 +128,7 @@ public class UserKitDB {
                 } else {
                     String query = "INSERT INTO user_kit_items (user_id,component_id,quantity) VALUES (?,?,?) "
                             + "ON DUPLICATE KEY UPDATE quantity = "
+                            // Nhập từ đơn dùng mức lớn hơn, không cộng lại toàn bộ số đã mua sau mỗi lần bấm.
                             + (importOrders ? "GREATEST(quantity, ?)" : "?") + ", updated_at = CURRENT_TIMESTAMP";
                     ps = connection.prepareStatement(query);
                     ps.setLong(1, userId);

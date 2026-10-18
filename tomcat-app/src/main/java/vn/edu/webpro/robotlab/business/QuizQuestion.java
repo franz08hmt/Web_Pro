@@ -93,6 +93,7 @@ public class QuizQuestion implements Serializable {
 
     /** Chấm một lựa chọn đã chọn: đúng khi optionId thuộc câu này và được đánh dấu is_correct. */
     public boolean isCorrectOption(String optionId) {
+        // Quy tắc đúng/sai thuộc câu hỏi ở server, không lấy cờ đúng từ trình duyệt.
         QuizOption option = findOption(optionId);
         return option != null && option.isCorrect();
     }

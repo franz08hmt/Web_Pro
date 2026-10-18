@@ -177,6 +177,7 @@ public class AssemblyPlacementDB {
         try {
             original = connection.getAutoCommit();
             connection.setAutoCommit(false);
+            // Gộp các bước ghi vào transaction; chỉ commit khi dữ kiện liên quan nhất quán.
             started = true;
             AssemblyLayout layout = load(connection, id, userId, true);
             if (layout == null) {
@@ -275,6 +276,7 @@ public class AssemblyPlacementDB {
             updated.setTransitioned("complete".equals(action));
             event.setLayoutVersionAfter(updated.getLayoutVersion());
             AssemblyEventDB.insert(connection, event, userId);
+            // Event dùng chính connection của placement; rollback không để lại nhật ký chấp nhận giả.
             connection.commit();
             committed = true;
             return updated;
@@ -310,10 +312,12 @@ public class AssemblyPlacementDB {
                     + "FROM assembly_sessions WHERE id = ? AND user_id = ?";
             if (lock) {
                 query += " FOR UPDATE";
+                // Khóa dòng phiên trong transaction trước khi bean kiểm và thao tác ghi thực hiện.
             }
             ps = connection.prepareStatement(query);
             ps.setLong(1, id);
             ps.setLong(2, userId);
+            // Owner lấy từ session được bind cùng id; biết mã phiên chưa đủ quyền đọc hoặc sửa.
             rs = ps.executeQuery();
             if (!rs.next()) {
                 return null;

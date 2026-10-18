@@ -27,6 +27,7 @@
             <form method="post" action="${pageContext.request.contextPath}/my-kit">
                 <input type="hidden" name="csrfToken" value="<c:out value='${sessionScope.csrfToken}'/>">
                 <input type="hidden" name="action" value="save">
+                <!-- Form gửi field theo name; csrfToken được server đối chiếu với token trong session. -->
                 <div class="kit-grid">
                     <c:forEach var="kitItem" items="${kitItems}">
                         <fieldset>

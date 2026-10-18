@@ -312,6 +312,7 @@ public class WiringExercise implements Serializable {
 
     /** Chấm cặp trực tiếp và giải thích đúng/sai/thiếu từ quy tắc của bài. */
     public WiringGrade grade(ArrayList<WiringConnection> input) {
+        // Bean đối chiếu cặp nối theo bài đã công bố; không mô phỏng dòng điện thực tế.
         ArrayList<WiringConnection> wires = normalize(input);
         HashMap<String, WiringRule> byPair = new HashMap<>();
         int n = 0;

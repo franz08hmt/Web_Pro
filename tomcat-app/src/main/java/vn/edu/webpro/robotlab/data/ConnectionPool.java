@@ -27,6 +27,7 @@ public class ConnectionPool {
         try {
             InitialContext ic = new InitialContext();
             dataSource = (DataSource) ic.lookup(JNDI_NAME);
+            // JNDI lấy DataSource Tomcat đã cấu hình; đây là pool JDBC, không phải kết nối HTTP.
         } catch (NamingException e) {
             System.out.println(e);
         }
@@ -40,6 +41,7 @@ public class ConnectionPool {
     }
 
     public Connection getConnection() throws SQLException {
+        // Mượn kết nối từ pool; lớp XxxDB phải trả lại bằng freeConnection trong finally.
         if (dataSource == null) {
             throw new SQLException("Chưa cấu hình Resource jdbc/robotlab trong context.xml.");
         }
@@ -50,6 +52,7 @@ public class ConnectionPool {
         try {
             if (c != null) {
                 c.close();
+                // Với connection của pool, close trả kết nối về pool để request khác có thể dùng lại.
             }
         } catch (SQLException e) {
             System.out.println(e);

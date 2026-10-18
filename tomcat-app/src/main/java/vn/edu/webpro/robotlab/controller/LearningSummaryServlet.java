@@ -52,6 +52,7 @@ public class LearningSummaryServlet extends HttpServlet {
 
             request.setAttribute("user", user);
             request.setAttribute("learningSummary", summary);
+            // EL trong JSP đọc getter của bean; request attribute chỉ dùng cho request đang forward.
             request.setAttribute("sessionCounts", sessionCounts);
             request.setAttribute("totalSessions", summary.getTotalSessions());
             request.setAttribute("completedRobots", completedRobots);

@@ -38,6 +38,7 @@
             </c:if>
             <c:if test="${recipient.canStartDiagnosis}">
                 <form method="post" action="${pageContext.request.contextPath}/tasks">
+                <!-- method chọn POST; action của form là URL nhận, khác input có name là action. -->
                     <input type="hidden" name="csrfToken" value="<c:out value="${sessionScope.csrfToken}"/>">
                     <input type="hidden" name="action" value="diagnosis">
                     <input type="hidden" name="id" value="<c:out value="${task.id}"/>">

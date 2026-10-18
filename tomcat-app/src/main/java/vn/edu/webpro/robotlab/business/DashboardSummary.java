@@ -55,6 +55,7 @@ public class DashboardSummary implements Serializable {
     /** Chọn hành động của phiên đang làm và phiên hoàn tất; không thay đổi trạng thái phiên. */
     public void addAssemblyCards(AssemblySession open, Robot activeRobot,
             AssemblySession complete, Robot finishedRobot) {
+        // Luật chọn thẻ dựa trên phiên đang làm/hoàn tất; JSP chỉ đọc kết quả qua getter.
         DashboardCard active = addCard("Đang lắp ráp", null, "Chọn mẫu để lắp", "/pages/lap-rap.html");
         if (open != null) {
             active.setSummary(open.isDetailed()

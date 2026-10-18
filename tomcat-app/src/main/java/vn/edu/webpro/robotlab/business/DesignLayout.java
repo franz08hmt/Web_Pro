@@ -89,6 +89,7 @@ public class DesignLayout implements Serializable {
 
     /** Luật gắn theo thứ tự đã chốt; client chỉ gửi ý định. */
     public String validateAttach(long instanceId, String slotId, String orientation, int version) {
+        // Kiểm vật thể và điểm gắn theo rule_set đã ghim; client không tự xác nhận tương thích.
         DesignInstance item = findInstance(instanceId);
         DesignSlot slot = resolveSlot(slotId);
         if (item == null || slot == null || slot.getHostInstanceId() == instanceId) {

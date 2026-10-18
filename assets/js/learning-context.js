@@ -13,6 +13,7 @@
     const a = document.createElement("a"); a.textContent = text; a.href = local(path); return a;
   };
   function componentUrl(id) {
+      // encodeURIComponent giữ mã linh kiện là dữ liệu trong URL, không biến nó thành cú pháp URL.
     return local(`pages/linh-kien.html?component=${encodeURIComponent(id)}#component-${encodeURIComponent(id)}`);
   }
   function componentLink(id) {

@@ -54,6 +54,7 @@ public class OrderServlet extends HttpServlet {
         try {
             // Không đọc giá/tổng/user từ body; checkout tiêu thụ cart và giá do DB cung cấp.
             ShopOrder order = OrderDB.checkout(user.getId());
+            // Server dùng giỏ/giá/kho trong DB; không tin tổng tiền hoặc userId từ request.
             ResponseUtil.sendJson(response, HttpServletResponse.SC_CREATED,
                     "{\"data\":" + order.toJson() + "}");
         } catch (IllegalStateException e) {

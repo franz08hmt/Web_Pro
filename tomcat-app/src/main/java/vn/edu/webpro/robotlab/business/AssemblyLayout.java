@@ -7,6 +7,7 @@ import java.util.HashSet;
 
 /** Dữ kiện và luật lắp ráp mô phỏng do server xác thực. */
 public class AssemblyLayout implements Serializable {
+    // JavaBean: field private, constructor rỗng, getter/setter; Serializable không phải lưu DB.
     private boolean unchanged;
     private boolean transitioned;
     private long sessionId;
@@ -230,6 +231,7 @@ public class AssemblyLayout implements Serializable {
 
     /** Kiểm toàn bộ ý định gắn; retry giống hệt không tạo thao tác mới. */
     public String validateAttach(long instanceId, long slotId, String orientation, int expectedVersion) {
+        // Bean kiểm luật trên dữ kiện đã đọc; không phụ thuộc request, JDBC hoặc kết quả client.
         AssemblyInstance instance = findInstance(instanceId);
         AssemblySlot slot = spec.findSlot(slotId);
         if (instance == null || slot == null) {
@@ -243,6 +245,7 @@ public class AssemblyLayout implements Serializable {
             return "SESSION_LOCKED";
         }
         if (expectedVersion != layoutVersion) {
+            // Tab dùng bố cục cũ phải tải lại, không ghi đè phiên bản hiện tại.
             return "LAYOUT_CONFLICT";
         }
         if (old != null && old.getSlotId() != slotId) {
@@ -266,6 +269,7 @@ public class AssemblyLayout implements Serializable {
 
     /** Tháo không làm bộ phận con đang gắn bị treo. */
     public String validateDetach(long instanceId, int expectedVersion) {
+        // Không tháo bộ phận cha khi còn con đang gắn, tránh tạo bố cục bị treo.
         if (findInstance(instanceId) == null) {
             return "NOT_FOUND";
         }
@@ -310,6 +314,7 @@ public class AssemblyLayout implements Serializable {
 
     /** Đếm X/N điểm bắt buộc và giải thích thiếu/sai/phụ thuộc từ layout thật. */
     public AssemblyCheckReport check() {
+        // Đếm điểm bắt buộc theo spec của phiên; không nhận phần trăm hoàn tất từ client.
         AssemblyCheckReport report = new AssemblyCheckReport();
         for (AssemblySlot slot : spec.getSlots()) {
             if (slot.isRequired()) {

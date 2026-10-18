@@ -432,6 +432,7 @@ public class AssemblySessionServlet extends HttpServlet {
             }
             String method = request.getMethod();
             if (!"GET".equals(method) && !SessionUtil.hasValidCsrfToken(request, response)) {
+                // Request ghi phải có token hợp lệ trước khi đọc ý định thay đổi bố cục.
                 return true;
             }
             long sessionId = id(segments[0]);
@@ -466,6 +467,7 @@ public class AssemblySessionServlet extends HttpServlet {
             } else if ("POST".equals(method) && segments.length == 2 && "placements".equals(segments[1])) {
                 String body = JsonUtil.readBody(request.getReader(), 8192);
                 intentInstanceId = positive(body, "instanceId");
+                // JSON chỉ mang ý định: instance, slot, hướng và version; server kiểm đúng/sai.
                 intentSlotId = positive(body, "slotId");
                 sendLayout(response, AssemblyPlacementDB.change(sessionId, user.getId(), "attach",
                         intentInstanceId, intentSlotId,

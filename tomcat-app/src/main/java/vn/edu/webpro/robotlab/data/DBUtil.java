@@ -18,6 +18,7 @@ public class DBUtil {
     }
 
     public static void closePreparedStatement(Statement ps) {
+        // Đóng statement trong finally; ResultSet được đóng trước và connection trả về pool sau.
         try {
             if (ps != null) {
                 ps.close();

@@ -34,6 +34,7 @@ public class AssemblyReview implements Serializable {
 
     /** Chỉ trình bày bố cục cuối của chính phiên và spec đã ghim; không sửa lịch sử. */
     public boolean canDisplayLayout(AssemblyLayout layout) {
+        // Chỉ cho dựng kết quả khi layout đúng phiên/spec, đã hoàn tất và đủ dữ kiện hợp lệ.
         if (session == null || !session.isCompleted() || !session.isDetailed() || layout == null
                 || layout.getSessionId() != session.getId() || !"COMPLETED".equals(layout.getStatus())
                 || !"DETAILED".equals(layout.getMode()) || layout.getSpec() == null
@@ -208,6 +209,7 @@ public class AssemblyReview implements Serializable {
 
     /** Tách trình tự đang có hiệu lực và đếm các từ chối từ nhật ký server. */
     public void summarizeEvents() {
+        // Chỉ lỗi học tập được đếm; xung đột tab hoặc request sai không thành lỗi kiến thức.
         activeEvents = new ArrayList<>();
         rejectionSummary = new ArrayList<>();
         HashMap<String, AssemblyEvent> grouped = new HashMap<>();

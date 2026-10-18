@@ -84,6 +84,7 @@ public class WiringServlet extends HttpServlet {
     /** POST kiểm token/version; tách lưu nháp và nộp, thành công dùng PRG. */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // Form POST kiểm USER và CSRF trước khi điều phối lưu nháp hoặc nộp bài.
         request.setCharacterEncoding("UTF-8");
         try {
             User user = user(request, response);

@@ -314,6 +314,7 @@ public class TaskSubmissionDB {
     /** Kiểm lại bằng chứng; chỉ ghi bài khi xác nhận hợp lệ. */
     public static TaskSubmission submit(
             long taskId, long userId, TaskSubmission input, boolean confirm) throws SQLException {
+        // Bài nộp, bằng chứng và vòng làm được kiểm lại dưới cùng transaction trước khi ghi.
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection connection = pool.getConnection();
         PreparedStatement ps = null;

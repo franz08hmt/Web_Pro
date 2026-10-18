@@ -81,12 +81,12 @@ public class ArchitectureServlet extends HttpServlet {
                 + "toàn bộ hoặc rollback; phục hồi autoCommit ở finally.");
         add(items, "Model 2 (MVC)",
                 "Trang hoàn thiện mẫu", "/account",
-                "tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java", 55, true,
+                "tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java", 56, true,
                 "Controller đọc request/session và điều phối; JavaBean tổng hợp, XxxDB đọc dữ liệu, "
                 + "JSP chỉ trình bày. Mở mẫu đã hoàn tất từ dashboard.");
         add(items, "CSRF và Cache-Control",
                 "Form bộ linh kiện", "/my-kit",
-                "tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/MyKitServlet.java", 47, true,
+                "tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/MyKitServlet.java", 49, true,
                 "POST form cần hidden csrfToken; API ghi cần X-CSRF-Token. Trang cá nhân dùng no-store "
                 + "để hạn chế lưu dữ liệu riêng trên cache.");
         add(items, "Xử lý lỗi thân thiện",

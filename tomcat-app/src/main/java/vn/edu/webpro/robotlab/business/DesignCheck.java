@@ -63,6 +63,7 @@ public class DesignCheck implements Serializable {
 
     /** Ba lớp được tính lại từ snapshot và phiên bản luật đã lưu, không đọc kết luận client. */
     public void evaluate(DesignLayout layout) {
+        // Tính lại ba lớp kiểm từ layout đã lưu; kết luận không phải dữ liệu client gửi.
         items = new ArrayList<>();
         passed = true;
         placedCount = layout.getPlacements().size();

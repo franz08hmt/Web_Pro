@@ -104,6 +104,7 @@ public class TaskRecipient implements Serializable {
 
     /** Suy ra trạng thái người học từ bài nộp và lần chấm mới nhất. */
     public String statusLabel(Date now) {
+        // Trạng thái cá nhân lấy từ bài nộp/lần chấm, khác trạng thái mở hoặc đóng của nhiệm vụ.
         if (latestSubmission == null) {
             if (task != null && task.isLate(now)) {
                 return "Chưa nộp — Quá hạn";

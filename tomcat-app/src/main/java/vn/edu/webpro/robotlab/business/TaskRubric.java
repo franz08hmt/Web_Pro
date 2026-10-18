@@ -30,6 +30,7 @@ public class TaskRubric implements Serializable {
             throw new IllegalArgumentException("Mẫu B cần điểm từ lượt chẩn đoán đã chốt.");
         }
         if (total <= 0 || score < 0 || score > total) {
+        // Bean áp dụng trọng số và cách làm tròn; không nhận tổng điểm do client khai báo.
             throw new IllegalArgumentException("Lượt quiz không hợp lệ.");
         }
         // BigDecimal + HALF_UP giữ đúng giá trị lưu và so ngưỡng, tránh sai số nhị phân.

@@ -50,6 +50,7 @@ public class AdminTaskServlet extends HttpServlet {
 
     private long[] recipientIds(HttpServletRequest request) {
         String[] values = request.getParameterValues("recipientId");
+        // Nhiều checkbox cùng name được đọc thành String[]; server còn kiểm từng người hợp lệ.
         if (values == null) {
             return new long[0];
         }

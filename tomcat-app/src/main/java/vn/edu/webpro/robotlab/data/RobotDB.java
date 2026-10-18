@@ -125,6 +125,7 @@ public class RobotDB {
 
     public static List<Robot> selectRobots(int limit, int offset) throws SQLException {
         ConnectionPool pool = ConnectionPool.getInstance();
+        // PreparedStatement bind LIMIT/OFFSET; ResultSet được ánh xạ thành danh sách JavaBean.
         Connection connection = pool.getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -134,6 +135,7 @@ public class RobotDB {
             ps = connection.prepareStatement(query);
             ps.setInt(1, limit);
             ps.setInt(2, offset);
+            // Dấu ? nhận giá trị qua setInt, không ghép tham số người dùng vào câu SQL.
             rs = ps.executeQuery();
             List<Robot> robots = new ArrayList<>();
             while (rs.next()) {

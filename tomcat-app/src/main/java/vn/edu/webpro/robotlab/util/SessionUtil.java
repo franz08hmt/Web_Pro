@@ -45,6 +45,7 @@ public final class SessionUtil {
      * session: nếu admin vừa hạ quyền tài khoản này thì quyền cũ mất ngay.
      */
     public static User getCurrentUser(HttpServletRequest request) throws SQLException {
+        // getSession(false) chỉ đọc phiên hiện có; danh tính không lấy từ userId trong URL.
         HttpSession session = request.getSession(false);
         Object value = session == null ? null : session.getAttribute("user");
         if (!(value instanceof User)) {
@@ -53,6 +54,7 @@ public final class SessionUtil {
 
         User cached = (User) value;
         User fresh = UserDB.selectUser(cached.getId());
+        // Đọc lại quyền và session_version; dữ kiện tài khoản mới quyết định phiên còn hợp lệ.
         if (!isCurrent(cached, fresh)) {
             session.invalidate();
             return null;
@@ -81,6 +83,7 @@ public final class SessionUtil {
     /** Như requireUser nhưng còn yêu cầu role ADMIN; sai quyền thì ghi lỗi 403. */
     public static User requireAdmin(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
+        // Kiểm quyền tại server; ẩn menu quản trị không thay thế bước này.
         User user;
         try {
             user = getCurrentUser(request);
@@ -104,6 +107,7 @@ public final class SessionUtil {
     /** Form JSP gửi hidden csrfToken (Ch7/35–36); giữ kiểm header API riêng. */
     public static boolean hasValidFormCsrfToken(
             HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // Form gửi hidden csrfToken; đối chiếu token đã lưu trong HttpSession.
         HttpSession session = request.getSession(false);
         Object token = session == null ? null : session.getAttribute("csrfToken");
         if (token instanceof String && token.equals(request.getParameter("csrfToken"))) {
@@ -116,6 +120,7 @@ public final class SessionUtil {
     /** Request ghi phải gửi header X-CSRF-Token khớp với token lưu trong session. */
     public static boolean hasValidCsrfToken(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
+        // API ghi dùng X-CSRF-Token; token không thay thế kiểm role hoặc owner.
         HttpSession session = request.getSession(false);
         Object token = session == null ? null : session.getAttribute("csrfToken");
         if (token instanceof String && token.equals(request.getHeader("X-CSRF-Token"))) {

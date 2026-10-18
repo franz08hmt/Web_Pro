@@ -138,6 +138,7 @@ public class TaskServlet extends HttpServlet {
     /** Kiểm CSRF, xử lý form hợp lệ rồi redirect theo PRG. */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // HTTP POST nhận form; token và owner được kiểm ở server trước khi xử lý action.
         request.setCharacterEncoding("UTF-8");
         try {
             User user = user(request, response);

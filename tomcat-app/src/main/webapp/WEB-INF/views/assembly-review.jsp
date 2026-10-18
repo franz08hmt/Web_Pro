@@ -75,6 +75,7 @@
                     <section id="review-model">
                         <h2>Mẫu hoàn chỉnh</h2>
                         <%@ include file="assembly-result-viewer.jspf" %>
+                        <!-- Static include ghép fragment lúc dịch JSP; không phát sinh request mới. -->
                         <c:if test="${not empty assemblyReview.imagePath}">
                             <figure>
                                 <img src="${pageContext.request.contextPath}/assets/<c:out value='${assemblyReview.imagePath}'/>"
@@ -214,7 +215,7 @@
             <c:url var="reviewThree" value="/assets/vendor/three/three.min.js"/>
             <c:url var="reviewParts" value="/assets/js/assembly-3d-parts.js"><c:param name="v" value="20261018.1"/></c:url>
             <c:url var="reviewViewer" value="/assets/js/assembly-result-viewer.js">
-                <c:param name="v" value="20261018.2"/>
+                <c:param name="v" value="20261018.3"/>
             </c:url>
             <script src="<c:out value='${reviewThree}'/>" defer></script>
             <script src="<c:out value='${reviewParts}'/>" defer></script>

@@ -5,6 +5,7 @@
             <h3>Mô hình em đã lắp — Phiên #<c:out value="${session.id}" /></h3>
             <p>Phiên bản spec: <c:out value="${reviewSpecVersion}" />. Chỉ xem bố cục cuối đã lưu của phiên này.</p>
             <div id="assembly-result-data" hidden><c:out value="${reviewLayoutJson}" /></div>
+            <!-- EL đọc attribute; c:out escape JSON trong HTML thường để JavaScript đọc textContent. -->
             <div id="assembly-result-stage" aria-describedby="assembly-result-status"></div>
             <p id="assembly-result-status" role="status">Trình xem cần JavaScript và WebGL.
                 Nếu chưa hiển thị được, hãy xem bản vẽ 2D và phiếu bên dưới.</p>

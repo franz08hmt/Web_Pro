@@ -13,7 +13,7 @@ Chỉ đọc lời nói; câu vấn đáp dùng ngay tại chặng đó khi cô 
 - Một cửa sổ trình duyệt đăng nhập USER để thực hành; một cửa sổ riêng/context riêng đăng nhập ADMIN.
   Hai tab thường cùng profile dùng chung cookie: đăng nhập ADMIN ở tab thứ hai có thể đổi cả tab USER.
 - Mở IDE sẵn các file trong từng chặng. Liên kết dưới đây ghi `file:dòng`; nếu không nhảy dòng,
-  dùng `Ctrl+G` rồi tìm tên method. Số dòng đối chiếu source ngày18/10/2026, không phải số slide.
+  dùng `Ctrl+G` rồi tìm tên method. Số dòng đã cập nhật sau khi thêm comment ngày18/10/2026, không phải số slide.
 - Không hiện mật khẩu, token, `.env`, VM options hoặc toàn bộ cấu hình kết nối lên màn hình trình bày.
 
 ### Dữ liệu người trình bày cần chuẩn bị bằng luồng thật
@@ -111,7 +111,7 @@ Không cắt phần mô hình kết quả, quy trình, phiếu và quiz sau hoà
   là luồng `/robots`; tìm `doGet`, `setAttribute`, `forward`.
 - [RobotDB.java:126](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/RobotDB.java#L126), `selectRobots`:
   SQL ở tầng data, không ở JSP.
-- [learning-context.js:16](../assets/js/learning-context.js#L16), `componentUrl`:
+- [learning-context.js:17](../assets/js/learning-context.js#L17), `componentUrl`:
   link đi đúng linh kiện, mã hóa tham số URL.
 
 **Chuyển:** “Để lưu bài của từng người và mở lại được, em đăng nhập bằng tài khoản người học.”
@@ -199,12 +199,12 @@ Chờ xác nhận đã lưu, chỉ tiến độ thay đổi.
 
 **Mở code theo đúng đường đi, chỉ mở khi cô hỏi:**
 
-1. [assembly-3d.js:885](../assets/js/assembly-3d.js#L885): callback `onAttach` gọi API, không tự chấm.
+1. [assembly-3d.js:886](../assets/js/assembly-3d.js#L886): callback `onAttach` gọi API, không tự chấm.
 2. [AssemblySessionServlet.java:434](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblySessionServlet.java#L434):
-   CSRF; [dòng466](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblySessionServlet.java#L466): đọc ý định gắn.
+   CSRF; [dòng467](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblySessionServlet.java#L467): đọc ý định gắn.
 3. [AssemblyPlacementDB.java:169](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L169), `change`:
    một connection/transaction, đọc layout và gọi bean.
-4. [AssemblyLayout.java:232](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L232), `validateAttach`:
+4. [AssemblyLayout.java:233](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L233), `validateAttach`:
    loại linh kiện, hướng, chỗ đã bị chiếm và cha.
 
 ### 4.5. Lắp phần còn lại — khoảng60–90 giây
@@ -244,14 +244,14 @@ Bấm **Hoàn tất** sau khi đủ; nếu đang thiếu thì chỉ thông báo 
 > Client gửi expectedLayoutVersion. Server so với version hiện tại dưới khóa;
 > tab cũ nhận409 xung đột để tải lại, không âm thầm ghi đè thao tác mới.
 
-**Code:** [AssemblyLayout.java:245](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L245),
-kiểm version; [AssemblyPlacementDB.java:309](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L309),
-lọc user và `FOR UPDATE`; [AssemblyLayout.java:312](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L312), `check`.
+**Code:** [AssemblyLayout.java:247](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L247),
+kiểm version; [AssemblyPlacementDB.java:311](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L311),
+lọc user và `FOR UPDATE`; [AssemblyLayout.java:316](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L316), `check`.
 
 **Cô hỏi: “Sao không tháo động cơ trước rồi tháo bánh sau?”**
 
 > Hệ thống chặn tháo cha khi còn con để bố cục không bị treo bộ phận.
-> `validateDetach` ở [AssemblyLayout.java:268](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L268).
+> `validateDetach` ở [AssemblyLayout.java:271](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L271).
 
 **Cô hỏi: “Hướng trái/phải có phải mô phỏng chính xác trục động cơ không?”**
 
@@ -280,7 +280,7 @@ Không nhận kết quả cũ là vừa tạo trong lượt live.
 > cùng instances và final placements. Một phiên lịch sử không bị dựng lại bằng spec mới nhất.
 
 **Code:** [AssemblyReviewPageServlet.java:40](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L40),
-user; dòng46 đọc phiên theo owner, dòng76 đọc layout;
+user; dòng47 đọc phiên theo owner, dòng78 đọc layout;
 [AssemblyReview.java:36](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyReview.java#L36), kiểm dữ kiện hiển thị.
 
 ### 5.2. Quy trình chuẩn và quá trình thực sự đã làm
@@ -298,9 +298,9 @@ bấm **Bước sau**, rồi quay về kết quả, không cần chờ phát to�
 > Để placement và sự kiện được chấp nhận cùng thành công hoặc cùng rollback,
 > tránh nhật ký nói đã gắn nhưng bố cục chưa lưu. Thao tác bị từ chối có thể được ghi riêng để truy vết.
 
-**Code:** [AssemblyPlacementDB.java:277](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L277),
+**Code:** [AssemblyPlacementDB.java:278](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L278),
 insert event cùng connection rồi commit;
-[AssemblyReview.java:210](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyReview.java#L210), `summarizeEvents`.
+[AssemblyReview.java:211](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyReview.java#L211), `summarizeEvents`.
 
 ### 5.3. Phiếu kết quả
 
@@ -353,8 +353,8 @@ Nếu đã có thiết kế chuẩn bị sẵn, quay danh sách và mở nó; n�
 > Khi nhập lại từ đơn, hệ thống dùng số lượng lớn hơn giữa dữ liệu đang có và số tổng từ đơn,
 > để bấm lại không cộng trùng vô hạn.
 
-**Code:** [MyKitServlet.java:55](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/MyKitServlet.java#L55),
-nhận action; [UserKitDB.java:131](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/UserKitDB.java#L131), `GREATEST`.
+**Code:** [MyKitServlet.java:58](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/MyKitServlet.java#L58),
+nhận action; [UserKitDB.java:132](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/UserKitDB.java#L132), `GREATEST`.
 
 ### 6.2. Lắp và kiểm thiết kế
 
@@ -492,15 +492,15 @@ không lấy lượt PRACTICE ở chặng5 để giả là lượt TASK. Mặc �
 **Mở code:**
 
 - [AdminTaskServlet.java:52](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AdminTaskServlet.java#L52):
-  `getParameterValues` lấy nhiều người được giao; dòng165 là `doPost`, dòng173 kiểm form CSRF.
+  `getParameterValues` lấy nhiều người được giao; dòng166 là `doPost`, dòng174 kiểm form CSRF.
 - [TaskServlet.java:139](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TaskServlet.java#L139):
   nhận form; chỉ đọc minh họa, không sửa file WIP.
-- [task-submit.jsp:60](../tomcat-app/src/main/webapp/WEB-INF/views/task-submit.jsp#L60):
-  form POST; dòng73–77 là các textarea giải thích.
+- [task-submit.jsp:61](../tomcat-app/src/main/webapp/WEB-INF/views/task-submit.jsp#L61):
+  form POST; dòng74–78 là các textarea giải thích.
 - [TaskRecipient.java:106](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/TaskRecipient.java#L106):
   `statusLabel` đọc bài nộp/lần chấm để trả trạng thái cá nhân.
 - [TaskSubmissionDB.java:315](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/TaskSubmissionDB.java#L315):
-  transaction nộp bài; [TaskRubric.java:28](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/TaskRubric.java#L28): tính điểm tự động.
+  transaction nộp bài; [TaskRubric.java:29](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/TaskRubric.java#L29): tính điểm tự động.
 
 **Chuyển:** “Những kết quả này quay lại tài khoản để người học biết đã làm gì và nên mở hoạt động nào tiếp.”
 
@@ -521,7 +521,7 @@ ADMIN chỉ danh sách quản trị nội dung/thống kê, không tạo/sửa d
 > Chưa. Menu chỉ giúp giao diện rõ ràng; server phải kiểm role cho từng route/thao tác.
 > USER gõ URL quản trị vẫn bị chặn. Dữ liệu riêng còn phải kiểm owner, không chỉ kiểm đã đăng nhập.
 
-**Code:** [SessionUtil.java:82](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java#L82), `requireAdmin`;
+**Code:** [SessionUtil.java:84](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java#L84), `requireAdmin`;
 [LearningSummaryServlet.java:53](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/LearningSummaryServlet.java#L53),
 đưa dữ kiện vào request rồi forward.
 
@@ -572,8 +572,8 @@ Không đọc mục này thành bài lý thuyết riêng. Chọn đúng câu cô
 > redirect về GET là PRG, giúp refresh không gửi lại chính POST đó.
 > PRG không thay việc khóa/version hoặc kiểm request lặp ở nghiệp vụ.
 
-**Mở:** [AssemblyReviewPageServlet.java:66](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L66), forward;
-[MyKitServlet.java:63](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/MyKitServlet.java#L63), redirect sau lưu.
+**Mở:** [AssemblyReviewPageServlet.java:67](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L67), forward;
+[MyKitServlet.java:67](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/MyKitServlet.java#L67), redirect sau lưu.
 
 ### “JavaBean chỉ có getter/setter thôi hay làm gì nữa?”
 
@@ -582,7 +582,7 @@ Không đọc mục này thành bài lý thuyết riêng. Chọn đúng câu cô
 > Bean không đọc HttpServletRequest hoặc tự gọi JDBC. Servlet điều phối, XxxDB đọc/ghi dữ kiện.
 
 **Mở:** [AssemblyLayout.java:9](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L9)
-và [dòng232](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L232).
+và [dòng233](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L233).
 
 ### “ConnectionPool, PreparedStatement và DBUtil ở đâu?”
 
@@ -591,8 +591,8 @@ và [dòng232](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/Assem
 > Trong finally, code đóng ResultSet/statement và trả connection về pool, kể cả có lỗi.
 
 **Mở:** [ConnectionPool.java:28](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ConnectionPool.java#L28), lookup JNDI;
-[dòng42](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ConnectionPool.java#L42), getConnection;
-[UserDB.java:129](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/UserDB.java#L129), bind/execute/map/finally;
+[dòng43](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ConnectionPool.java#L43), getConnection;
+[UserDB.java:130](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/UserDB.java#L130), bind/execute/map/finally;
 [DBUtil.java:20](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/DBUtil.java#L20), đóng statement.
 
 ### “Transaction và FOR UPDATE để làm gì?”
@@ -602,7 +602,7 @@ và [dòng232](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/Assem
 > layoutVersion còn giúp phát hiện request từ tab đã lỗi thời.
 
 **Mở:** [AssemblyPlacementDB.java:169](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L169),
-`change`, và [dòng309](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L309), owner/lock.
+`change`, và [dòng311](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L311), owner/lock.
 
 ### “EL, JSTL, c:out và include dùng ở đâu?”
 
@@ -623,8 +623,8 @@ Payload nằm trong div HTML thường; JS đọc textContent rồi JSON.parse, 
 > no-store yêu cầu không cache trang/phản hồi dữ liệu cá nhân.
 
 **Mở:** [SessionUtil.java:47](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java#L47), user;
-[dòng105](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java#L105), form CSRF;
-[dòng117](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java#L117), API CSRF.
+[dòng108](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java#L108), form CSRF;
+[dòng121](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java#L121), API CSRF.
 
 ### “Ảnh tham khảo, kết quả3D và replay có gì khác?”
 
@@ -633,7 +633,7 @@ Payload nằm trong div HTML thường; JS đọc textContent rồi JSON.parse, 
 > thì không dựng giả mô hình chính xác; vẫn giữ ảnh và thông tin lịch sử còn có.
 
 **Mở:** [assembly-result-viewer.js:43](../assets/js/assembly-result-viewer.js#L43), tọa độ/góc đã lưu;
-[AssemblyReviewPageServlet.java:87](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L87), payload từ server.
+[AssemblyReviewPageServlet.java:90](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L90), payload từ server.
 
 ## 12. Chia người và tập để trình bày liền mạch
 

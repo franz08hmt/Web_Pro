@@ -26,6 +26,7 @@ public class ShopOrder implements Serializable {
     }
 
     public BigDecimal calculateTotal() {
+        // BigDecimal cộng tiền chính xác theo từng dòng, tránh sai số số thực nhị phân.
         BigDecimal total = BigDecimal.ZERO;
         for (OrderItem item : items) {
             total = total.add(item.getLineTotalVnd());

@@ -41,6 +41,7 @@
         object.userData.orientation = placed.orientation;
         // Same convention as assembly-3d-placement: slots already contain WORLD coordinates.
         object.position.set(slot.x, slot.y, slot.z);
+        // Tọa độ tuyệt đối từ slot của phiên; chỉ camera đổi khi xem, không ghi placement.
         object.rotation.set(slot.rx, slot.ry + Number(placed.orientation.slice(1)) * Math.PI / 180, slot.rz);
       }
       return model;

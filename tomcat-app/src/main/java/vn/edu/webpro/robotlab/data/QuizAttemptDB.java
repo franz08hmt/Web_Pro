@@ -39,6 +39,7 @@ public class QuizAttemptDB {
      */
     public static QuizAttempt submitAttempt(long userId, String robotId, List<String[]> submittedAnswers)
             throws SQLException {
+        // Đọc và kiểm câu hỏi ở server trước khi lưu lượt làm theo đúng owner.
         QuizAttempt graded = gradeAnswers(robotId, submittedAnswers);
         return persistAttempt(userId, robotId, graded.getScore(), graded.getTotalQuestions(), graded.getAnswers());
     }

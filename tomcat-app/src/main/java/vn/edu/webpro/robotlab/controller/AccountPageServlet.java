@@ -43,6 +43,7 @@ public class AccountPageServlet extends HttpServlet {
         response.setHeader("Cache-Control", "no-store");
         try {
             DashboardSummary dashboard = new DashboardSummary();
+            // Servlet lấy dữ kiện theo user; JavaBean quyết định nội dung và hành động của thẻ.
             AssemblySession open = AssemblySessionDB.selectLatestSession(user.getId(), false);
             AssemblySession complete = AssemblySessionDB.selectLatestSession(user.getId(), true);
             Robot activeRobot = open == null ? null : RobotDB.selectRobot(open.getRobotId());

@@ -882,6 +882,7 @@
     if (!placementView) {
       placementView = window.createAssemblyPlacementView({
         THREE, camera, root: robotGroup, canvas: renderer.domElement, panel: partsContainer,
+        // Callback gửi ý định lên Servlet; Three.js chỉ dựng hình, server mới chấp nhận bố cục.
         onAttach: (instanceId, slotId, orientation, version) =>
           sessionApi.attach(activeSession.id, instanceId, slotId, orientation, version),
         onDetach: (instanceId, version) => sessionApi.detach(activeSession.id, instanceId, version),

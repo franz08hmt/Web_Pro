@@ -23,20 +23,20 @@ Không học theo câu hỏi “nội dung ở trang tài liệu nào”. Mỗi 
 
 ## Bản đồ mở file theo câu hỏi kiến thức
 
-- **Client gửi form POST:** [task-submit.jsp:60](../tomcat-app/src/main/webapp/WEB-INF/views/task-submit.jsp#L60) — method/action/name quyết định request gửi đi.
+- **Client gửi form POST:** [task-submit.jsp:61](../tomcat-app/src/main/webapp/WEB-INF/views/task-submit.jsp#L61) — method/action/name quyết định request gửi đi.
 - **GET: nhận request mở trang:** [LearningProfileServlet.java:22](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/LearningProfileServlet.java#L22) — request là đầu vào; response là đầu ra.
 - **POST: nhận form bài nộp:** [TaskServlet.java:139](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TaskServlet.java#L139) — kiểm session/token trước khi xử lý action.
 - **Đọc parameter:** [TaskFormUtil.java:19](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/TaskFormUtil.java#L19) — getParameter trả String, thiếu thì null.
 - **Đọc nhiều checkbox:** [AdminTaskServlet.java:51](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AdminTaskServlet.java#L51) — getParameterValues trả String[].
 - **Đưa object vào request:** [LearningProfileServlet.java:52](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/LearningProfileServlet.java#L52) — attribute dùng giữa Servlet và JSP trên server.
 - **Forward sang JSP:** [TaskServlet.java:35](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TaskServlet.java#L35) — RequestDispatcher dùng cùng request/response.
-- **Redirect sau khi lưu:** [TaskServlet.java:200](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TaskServlet.java#L200) — browser gửi GET mới; attribute cũ không đi theo.
+- **Redirect sau khi lưu:** [TaskServlet.java:201](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TaskServlet.java#L201) — browser gửi GET mới; attribute cũ không đi theo.
 - **EL đọc dữ liệu request:** [learning-profile.jsp:31](../tomcat-app/src/main/webapp/WEB-INF/views/learning-profile.jsp#L31) — fullName ánh xạ sang getter getFullName().
 - **Getter thật mà EL gọi:** [LearningProfile.java:60](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/LearningProfile.java#L60) — trả tên từ bean do Servlet đã dựng.
-- **JSTL lặp và escape:** [task-submit.jsp:67](../tomcat-app/src/main/webapp/WEB-INF/views/task-submit.jsp#L67) — render danh sách bằng chứng và c:out.
+- **JSTL lặp và escape:** [task-submit.jsp:68](../tomcat-app/src/main/webapp/WEB-INF/views/task-submit.jsp#L68) — render danh sách bằng chứng và c:out.
 - **Session sau đăng nhập:** [SessionUtil.java:23](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java#L23) — user/csrfToken nằm ở server, cookie giữ mã phiên.
 - **Danh tính của request:** [SessionUtil.java:47](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java#L47) — getSession(false), getAttribute, đọc lại UserDB.
-- **Pool cấp kết nối DB:** [ConnectionPool.java:42](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ConnectionPool.java#L42) — JDBC Connection khác kết nối HTTP.
+- **Pool cấp kết nối DB:** [ConnectionPool.java:43](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ConnectionPool.java#L43) — JDBC Connection khác kết nối HTTP.
 - **SELECT bằng JDBC:** [UserDB.java:121](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/UserDB.java#L121) — prepareStatement/setString/executeQuery/rs.next.
 - **Ghi DB bằng JDBC:** [UserDB.java:26](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/UserDB.java#L26) — executeUpdate trả số dòng tác động, không trả ResultSet.
 - **Transaction nộp bài:** [TaskSubmissionDB.java:315](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/TaskSubmissionDB.java#L315) — lock/bean/INSERT/commit hoặc rollback.
@@ -94,9 +94,9 @@ Request mang dữ liệu vào. Response mang status, header và HTML/JSON trả 
 
 ### 2.2. Client gửi form: phải chỉ đúng method, action, name và value
 
-Mở [task-submit.jsp:60](../tomcat-app/src/main/webapp/WEB-INF/views/task-submit.jsp#L60): form nộp bài thực hành.
+Mở [task-submit.jsp:61](../tomcat-app/src/main/webapp/WEB-INF/views/task-submit.jsp#L61): form nộp bài thực hành.
 
-**Source:** [task-submit.jsp:60](../tomcat-app/src/main/webapp/WEB-INF/views/task-submit.jsp#L60), dòng 60–64.
+**Source:** [task-submit.jsp:61](../tomcat-app/src/main/webapp/WEB-INF/views/task-submit.jsp#L61), dòng 60–64.
 
 ```jsp
 <form method="post" action="${pageContext.request.contextPath}/tasks">
@@ -255,7 +255,7 @@ Mở [learning-profile.jsp:31](../tomcat-app/src/main/webapp/WEB-INF/views/learn
 
 ### 2.6. POST preview và POST confirm: vì sao một bên forward, một bên redirect?
 
-**Source:** [TaskServlet.java:183](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TaskServlet.java#L183), dòng 181–198.
+**Source:** [TaskServlet.java:184](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TaskServlet.java#L184), dòng 181–198.
 
 ```java
 } else if ("preview".equals(action) || "confirm".equals(action)) {
@@ -299,7 +299,7 @@ Response gồm **status**, **header**, **body**.
 - Status: [TaskServlet.java:46](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TaskServlet.java#L46) — lỗi dữ liệu.
 - Header: [LearningProfileServlet.java:24](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/LearningProfileServlet.java#L24) — `Cache-Control: no-store`.
 - HTML body: JSP `learning-profile.jsp` sau forward; JSP directive khai báo `text/html; charset=UTF-8`.
-- Redirect: [TaskServlet.java:200](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TaskServlet.java#L200) — Tomcat gửi redirect, browser GET URL đích.
+- Redirect: [TaskServlet.java:201](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TaskServlet.java#L201) — Tomcat gửi redirect, browser GET URL đích.
 - JSON body: helper sau đây viết vào response.
 
 **Source:** [ResponseUtil.java:12](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/ResponseUtil.java#L12), dòng 12–18.
@@ -410,7 +410,7 @@ assets/js/api.js  fetch("/api/auth/login", {method: "POST", body: JSON})
       └─ ResponseUtil.sendJson(response, 200, ...)
 ```
 
-Mọi request ghi của API gửi header `X-CSRF-Token`; [SessionUtil.hasValidCsrfToken:117](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java#L117) so với
+Mọi request ghi của API gửi header `X-CSRF-Token`; [SessionUtil.hasValidCsrfToken:121](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/util/SessionUtil.java#L121) so với
 token trong session.
 
 ### 3.3 Form POST có chống gian lận (nhiệm vụ, nối dây, chẩn đoán)
@@ -472,7 +472,7 @@ dùng `executeUpdate()`, trả số dòng tác động. SELECT và INSERT không
 
 #### Ánh xạ cột DB sang property của bean
 
-**Source:** [UserDB.java:281](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/UserDB.java#L281), dòng 281–284.
+**Source:** [UserDB.java:283](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/UserDB.java#L283), dòng 281–284.
 
 ```java
 private static User readUser(ResultSet rs) throws SQLException {
@@ -688,18 +688,18 @@ cặp bị cấm 5V–GND → nộp → xem điểm và giải thích → luyệ
 2. **Controller ở đâu?** Mở [TaskServlet.java:16](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TaskServlet.java#L16).
    `@WebServlet` ánh xạ URL; mỗi Servlet nhận request,
    kiểm quyền, gọi `XxxDB` và bean, rồi forward hoặc trả JSON.
-3. **Luật và SQL nằm ở đâu?** Mở [TaskRubric.java:28](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/TaskRubric.java#L28): luật điểm ở bean.
+3. **Luật và SQL nằm ở đâu?** Mở [TaskRubric.java:29](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/TaskRubric.java#L29): luật điểm ở bean.
    Mở [UserDB.java:121](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/UserDB.java#L121): SQL/PreparedStatement ở XxxDB.
    Servlet đọc request và điều phối, không tự tính điểm hoặc viết SQL ở JSP.
 4. **forward khác redirect thế nào?** Mở [TaskServlet.java:36](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TaskServlet.java#L36)
-   và [TaskServlet.java:200](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TaskServlet.java#L200).
+   và [TaskServlet.java:201](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TaskServlet.java#L201).
    `forward` chuyển nội bộ trong cùng request, URL browser không đổi và JSP đọc được request attribute.
    `sendRedirect` bảo browser gửi request mới tới URL đích; dùng sau confirm thành công.
 5. **request attribute khác session attribute?** `profile` đặt vào request chỉ sống trong
    một request; `user` đặt vào session được giữ qua nhiều request của phiên đăng nhập.
 6. **Vì sao không đặt currentUser thành field thay đổi của Servlet?** Một instance Servlet có thể xử lý
    nhiều request đồng thời. Field dùng chung có thể bị request khác ghi đè. Mở
-   [TaskServlet.java:143](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TaskServlet.java#L143): `user` là biến local.
+   [TaskServlet.java:144](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TaskServlet.java#L144): `user` là biến local.
 7. **URL vào Servlet được ánh xạ ở đâu?** Mở [TaskServlet.java:16](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/TaskServlet.java#L16):
    `@WebServlet("/tasks")`. [web.xml:1](../tomcat-app/src/main/webapp/WEB-INF/web.xml#L1) có cấu hình ứng dụng và trang chào;
    không nhầm URL mapping với hidden parameter `action` của form.
@@ -707,7 +707,7 @@ cặp bị cấm 5V–GND → nộp → xem điểm và giải thích → luyệ
 ### B. JDBC
 
 8. **PreparedStatement khác Statement?** Tham số `?` gán bằng `setXxx`, nên dữ liệu người
-   dùng không thành mã SQL. Mở [UserDB.java:129](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/UserDB.java#L129):
+   dùng không thành mã SQL. Mở [UserDB.java:130](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/UserDB.java#L130):
    `prepareStatement`, `setString`, `executeQuery`.
 9. **Connection pool là gì, cấu hình ở đâu?** Giữ sẵn một tập kết nối để dùng lại. Khai báo
    trong [META-INF/context.xml:13](../tomcat-app/src/main/webapp/META-INF/context.xml#L13).
@@ -804,7 +804,7 @@ cặp bị cấm 5V–GND → nộp → xem điểm và giải thích → luyệ
     chưa có email thông báo; phần trình bày dùng chung dùng include và getter của bean. Biết
     phân biệt đúng các công nghệ, không chỉ vào source chức năng chưa tồn tại.
 42. **"Client–server và Java–DB khác nhau ở đâu?"** [api.js:15](../assets/js/api.js#L15)
-    dùng HTTP/fetch; [ConnectionPool.java:42](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ConnectionPool.java#L42) dùng JDBC Connection.
+    dùng HTTP/fetch; [ConnectionPool.java:43](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/ConnectionPool.java#L43) dùng JDBC Connection.
     Browser không gọi MySQL trực tiếp. JSON là body HTTP, không phải giao thức JDBC.
 43. **"Phần này em làm hay công cụ làm?"** Trả lời trung thực về cách làm việc; quan trọng hơn là
     giải thích được từng dòng và chỉ ra file, hàm, bảng liên quan.
@@ -939,7 +939,7 @@ hình khối động cơ không mô phỏng chính xác chiều trục.” Vì v
 - **Phiên mới biết chọn v2 thế nào?** JDBC chọn PUBLISHED có version_no cao nhất
   rồi lưu vào phiên: [AssemblyPlacementDB.java:31](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L31).
 - **Vì sao kiểm hướng ở server?** Client có thể gửi hướng bất kỳ; bean đối chiếu
-  danh sách của slot: [AssemblyLayout.java:239](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L239),
+  danh sách của slot: [AssemblyLayout.java:241](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L241),
   [AssemblySlot.java:182](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblySlot.java#L182).
 - **DB bảo vệ hướng bằng gì?** Placement tham chiếu cặp slot_id/orientation_code
   đã khai báo: [migration013:87](../database/migrations/013_assembly_placement.sql#L87).
@@ -961,7 +961,7 @@ Các liên kết đều mở source, không cần tìm trong slide hoặc tài l
 Gắn vật thể, tăng version và ghi ACCEPTED phải cùng thành công hoặc cùng rollback.
 Nếu mở một connection khác để ghi nhật ký, có thể có lịch sử nhưng vật thể chưa
 được lưu. Chỉ ra `AssemblyEventDB.insert(connection, event, userId)` ngay trước
-commit: [AssemblyPlacementDB.java:245](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L245).
+commit: [AssemblyPlacementDB.java:246](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L246).
 Hàm insert nhận Connection từ caller, dùng PreparedStatement và finally đóng
 statement, không tự commit: [AssemblyEventDB.java:16](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyEventDB.java#L16).
 REJECTED ghi lý do nhưng không đổi mô hình/version; cap300, không ghi lỗi quyền.
@@ -980,8 +980,8 @@ Servlet gọi `request.setAttribute("assemblyReview", review)` và đặt robot/
 bản vẽ/bước chuẩn. `String url` + RequestDispatcher.forward chuyển cùng request sang
 JSP. JSP đọc `${assemblyReview.completedAtLabel}` bằng getter của bean và c:out,
 Tomcat sinh HTML trong HTTP response cho trình duyệt.
-Chỉ [Servlet:49](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L49)
-và [Servlet:58](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L58),
+Chỉ [Servlet:50](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L50)
+và [Servlet:59](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L59),
 rồi mở [assembly-review.jsp:43](../tomcat-app/src/main/webapp/WEB-INF/views/assembly-review.jsp#L43).
 Phân biệt **forward** giữ request để JSP đọc attribute với **redirect** tạo GET mới.
 
@@ -1002,7 +1002,7 @@ Nếu khung quá chật không tìm được chỗ trống, giữ nhãn tại t�
 **Thống kê “Những lần cần sửa” có tính lỗi tab hoặc hoàn tác trống không?** Không.
 Nhật ký vẫn giữ để truy vết; bean chỉ tổng hợp sáu mã lỗi gắn/tháo của người học.
 Danh sách ở một hàm instance, không lọc ở JSP hoặc xóa DB:
-[AssemblyReview.java:207](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyReview.java#L207).
+[AssemblyReview.java:208](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyReview.java#L208).
 
 ### 5. Vì sao phát lại không gọi API ghi?
 
@@ -1019,7 +1019,7 @@ Client gửi POST với expectedLayoutVersion và CSRF, không tự sửa DB. Xx
 phiên, lấy sự kiện gần nhất chưa undo sau RESET rồi gọi bean. Bean đảo gắn→tháo,
 đổi hướng→hướng cũ, tháo→gắn lại bằng chính luật validateAttach/validateDetach.
 Chỉ [AssemblyEventDB.java:151](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyEventDB.java#L151),
-[AssemblyLayout.java:212](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L212),
+[AssemblyLayout.java:213](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyLayout.java#L213),
 [AssemblyPlacementDB.java:161](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L161).
 Không còn thao tác trả422; tab cũ409; phiên hoàn tất khóa sửa. Không có Redo.
 
@@ -1117,7 +1117,7 @@ dc-motor khi tên còn cũ, có transaction và schema_migrations để quản l
 Java đọc components.name qua JOIN, bean chỉ ghép số vật thể1/2,2/2.
 Mở [016_component_name_fix.sql:1](../database/migrations/016_component_name_fix.sql#L1),
 [DesignInstance:79](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DesignInstance.java#L79),
-[AssemblyPlacementDB:400](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L400).
+[AssemblyPlacementDB:404](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/data/AssemblyPlacementDB.java#L404).
 Không sửa ID, số lượng, nhãn spec đã công bố hoặc snapshot tên trong đơn hàng cũ.
 
 ## Đợt 11 — Điều hướng theo hành trình
@@ -1158,7 +1158,7 @@ JSON cho API, không hiện exception. /robots do Servlet dựng HTML bằng JDB
 pages/mau-robot.html fetch JSON rồi dựng DOM. Cả hai vẫn phải kiểm quyền/luật ở server.
 Đọc [web.xml:10](../tomcat-app/src/main/webapp/WEB-INF/web.xml#L10),
 [PageErrorFilter.java:16](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/filter/PageErrorFilter.java#L16),
-[RobotCatalogPageServlet.java:45](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/RobotCatalogPageServlet.java#L45) và
+[RobotCatalogPageServlet.java:47](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/RobotCatalogPageServlet.java#L47) và
 [robot-catalog-api.js:84](../assets/js/robot-catalog-api.js#L84).
 
 Không cần học thuộc số slide. Mở file, nói đoạn code **nhận gì → kiểm gì → trả gì**;
@@ -1175,7 +1175,7 @@ vẫn khác chưa làm. Thiết kế gần nhất dùng LIMIT1, nhiệm vụ tr�
 
 - [Servlet: đọc dữ kiện và forward](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AccountPageServlet.java#L44).
 - [JavaBean: quyết định thẻ](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DashboardSummary.java#L56).
-- [JavaBean: chọn gợi ý quiz](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DashboardSummary.java#L86).
+- [JavaBean: chọn gợi ý quiz](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/DashboardSummary.java#L87).
 - [JUnit: trạng thái rỗng và trường hợp biên](../tomcat-app/src/test/java/vn/edu/webpro/robotlab/business/DashboardSummaryTest.java#L20).
 
 ### Đợt11c — giải thích qua hành trình học
@@ -1207,7 +1207,7 @@ phân biệt Chưa nộp và quá hạn; cờ nộp muộn là dữ kiện riên
 ## Mô hình kết quả ngay trong trang hoàn thiện — 18/10/2026
 
 **Vì sao đây là mô hình của đúng phiên?**
-[Servlet:46](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L46)
+[Servlet:47](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/controller/AssemblyReviewPageServlet.java#L47)
 đọc phiên theo id và user từ session; XxxDB đọc spec_id đã ghim cùng placements,
 không chọn spec mới nhất theo robot. [AssemblyReview:36](../tomcat-app/src/main/java/vn/edu/webpro/robotlab/business/AssemblyReview.java#L36)
 kiểm dữ kiện trước khi cho hiển thị, kể cả phiên bản spec cũ.
@@ -1218,9 +1218,9 @@ dùng EL/JSTL và c:out trong div ẩn. JavaScript đọc textContent, JSON.pars
 bộ hình khối sẵn có. Luật nghiệp vụ vẫn ở JavaBean; Servlet chỉ điều phối.
 
 **Vì sao kéo mô hình tại đây không đổi kết quả?**
-[Viewer:54](../assets/js/assembly-result-viewer.js#L54) chỉ đổi camera, không có
+[Viewer:55](../assets/js/assembly-result-viewer.js#L55) chỉ đổi camera, không có
 API mutation/gắn/tháo. GET xem lại không tăng version, thêm event hay sửa DB.
-Khi rời trang, [dispose:67](../assets/js/assembly-result-viewer.js#L67) dọn tài nguyên WebGL/listener.
+Khi rời trang, [dispose:68](../assets/js/assembly-result-viewer.js#L68) dọn tài nguyên WebGL/listener.
 
 **Ảnh tham khảo, mô hình kết quả và replay khác gì?**
 Ảnh tham khảo là ảnh catalog. Mô hình kết quả dựng ngay từ placements cuối của

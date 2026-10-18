@@ -119,6 +119,7 @@ public class UserDB {
     }
 
     public static User selectUser(String email) throws SQLException {
+        // PreparedStatement bind giá trị email; ResultSet ánh xạ dữ liệu thành User bean.
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection connection = pool.getConnection();
         PreparedStatement ps = null;
@@ -128,6 +129,7 @@ public class UserDB {
         try {
             ps = connection.prepareStatement(query);
             ps.setString(1, email);
+            // Bind tham số vào dấu ?, không ghép email trực tiếp vào SQL.
             rs = ps.executeQuery();
             User user = null;
             if (rs.next()) {

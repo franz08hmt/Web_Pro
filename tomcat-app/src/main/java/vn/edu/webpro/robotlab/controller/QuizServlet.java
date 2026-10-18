@@ -60,6 +60,7 @@ public class QuizServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // Nhận đáp án và danh tính từ session; không nhận điểm tự khai của người dùng.
         User user = SessionUtil.requireUser(request, response);
         if (user == null || !SessionUtil.hasValidCsrfToken(request, response)) return;
 

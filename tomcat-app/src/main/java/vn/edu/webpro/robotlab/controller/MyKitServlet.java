@@ -31,6 +31,7 @@ public class MyKitServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // HTTP POST nhận form; UTF-8 phải đặt trước khi đọc các parameter.
         request.setCharacterEncoding("UTF-8");
         show(request, response, true);
     }
@@ -38,6 +39,7 @@ public class MyKitServlet extends HttpServlet {
     private void show(HttpServletRequest request, HttpServletResponse response, boolean post)
             throws ServletException, IOException {
         response.setHeader("Cache-Control", "no-store");
+        // Dữ liệu cá nhân: yêu cầu trình duyệt và cache trung gian không lưu phản hồi.
         try {
             User user = SessionUtil.getCurrentUser(request);
             if (user == null) {
@@ -50,9 +52,11 @@ public class MyKitServlet extends HttpServlet {
             DesignRuleSet rules = DesignRuleDB.selectPublished();
             List<KitItem> items = UserKitDB.selectItems(user.getId(), rules);
             request.setAttribute("kitItems", items);
+            // Request attribute truyền bean sang JSP trong cùng request, không phải field của form.
             if (post) {
                 try {
                     String action = request.getParameter("action");
+                    // Đọc field tên action của form; HTTP method mới quyết định doGet hay doPost.
                     if ("import".equals(action)) {
                         UserKitDB.change(user.getId(), new HashMap<String, Integer>(), true);
                     } else if ("save".equals(action)) {
@@ -61,6 +65,7 @@ public class MyKitServlet extends HttpServlet {
                         throw new IllegalArgumentException("Thao tác không hợp lệ. Hãy dùng nút trên form.");
                     }
                     response.sendRedirect(request.getContextPath() + "/my-kit?saved=1");
+                    // PRG: lưu xong chuyển sang GET; refresh không gửi lại chính POST vừa xử lý.
                     return;
                 } catch (IllegalArgumentException e) {
                     response.setStatus(422);

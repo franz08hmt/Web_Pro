@@ -23,6 +23,7 @@ public class RobotCatalogPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // GET đọc danh mục; Servlet điều phối, XxxDB truy vấn và JSP trình bày.
         // get parameters from the request
         int page = pageNumber(request.getParameter("page"));
 
@@ -32,6 +33,7 @@ public class RobotCatalogPageServlet extends HttpServlet {
 
             // store data in request attributes for the JSP
             request.setAttribute("robots", robots);
+            // JSP đọc danh sách bean bằng EL/JSTL sau khi forward cùng request.
             request.setAttribute("total", total);
             request.setAttribute("page", page);
             request.setAttribute("hasNextPage", (long) page * PAGE_SIZE < total);
