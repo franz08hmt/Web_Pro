@@ -152,6 +152,15 @@ test("design room explains entry, WebGL, API, and malformed saved-layout failure
   assert.match(room, /webglcontextlost/);
 });
 
+test("design room provides a prominent accessible return to the design list", () => {
+  const page = read("pages/xuong-thiet-ke.html");
+  const styles = read("assets/css/design-room.css");
+  assert.match(page, /<a class="design-room-back" href="\.\.\/designs"[^>]*>← Quay lại kho thiết kế<\/a>/);
+  assert.match(styles, /\.design-room-back\s*\{[^}]*min-height:\s*44px/s);
+  assert.match(styles, /\.design-room-back:focus-visible\s*\{/);
+  assert.match(page, /design-room\.css\?v=20261018\.2/);
+});
+
 test("workshop reuses placement view with string mount ids and keeps all writes owner scoped and CSRF protected", () => {
   const base = "tomcat-app/src/main/java/vn/edu/webpro/robotlab/";
   const db = read(base + "data/DesignPlacementDB.java");

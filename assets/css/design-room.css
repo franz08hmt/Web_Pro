@@ -2,6 +2,12 @@
 .design-room-header { max-width: 1440px; margin: auto; }
 .design-room-header nav { display: flex; flex-wrap: wrap; gap: 16px; }
 .design-room-header a { min-height: 44px; display: inline-flex; align-items: center; }
+.design-room-header .design-room-back {
+  min-height: 44px; margin-bottom: 12px; padding: 8px 14px; border: 1px solid #3d4a50;
+  border-radius: 8px; background: #1b2429; color: #f3f4f6; text-decoration: none;
+}
+.design-room-header .design-room-back:hover { border-color: #ffa871; color: #ffa871; }
+.design-room-header .design-room-back:focus-visible { outline: 3px solid #ffa871; outline-offset: 3px; }
 .design-room-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 24px; max-width: 1440px; margin: auto; }
 .design-room-grid > * { min-width: 0; }
 /* Khung assembly-3d-view hiện có, giới hạn trong Xưởng để không import style.css toàn cục. */
