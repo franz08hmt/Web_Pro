@@ -440,3 +440,7 @@ clone QA/DB8080/DB demo không đổi, 10 file bảo vệ giữ hash. QA8082 đ�
 Giới hạn GROUP COMPLETED/lịch sử spec cũ chỉ kiểm bean/fixture; chi tiết tại
 docs/ASSEMBLY_REVIEW_3D_QA_REPORT.md. Không push.
 
+- [x] Chốt Run IDE thật: cấu hình cục bộ Tomcat Final WAR riêng, không BuildArtifacts
+  từ WIP; WAR92f7954/351 file/179 class major61 khớp. Năm mô hình/15 viewport,
+  camera/reload/quyền đạt trên8080;0 mutation/lỗi JS. Run phát triển vẫn giữ nguyên.
+

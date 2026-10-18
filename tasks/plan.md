@@ -833,3 +833,10 @@ file bảo vệ giữ hash; descriptor/server.xml không đổi,8081 nguyên tr�
 Đang giữ8080 chạy; helper Status/Stop/Start và bằng chứng trong
 qa-evidence/assembly-review-3d-deploy-8080-20261018 ngoài repo. Không push.
 
+Chốt sau Run IDE: Run phát triển tự build exploded từ WIP nên đã tách thêm cấu
+hình cục bộ Tomcat Final WAR theo duyệt, không sửa cấu hình phát triển/global.
+Người dùng đã Run đúng Final; PID39896/base riêng, descriptor WAR sạch92f7954,
+351 file và179 class major61 khớp, năm mô hình/15 viewport/camera/reload/quyền
+đạt trên8080,0 mutation/lỗi JS và10 hash bảo vệ nguyên. Giữ IDE server chạy.
+Bằng chứng final-war-run-config-20261018 ngoài repo; XML IDE ignored, không push.
+

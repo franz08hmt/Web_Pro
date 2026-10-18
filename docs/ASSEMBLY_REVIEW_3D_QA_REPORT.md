@@ -248,3 +248,46 @@ Before launch bật BuildArtifacts cho chính artifact này. Không sửa cấu 
 trong lượt xác minh; muốn pin External Source WAR sạch cần người dùng duyệt riêng.
 Mười file bảo vệ vẫn giữ hash. Bằng chứng: `INTELLIJ_RUN_VERIFICATION.json` ở thư
 mục triển khai ngoài repo. Không dùng helper Stop cũ để can thiệp PID của IDE.
+
+## Chốt Run riêng “Tomcat Final WAR” — 18/10/2026
+
+Người dùng duyệt chọn cách chạy phù hợp cho final. Đã tạo cấu hình cục bộ
+`.idea/runConfigurations/Tomcat_Final_WAR.xml`, Git bỏ qua; không commit XML IDE.
+Giữ nguyên Run phát triển `Tomcat 9.0.120`, server/JDK17 và năm DB properties.
+Cấu hình Final dùng External Source là WAR `92f7954`, context `/`, Before launch
+không Make/BuildArtifacts. Runtime base riêng; thêm logging riêng để không in
+VM arguments chứa bí mật. Workspace/config cũ được backup private trước khi tạo.
+
+Sau khi người dùng Stop Run cũ và Run đúng Final, kiểm thực tế:
+
+| Mục | Kết quả |
+|---|---|
+| URL/PID lúc kiểm | `http://localhost:8080/`, PID39896; 1099 cùng process của IDE |
+| Runtime | Java17.0.19; base riêng `e2c73c89-cee7-4367-a318-e5ff279fbe23` |
+| Descriptor | ROOT.xml trỏ thẳng WAR sạch đã chốt, không trỏ target working tree |
+| WAR | SHA256 `610440ea6656890768d90ee4f3838a7d4b5ba5ef3d0f85b8f798a0bbdbc1e386` |
+| Artifact Tomcat giải nén | 351 file khớp candidate từng byte; 179 class đều major61 |
+| WIP không vào bản phục vụ | Learning-profile JSP và toàn bộ class/resource khớp bản sạch, khác exploded working tree trước đó |
+| HTTP | JS viewer/review và CSS khớp byte candidate; health200; review no-store |
+| Năm mô hình | Phiên44–48 có10/11/8/12/12 placements, khớp spec/layout của phiên và có geometry thật |
+| Tương tác xem | Xoay chuột, zoom bằng Enter, căn giữa, reload; 15 viewport390/768/1440 đạt |
+| Quyền | Đổi sang phiên30 của người khác404; khách302 đăng nhập |
+| Không ghi khi xem | 0 request ghi nghiệp vụ sau đăng nhập, 0 lỗi JS chưa xử lý |
+| Bảo vệ | 10 file giữ hash; không sửa DB/schema/seed, không tác động8081 |
+
+Bằng chứng mới: `D:/Web-Pro/qa-evidence/final-war-run-config-20261018/`, gồm
+`CONFIGURATION.json`, `FINAL_RUN_ACCEPTANCE.json`, ảnh năm mẫu desktop/mobile;
+backup cấu hình và logging nằm trong private giới hạn ACL. Không chạy lại full
+suite vì source/WAR không đổi: kết quả259 Node/163 JUnit thuộc chính WAR này.
+Đây là kiểm mới bằng Run IDE thật, không kế thừa kết luận từ helper hay QA8082.
+
+Dùng **Tomcat Final WAR khi demo**, Run cũ khi phát triển. Chỉ chạy một cấu hình
+cùng lúc vì cùng cổng8080/JMX1099. Chỉnh source/WIP không tự cập nhật WAR Final;
+muốn đổi bản final cần build sạch, kiểm và thay artifact có kiểm soát.
+Hoàn tác cấu hình: Stop Final, chọn Run phát triển cũ; file Final có thể bỏ riêng
+nếu không dùng nữa, không cần phục hồi toàn workspace hoặc DB. Không dùng helper
+ngoài IDE để dừng process này. Không sửa global settings.
+
+**Trạng thái chốt: IntelliJ Run Final đã chạy đúng WAR sạch và kiểm đạt trên
+localhost:8080.** Giữ server của IDE chạy, không còn chờ bước Run này. Các giới hạn
+kiểm live GROUP/spec lịch sử ở phần trước vẫn được ghi đúng phạm vi. Chưa push.
