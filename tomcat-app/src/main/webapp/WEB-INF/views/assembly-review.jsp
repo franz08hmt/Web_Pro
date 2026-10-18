@@ -87,7 +87,12 @@
                                 <%@ include file="assembly-drawing.jspf" %>
                             </c:when>
                             <c:otherwise>
-                                <p>Bản vẽ chi tiết chỉ có ở phiên lắp chi tiết.</p>
+                                <c:choose>
+                                    <c:when test="${session.detailed}">
+                                        <p>Chưa đủ dữ liệu để dựng bản vẽ của phiên này.</p>
+                                    </c:when>
+                                    <c:otherwise><p>Bản vẽ chi tiết chỉ có ở phiên lắp chi tiết.</p></c:otherwise>
+                                </c:choose>
                             </c:otherwise>
                         </c:choose>
                     </section>
@@ -209,7 +214,7 @@
             <c:url var="reviewThree" value="/assets/vendor/three/three.min.js"/>
             <c:url var="reviewParts" value="/assets/js/assembly-3d-parts.js"><c:param name="v" value="20261018.1"/></c:url>
             <c:url var="reviewViewer" value="/assets/js/assembly-result-viewer.js">
-                <c:param name="v" value="20261018.1"/>
+                <c:param name="v" value="20261018.2"/>
             </c:url>
             <script src="<c:out value='${reviewThree}'/>" defer></script>
             <script src="<c:out value='${reviewParts}'/>" defer></script>

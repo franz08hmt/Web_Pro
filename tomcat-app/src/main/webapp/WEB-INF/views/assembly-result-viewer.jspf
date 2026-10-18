@@ -17,6 +17,7 @@
         </div>
     </c:when>
     <c:when test="${session.detailed}">
+        <c:if test="${not empty reviewLayoutWarning}"><p><c:out value="${reviewLayoutWarning}" /></p></c:if>
         <p>Chưa đủ dữ liệu bố cục cuối để hiển thị đúng mô hình của phiên này.
             Bạn vẫn có thể xem các thông tin kết quả và phiếu còn lưu bên dưới.</p>
     </c:when>

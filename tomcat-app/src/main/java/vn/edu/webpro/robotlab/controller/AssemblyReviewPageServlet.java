@@ -72,7 +72,12 @@ public class AssemblyReviewPageServlet extends HttpServlet {
         AssemblyDrawing drawing = new AssemblyDrawing();
         AssemblyLayout layout = null;
         if (session.isDetailed()) {
-            layout = AssemblyPlacementDB.selectLayout(session.getId(), userId);
+            try {
+                layout = AssemblyPlacementDB.selectLayout(session.getId(), userId);
+            } catch (SQLException e) {
+                request.setAttribute("reviewLayoutWarning",
+                        "Tạm chưa đọc được bố cục cuối của phiên này. Các thông tin còn lưu được giữ bên dưới.");
+            }
             if (layout != null && layout.getSpec() != null) {
                 drawing.build(layout);
                 review.setCorrectCount(layout.check().getCorrectCount());

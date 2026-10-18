@@ -103,6 +103,9 @@
       const camera = new THREE.PerspectiveCamera(40, 1, 0.01, radius * 100);
       let azimuth = Math.PI - 0.7, polar = 1.05, distance, fitDistance;
       renderer = new THREE.WebGLRenderer({antialias: true, alpha: false});
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.15;
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
       const canvas = renderer.domElement;
       canvas.tabIndex = 0;
