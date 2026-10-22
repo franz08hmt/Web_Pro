@@ -266,13 +266,3 @@ Remove-Item Env:ROBOTLAB_EXPLODED_DIR
 
 Chọn thư mục build riêng chưa được runtime khác sử dụng. Bộ kiểm tra UTF-8 sẽ đối chiếu artifact tại `ROBOTLAB_EXPLODED_DIR`; kiểm thử nguồn không thay thế nghiệm thu trình duyệt trên đúng bản đang triển khai.
 
-## Tài liệu dự án
-
-- [Kịch bản demo 15–20 phút, vấn đáp và vị trí code](docs/TEAM_FLOW_DEMO_GUIDE.md)
-- [Ôn tập vấn đáp cuối kỳ](docs/ON_TAP_VAN_DAP_CUOI_KY.md)
-- [Kiến trúc và luồng request/response](docs/ARCHITECTURE.md)
-- [Quy ước API](docs/API_CONVENTIONS.md)
-- [ERD và dữ liệu](docs/erd.md)
-- [Bản đồ trang và điều hướng](docs/SITE_MAP.md)
-
-Bắt đầu trình bày bằng luồng học chính; dùng `/architecture` để mở ví dụ Servlet, JavaBean, JSP/JSTL và JDBC khi cần giải thích code. Báo cáo QA và lịch sử từng đợt được giữ riêng trong `docs/`.
