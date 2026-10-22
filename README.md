@@ -1,295 +1,228 @@
 # Robot Assembly Lab
 
-## Ôn và trình bày final
+Robot Assembly Lab là website hỗ trợ người học chọn mẫu robot, chuẩn bị linh kiện và tự lắp từng vật thể trong phòng 3D có server kiểm chứng. Sau khi hoàn tất, người học xem lại mô hình đã lưu, quy trình lắp, phiếu kết quả và làm bài kiểm tra kiến thức của mẫu đó.
 
-- Bắt đầu với [kịch bản demo15–20 phút, vấn đáp ngay từng đoạn và file:dòng](docs/TEAM_FLOW_DEMO_GUIDE.md).
-- Khi cô hỏi sâu, dùng [tài liệu vấn đáp theo code](docs/ON_TAP_VAN_DAP_CUOI_KY.md).
-- Luồng chính: **chọn mẫu → lắp từng vật thể có server kiểm chứng → xem mô hình đã lưu,
-  quy trình, phiếu kết quả → quiz**. Xưởng thiết kế là nhánh tự chọn linh kiện và kiểm tương thích.
-- Chạy bằng cấu hình duy nhất **Tomcat 9.0.120**, Java17, context `/`, tại `http://localhost:8080/`.
-  Không chạy helper Start cùng IntelliJ.8081 là môi trường riêng, không suy kết quả giữa hai cổng.
-- Tài liệu kiến trúc/API/ERD là nguồn tra cứu; các báo cáo QA giữ làm bằng chứng lịch sử,
-  số test/runtime trong mỗi báo cáo chỉ thuộc lần kiểm ghi ở đó.
+Đồ án môn **Lập trình Web — Nhóm 4**, xây dựng bằng **Java Servlet/JSP, Tomcat 9 và MySQL**.
 
-## Cập nhật8080 — kéo-thả đủ5 mẫu (17/10/2026)
+## Trạng thái dự án
 
-Đã nghiệm thu trực tiếp `http://localhost:8080/pages/mau-robot.html` trên DB
-`robot_lab_content_test`: đường vào mặc định DETAILED, từng vật thể/điểm gắn/
-hướng được server kiểm tra; giữ URL GROUP lịch sử. Cả5 mẫu qua53 lần kéo-thả,
-reload/undo/hoàn tất. Có backup và giữ nguyên mọi dòng dữ liệu cũ/WIP.
+Phiên bản hiện tại có năm mẫu: Robot dò đường, Robot tránh vật cản, Cánh tay robot mini, Robot dò line kết hợp tránh vật cản và Robot quét hướng tránh vật cản.
 
-Đây là môi trường khác với `FINAL.ps1`/8081; không dùng lẫn tài khoản hoặc suy
-kết quả kiểm thử giữa hai cổng. Hướng dẫn chạy/dừng bản8080, bằng chứng253 Node/
-159 JUnit và giới hạn: [nghiệm thu8080](docs/ASSEMBLY_8080_QA_REPORT.md).
+- Lắp ráp từng vật thể: kéo-thả hoặc chọn-gắn, xoay hướng, tháo, hoàn tác và lưu bố cục tại server.
+- Trang hoàn thiện: mô hình 3D đúng phiên, bản vẽ 2D, nhật ký, phiếu kết quả, phát lại và đường vào quiz.
+- Xưởng thiết kế: tự chọn linh kiện, vào phòng 3D ngay sau khi tạo, kiểm tra tương thích và in hồ sơ thiết kế.
+- Các chức năng hỗ trợ: nối dây, chẩn đoán, tra cứu lỗi, nhiệm vụ thực hành, bộ linh kiện và cửa hàng mô phỏng.
 
-## Tích hợp luồng phụ của Nhi và Tuấn Anh — 12/10/2026
+Các báo cáo trong `docs/` ghi lại kết quả kiểm chứng từng phiên bản; số test và trạng thái triển khai trong báo cáo chỉ áp dụng cho lần kiểm được ghi ở đó.
 
-- **Thư viện:** lọc theo mẫu robot, chọn số tài nguyên mỗi trang, phân trang và
-  thông báo tải/lỗi/dữ liệu rỗng. Content API cũ vẫn trả mảng; hàm phân trang
-  riêng trả `{data, meta}`, không đổi các trang robot/linh kiện/lắp ráp.
-- **Lịch sử chẩn đoán:** USER mở `/diagnosis?action=history` để xem lại lượt
-  PRACTICE đã nộp của mình; không đưa lượt TASK vào lịch sử luyện. Điểm và ngày
-  dùng luật JavaBean hiện có, giờ Việt Nam; JSP chỉ trình bày bằng EL/JSTL core.
-- Không thêm migration. `database/seed-library-resources-phase3.sql` là seed
-  bổ sung tùy chọn (INSERT IGNORE), chạy sau seed robot Đợt 3 nếu muốn thêm
-  10 tài nguyên. **Lần tích hợp này không chạy seed hoặc thay dữ liệu MySQL.**
-- Chi tiết review, kiểm thử và giới hạn: [báo cáo tích hợp](docs/TEAM_INTEGRATION_QA_20261012.md).
+## Phạm vi nghiệp vụ
 
-## Chẩn đoán tương tác và nhiệm vụ mẫu B (Đợt 6, chặng 2)
+### Luồng chức năng chính
 
-USER chọn phép kiểm tra bằng form để mở từng quan sát mô phỏng, rồi chọn nguyên
-nhân và biện pháp. Server ghi nhận thao tác, chấm thu thập quan sát /4, nguyên
-nhân /3 và xử lý /3; chỉ hiện đáp án/giải thích sau khi kết luận. Lượt PRACTICE
-để luyện độc lập; lượt TASK gắn cố định vào vòng nhiệm vụ ngay khi bắt đầu.
-ADMIN biên soạn nháp, xem trước, công bố bản bất biến, nhân bản và lưu trữ.
+1. **Lắp theo mẫu:** đăng nhập → chọn mẫu → chuẩn bị linh kiện → vào phòng 3D → lắp và nhận phản hồi từ server → hoàn tất.
+2. **Học sau khi lắp:** xem mô hình đã lưu, đối chiếu bước chuẩn và trình tự đã làm → xem phiếu → làm quiz đúng mẫu.
+3. **Tự thiết kế:** chọn linh kiện từ bộ cá nhân hoặc thư viện → tạo thiết kế → vào phòng 3D → lắp, kiểm tra và xem hồ sơ vật tư/bản vẽ.
 
-Mẫu B: lắp ráp 30 + quiz 25 + chẩn đoán 25 + giải thích 20. Server dùng điểm
-chẩn đoán chính xác để tính tổng tự động, làm tròn HALF_UP một lần tới một chữ
-số thập phân và lưu snapshot. Mẫu A giữ luật 40 + 40 + 20. Vòng bổ sung dùng
-lượt chẩn đoán mới đã kết luận hoặc dùng lại bài trước nếu chưa bắt đầu lượt mới.
+### Chức năng hỗ trợ
 
-DB đã có migration 009: chạy theo thứ tự, bằng MySQL client trên DB ứng dụng:
+| Nhóm | Nội dung |
+| --- | --- |
+| Tài khoản và kết quả | Đăng ký, đăng nhập, dashboard, tổng kết học tập và hồ sơ in/PDF |
+| Thực hành | Bài nối dây, hỗ trợ Admin–User, chẩn đoán và tra cứu lỗi theo mẫu |
+| Nhiệm vụ | Giao nhiệm vụ, thu bằng chứng, nộp bài, phản hồi và đánh giá theo rubric hiện có |
+| Tài nguyên | Danh mục linh kiện, thư viện, bộ linh kiện cá nhân và nhập từ đơn đã xác nhận |
+| Cửa hàng mô phỏng | Sản phẩm, giỏ hàng, kiểm tồn kho, tạo đơn và lịch sử đơn |
+| Quản trị | Quản lý nội dung, quiz, bài thực hành, nhiệm vụ, người dùng và thống kê |
 
-```sql
-SOURCE database/migrations/010_diagnosis_practice.sql;
-SOURCE database/seed-diagnosis-phase6.sql;
-```
+### Giới hạn mô phỏng
 
-Migration 010 cần CREATE/ALTER, thêm năm bảng và các liên kết nullable, mở rubric
-A/B, đổi hai CHECK điểm tối thiểu từ 40 thành 30. Không sửa dữ liệu cũ. Seed
-INSERT IGNORE gồm năm tình huống chính thức; cần catalog robot và ít nhất một
-ADMIN có sẵn. Có thể chạy lại; các bản công bố đã tồn tại không bị ghi đè.
-Schema cài mới đã gộp thay đổi này trong `database/schema.sql`.
+- Kiểm tra theo luật lắp ghép và cấu hình đã công bố; không mô phỏng điện, vật lý hoặc firmware.
+- Xưởng chỉ kiểm chứng bộ linh kiện được hỗ trợ. Linh kiện chưa có luật được báo rõ, không tự coi là đúng.
+- Thiết kế riêng không được tính là hoàn thành mẫu chính thức hoặc bằng chứng nhiệm vụ.
+- Bản vẽ và hồ sơ là tài liệu tham khảo, không thay thế kiểm tra thực tế khi lắp robot.
+- Cửa hàng không thu tiền, không tích hợp thanh toán hoặc giao hàng thật.
 
-Tài khoản USER có **Luyện chẩn đoán**; ADMIN có **Quản lý tình huống chẩn đoán**.
-Trang Servlet/JSP và form hoạt động khi tắt JavaScript. Quan sát là dữ liệu
-mô phỏng của bài tập, không phải phép đo robot thật. Đây là đánh giá quá trình
-có tài liệu tham khảo và luyện tập, không phải thi kín.
+## Kiến trúc kỹ thuật
 
-Xem [đối chiếu slide và kịch bản demo](docs/TEAM_FLOW_DEMO_GUIDE.md),
-[báo cáo QA chặng 2 và giới hạn](docs/PHASE6C_QA_REPORT.md).
+Ứng dụng dùng **Model 2 (MVC)**, giữ các lớp Servlet, JavaBean và JDBC theo cấu trúc môn học.
 
-## Nhiệm vụ thực hành và đánh giá (Đợt 6, chặng 1)
-
-ADMIN tạo nháp/giao USER/công bố/gia hạn/đóng/lưu trữ/nhân bản, chấm và sửa chấm
-có lịch sử. USER làm quiz tính điểm theo vòng, chọn phiên lắp ráp COMPLETED,
-viết giải thích, xem trước rồi nộp; yêu cầu bổ sung mở vòng tiếp theo. Rubric A
-cố định: lắp ráp 40, quiz 40, giải thích 20. Chưa chấm hiện điểm tự động /80.
-
-Sau migration 008, chạy `database/migrations/009_practice_tasks.sql` trên đúng
-database bằng tài khoản có quyền CREATE/REFERENCES. Kiểm schema_migrations
-trước; database mới dùng schema.sql đã chứa năm bảng nhiệm vụ, không chạy lại
-các migration đã có. Migration 009 chỉ thêm bảng, không đổi dữ liệu cũ;
-IF NOT EXISTS cho phép tiếp tục khi lần chạy DDL trước bị ngắt, không thay thế
-việc kiểm cấu trúc các bảng hiện có.
-
-Lối vào ở trang Tài khoản: USER **Nhiệm vụ của tôi**, ADMIN **Quản lý nhiệm vụ**.
-Trang mới dùng Servlet → JavaBean → XxxDB → JSP/form, chạy khi tắt JavaScript.
-Xem [đối chiếu chương/slide và demo](docs/TEAM_FLOW_DEMO_GUIDE.md) và
-[bằng chứng kiểm chứng Đợt 6](docs/PHASE6_QA_REPORT.md).
-
-
-Ứng dụng Web Java giúp người học chọn mô hình robot, tra cứu linh kiện, thực hiện
-các bước lắp ráp và lưu tiến độ. Runtime duy nhất của dự án là **Java Servlet/JSP
-trên Tomcat 9**; Node.js không chạy backend.
-
-## Kiến trúc theo Model 2 (MVC) của học phần
-
-Chia tầng đúng như Chapter 2 slide 5 và Chapter 12 (sách *Murach's Java Servlets and JSP*):
+| Thành phần | Công nghệ và trách nhiệm |
+| --- | --- |
+| Giao diện | HTML5, CSS3, JavaScript, JSP/JSTL core/EL; Three.js cục bộ cho 3D |
+| Controller | Java 17, Servlet API `javax.servlet`, chạy trên Tomcat 9 |
+| Business | JavaBean giữ dữ liệu và luật nghiệp vụ |
+| Data | Các lớp `XxxDB` static, JDBC, `PreparedStatement`, `ConnectionPool`, `DBUtil` |
+| Database | MySQL 8, khóa ngoại, transaction và khóa khi cập nhật bố cục |
+| Xác thực | `HttpSession`, cookie `JSESSIONID`, phân quyền và ownership tại server |
+| Bảo vệ thao tác | CSRF, kiểm phiên bản bố cục và `Cache-Control: no-store` cho dữ liệu cá nhân |
 
 ```text
-Browser — view: HTML/JSP
-        │ HTTP request
-        ▼
-Servlet — controller (package controller)
-        │ kiểm tra dữ liệu, gọi lớp XxxDB
-        ▼
-XxxDB + ConnectionPool + DBUtil — data access layer (package data)
-        │ PreparedStatement
-        ▼
-MySQL
+Trình duyệt
+    | HTTP request
+    v
+Servlet (controller)
+    | gọi XxxDB và JavaBean
+    v
+XxxDB + ConnectionPool + DBUtil <--> MySQL
+    | dữ liệu trong JavaBean
+    v
+request attribute --> JSP/JSTL --> HTML
+hoặc JSON response --> JavaScript --> giao diện tương tác
 ```
 
-Dữ liệu đi giữa các tầng bằng JavaBean trong package `business` (model).
+Các trang tổng hợp và form dùng Servlet → JSP; catalog HTML và phòng 3D gọi API cùng origin. JavaScript dựng hình và điều khiển tương tác; server quyết định đúng/sai, điểm và trạng thái lưu.
 
-- Java 17, Servlet API 4.0.1 (`javax.servlet`), JSP, JSTL và Tomcat 9.
-- Connection pool khai báo trong `META-INF/context.xml` như Chapter 12 slide 34.
-- `HttpSession`/cookie `JSESSIONID` giữ trạng thái đăng nhập; request ghi dùng CSRF.
-- `/robots` và `/components` là trang JSP do servlet dựng sẵn ở server: `doGet` đọc
-  tham số, gọi `RobotDB`/`ComponentDB`, `setAttribute` rồi `forward` sang JSP dùng
-  JSTL. `/account` và `/architecture` cũng đi theo luồng này.
-- REST API trả JSON cho phần giao diện HTML/JavaScript trong `pages/`.
-- Three.js được lưu tại `assets/vendor/three`, không phụ thuộc `node_modules` khi chạy.
+**Node.js chỉ dùng chạy kiểm thử nguồn, không chạy backend.** Dự án không dùng Express, Spring hoặc ORM.
 
-Giải thích chi tiết và vị trí code: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+## Mô hình dữ liệu
 
-## Thư mục cần biết
+| Nhóm bảng | Dữ liệu chính |
+| --- | --- |
+| `users` | Tài khoản, mật khẩu băm, vai trò và phiên bản đăng nhập |
+| `robots`, `components`, `robot_components`, `assembly_steps` | Mẫu robot, linh kiện, số lượng và bước chuẩn |
+| `assembly_sessions`, `session_components`, `session_steps` | Phiên học và tiến độ chuẩn bị theo người dùng |
+| `assembly_specs`, `assembly_slots`, `assembly_slot_orientations` | Phiên bản cấu hình lắp và hướng hợp lệ |
+| `assembly_instances`, `assembly_placements`, `assembly_events` | Vật thể, bố cục đã lưu và nhật ký thao tác |
+| `quiz_*`, `troubleshooting_guides`, `library_resources` | Kiểm tra kiến thức và tài nguyên học tập |
+| Các bảng nhiệm vụ, nối dây và chẩn đoán | Bài thực hành, lượt làm, bằng chứng và đánh giá |
+| `design_*`, `robot_designs`, `user_kit_items` | Luật Xưởng, thiết kế cá nhân và bộ linh kiện |
+| `shop_products`, `cart_items`, `orders`, `order_items` | Sản phẩm, giỏ hàng và đơn mô phỏng |
+
+Schema chi tiết và quan hệ: [docs/erd.md](docs/erd.md). Phiên cũ giữ spec/luật đã gắn tại lúc tạo; không lấy bản mới nhất để chấm lại lịch sử.
+
+## Trang và API chính
+
+| Chức năng | Trang người dùng | API chính |
+| --- | --- | --- |
+| Tài khoản | `/pages/tai-khoan.html`, `/account` | `/api/auth/*` |
+| Mẫu và linh kiện | `/pages/mau-robot.html`, `/pages/linh-kien.html` | `/api/robots`, `/api/components` |
+| Lắp theo mẫu | `/pages/lap-rap.html`, `/pages/lap-rap-3d.html` | `/api/assembly-sessions/*` |
+| Kết quả lắp | `/assembly-review`, `/assembly-receipt` | Dữ liệu chủ phiên do Servlet đọc và forward JSP |
+| Quiz | `/pages/kiem-tra.html` | `/api/quiz/*` |
+| Xưởng và bộ linh kiện | `/designs`, `/my-kit`, `/design-sheet` | `/api/designs/*` |
+| Thực hành | `/wiring`, `/diagnosis`, `/tasks` | Form Servlet và các luồng hiện có |
+| Cửa hàng | `/pages/cua-hang.html`, `/pages/gio-hang.html`, `/order-history` | `/api/shop/products`, `/api/cart`, `/api/orders` |
+| Kết quả và bản đồ môn học | `/learning-summary`, `/learning-profile`, `/architecture` | Servlet → JSP |
+
+`/robots` và `/components` vẫn được giữ làm ví dụ catalog render bằng Servlet/JSP. Menu, quyền truy cập và toàn bộ route được mô tả tại [SITE_MAP](docs/SITE_MAP.md); hợp đồng JSON tại [API_CONVENTIONS](docs/API_CONVENTIONS.md).
+
+## Phân công nhóm
+
+| Thành viên | Mảng phụ trách | File tiêu biểu |
+| --- | --- | --- |
+| Huỳnh Minh Tài | Nền tảng Servlet/Tomcat, xác thực và phân quyền, phiên học, nhiệm vụ, hồ sơ, cửa hàng và tích hợp | `AuthServlet`, `AssemblySessionServlet`, `TaskServlet`, `LearningProfileServlet`, `CartDB`, `OrderDB` |
+| Văn Phạm Thảo Nhi | Cơ sở dữ liệu, nội dung robot/linh kiện/thư viện, quản trị nội dung, quiz và thống kê | `RobotDB`, `ComponentDB`, `QuizServlet`, `StatsDB`, `database/` |
+| Phạm Tuấn Anh | Tương tác lắp ráp 3D, thực hành nối dây, chẩn đoán, hỗ trợ và responsive | `assembly-3d.js`, `WiringServlet`, `WiringExercise`, `DiagnosisServlet` |
+
+Phân công và luồng code chi tiết nằm trong [tài liệu vấn đáp](docs/ON_TAP_VAN_DAP_CUOI_KY.md).
+
+## Cấu trúc thư mục
 
 ```text
-tomcat-app/
-  pom.xml
-  src/main/java/vn/edu/webpro/robotlab/
-    business/     JavaBean: User, Robot, Component, AssemblySession...
-    controller/   Servlet nhận request, trả JSON hoặc forward sang JSP
-    data/         ConnectionPool, DBUtil và UserDB, RobotDB... (JDBC + SQL)
-    util/         PasswordUtil, SessionUtil, JsonUtil, ValidationUtil...
-    filter/       UTF-8, request context, xử lý lỗi chung
-  src/main/webapp/META-INF/context.xml   Connection pool jdbc/robotlab
-  src/main/webapp/WEB-INF/views/         JSP không truy cập trực tiếp
-assets/           CSS, JavaScript, ảnh và Three.js cục bộ
-pages/            Các view HTML phía client
-database/         Schema, seed và migration MySQL
-docs/             Kiến trúc, API, ERD và kịch bản thuyết trình
-tests/server/     Kiểm tra tĩnh tùy chọn cho frontend/cấu hình WAR
+robot-engine-website/
+|-- index.html
+|-- pages/                         Trang HTML và giao diện tương tác
+|-- assets/                        CSS, JavaScript, ảnh và Three.js cục bộ
+|-- tomcat-app/
+|   |-- pom.xml
+|   `-- src/
+|       |-- main/java/vn/edu/webpro/robotlab/
+|       |   |-- controller/         Servlet điều phối request
+|       |   |-- business/           JavaBean và luật nghiệp vụ
+|       |   |-- data/               XxxDB, ConnectionPool và DBUtil
+|       |   |-- util/               Tiện ích kỹ thuật
+|       |   `-- filter/             Bộ lọc request, quyền và lỗi
+|       |-- main/webapp/
+|       |   |-- META-INF/context.xml
+|       |   `-- WEB-INF/views/      JSP và các phần dùng chung .jspf
+|       `-- test/java/              JUnit
+|-- database/                      Schema, migration và seed
+|-- tests/server/                  Kiểm thử nguồn và hành vi JavaScript
+|-- docs/                          Kiến trúc, API, ERD, demo và báo cáo QA
+|-- .env.example                   Mẫu thông số kết nối, không chứa bí mật thật
+|-- package.json                   Lệnh kiểm thử Node.js
+`-- README.md
 ```
 
-## Chạy bằng IntelliJ + Tomcat
+## Quy trình Git
 
-Yêu cầu: JDK 17, Tomcat 9 và MySQL 8.
+- `main` là bản tích hợp để bàn giao; phát triển và review trên nhánh riêng.
+- Không đưa thay đổi đang làm dở vào commit phát hành.
+- Trước khi tích hợp, chạy kiểm tra phù hợp và `git diff --check`.
+- Không commit `.env`, cấu hình IDE cá nhân, mật khẩu, token, DB backup hoặc artifact build.
+- Lịch sử triển khai và kiểm chứng được lưu trong các báo cáo QA, không dùng README làm nhật ký từng đợt.
 
-1. Tạo database UTF-8, chọn database đó rồi chạy `database/schema.sql` và
-   `database/seed.sql`. Với database cũ, chỉ chạy migration chưa có trong
-   `schema_migrations` (`database/migrations/00N_*.sql`, theo đúng thứ tự số).
-   Migration là lệnh DDL nên phải chạy bằng tài khoản MySQL có quyền
-   `CREATE`/`ALTER` (ví dụ `root`), không phải tài khoản ứng dụng. Sau khi đã có
-   migration `006_quiz`, chạy thêm `database/seed-quiz.sql`; sau migration
-   `007_troubleshooting`, chạy thêm `database/seed-troubleshooting.sql`. Cả hai
-   đều an toàn chạy trên database đang dùng — chỉ INSERT bảng `quiz_*` hoặc
-   `troubleshooting_guides`, không đụng dữ liệu người dùng. Để thêm hai mẫu
-   `line-obstacle` và `servo-scout`, sau `seed.sql` chạy lần lượt
-   `database/seed-robots-phase3.sql`, `database/seed-quiz-phase3.sql` (sau khi
-   có bảng quiz từ migration `006_quiz`) và
-   `database/seed-troubleshooting-phase3.sql` (sau migration
-   `007_troubleshooting`). Các seed đợt 3 chỉ dùng `INSERT IGNORE`, không thêm
-   bảng/cột và có thể chạy lại an toàn. Với database cũ, sau `007_troubleshooting`
-   chạy migration `008_shop_cart_orders.sql`; sau đó chạy `database/seed-shop.sql`.
-   Database mới nhận bốn bảng cửa hàng từ `schema.sql`, rồi chạy cùng seed cửa hàng.
-   Seed chỉ thêm 12 sản phẩm mô phỏng gắn với `components`, không đụng giỏ, tài
-   khoản hay lịch sử đơn đã có.
-2. Trong cấu hình Tomcat của IntelliJ, tab **Server**, ô **VM options**, nhập:
+## Chạy trên máy mới (Windows / IntelliJ)
 
-   ```text
-   -DDB_HOST=127.0.0.1 -DDB_PORT=3306 -DDB_NAME=ten_database -DDB_USER=ten_user -DDB_PASSWORD=mat_khau
-   ```
+Yêu cầu: **JDK 17, Maven, Tomcat 9 và MySQL 8**. Node.js 20+ chỉ cần khi chạy bộ kiểm thử Node.
 
-   `META-INF/context.xml` đọc năm giá trị này qua `${DB_HOST}`…, nên mật khẩu
-   không nằm trong Git. Tomcat không tự đọc file `.env`.
-3. Trong **Deployment**, thêm artifact `robot-assembly-lab-tomcat:war exploded`
-   và đặt **Application context** là `/` vì frontend gọi API cùng origin tại `/api`.
-4. Chạy cấu hình Tomcat, không chạy `index.html` và không dùng `npm run dev`.
-5. Mở `http://localhost:8080/`. Kiểm tra kết nối tại
-   `http://localhost:8080/api/health`.
+### 1. Tạo database và nạp danh mục
 
-Có thể build ngoài IntelliJ bằng:
+Chỉ làm phần này với **database mới, rỗng**. Dùng tài khoản cài đặt có quyền DDL; tài khoản chạy ứng dụng chỉ cần quyền DML phù hợp trên database ứng dụng.
+
+Mở MySQL CLI từ thư mục gốc repo, kết nối UTF-8 và nhập mật khẩu khi được hỏi:
 
 ```powershell
-mvn -f tomcat-app/pom.xml clean package
+mysql --default-character-set=utf8mb4 -u tai_khoan_cai_dat -p
 ```
 
-WAR được tạo tại `tomcat-app/target/robot-assembly-lab.war`.
-
-## Cài nhanh trên máy mới và khắc phục lỗi đăng nhập
-
-Mỗi máy có MySQL riêng nên **tài khoản và dữ liệu không đi theo Git**. Trên máy mới, đăng ký
-tài khoản mới; tài khoản demo của máy khác không tồn tại ở đây. Lỗi đăng nhập/đăng ký trên máy
-mới gần như luôn do cấu hình hoặc database, **không phải do code**: đừng sửa code, hãy làm
-theo các bước dưới đây (chi tiết đầy đủ ở mục "Chạy bằng IntelliJ + Tomcat" phía trên).
-
-### Bước 1. Cấu hình IntelliJ
-
-1. Dùng **JDK 17** (Project SDK) và Tomcat 9. Không dùng JDK 21 hoặc 25.
-2. Cấu hình Tomcat → **Deployment**: thêm artifact `robot-assembly-lab-tomcat:war exploded`,
-   **Application context = `/`** (nếu khác `/` thì mọi lời gọi `/api/...` bị 404).
-3. Chạy bằng nút Run Tomcat. Không mở `index.html` bằng Live Server hoặc bấm đúp.
-4. Sau khi pull hoặc sửa code: Build → Rebuild Project, rồi chạy lại.
-
-### Bước 2. Cài MySQL và khai báo kết nối
-
-1. Cài **MySQL 8** (không dùng MariaDB: `schema.sql` dùng collation `utf8mb4_0900_ai_ci`).
-2. Tab **Server** của cấu hình Tomcat, ô **VM options**, điền theo MySQL **của máy mình**:
-
-   ```text
-   -DDB_HOST=127.0.0.1 -DDB_PORT=3306 -DDB_NAME=robot_assembly_lab -DDB_USER=root -DDB_PASSWORD=mat_khau
-   ```
-
-   Tomcat không đọc file `.env`. Mật khẩu có ký tự đặc biệt hoặc dấu cách thì đặt trong dấu nháy kép.
-
-### Bước 3. Tạo database và nạp dữ liệu (một lần)
-
-Đăng nhập MySQL bằng tài khoản có quyền `CREATE` (ví dụ `root`) và chạy, thay đường dẫn cho đúng
-máy mình (dùng dấu `/`):
+Trong MySQL, tạo và chọn database mới rồi chạy theo thứ tự:
 
 ```sql
-CREATE DATABASE robot_assembly_lab CHARACTER SET utf8mb4;
+CREATE DATABASE robot_assembly_lab
+  CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 USE robot_assembly_lab;
-SOURCE D:/duong-dan/robot-engine-website/database/schema.sql;
-SOURCE D:/duong-dan/robot-engine-website/database/seed.sql;
+
+SOURCE database/schema.sql;
+SOURCE database/seed.sql;
+SOURCE database/seed-robots-phase3.sql;
+SOURCE database/seed-quiz.sql;
+SOURCE database/seed-quiz-phase3.sql;
+SOURCE database/seed-troubleshooting.sql;
+SOURCE database/seed-troubleshooting-phase3.sql;
+SOURCE database/seed-shop.sql;
+SOURCE database/seed-library-resources-phase3.sql;
+SOURCE database/seed-assembly-spec-obstacle-avoider.sql;
+SOURCE database/seed-assembly-spec-obstacle-avoider-v2.sql;
+SOURCE database/seed-assembly-spec-all-models.sql;
+SOURCE database/seed-design-rules-v1.sql;
+SOURCE database/seed-design-rules-v2.sql;
 ```
 
-- `schema.sql` đã gồm đủ mọi bảng, chạy trên database **rỗng**, không cần chạy từng migration.
-- Nạp thêm dữ liệu đầy đủ như bản demo, theo thứ tự:
-  `seed-robots-phase3.sql`, `seed-quiz.sql`, `seed-quiz-phase3.sql`, `seed-troubleshooting.sql`,
-  `seed-troubleshooting-phase3.sql`, `seed-shop.sql`.
-- `seed-diagnosis-phase6.sql` và `seed-wiring-phase7.sql` chỉ thêm dữ liệu khi **đã có tài khoản
-  ADMIN** (xem Bước 5); chạy chúng sau cùng.
+`schema.sql` đã gộp cấu trúc hiện tại; **không chạy lại migration 001–016 trên database vừa tạo bằng schema này**. Hai seed chẩn đoán/nối dây thực hiện sau khi có ADMIN, ở bước 4.
 
-### Bước 4. Kiểm tra bằng `/api/health`
+Với database đang có dữ liệu: backup, kiểm `schema_migrations`, đọc migration và chỉ áp dụng phần còn thiếu theo thứ tự. Ví dụ `008_shop_cart_orders.sql` thêm cửa hàng, `013_assembly_placement.sql` thêm lắp chi tiết, `014_assembly_events.sql` thêm nhật ký, `015_robot_design.sql` thêm Xưởng và `016_component_name_fix.sql` sửa tên catalog. Không chạy lại schema, không sửa spec PUBLISHED hoặc tiến độ cũ để nâng cấp.
 
-Sau các seed robot, chạy seed cấu hình lắp ráp theo thứ tự:
-`seed-assembly-spec-obstacle-avoider.sql` rồi `seed-assembly-spec-obstacle-avoider-v2.sql`.
-Chạy lại không sửa cấu hình đã công bố hoặc các phiên cũ.
-Database cũ có013: kiểm `schema_migrations` rồi chạy
-`database/migrations/014_assembly_events.sql` nếu chưa có014. Database mới nhận
-bảng nhật ký từ `schema.sql`, không chạy lại migration. Không có seed nhật ký.
+### 2. Cấu hình Tomcat trong IntelliJ
 
-Xưởng thiết kế: database cũ chạy `database/migrations/015_robot_design.sql` sau014
-nếu chưa có015. Database mới nhận bảng từ schema.sql. Sau seed catalog chạy
-`database/seed-design-rules-v1.sql`, rồi `database/seed-design-rules-v2.sql`.
-Thiết kế mới lấy luật PUBLISHED mới nhất; thiết kế cũ giữ phiên bản đã lưu.
+1. Chọn Project SDK **JDK 17** và Tomcat **9**; giữ target biên dịch Java 17.
+2. Tạo một cấu hình Tomcat Local. Trong **Deployment**, thêm WAR exploded của module `robot-assembly-lab-tomcat`, đặt **Application context** là `/`.
+3. Trong **Server → VM options**, điền các giá trị kết nối của máy:
 
-Chạy Tomcat rồi mở `http://localhost:8080/api/health`:
-
-| Kết quả | Nguyên nhân thường gặp | Cách xử lý |
-| --- | --- | --- |
-| Không mở được hoặc 404 | Chưa chạy Tomcat; Application context khác `/`; đang mở `index.html` trực tiếp | Sửa theo Bước 1 |
-| `"database":"unavailable"` | Sai `DB_*`, MySQL chưa chạy, chưa tạo database, sai user/mật khẩu | Sửa theo Bước 2–3; thử nối bằng MySQL Workbench trước |
-| `"database":"connected"` nhưng đăng nhập báo "Email hoặc mật khẩu không đúng" | Database của máy này chưa có tài khoản đó | Đăng ký tài khoản mới (Bước 5) |
-| `"database":"connected"` nhưng đăng ký báo lỗi 500 | Thiếu bảng (chưa chạy `schema.sql`) hoặc dùng MariaDB | Chạy lại Bước 3 trên database rỗng |
-| Màn hình đăng nhập báo "Cơ sở dữ liệu chưa sẵn sàng" | Mã 503: Tomcat không nối được MySQL | Như dòng `unavailable` |
-
-Phải thấy `"database":"connected"` thì đăng nhập/đăng ký mới hoạt động.
-
-### Bước 5. Đăng ký, đăng nhập và tạo ADMIN
-
-1. Mở `http://localhost:8080/` và đăng ký tài khoản mới ngay trên máy mình.
-2. Cần quyền quản trị thì chạy trong MySQL, rồi đăng xuất và đăng nhập lại:
-
-   ```sql
-   UPDATE users SET role = 'admin', session_version = session_version + 1
-   WHERE email = 'email_vua_dang_ky@example.com';
+   ```text
+   -DDB_HOST=127.0.0.1 -DDB_PORT=3306 -DDB_NAME=robot_assembly_lab -DDB_USER=ten_user_ung_dung -DDB_PASSWORD=mat_khau_cuc_bo
    ```
 
-3. Có ADMIN rồi mới chạy `seed-diagnosis-phase6.sql` và `seed-wiring-phase7.sql`.
+4. `META-INF/context.xml` dùng các system property này để tạo JNDI DataSource `jdbc/robotlab`. **Tomcat không tự đọc `.env`**; `.env.example` chỉ là mẫu thông số.
+5. Bấm Run Tomcat rồi mở `http://localhost:8080/`. Không mở `index.html` trực tiếp hoặc dùng Live Server để thay luồng backend.
 
-### Muốn có đúng dữ liệu của người khác trong nhóm
+Không chạy thêm launcher/server khác trên cùng cổng với IntelliJ. Các launcher demo ngoài repo phụ thuộc môi trường riêng, không phải điều kiện để chạy dự án trên máy mới.
 
-Người có dữ liệu xuất database rồi gửi **riêng trong nhóm** (file chứa mật khẩu đã băm và dữ liệu
-thử, **không đưa lên Git**):
+### 3. Kiểm tra kết nối
 
-```text
-mysqldump -u root -p --default-character-set=utf8mb4 ten_database > robot_lab_dump.sql
-```
+Mở `http://localhost:8080/api/health`; trường `database` cần là `"connected"`.
 
-Máy kia tạo database rỗng rồi nhập file này thay cho Bước 3; tài khoản và dữ liệu sẽ giống bản gốc.
+| Hiện tượng | Kiểm tra |
+| --- | --- |
+| Không truy cập được hoặc 404 | Tomcat đã chạy chưa, deployment và context có đúng `/` không |
+| `database` là `"unavailable"` | MySQL, năm giá trị `DB_*`, quyền tài khoản và database đã chọn |
+| Đăng nhập báo dữ liệu chưa sẵn sàng | Kết nối, cấu trúc bảng và log Tomcat; không tự chạy lại schema trên DB có dữ liệu |
+| Class version `69.0`, yêu cầu `61.0` | Có class Java 25 trong output; kiểm compiler target và rebuild bằng JDK 17 khi output không bị runtime sử dụng |
+| `localhost:1099` hoặc `8080` đã được dùng | Kiểm đúng tiến trình/cấu hình đang chạy; không mở hai Tomcat và không dừng tiến trình chưa xác minh |
 
-### Vẫn lỗi?
+### 4. Tài khoản quản trị và bài thực hành
 
-Gửi kèm khi hỏi nhóm: kết quả `/api/health`, phiên bản Java và MySQL, và dòng lỗi **đầu tiên**
-(màu đỏ) trong cửa sổ Run của Tomcat hoặc thông báo hiện trên màn hình đăng nhập.
-
-## Tài khoản quản trị
-
-Đăng ký trên giao diện tạo tài khoản thường. Sau đó cập nhật quyền trong MySQL:
+Đăng ký qua website tạo tài khoản USER. Để bootstrap ADMIN đầu tiên, dùng tài khoản cài đặt trên đúng database, với email vừa đăng ký:
 
 ```sql
 UPDATE users
@@ -297,258 +230,49 @@ SET role = 'admin', session_version = session_version + 1
 WHERE email = 'admin@example.com';
 ```
 
-Đây chỉ là bước bootstrap quản trị viên đầu tiên. Các lần phân quyền sau dùng
-`/pages/admin-users.html` (yêu cầu role ADMIN và CSRF); các phiên cũ của tài khoản
-được đổi quyền sẽ hết hiệu lực. Trang quản trị nội dung là
-`/pages/admin-content.html`; quản trị sản phẩm demo tại `/pages/admin-shop.html`.
+Kiểm đúng một tài khoản được cập nhật, rồi đăng xuất/đăng nhập lại. Không chỉnh `password_hash`. Những lần quản lý quyền sau dùng `/pages/admin-users.html` theo quyền server hiện có.
 
-## Cửa hàng mô phỏng
-
-- `GET /pages/cua-hang.html`: catalog công khai với giá tham khảo/tồn kho.
-- `/pages/gio-hang.html`: xem và chỉnh giỏ cần đăng nhập; checkout tạo đơn
-  `CONFIRMED` trong database sau khi server kiểm tra tồn kho và tính lại tổng.
-- `/order-history`: Servlet forward sang JSP, chỉ hiển thị đơn của tài khoản hiện
-  tại và tên/giá được chụp tại lúc đặt.
-- Không có cổng thanh toán, dữ liệu thẻ, thu tiền hoặc giao hàng thật.
-
-## Hồ sơ học tập cá nhân có thể in
-
-- `/learning-profile`: hồ sơ chỉ đọc của tài khoản đăng nhập, gồm tiến độ năm
-  mẫu robot, lượt quiz và kỹ năng có căn cứ từ các bảng hiện có.
-- `LearningProfileServlet` lấy user từ `HttpSession`, gọi `RobotDB`/`StatsDB`,
-  dựng JavaBean rồi forward sang JSP. Response dùng `Cache-Control: no-store`;
-  không nhận chủ sở hữu từ query string.
-- Nút **In / Lưu PDF** gọi hộp thoại in của trình duyệt. Chọn khổ A4 và
-  **Lưu dưới dạng PDF**, nên tắt **Đầu trang và chân trang** để tránh thêm ngày
-  giờ/tiêu đề của trình duyệt. Số trang do CSS tạo phụ thuộc trình duyệt;
-  không có dịch vụ hoặc thư viện xuất PDF riêng.
-- Đợt 5b giữ kết quả/giao diện/SQL và viết luật bean bằng vòng `for`, `if/else`,
-  `ArrayList`/`HashMap`; ngày giờ dùng `Date` và `SimpleDateFormat` tạo riêng mỗi
-  lần theo giờ Việt Nam. JSP nhận các getter boolean trạng thái, Servlet dùng
-  `String url` + forward theo slide. Xem bảng chương/slide và Hỏi–Đáp trong
-  [hướng dẫn demo và mở code](docs/TEAM_FLOW_DEMO_GUIDE.md).
-
-## Kiểm tra
-
-Kiểm tra chính là build Maven:
-
-```powershell
-mvn -f tomcat-app/pom.xml clean package
-```
-
-Nếu máy có Node.js 20, có thể chạy thêm các kiểm tra tĩnh; đây không phải runtime:
-
-```powershell
-npm test
-```
-
-## Phân công nhóm
-
-Nhóm 4 · Web Programming. Mỗi thành viên giữ vai trò ban đầu; cửa hàng, giỏ hàng và đơn mô phỏng
-được phân cho Tài theo cập nhật ngày 07/10/2026. Mỗi người phụ trách trọn luồng chức năng của mình
-từ trình duyệt đến bảng MySQL.
-
-| Thành viên | Mảng phụ trách | Chức năng chính | Chuỗi file nên mở |
-| --- | --- | --- | --- |
-| Huỳnh Minh Tài | Nền tảng và phiên học tập (giao diện dùng chung, tích hợp, Servlet/Tomcat, phân quyền) | Đăng nhập, session, CSRF; phiên lắp ráp và phiếu kết quả; nhiệm vụ thực hành (rubric A/B); hồ sơ học tập in A4; khung giao diện JSP; cửa hàng, giỏ hàng và đơn mô phỏng | `AuthServlet` → `SessionUtil` → `UserDB`; `AssemblySessionServlet`; `TaskServlet`; `LearningProfileServlet`; `CartServlet`/`OrderServlet` → `CartDB`/`OrderDB` |
-| Văn Phạm Thảo Nhi | Dữ liệu và nội dung (database, nội dung mô hình/linh kiện/thư viện) | Lớp dữ liệu (`ConnectionPool`, schema, migration, seed); catalog robot/linh kiện/thư viện và CRUD Admin; quiz; tra cứu lỗi; tổng kết và thống kê | `ConnectionPool` → `RobotDB`/`ComponentDB`; `QuizServlet` → `QuizAttemptDB`; `StatsDB`; `database/schema.sql` |
-| Phạm Tuấn Anh | Tương tác và thực hành (luồng lắp ráp, JavaScript, đa thiết bị) | Phòng 3D, hiệu ứng ăn mừng và lái thử; chẩn đoán lỗi tương tác; phòng nối dây có chấm và hỗ trợ Admin–User; giao diện đáp ứng | `assembly-3d.js`; `WiringServlet` → `WiringExercise.grade` → `WiringDB`; `DiagnosisServlet` |
-
-Bảng phân công chi tiết, luồng code và câu hỏi dự kiến theo từng người:
-[mục 7 của file ôn tập cuối kỳ](docs/ON_TAP_VAN_DAP_CUOI_KY.md#7-phân-công-theo-thành-viên).
-
-## Tài liệu bảo vệ bài
-
-- [Kiến trúc và luồng request/response](docs/ARCHITECTURE.md)
-- [Quy ước và danh sách API](docs/API_CONVENTIONS.md)
-- [ERD](docs/erd.md)
-- [Luồng demo và câu hỏi giảng viên](docs/TEAM_FLOW_DEMO_GUIDE.md)
-- [Ôn tập vấn đáp cuối kỳ (một file duy nhất: kiến thức chapter, luồng code, phân công, câu hỏi–đáp)](docs/ON_TAP_VAN_DAP_CUOI_KY.md)
-
-## Phòng thực hành nối dây (Đợt 7, chặng 1)
-
-USER vào `/wiring`: tạo nháp, nối chân bằng SVG hoặc form radio, lưu/tiếp tục,
-nộp/xem giải thích/luyện lại. Nhấn hai chân, kéo thả và bàn phím là tiện ích
-view; form vẫn chạy khi tắt JavaScript. ADMIN `/admin-wiring`: biên soạn nháp,
-xem trước, công bố bản bất biến, nhân bản và lưu trữ.
-
-Sau migration 010, chạy bằng tài khoản DDL trên đúng database:
+Khi đã có ADMIN, dùng tài khoản cài đặt chạy:
 
 ```sql
-SOURCE database/migrations/011_wiring_practice.sql;
+SOURCE database/seed-diagnosis-phase6.sql;
 SOURCE database/seed-wiring-phase7.sql;
 ```
 
-Hai bài chính thức: `wiring-line-follower-v2`, `wiring-obstacle-avoider-v2`.
-Seed chỉ thêm, chạy lại không sửa bài đã công bố. Chỉ chấm cặp trực tiếp được
-khai báo; không mô phỏng điện hay xác nhận robot thật. Điểm =
-HALF_UP(100 × max(C − W, 0) / N, 1), chỉ đúng toàn bộ khi C=N và W=0.
-Không đổi nhiệm vụ/rubric A/B. Xem [thiết kế](docs/WIRING_DESIGN.md),
-[kiểm chứng chặng 1](docs/PHASE7_WIRING_QA_REPORT.md).
+Hai bài nối dây chính thức là `wiring-line-follower-v2` và `wiring-obstacle-avoider-v2`. Seed không tạo sẵn mật khẩu hoặc kết quả học tập; không import DB cá nhân của thành viên để thay việc cài đặt.
 
-### Hỗ trợ phiên nối dây Admin–User (Đợt 7, chặng 2)
+## Build và kiểm thử
 
-USER gửi câu hỏi từ lượt đã lưu, xem phản hồi, gửi cập nhật/bản chụp mới và đánh dấu
-giải quyết. ADMIN xem đúng bản chụp tại lúc gửi, phản hồi hoặc đóng hỗ trợ; không sửa
-dây, nộp thay hay đổi điểm. Tin nhắn/bản chụp cũ bất biến, hỗ trợ độc lập với Mẫu A/B.
+Xác minh Maven thực sự dùng Java 17, sau đó chạy từ thư mục gốc repo:
 
-Sau migration 011, chạy `database/migrations/012_wiring_support.sql` trên đúng schema.
-Migration chỉ thêm hai bảng, chạy lại không xóa/ghi đè lịch sử. Route USER:
-`/wiring-support`; ADMIN: `/admin-wiring-support`. Lối vào theo vai trò ở trang tài khoản
-và từ lượt nối dây. Báo cáo: [QA hỗ trợ](docs/PHASE7_WIRING_SUPPORT_QA_REPORT.md).
+```powershell
+java -version
+mvn -version
+mvn -q -f tomcat-app/pom.xml test
+mvn -q -f tomcat-app/pom.xml clean package
+npm test
+```
 
-### Lắp ráp từng vật thể có kiểm chứng (Đợt 8)
+WAR đầu ra: `tomcat-app/target/robot-assembly-lab.war`. Tài nguyên HTML/CSS/JS ở repo được Maven đóng gói vào WAR; chỉnh source không tự đồng nghĩa Tomcat đã nhận artifact mới.
 
-Sau migration012, chạy `database/migrations/013_assembly_placement.sql`, rồi
-`database/seed-assembly-spec-obstacle-avoider.sql` trên đúng DB đã được duyệt.
-Cần quyền CREATE/ALTER; không tăng quyền tài khoản ứng dụng để ép chạy.
-013 thêm năm bảng và mode/spec/version của phiên; không chuyển đổi phiên cũ.
-Seed thêm spec v1 của obstacle-avoider với10 điểm gắn; chạy lại không sửa bản cũ.
-Sau seed v1, chạy `database/seed-assembly-spec-obstacle-avoider-v2.sql`.
-Phiên lắp chi tiết cũ giữ v1; phiên mới chọn spec v2 có kiểm hướng. Không có migration mới.
-Không tạo tài khoản hay đổi components/robot/quiz/nhiệm vụ bằng seed này.
+Nếu IntelliJ/Tomcat đang phục vụ `target`, build vào thư mục riêng để tránh ghi đè:
 
-Phiên mới của robot có spec dùng khay từng vật thể, kéo hoặc chọn-gắn, xoay90°,
-server xác thực và lưu. Phiên GROUP cũ và robot chưa có spec dùng luồng cũ.
-Hoàn tất chỉ khi JavaBean kiểm đủ10/10; không mô phỏng vật lý/điện/firmware.
-Xem [QA Đợt8](docs/PHASE8_ASSEMBLY_QA_REPORT.md).
+```powershell
+mvn -q -f tomcat-app/pom.xml -Drobotlab.buildDirectory=D:/robotlab-build clean package
+$env:ROBOTLAB_EXPLODED_DIR = 'D:/robotlab-build/robot-assembly-lab'
+npm test
+Remove-Item Env:ROBOTLAB_EXPLODED_DIR
+```
 
-#### Kéo-thả đủ 5 mẫu — 17/10/2026
+Chọn thư mục build riêng chưa được runtime khác sử dụng. Bộ kiểm tra UTF-8 sẽ đối chiếu artifact tại `ROBOTLAB_EXPLODED_DIR`; kiểm thử nguồn không thay thế nghiệm thu trình duyệt trên đúng bản đang triển khai.
 
-Sau hai seed obstacle-avoider ở trên, chạy thêm
-`database/seed-assembly-spec-all-models.sql` trên **đúng database đã chọn**.
-Không cần migration mới; seed chỉ thêm4 spec v1/43 slot/hướng, chạy lại không sửa
-bản đã có. Nên backup DB và kiểm SQL trên DB thử trước; không tăng quyền tài khoản web.
+## Tài liệu dự án
 
-| Mẫu | Số vật thể phải gắn |
-| --- | ---: |
-| Robot dò đường | 11 |
-| Robot tránh vật cản | 10 |
-| Cánh tay robot mini | 8 (4 servo riêng) |
-| Robot dò line kết hợp tránh vật cản | 12 |
-| Robot quét hướng tránh vật cản | 12 |
+- [Kịch bản demo 15–20 phút, vấn đáp và vị trí code](docs/TEAM_FLOW_DEMO_GUIDE.md)
+- [Ôn tập vấn đáp cuối kỳ](docs/ON_TAP_VAN_DAP_CUOI_KY.md)
+- [Kiến trúc và luồng request/response](docs/ARCHITECTURE.md)
+- [Quy ước API](docs/API_CONVENTIONS.md)
+- [ERD và dữ liệu](docs/erd.md)
+- [Bản đồ trang và điều hướng](docs/SITE_MAP.md)
 
-Đăng nhập → chọn mẫu → chuẩn bị đủ linh kiện → vào3D → kéo vật thể tới điểm gắn,
-Q/E hoặc nút xoay90°, hoặc chọn vật thể/slot/hướng rồi Gắn bằng bàn phím.
-Server kiểm loại, hướng, cha và version; màu xanh chỉ sau khi server chấp nhận.
-Đây là góc đặt mô hình rời rạc, **không phải góc điều khiển servo**, mô phỏng điện
-hay chứng nhận an toàn của robot thật.
-
-Phiên GROUP cũ không chuyển đổi hoặc chấm lại. Nút **Mở phiên kéo-thả riêng** ở
-trang chuẩn bị/3D mở hoặc tiếp tục phiên DETAILED của đúng tài khoản; vẫn phải
-chuẩn bị bộ kit ở phiên mới. Tải lại sau khi lỗi mạng có thể bấm lại, không tạo
-thêm phiên DETAILED nếu đã có phiên đang mở. Bản khách vẫn là xem trước cục bộ,
-không phải bằng chứng lắp ráp đã được server xác nhận.
-
-Muốn dùng ở Tomcat đang chạy phải triển khai WAR mới **và** nạp seed trên DB mà
-Tomcat đó kết nối; chỉ sửa file SQL trong Git không làm DB tự cập nhật.
-Xem [báo cáo toàn bộ mẫu](docs/ALL_MODELS_PLACEMENT_QA_REPORT.md).
-
-Trên laptop hiện tại, bản final đã nạp seed trên DB demo riêng và chạy tại
-http://127.0.0.1:8081 (khác môi trường8080). Mở bằng PowerShell:
-`& 'D:\Web-Pro\FINAL.ps1' -Lenh Mo`; dừng bằng `-Lenh Dung`.
-Tài khoản, mật khẩu qua helper cục bộ, URL phiên và lưu ý bảo toàn dữ liệu xem
-[hướng dẫn final hiện hành](docs/TEAM_FLOW_DEMO_GUIDE.md). Không cần sửa .env hoặc IDE.
-
-Launcher đã được hardening để phục hồi runtime mồ côi sau khi xác minh cấu hình,
-PID/argfile và checksum; runtime còn sống nhưng unhealthy sẽ được giữ nguyên để
-kiểm tra. Không tự xóa thư mục runtime hoặc chạy prepare/seed khi mở web.
-Xem [nghiệm thu hardening và WAR chờ duyệt triển khai](docs/FINAL_HARDENING_QA_REPORT.md).
-
-Khi IntelliJ/Tomcat đang dùng target, có thể build riêng bằng JDK17:
-`mvn -f tomcat-app/pom.xml -Drobotlab.buildDirectory=D:/Web-Pro/qa-evidence/phase8/final-build clean package`.
-Tham số tùy chọn; build thông thường vẫn dùng `tomcat-app/target`.
-Để guard UTF-8 đối chiếu bản build riêng, đặt `ROBOTLAB_EXPLODED_DIR` tới
-thư mục `robot-assembly-lab` được giải nén bởi Maven trong build directory đó.
-
-### Sau khi hoàn tất mẫu robot (Đợt 9)
-
-Nút **Xem kết quả** và lịch sử phiên hoàn tất mở `/assembly-review?session=…`:
-ảnh mẫu hoàn chỉnh; hai bản vẽ giản lược của phiên chi tiết; bước chuẩn và trình
-tự đã làm; phiếu kết quả/in; kết quả quiz của chính người học và nút kiểm tra đúng mẫu.
-Phiếu `/assembly-receipt?session=…` vẫn mở được. Phiên GROUP chỉ có ảnh mẫu,
-bước chuẩn, phiếu và quiz; không suy đoán bản vẽ hoặc nhật ký còn thiếu.
-
-Trong phòng chi tiết đang lắp, **Hoàn tác**/Ctrl+Z đảo thao tác gắn, tháo hoặc đổi hướng
-gần nhất sau lần đặt lại. Server kiểm luật và version trước khi lưu; không có Redo.
-Phát lại3D là chế độ chỉ đọc, không sửa phiên đã hoàn tất. Phiên cũ không được tạo
-nhật ký hồi tố. Đây là mô hình giản lược, không phải bản vẽ kỹ thuật hay robot thật.
-
-Sau013, chạy014 bằng tài khoản có quyền CREATE/REFERENCES trên đúng DB.
-Migration thêm `assembly_events`, giữ spec v1/v2 và mọi dữ liệu cũ; không cần seed mới.
-Xem [bằng chứng và giới hạn Đợt9](docs/PHASE9_REVIEW_QA_REPORT.md).
-
-## Xưởng thiết kế robot — Đợt 10
-
-Tự thiết kế trong bộ linh kiện được hỗ trợ kiểm chứng, không ghép mọi linh kiện bất kỳ.
-Luật lắp ghép/cấu hình không mô phỏng điện, vật lý hay firmware; thiết kế riêng không
-tính hoàn thành mẫu chính thức và không làm bằng chứng nhiệm vụ.
-
-Máy đã có database: kiểm schema_migrations, chạy
-`database/migrations/015_robot_design.sql` nếu chưa có015, sau014, trên đúng database.
-Máy mới dùng `database/schema.sql` đã chứa11 bảng Xưởng; không cần chạy lại015.
-Sau seed catalog/robot/shop và cấu hình lắp mẫu, chạy `database/seed-design-rules-v1.sql`.
-Sau đó chạy `database/seed-design-rules-v2.sql`: sao chép v1, chỉ sửa góc nền
-rear-bay/front-top về0 vì v1 bù góc hai lần. Không sửa schema hoặc spec mẫu.
-Seed luật dùng transaction/guard version; chạy lại không đổi bản đã công bố.
-Không nâng quyền ứng dụng; dùng tài khoản cài đặt được cấp CREATE/REFERENCES nếu cần.
-
-Vào Tài khoản → Bộ linh kiện của tôi hoặc Thiết kế của tôi. Bộ linh kiện có thể nhập
-từ đơn CONFIRMED của chính mình; bấm lại không cộng trùng. Tạo thiết kế từ kit hoặc
-thư viện, chọn mục tiêu → tạo snapshot → vào ngay phòng 3D đúng thiết kế →
-gắn/xoay/hoàn tác → Kiểm tra → Hồ sơ thiết kế/In.
-Giới hạn20 thiết kế,30 vật thể/thiết kế,10/loại và đúng một khung nền. arm-frame và
-mini-gripper có hình3D nhưng chưa hỗ trợ kiểm chứng. Đổi kit không đổi snapshot thiết kế.
-Phòng lắp mẫu cũ và spec v1/v2 giữ nguyên. Kết quả/giới hạn QA: [báo cáo Đợt10](docs/PHASE10_DESIGN_QA_REPORT.md).
-
-### Đợt10b — Tên catalog và khung nhìn Xưởng
-
-Database đang có015: chạy `database/migrations/016_component_name_fix.sql` trên
-đúng database. Migration chỉ đổi tên dc-motor khi còn tên cũ, ghi schema_migrations
-và chạy lại an toàn; không ghi đè tên admin đã biên soạn khác. Máy mới dùng schema.sql
-và seed.sql đã có tên “Động cơ DC TT (hộp số)”. Không sửa nhãn spec đã PUBLISHED.
-Nhãn động cơ/bánh xe là hai linh kiện riêng; không viết tên ngoại lệ trong Java.
-Tên đơn hàng cũ là snapshot lúc mua và giữ nguyên. Xưởng tự căn theo vật thể/khay,
-có nút Căn giữa mô hình; camera/bệ/sàn dùng thông số của phòng lắp mẫu.
-
-## Đợt 11 — Điều hướng theo hành trình
-
-Menu chung có sáu nhóm Học, Luyện tập, Tài nguyên, Của tôi, Giới thiệu, Quản trị.
-Các nhóm mở bằng một lần bấm rồi chọn chức năng; desktop vẫn có nút thu gọn sidebar.
-HTML và JSP cùng nhãn/thứ tự/đích theo tests/fixtures/site-nav.json. JSP dùng include
-site-nav.jspf và c:if; HTML chỉ mở nhóm riêng sau GET /api/auth/me, không tin localStorage.
-USER và khách thấy đường vào luyện tập; ADMIN dùng nhóm quản trị vì các route luyện tập
-USER vốn chặn ADMIN. Mục chấm mở danh sách chọn nhiệm vụ, không trỏ route thiếu ID.
-
-Trang chính: pages/mau-robot.html, pages/linh-kien.html, /account (Bảng điều khiển).
-pages/tai-khoan.html giữ đăng nhập/đăng ký, hồ sơ tài khoản và lịch sử lắp; đăng nhập
-thành công tới /account. /robots và /components vẫn là ví dụ Servlet/JSP và mở từ
-/architecture. Kết quả học tập → /learning-summary; Bản in/PDF → /learning-profile.
-
-/architecture là bản đồ môn học công khai, in được, nối chủ đề với chức năng và
-file:dòng. Hồ sơ thiết kế có form bổ sung vật tư thiếu vào giỏ: token, kiểm owner,
-transaction, bù lượng chưa có trong kit/giỏ; PRG về giỏ, không checkout hoặc đổi kho.
-Không cần migration/seed mới. Xem docs/SITE_MAP.md và docs/PHASE11_UX_QA_REPORT.md.
-
-### Đợt 11b — liên kết và kiểm bản demo
-
-Link linh kiện thống nhất query `component` + hash `component-ID`, nhận cả hash
-cũ. Link luyện tập trong nội dung chờ USER được server xác nhận. Cửa hàng giải
-quyết SKU qua GET riêng, giữ phân trang; không ghi giỏ khi mở link. Dashboard
-đặt quyết định trong JavaBean, không gọi DB để chọn gợi ý trong vòng lặp.
-Không có migration/seed/dependency mới.
-
-Build bằng JDK17: đặt JAVA_HOME đúng trong phiên rồi chạy Maven `clean package`,
-sau đó `npm test` tại repo. Tránh để compiler IDE khác phiên bản ghi đè
-`tomcat-app/target/classes`. ROOT.xml IntelliJ đã quan sát trỏ tới
-`tomcat-app/target/robot-assembly-lab`; XML artifact exploded2 riêng không chứng
-minh đang được phục vụ. Bằng chứng source/commit/artifact/HTTP và giới hạn:
-docs/PHASE11B_REVIEW_FIX_QA_REPORT.md.
-### Xem mô hình của chính phiên trên trang hoàn thiện
-
-Phiên DETAILED đã hoàn tất có khung 3D chỉ đọc ngay trong `/assembly-review`:
-xoay camera, phóng to/thu nhỏ, căn giữa. Dữ kiện lấy từ spec/placements của phiên,
-không từ mẫu mặc định; ảnh catalog ghi rõ Ảnh tham khảo. GROUP cũ giữ lịch sử,
-không giả dựng vị trí/hướng chưa được lưu. SVG 2D vẫn là phương án in/dự phòng.
-Không cần migration/seed/dependency mới. Gói WAR và trạng thái chờ triển khai:
-[báo cáo QA](docs/ASSEMBLY_REVIEW_3D_QA_REPORT.md).
+Bắt đầu trình bày bằng luồng học chính; dùng `/architecture` để mở ví dụ Servlet, JavaBean, JSP/JSTL và JDBC khi cần giải thích code. Báo cáo QA và lịch sử từng đợt được giữ riêng trong `docs/`.
