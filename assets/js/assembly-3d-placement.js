@@ -21,6 +21,7 @@ window.createAssemblyPlacementView = function (options) {
   let exploded = false;
   let unsynced = false;
   let selectedObject = null;
+  const allOrientationCodes = ["Y0", "Y90", "Y180", "Y270"];
 
   const heading = document.createElement("h3");
   heading.textContent = "Vật thể và điểm gắn";
@@ -93,10 +94,83 @@ window.createAssemblyPlacementView = function (options) {
     message("Đã hủy chọn; mô hình trở về dữ liệu server đã lưu.", "neutral");
   }
 
-  function choose(instanceId) {
-    selectedInstance = String(instanceId);
-    selectedObject = objects.get(selectedInstance);
+  function selectedItem(instanceId) {
+    const id = instanceId == null ? selectedInstance : instanceId;
+    return layout?.instances.find(item => String(item.id) === String(id));
+  }
+
+  function selectedSlotData(slotId) {
+    const id = slotId == null ? selectedSlot : slotId;
+    return layout?.spec.slots.find(slot => String(slot.id) === String(id));
+  }
+
+  function selectedSlotIsAvailable() {
+    const item = selectedItem();
+    const slot = selectedSlotData();
+    if (!item || !slot || slot.componentId !== item.componentId) return false;
+    const occupant = layout.placements.find(placed => String(placed.slotId) === String(slot.id));
+    return !occupant || String(occupant.instanceId) === String(item.id);
+  }
+
+  function allowedOrientationCodes() {
+    if (!options.matchComponentSlots || !selectedSlot || !selectedSlotIsAvailable()) {
+      return allOrientationCodes;
+    }
+    const slot = selectedSlotData();
+    const supported = (slot.orientations || []).filter(code => allOrientationCodes.includes(code));
+    return supported.length ? supported : allOrientationCodes;
+  }
+
+  function alignOrientation() {
+    const supported = allowedOrientationCodes();
+    if (options.matchComponentSlots && !supported.includes(orientation)) {
+      orientation = supported[0];
+    }
+  }
+
+  function renderDirections() {
+    resetFieldset(directions, "Hướng tương đối với vị trí gốc");
+    for (const code of allowedOrientationCodes()) {
+      radio(directions, "assembly-orientation", code, code.slice(1) + "°", orientation === code, () => {
+        orientation = code;
+        previewOrientation();
+        directions.querySelectorAll("input").forEach(input => { input.checked = input.value === orientation; });
+        message(`Hướng xem trước: ${orientation.slice(1)}°. Chưa đồng bộ.`, "preview");
+      });
+    }
+  }
+
+  function selectSlot(slotId) {
+    const slot = selectedSlotData(slotId);
+    if (!slot) return;
+    const previousOrientation = orientation;
+    selectedSlot = String(slot.id);
+    alignOrientation();
     previewOrientation();
+    highlight(slot.id, 0xfbbf24);
+    renderDirections();
+    updateRotationControls();
+    if (previousOrientation !== orientation && options.matchComponentSlots) {
+      message(`Điểm này hỗ trợ hướng ${orientation.slice(1)}°; đã chọn hướng hợp lệ. `
+        + "Server sẽ xác nhận khi bạn gắn vật thể.", "preview");
+    } else {
+      message("Điểm gắn xem trước; server chưa xác nhận.", "preview");
+    }
+  }
+
+  function choose(instanceId) {
+    const nextInstance = String(instanceId);
+    const changed = selectedInstance !== nextInstance;
+    selectedInstance = nextInstance;
+    selectedObject = objects.get(selectedInstance);
+    if (changed && options.matchComponentSlots) {
+      orientation = "Y0";
+      if (!selectedSlotIsAvailable()) selectedSlot = null;
+      alignOrientation();
+    }
+    renderDirections();
+    previewOrientation();
+    updateRotationControls();
     message("Đã chọn vật thể. Chọn điểm gắn và hướng rồi nhấn Gắn.", "preview");
   }
 
@@ -111,8 +185,10 @@ window.createAssemblyPlacementView = function (options) {
 
   function rotate(delta) {
     if (!selectedInstance || busy || !layout?.canEdit) return;
-    const codes = ["Y0", "Y90", "Y180", "Y270"];
-    orientation = codes[(codes.indexOf(orientation) + delta + 4) % 4];
+    const codes = allowedOrientationCodes();
+    if (codes.length < 2) return;
+    const current = codes.indexOf(orientation);
+    orientation = codes[(Math.max(0, current) + delta + codes.length) % codes.length];
     previewOrientation();
     message(`Hướng xem trước: ${orientation.slice(1)}°. Chưa đồng bộ.`, "preview");
     directions.querySelectorAll("input").forEach(input => { input.checked = input.value === orientation; });
@@ -159,10 +235,17 @@ window.createAssemblyPlacementView = function (options) {
     undo.disabled = disabled;
     cancel.disabled = busy;
     retry.disabled = disabled;
-    rotateLeft.disabled = disabled;
-    rotateRight.disabled = disabled;
+    updateRotationControls();
     installed.querySelectorAll("button").forEach(button => { button.disabled = disabled; });
     onChange?.(layout, busy, unsynced);
+  }
+
+  function updateRotationControls() {
+    const disabled = busy || !layout?.canEdit;
+    const fixedOrientation = options.matchComponentSlots && selectedSlot
+      && allowedOrientationCodes().length === 1;
+    rotateLeft.disabled = disabled || Boolean(fixedOrientation);
+    rotateRight.disabled = disabled || Boolean(fixedOrientation);
   }
 
   function radio(fieldset, name, value, text, checked, change) {
@@ -186,9 +269,12 @@ window.createAssemblyPlacementView = function (options) {
   function sync(next) {
     if (!next) return;
     layout = next;
+    if (options.matchComponentSlots) {
+      if (selectedSlot && !selectedSlotIsAvailable()) selectedSlot = null;
+      alignOrientation();
+    }
     resetFieldset(tray, "Khay linh kiện chưa gắn");
     resetFieldset(slots, "Chọn điểm gắn");
-    resetFieldset(directions, "Hướng tương đối với vị trí gốc");
     installed.replaceChildren();
     for (const object of objects.values()) {
       root.remove(object);
@@ -254,19 +340,10 @@ window.createAssemblyPlacementView = function (options) {
       radio(slots, "assembly-slot", String(slot.id),
         `${slot.label} · hướng ${slot.orientations.map(code => code.slice(1) + "°").join(", ")}`,
         selectedSlot === String(slot.id), () => {
-          selectedSlot = String(slot.id);
-          previewOrientation();
-          highlight(slot.id, 0xfbbf24);
-          message("Điểm gắn xem trước; server chưa xác nhận.", "preview");
+          selectSlot(slot.id);
         });
     }
-    for (const code of ["Y0", "Y90", "Y180", "Y270"]) {
-      radio(directions, "assembly-orientation", code, code.slice(1) + "°", orientation === code,
-        () => {
-          if (selectedInstance) rotate((Number(code.slice(1)) - Number(orientation.slice(1))) / 90);
-          else orientation = code;
-        });
-    }
+    renderDirections();
     if (!trayIndex) tray.append(document.createTextNode("Khay không còn vật thể."));
     if (!next.placements.length) installed.append(document.createTextNode("Chưa có vật thể được gắn."));
     selectedObject = objects.get(selectedInstance);
@@ -283,12 +360,23 @@ window.createAssemblyPlacementView = function (options) {
   function pointerDown(event) {
     if (!layout || busy || !layout.canEdit || exploded) return false;
     ray(event);
+    const markerSlot = selectedInstance && options.matchComponentSlots ? findPreviewSlot(event) : null;
+    if (markerSlot) {
+      selectSlot(markerSlot.id);
+      return true;
+    }
     const markerHit = raycaster.intersectObjects([...markers.values()], false)[0];
+    if (markerHit && selectedInstance && !options.matchComponentSlots) {
+      selectSlot(markerHit.object.userData.slotId);
+      return true;
+    }
     if (markerHit && selectedInstance) {
-      selectedSlot = markerHit.object.userData.slotId;
-      previewOrientation();
-      highlight(selectedSlot, 0xfbbf24);
-      message("Đã chọn điểm gắn. Nhấn Gắn để gửi server.", "preview");
+      selectedSlot = null;
+      highlight(null, 0xa9b6b4);
+      message(
+        "Điểm gần nhất không phù hợp hoặc đã có vật thể. Hãy chọn điểm gắn phù hợp còn trống.",
+        "error"
+      );
       return true;
     }
     const hit = raycaster.intersectObjects([...objects.values()], true)[0];
@@ -304,10 +392,18 @@ window.createAssemblyPlacementView = function (options) {
 
   function findPreviewSlot(event) {
     const rect = canvas.getBoundingClientRect();
+    const instance = options.matchComponentSlots
+      ? layout.instances.find(item => String(item.id) === String(selectedInstance)) : null;
+    if (options.matchComponentSlots && selectedInstance && !instance) return null;
     let nearest = null;
     let distance = 28;
-    // Chọn marker trên màn hình để phân biệt các điểm cùng x/z nhưng khác độ cao.
+    // Ưu tiên điểm cùng loại và còn trống; server vẫn là nơi quyết định luật lắp ráp.
     for (const slot of layout.spec.slots) {
+      if (options.matchComponentSlots && instance && slot.componentId !== instance.componentId) continue;
+      if (options.matchComponentSlots) {
+        const occupant = layout.placements.find(placed => String(placed.slotId) === String(slot.id));
+        if (occupant && String(occupant.instanceId) !== String(instance?.id)) continue;
+      }
       const marker = markers.get(String(slot.id));
       if (!marker) continue;
       const screen = marker.getWorldPosition(new THREE.Vector3()).project(camera);
@@ -328,10 +424,17 @@ window.createAssemblyPlacementView = function (options) {
       drag.object.position.set(THREE.MathUtils.clamp(point.x, -6, 6), .9,
         THREE.MathUtils.clamp(point.z, -5, 6));
       const nearest = findPreviewSlot(event);
-      selectedSlot = nearest ? String(nearest.id) : null;
+      const nextSlot = nearest ? String(nearest.id) : null;
+      if (nextSlot !== selectedSlot) {
+        selectedSlot = nextSlot;
+        alignOrientation();
+        renderDirections();
+        updateRotationControls();
+      }
       previewOrientation();
       highlight(selectedSlot, 0xfbbf24);
-      message(nearest ? `Xem trước: ${nearest.label}. Chưa đồng bộ.` : "Kéo gần một điểm gắn hoặc hủy chọn.", "preview");
+      message(nearest ? `Xem trước: ${nearest.label}. Chưa đồng bộ.`
+        : "Kéo gần một điểm gắn phù hợp còn trống hoặc hủy chọn.", "preview");
     }
     return true;
   }
